@@ -3,13 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import parse from 'html-react-parser';
-import { Textarea, Title, Button } from '@mantine/core';
+import { Button, Grid, Textarea, Title } from '@mantine/core';
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
-
+import Header from './components/Header';
 
 export default function DocumentPage() {
-
   const [sectionsContent, setSectionContent] = useState([
     `<div>contetnt 1 </div>`,
     '<p>contetnt<strong> 2</strong></p>',
@@ -22,13 +21,9 @@ export default function DocumentPage() {
     extensions: [StarterKit],
     content: editorContent,
     onUpdate: ({ editor }) => {
-
       console.log(editor.getHTML()); // Zapisuje treść w konsoli po każdej edycji
     },
   });
-
-
-
 
   const replaceSelectedText = () => {
     const selectedText = editor.state.doc.textBetween(
@@ -51,40 +46,52 @@ export default function DocumentPage() {
   };
 
   return (
-    <div>
-     <Button variant="filled" onClick={()=> {setSectionContent([...sectionsContent,"<p>New chapter</p>"]); console.log(sectionsContent)}}>Add chapter</Button>
+    <>
+      <Header />
+      <Grid>
+        <Grid.Col span={6}>
+          1
+          <div>
+            <Button
+              variant="filled"
+              onClick={() => {
+                setSectionContent([...sectionsContent, '<p>New chapter</p>']);
+                console.log(sectionsContent);
+              }}
+            >
+              Add chapter
+            </Button>
 
-     {
-      sectionsContent.length>0 ? (
-        sectionsContent.map((item, idx)=>(
-
-          <div key={idx}
-        tabIndex={idx}
-        onFocus={async () => {
-          setActiveSecion(idx);
-          await editor?.commands.setContent(item);
-          console.log("onFocus", item);
-        }}
-        onBlur={()=>{
-          let content: (string | undefined) = sectionsContent;
-          content[idx]=editor?.getHTML();
-          setSectionContent(content)
-          console.log("OnBlur", editorContent);
-        }}
-      >
-        {activeSection === idx ? (
-          <RichTextEditor editor={editor}>
-            <RichTextEditor.Content />
-          </RichTextEditor>
-        ) : (
-          parse(sectionsContent[idx])
-        )}
-      </div>
-
-        ))
-      ): <></>
-     }
-      {/* <div
+            {sectionsContent.length > 0 ? (
+              sectionsContent.map((item, idx) => (
+                <div
+                  key={idx}
+                  tabIndex={idx}
+                  onFocus={async () => {
+                    setActiveSecion(idx);
+                    await editor?.commands.setContent(item);
+                    console.log('onFocus', item);
+                  }}
+                  onBlur={() => {
+                    let content: string | undefined = sectionsContent;
+                    content[idx] = editor?.getHTML();
+                    setSectionContent(content);
+                    console.log('OnBlur', editorContent);
+                  }}
+                >
+                  {activeSection === idx ? (
+                    <RichTextEditor editor={editor}>
+                      <RichTextEditor.Content />
+                    </RichTextEditor>
+                  ) : (
+                    parse(sectionsContent[idx])
+                  )}
+                </div>
+              ))
+            ) : (
+              <></>
+            )}
+            {/* <div
         tabIndex={0}
         onFocus={() => {
           setActiveSecion(0);
@@ -118,9 +125,13 @@ export default function DocumentPage() {
         )}
       </div> */}
 
-      <button type="button" onClick={replaceSelectedText} style={{ marginTop: '10px' }}>
-        Podmień zaznaczony tekst
-      </button>
-    </div>
+            <button type="button" onClick={replaceSelectedText} style={{ marginTop: '10px' }}>
+              Podmień zaznaczony tekst
+            </button>
+          </div>
+        </Grid.Col>
+        <Grid.Col span={6}>2</Grid.Col>
+      </Grid>
+    </>
   );
 }
