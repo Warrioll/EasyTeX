@@ -1,10 +1,11 @@
-import { createTheme } from '@mantine/core';
+import { colorsTuple, createTheme } from '@mantine/core';
 
 export const theme = createTheme({
-
+    primaryColor: 'mainCyan',
     colors: {
-      //'mainTale': ["#"],
-
-    }
+      mainCyan: colorsTuple('var(--mantine-color-cyan-9)'),
+      
+    },
+   
   /** Put your mantine theme override here */
 });

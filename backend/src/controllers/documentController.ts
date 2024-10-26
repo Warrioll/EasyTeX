@@ -87,3 +87,50 @@ export const updateLine = async (req: express.Request, res: express.Response)=>{
     res.sendStatus(500);
   }
 }
+
+export const updateLines = async (req: express.Request, res: express.Response)=>{
+  type chapterType = {
+    head: string | null | undefined,
+    body: string | null | undefined
+  }
+
+  const parseToTex = (chapter: chapterType)=>{
+      const title = `\\section{${chapter.head}}`
+      //console.log("Przed", chapter.body );
+      let content = chapter.body.split('</p>');
+      //console.log("Po split", content);
+      content = content.map(line=> line.replace('<p>', ''));
+      //console.log("Po map", content);
+      const endContent = content.join(" ");
+      //console.log("Po join", endContent);
+
+      /*
+      W taki sam sposób jak <p> z boldami i resztą:
+        1. wyszukanie i podzielenie na elementy tablicy po znaku </b>
+        2. podzelenie elemenmtów na kolejene tablie tak zamo jak w 1. tylko względem <b>
+        3. powinna powstać tablica zabierajace podtablice o 2 elementach gdzioe ten drugi element ma być boldem - usunąć z niego znaczniki i opatrzyć w skłądnie Tex
+        4. złączayć wszytko w jeden string do zmiennej content (falt i join chyba trzeba bedzie)
+      */
+
+      return [title, endContent];
+  }
+
+  try{
+    const {id} = req.params;
+    const {sections} = req.body;
+    console.log("section", sections);
+    const toTex = sections.map(parseToTex).flat();
+    console.log("toTex", toTex);
+    let content: (string | undefined)[] = await loadTexFile(id);
+    content.splice(4,0, toTex);
+    content=content.flat();
+    console.log("content", content);
+
+    fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+
+    res.sendStatus(200);
+  }catch(error){
+    console.log(error);
+    res.sendStatus(500);
+  }
+}

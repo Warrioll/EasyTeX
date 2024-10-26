@@ -1,5 +1,5 @@
 import express from 'express'
-import { getDocuments, getDocumentById, createDocument, updateLine, addLine } from './controllers/documentController';
+import { getDocuments, getDocumentById, createDocument, updateLine, addLine, updateLines } from './controllers/documentController';
 //import documents from './documentRouter'
 
 const router = express.Router();
@@ -13,6 +13,7 @@ export default (): express.Router =>{
         router.post('/document',createDocument);
         router.post("/document/line/:id",addLine )
         router.put("/document/line/:id",updateLine )
+        router.put("/document/lines/:id",updateLines )
     }catch(error){
         console.log(error);
     }
