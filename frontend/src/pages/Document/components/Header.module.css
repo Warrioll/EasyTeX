@@ -1,40 +1,45 @@
-.header {
-    height: rem(60px);
-    padding-left: var(--mantine-spacing-md);
-    padding-right: var(--mantine-spacing-md);
-    border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  .band{
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-9));
+    border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-6));;
+   
   }
-  
-  .link {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-left: var(--mantine-spacing-md);
-    padding-right: var(--mantine-spacing-md);
-    text-decoration: none;
-    color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+
+  .tab {
+    z-index: 1;
     font-weight: 500;
-    font-size: var(--mantine-font-size-sm);
+    transition: color 100ms ease;
+    color:  var(--mantine-color-cyan-8);
   
-    @media (max-width: $mantine-breakpoint-sm) {
-      height: rem(42px);
-      width: 100%;
+    &[data-active] {
+      color: var(--mantine-color-white);
     }
   
-    @mixin hover {
-      background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+    @mixin dark {
+      color: var(--mantine-color-dark-1);
+  
+      &[data-active] {
+        color: var(--mantine-color-white);
+      }
     }
   }
-  
-  .subLink {
-    width: 100%;
-    padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+
+  .list {
+    position: relative;
+
+  }
+
+  .indicator {
+    background-color: var(--mantine-color-cyan-8);
     border-radius: var(--mantine-radius-md);
+
   
-    @mixin hover {
-      background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+    @mixin dark {
+      background-color: var(--mantine-color-dark-6);
+      border-color: var(--mantine-color-dark-4);
     }
   }
+  
+ 
   
   .dropdownFooter {
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));

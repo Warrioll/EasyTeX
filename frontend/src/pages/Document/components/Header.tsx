@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Anchor,
   Box,
@@ -7,6 +8,8 @@ import {
   Collapse,
   Divider,
   Drawer,
+  Flex,
+  FloatingIndicator,
   Group,
   HoverCard,
   rem,
@@ -31,95 +34,83 @@ import { useDisclosure } from '@mantine/hooks';
 // } from '@tabler/icons-react';
 import classes from './Header.module.css';
 
-// const mockdata = [
-//   {
-//     icon: IconCode,
-//     title: 'Open source',
-//     description: 'This Pokémon’s cry is very loud and distracting',
-//   },
-//   {
-//     icon: IconCoin,
-//     title: 'Free for everyone',
-//     description: 'The fluid of Smeargle’s tail secretions changes',
-//   },
-//   {
-//     icon: IconBook,
-//     title: 'Documentation',
-//     description: 'Yanma is capable of seeing 360 degrees without',
-//   },
-//   {
-//     icon: IconFingerprint,
-//     title: 'Security',
-//     description: 'The shell’s rounded shape and the grooves on its.',
-//   },
-//   {
-//     icon: IconChartPie3,
-//     title: 'Analytics',
-//     description: 'This Pokémon uses its flying ability to quickly chase',
-//   },
-//   {
-//     icon: IconNotification,
-//     title: 'Notifications',
-//     description: 'Combusken battles with the intensely hot flames it spews',
-//   },
-// ];
+type headerProps = {
+  editFunctions: Record<string, (...args: any[]) => any>;
+};
 
-export default function Header() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
-  const theme = useMantineTheme();
+export default function Header({ editFunctions }: React.FC<headerProps>) {
+  //const theme = useMantineTheme();
 
-  //   const links = mockdata.map((item) => (
-  //     <UnstyledButton className={classes.subLink} key={item.title}>
-  //       <Group wrap="nowrap" align="flex-start">
-  //         <ThemeIcon size={34} variant="default" radius="md">
-  //           <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
-  //         </ThemeIcon>
-  //         <div>
-  //           <Text size="sm" fw={500}>
-  //             {item.title}
-  //           </Text>
-  //           <Text size="xs" c="dimmed">
-  //             {item.description}
-  //           </Text>
-  //         </div>
-  //       </Group>
-  //     </UnstyledButton>
-  //   ));
+  const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
+  const [value, setValue] = useState<string | null>('file');
+  const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
+  const setControlRef = (val: string) => (node: HTMLButtonElement) => {
+    controlsRefs[val] = node;
+    setControlsRefs(controlsRefs);
+  };
 
   return (
-    <Box pb={120}>
-      <header className={classes.header}>
-        <Group justify="space-between" h="100%">
-          {
-            //<MantineLogo size={30} />
-          }
-          <div>EasyTeX</div>
-          <Group h="100%" gap={0} visibleFrom="sm">
-            <Tabs radius="xs" defaultValue="mainTools">
-              <Tabs.List>
-                <Tabs.Tab value="file">File</Tabs.Tab>
-                <Tabs.Tab value="mainTools">Main Tools</Tabs.Tab>
+    <Box h="11vh">
+      {/* <header> */}
+      <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
+        <Center h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
+          <Group justify="space-between" h="100%" w="100%">
+            <div>EasyTeX</div>
+            <Group h="100%" gap={0} visibleFrom="sm">
+              <Tabs.List ref={setRootRef} className={classes.list}>
+                <Tabs.Tab value="file" ref={setControlRef('file')} className={classes.tab}>
+                  File
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value="mainTools"
+                  ref={setControlRef('mainTools')}
+                  className={classes.tab}
+                >
+                  Main Tools
+                </Tabs.Tab>
+
+                <FloatingIndicator
+                  target={value ? controlsRefs[value] : null}
+                  parent={rootRef}
+                  className={classes.indicator}
+                />
               </Tabs.List>
-
-              <Tabs.Panel value="file">File tools</Tabs.Panel>
-
-              <Tabs.Panel value="mainTools">
-                <Button variant="default">Bold</Button>
-                <Button variant="default">Italic</Button>
-                <Button variant="default">underline</Button>
-              </Tabs.Panel>
-            </Tabs>
+            </Group>
+            <Button variant="default" size="xs">
+              Profile
+            </Button>
           </Group>
+        </Center>
 
-          <Group visibleFrom="sm">
-            <Button variant="default">Profile</Button>
-          </Group>
+        <Center
+          h="6vh"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+          pl="lg"
+          pr="lg"
+          ml="lg"
+          mr="lg"
+          className={classes.band}
+        >
+          <Tabs.Panel value="file">File tools</Tabs.Panel>
 
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
-        </Group>
-      </header>
+          <Tabs.Panel value="mainTools">
+            <Button variant="default">Bold</Button>
+            <Button variant="default">Italic</Button>
+            <Button variant="default">underline</Button>
+            <Button variant="default" onClick={editFunctions.addSection}>
+              Add Section
+            </Button>
+            <Button variant="default" onClick={editFunctions.saveChanges}>
+              Save Changes
+            </Button>
+          </Tabs.Panel>
+        </Center>
 
+        {/* <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" /> */}
+      </Tabs>
+      {/* </header> */}
+
+      {/* //do Burgera
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
@@ -140,10 +131,10 @@ export default function Header() {
               <Box component="span" mr={5}>
                 Features
               </Box>
-              {/* <IconChevronDown
+              <IconChevronDown
                 style={{ width: rem(16), height: rem(16) }}
                 color={theme.colors.blue[6]}
-              /> */}
+              />
             </Center>
           </UnstyledButton>
           <Collapse in={linksOpened}>
@@ -165,7 +156,7 @@ export default function Header() {
             <Button>Sign up</Button>
           </Group>
         </ScrollArea>
-      </Drawer>
+      </Drawer> */}
     </Box>
   );
 }

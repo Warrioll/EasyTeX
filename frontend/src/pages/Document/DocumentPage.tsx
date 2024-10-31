@@ -1,20 +1,28 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
-import Placeholder from '@tiptap/extension-placeholder';
+import { useState } from 'react';
 import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
 import parse from 'html-react-parser';
-import { Button, Grid, Paper, ScrollArea, Textarea, Title } from '@mantine/core';
+import { Document, Page, pdfjs } from 'react-pdf';
+import { Box, Button, Grid, Paper, ScrollArea, Textarea, Title } from '@mantine/core';
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
 import Header from './components/Header';
+import pdfClasses from './components/pdfDocument.module.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 type chapterType = {
   head: string | null | undefined;
   body: string | undefined;
 };
+
+//pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function DocumentPage() {
   const [sectionsContent, setSectionContent] = useState<chapterType[]>([]);
@@ -52,7 +60,7 @@ export default function DocumentPage() {
     }
   };
 
-  const send = async () => {
+  const saveChanges = async () => {
     const response = await axios.put(
       'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
       { sections: sectionsContent }
@@ -60,29 +68,28 @@ export default function DocumentPage() {
     console.log(response);
   };
 
+  const addSection = () => {
+    setSectionContent([...sectionsContent, { head: 'New Chapter', body: 'Write here...' }]);
+    console.log(sectionsContent);
+  };
+
+  const editFunctions = {
+    addSection,
+    saveChanges,
+  };
+
   return (
     <>
-      <Header />
-      <ScrollArea h="79vh">
+      <Header editFunctions={editFunctions} />
+
+      <ScrollArea h="89vh" w="100vw" offsetScrollbars type="always">
         <Grid>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            <button type="button" onClick={replaceSelectedText} style={{ marginTop: '10px' }}>
+            {/* <button type="button" onClick={replaceSelectedText} style={{ marginTop: '10px' }}>
               Podmień zaznaczony tekst
-            </button>
-            <Button
-              color="var(--mantine-color-cyan-9)"
-              variant="filled"
-              onClick={() => {
-                setSectionContent([
-                  ...sectionsContent,
-                  { head: 'New Chapter', body: 'Write here...' },
-                ]);
-                console.log(sectionsContent);
-              }}
-            >
-              Add chapter
-            </Button>
-            <Button onClick={send}>Send</Button>
+            </button> */}
+            {/* 
+            <Button onClick={send}>Send</Button> */}
             <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
               <div>
                 {sectionsContent.length > 0 ? (
@@ -121,7 +128,9 @@ export default function DocumentPage() {
             </Paper>
           </Grid.Col>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            2
+            <Document file="/671396c35547c1fc316c1a06.pdf" className={pdfClasses.annotationLayer}>
+              <Page pageNumber={1} />
+            </Document>
           </Grid.Col>
         </Grid>
       </ScrollArea>
