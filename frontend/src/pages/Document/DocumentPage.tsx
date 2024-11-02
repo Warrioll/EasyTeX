@@ -5,7 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Box, Button, Grid, Paper, ScrollArea, Textarea, Title } from '@mantine/core';
+import { Box, Button, Grid, Input, Paper, ScrollArea, Textarea, Title } from '@mantine/core';
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
@@ -29,6 +29,8 @@ export default function DocumentPage() {
 
   const [activeSection, setActiveSecion] = useState(0);
   const [editorContent, setEditorContent] = useState(sectionsContent[activeSection]);
+
+  const [pdfLoaded, setPdfLoaded] = useState(true);
 
   const editor = useEditor({
     extensions: [
@@ -60,22 +62,43 @@ export default function DocumentPage() {
     }
   };
 
+  //to to przeanalizowania
+  const delay = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
+
   const saveChanges = async () => {
+    await setPdfLoaded(false);
     const response = await axios.put(
       'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
       { sections: sectionsContent }
     );
     console.log(response);
+    //kurka przy 800ms działa ale to za długo
+    //await delay(800);
+    await setPdfLoaded(true);
   };
 
   const addSection = () => {
-    setSectionContent([...sectionsContent, { head: 'New Chapter', body: 'Write here...' }]);
+    setSectionContent([
+      ...sectionsContent,
+      { head: 'New Chapter', body: '<h6>Write</h6> here...' },
+    ]);
     console.log(sectionsContent);
+  };
+
+  const reloadPdf = async () => {
+    await setPdfLoaded(false);
+    await setTimeout(() => {
+      console.log('timeout');
+    }, 5000);
+    await setPdfLoaded(true);
   };
 
   const editFunctions = {
     addSection,
     saveChanges,
+    reloadPdf,
   };
 
   return (
@@ -128,9 +151,24 @@ export default function DocumentPage() {
             </Paper>
           </Grid.Col>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            <Document file="/671396c35547c1fc316c1a06.pdf" className={pdfClasses.annotationLayer}>
-              <Page pageNumber={1} />
-            </Document>
+            <Box m="xl">
+              {pdfLoaded ? (
+                <Document
+                  file="http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06"
+                  className={pdfClasses.annotationLayer}
+                >
+                  <Page
+                    pageNumber={1}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    className={pdfClasses.page}
+                    scale={1.31}
+                  />
+                </Document>
+              ) : (
+                <>PDF Not found</>
+              )}
+            </Box>
           </Grid.Col>
         </Grid>
       </ScrollArea>

@@ -1,0 +1,19 @@
+button{
+    &[data-variant='format'] {
+      padding: 0.6rem;
+    
+        @mixin light {
+           background-color: var(--mantine-color-gray-white);
+           color: var(--mantine-color-gray-black)
+        }
+    
+        @mixin dark {
+            background-color: var(--mantine-color-dark-8);
+            color: var(--mantine-color-gray-white)
+        }
+    
+        &:hover{
+            background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8));
+        }
+}
+}

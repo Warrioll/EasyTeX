@@ -1,6 +1,6 @@
-import { colorsTuple, createTheme } from '@mantine/core';
-import { pointer } from '@testing-library/user-event/dist/types/pointer';
-
+import { Button, colorsTuple, createTheme, Input } from '@mantine/core';
+//import { pointer } from '@testing-library/user-event/dist/types/pointer';
+import classes from './componentsGlobal.module.css'
 export const theme = createTheme({
     primaryColor: 'mainCyan',
     //primaryShade: { light: 7, dark: 7 },
@@ -10,7 +10,13 @@ export const theme = createTheme({
     },
     autoContrast: true,
     cursorType: 'pointer',
-    defaultRadius: 'sm'
+    defaultRadius: 'sm',
+
+    components:{
+      Button: Button.extend({classNames: classes}),
+      Input: Input.extend({ classNames: classes }),
+    }
+     
    
   /** Put your mantine theme override here */
 });

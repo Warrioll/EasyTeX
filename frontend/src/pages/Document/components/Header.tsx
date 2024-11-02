@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { GoListOrdered } from 'react-icons/go';
+import { ImBold, ImItalic, ImUnderline } from 'react-icons/im';
+import { MdFormatListBulleted } from 'react-icons/md';
 import {
   Anchor,
   Box,
@@ -42,7 +45,7 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
   //const theme = useMantineTheme();
 
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
-  const [value, setValue] = useState<string | null>('file');
+  const [value, setValue] = useState<string | null>('mainTools');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
   const setControlRef = (val: string) => (node: HTMLButtonElement) => {
     controlsRefs[val] = node;
@@ -94,14 +97,29 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
           <Tabs.Panel value="file">File tools</Tabs.Panel>
 
           <Tabs.Panel value="mainTools">
-            <Button variant="default">Bold</Button>
-            <Button variant="default">Italic</Button>
-            <Button variant="default">underline</Button>
+            <Button variant="format">
+              <ImBold />
+            </Button>
+            <Button variant="format">
+              <ImItalic />
+            </Button>
+            <Button variant="format">
+              <ImUnderline />
+            </Button>
+            <Button variant="format">
+              <MdFormatListBulleted />
+            </Button>
+            <Button variant="format">
+              <GoListOrdered />
+            </Button>
             <Button variant="default" onClick={editFunctions.addSection}>
               Add Section
             </Button>
             <Button variant="default" onClick={editFunctions.saveChanges}>
               Save Changes
+            </Button>
+            <Button variant="default" onClick={editFunctions.reloadPdf}>
+              Reload PDF
             </Button>
           </Tabs.Panel>
         </Center>

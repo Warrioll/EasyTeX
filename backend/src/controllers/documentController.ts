@@ -27,6 +27,20 @@ export const  getDocuments= async (req: express.Request, res: express.Response)=
   }
 };
 
+export const  getPdf= async (req: express.Request, res: express.Response)=>{
+ 
+  try{
+    const {id} = req.params;
+    res.setHeader('Content-type', 'application/pdf')
+   
+    fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
+      //res.status(200).json(documents);
+  }catch(error){
+      console.log("Get ERROR: ", error)
+      res.sendStatus(400);
+  }
+};
+
 export const createDocument = async (req: express.Request, res: express.Response)=>{
 
 //const nd: (string |undefined)[]= ["\\documentclass{book}", , "\\begin{document}",, "wlazł kotek na płotek i mrugaa",, "\\end{document}"];
@@ -128,9 +142,14 @@ export const updateLines = async (req: express.Request, res: express.Response)=>
 
     fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
 
+    await compileTex('documentBase', id+'.tex')
+    //clearCompilationFiles('documentBase', id+'.tex')
+
     res.sendStatus(200);
   }catch(error){
     console.log(error);
     res.sendStatus(500);
   }
 }
+
+
