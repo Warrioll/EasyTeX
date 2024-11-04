@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { GoListOrdered } from 'react-icons/go';
-import { ImBold, ImItalic, ImUnderline } from 'react-icons/im';
-import { MdFormatListBulleted } from 'react-icons/md';
 import {
   Anchor,
   Box,
@@ -36,6 +33,12 @@ import { useDisclosure } from '@mantine/hooks';
 //   IconChevronDown,
 // } from '@tabler/icons-react';
 import classes from './Header.module.css';
+import { FaItalic, FaUnderline, FaBold, FaStrikethrough, FaSubscript, FaSuperscript, FaList, FaCode  } from "react-icons/fa";
+import { FaListOl } from "react-icons/fa6";
+import { LuHeading1, LuHeading2 } from "react-icons/lu";
+import { MdOutlineAdd } from "react-icons/md";
+import { PiTextTBold } from "react-icons/pi";
+
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
@@ -45,7 +48,7 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
   //const theme = useMantineTheme();
 
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
-  const [value, setValue] = useState<string | null>('mainTools');
+  const [value, setValue] = useState<string | null>('insert');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
   const setControlRef = (val: string) => (node: HTMLButtonElement) => {
     controlsRefs[val] = node;
@@ -65,12 +68,20 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
                   File
                 </Tabs.Tab>
                 <Tabs.Tab
-                  value="mainTools"
-                  ref={setControlRef('mainTools')}
+                  value="insert"
+                  ref={setControlRef('insert')}
                   className={classes.tab}
                 >
-                  Main Tools
+                  Insert
                 </Tabs.Tab>
+                <Tabs.Tab
+                  value="font"
+                  ref={setControlRef('font')}
+                  className={classes.tab}
+                >
+                  Font
+                </Tabs.Tab>
+              
 
                 <FloatingIndicator
                   target={value ? controlsRefs[value] : null}
@@ -82,6 +93,7 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
             <Button variant="default" size="xs">
               Profile
             </Button>
+
           </Group>
         </Center>
 
@@ -96,31 +108,58 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
         >
           <Tabs.Panel value="file">File tools</Tabs.Panel>
 
-          <Tabs.Panel value="mainTools">
-            <Button variant="format">
-              <ImBold />
+          <Tabs.Panel value="insert">
+            <Button variant="format"  fz='var(--mantine-font-size-lg)' fw='bold' onClick={editFunctions.addSection}>
+              < MdOutlineAdd/>
+              < LuHeading1/>
             </Button>
-            <Button variant="format">
-              <ImItalic />
+            <Button variant="format"  fz='var(--mantine-font-size-lg)' onClick={editFunctions.addSection}>
+              < MdOutlineAdd/>
+              < LuHeading2/>
             </Button>
-            <Button variant="format">
-              <ImUnderline />
+            <Button variant="format"  fz='var(--mantine-font-size-lg)' >
+            < MdOutlineAdd/>
+            < PiTextTBold/>
             </Button>
-            <Button variant="format">
-              <MdFormatListBulleted />
-            </Button>
-            <Button variant="format">
-              <GoListOrdered />
-            </Button>
-            <Button variant="default" onClick={editFunctions.addSection}>
-              Add Section
-            </Button>
-            <Button variant="default" onClick={editFunctions.saveChanges}>
+            <Button variant="format" onClick={editFunctions.saveChanges}>
               Save Changes
             </Button>
-            <Button variant="default" onClick={editFunctions.reloadPdf}>
+            <Button variant="format" onClick={editFunctions.reloadPdf}>
               Reload PDF
             </Button>
+            </Tabs.Panel>
+          <Tabs.Panel value="font">
+            <Button variant="format" fz='var(--mantine-font-size-md)'>
+              <FaBold />
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-md)'>
+              <FaItalic  />
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-md)'>
+              <FaUnderline />
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-md)'>
+              <FaStrikethrough/>
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-lg)'>
+              < FaCode/>
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-md)' ml='2rem'>
+              <FaSubscript/>
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-md)'>
+              <FaSuperscript />
+            </Button>
+
+            <Button variant="format" fz='var(--mantine-font-size-lg)' ml='2rem'>
+              < FaList/>
+            </Button>
+            <Button variant="format" fz='var(--mantine-font-size-lg)'>
+              <FaListOl/>
+            </Button>
+            
+           
+            
           </Tabs.Panel>
         </Center>
 

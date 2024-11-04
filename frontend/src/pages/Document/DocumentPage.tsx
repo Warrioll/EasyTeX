@@ -50,8 +50,8 @@ export default function DocumentPage() {
     );
 
     if (!selectedText) {
-      //alert('Brak zaznaczonego tekstu');
-      return;
+      //alert('Brak zaznaczonego tekstu'); 
+      return; 
     }
 
     const replacement = 'wwwwwwwwwwwww'; //prompt('Podaj tekst, który ma zastąpić zaznaczony:', selectedText);
@@ -82,7 +82,7 @@ export default function DocumentPage() {
   const addSection = () => {
     setSectionContent([
       ...sectionsContent,
-      { head: 'New Chapter', body: '<h6>Write</h6> here...' },
+      { head: 'New Chapter', body: 'Write here...' },
     ]);
     console.log(sectionsContent);
   };

@@ -1,6 +1,8 @@
 button{
     &[data-variant='format'] {
-      padding: 0.6rem;
+      padding: 0.5rem;
+      margin-left: 0.2rem;
+      margin-right: 0.2rem;
     
         @mixin light {
            background-color: var(--mantine-color-gray-white);
