@@ -1,5 +1,5 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
@@ -22,15 +22,16 @@ type chapterType = {
   body: string | undefined;
 };
 
-//pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
 export default function DocumentPage() {
+  const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
+
   const [sectionsContent, setSectionContent] = useState<chapterType[]>([]);
 
   const [activeSection, setActiveSecion] = useState(0);
   const [editorContent, setEditorContent] = useState(sectionsContent[activeSection]);
 
   const [pdfLoaded, setPdfLoaded] = useState(true);
+  const [pagesNumber, setPagesNumber] = useState<number>(0);
 
   const editor = useEditor({
     extensions: [
@@ -42,25 +43,25 @@ export default function DocumentPage() {
     },
   });
 
-  const replaceSelectedText = () => {
-    const selectedText = editor.state.doc.textBetween(
-      editor.state.selection.from,
-      editor.state.selection.to,
-      ' '
-    );
+  // const replaceSelectedText = () => {
+  //   const selectedText = editor.state.doc.textBetween(
+  //     editor.state.selection.from,
+  //     editor.state.selection.to,
+  //     ' '
+  //   );
 
-    if (!selectedText) {
-      //alert('Brak zaznaczonego tekstu'); 
-      return; 
-    }
+  //   if (!selectedText) {
+  //     //alert('Brak zaznaczonego tekstu');
+  //     return;
+  //   }
 
-    const replacement = 'wwwwwwwwwwwww'; //prompt('Podaj tekst, który ma zastąpić zaznaczony:', selectedText);
+  //   const replacement = 'wwwwwwwwwwwww'; //prompt('Podaj tekst, który ma zastąpić zaznaczony:', selectedText);
 
-    if (replacement !== null) {
-      // Zastąpienie zaznaczonego tekstu
-      editor.commands.insertContent(replacement);
-    }
-  };
+  //   if (replacement !== null) {
+  //     // Zastąpienie zaznaczonego tekstu
+  //     editor.commands.insertContent(replacement);
+  //   }
+  // };
 
   //to to przeanalizowania
   const delay = (ms: number) => {
@@ -80,10 +81,7 @@ export default function DocumentPage() {
   };
 
   const addSection = () => {
-    setSectionContent([
-      ...sectionsContent,
-      { head: 'New Chapter', body: 'Write here...' },
-    ]);
+    setSectionContent([...sectionsContent, { head: 'New Chapter', body: 'Write here...' }]);
     console.log(sectionsContent);
   };
 
@@ -95,11 +93,26 @@ export default function DocumentPage() {
     await setPdfLoaded(true);
   };
 
+  const bold = () => {
+    //editor.commands.insertContent('<b>BOLD!</b>');
+    editor?.commands.setBold();
+  };
+
   const editFunctions = {
     addSection,
     saveChanges,
     reloadPdf,
+    bold,
   };
+
+  useEffect(() => {
+    const setPages = async () => {
+      const document = await pdfjs.getDocument(pdfLink).promise;
+      setPagesNumber(document.numPages);
+      console.log('pages:', pagesNumber);
+    };
+    setPages();
+  }, [pdfLoaded]);
 
   return (
     <>
@@ -153,18 +166,21 @@ export default function DocumentPage() {
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
             <Box m="xl">
               {pdfLoaded ? (
-                <Document
-                  file="http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06"
-                  className={pdfClasses.annotationLayer}
-                >
-                  <Page
-                    pageNumber={1}
-                    renderTextLayer={false}
-                    renderAnnotationLayer={false}
-                    className={pdfClasses.page}
-                    scale={1.31}
-                  />
-                </Document>
+                Array(pagesNumber)
+                  .fill(1)
+                  .map((x, idx) => (
+                    <Box mb="sm">
+                      <Document file={pdfLink} className={pdfClasses.annotationLayer}>
+                        <Page
+                          pageNumber={idx + 1}
+                          renderTextLayer={false}
+                          renderAnnotationLayer={false}
+                          className={pdfClasses.page}
+                          scale={1.31}
+                        />
+                      </Document>
+                    </Box>
+                  ))
               ) : (
                 <>PDF Not found</>
               )}

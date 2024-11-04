@@ -10,7 +10,7 @@ export const theme = createTheme({
     },
     autoContrast: true,
     cursorType: 'pointer',
-    defaultRadius: 'sm',
+    defaultRadius: 'md',
 
     components:{
       Button: Button.extend({classNames: classes}),
