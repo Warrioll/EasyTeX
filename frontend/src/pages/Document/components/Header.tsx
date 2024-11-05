@@ -47,6 +47,7 @@ import { useDisclosure } from '@mantine/hooks';
 //   IconChevronDown,
 // } from '@tabler/icons-react';
 import classes from './Header.module.css';
+import FontTab from './FontTab';
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
@@ -135,35 +136,9 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
               Reload PDF
             </Button>
           </Tabs.Panel>
+          
           <Tabs.Panel value="font">
-            <Button variant="format" fz="var(--mantine-font-size-md)" onClick={editFunctions.bold}>
-              <FaBold />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-md)">
-              <FaItalic />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-md)">
-              <FaUnderline />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-md)">
-              <FaStrikethrough />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-lg)">
-              <FaCode />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-md)" ml="2rem">
-              <FaSubscript />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-md)">
-              <FaSuperscript />
-            </Button>
-
-            <Button variant="format" fz="var(--mantine-font-size-lg)" ml="2rem">
-              <FaList />
-            </Button>
-            <Button variant="format" fz="var(--mantine-font-size-lg)">
-              <FaListOl />
-            </Button>
+           <FontTab/>
           </Tabs.Panel>
         </Center>
 
