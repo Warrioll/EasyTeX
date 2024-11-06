@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Extension } from '@tiptap/core';
+import { Editor } from '@tiptap/react';
 import {
   FaBold,
   FaCode,
@@ -37,6 +39,7 @@ import {
 } from '@mantine/core';
 //import { MantineLogo } from '@mantinex/mantine-logo';
 import { useDisclosure } from '@mantine/hooks';
+import FontTab from './FontTab';
 // import {
 //   IconNotification,
 //   IconCode,
@@ -47,13 +50,14 @@ import { useDisclosure } from '@mantine/hooks';
 //   IconChevronDown,
 // } from '@tabler/icons-react';
 import classes from './Header.module.css';
-import FontTab from './FontTab';
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
+  editor: Editor;
+  saveElementChanges: () => void;
 };
 
-export default function Header({ editFunctions }: React.FC<headerProps>) {
+const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChanges }) => {
   //const theme = useMantineTheme();
 
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
@@ -125,20 +129,28 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
               <MdOutlineAdd />
               <LuHeading2 />
             </Button>
-            <Button variant="format" fz="var(--mantine-font-size-lg)">
+            <Button
+              variant="format"
+              fz="var(--mantine-font-size-lg)"
+              onClick={editFunctions.addTextfield}
+            >
               <MdOutlineAdd />
               <PiTextTBold />
             </Button>
-            <Button variant="format" onClick={editFunctions.saveChanges}>
+            <Button variant="format" onClick={editFunctions.sendChanges}>
               Save Changes
             </Button>
             <Button variant="format" onClick={editFunctions.reloadPdf}>
               Reload PDF
             </Button>
           </Tabs.Panel>
-          
+
           <Tabs.Panel value="font">
-           <FontTab/>
+            <FontTab
+              editFunctions={editFunctions}
+              editor={editor}
+              saveElementChanges={saveElementChanges}
+            />
           </Tabs.Panel>
         </Center>
 
@@ -195,4 +207,6 @@ export default function Header({ editFunctions }: React.FC<headerProps>) {
       </Drawer> */}
     </Box>
   );
-}
+};
+
+export default Header;

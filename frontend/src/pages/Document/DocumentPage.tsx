@@ -9,6 +9,8 @@ import { Box, Button, Grid, Input, Paper, ScrollArea, Textarea, Title } from '@m
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
+import { blockType } from '@/Types';
+import TextfieldBlock from './blocks/TextfieldBlock';
 import Header from './components/Header';
 import pdfClasses from './components/pdfDocument.module.css';
 
@@ -17,17 +19,18 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-type chapterType = {
-  head: string | null | undefined;
-  body: string | undefined;
-};
+// type chapterType = {
+//   head: string | null | undefined;
+//   body: string | undefined;
+// };
 
 export default function DocumentPage() {
   const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
 
-  const [sectionsContent, setSectionContent] = useState<chapterType[]>([]);
+  // const [sectionsContent, setSectionsContent] = useState<chapterType[]>([]);
+  const [sectionsContent, setSectionsContent] = useState<blockType[]>([]);
 
-  const [activeSection, setActiveSecion] = useState(0);
+  const [activeSection, setActiveSecion] = useState<number>(0);
   const [editorContent, setEditorContent] = useState(sectionsContent[activeSection]);
 
   const [pdfLoaded, setPdfLoaded] = useState(true);
@@ -37,7 +40,7 @@ export default function DocumentPage() {
     extensions: [
       StarterKit, //, Placeholder.configure({ placeholder: 'This is placeholder' })
     ],
-    content: editorContent,
+    //content: editorContent,
     onUpdate: ({ editor }) => {
       console.log(editor.getHTML());
     },
@@ -68,7 +71,14 @@ export default function DocumentPage() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
-  const saveChanges = async () => {
+  const saveElementChanges = () => {
+    let content = sectionsContent;
+    content[activeSection].blockContent = editor?.getHTML();
+    setSectionsContent(content);
+    //console.log('OnBlur', editorContent);
+  };
+
+  const sendChanges = async () => {
     await setPdfLoaded(false);
     const response = await axios.put(
       'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
@@ -80,8 +90,24 @@ export default function DocumentPage() {
     await setPdfLoaded(true);
   };
 
+  // const addSection = () => {
+  //   setSectionsContent([...sectionsContent, { head: 'New Chapter', body: '<u>Write</u> here...' }]);
+  //   console.log(sectionsContent);
+  // };
+
   const addSection = () => {
-    setSectionContent([...sectionsContent, { head: 'New Chapter', body: 'Write here...' }]);
+    setSectionsContent([
+      ...sectionsContent,
+      { typeOfBlock: 'section', blockContent: 'Write here...' },
+    ]);
+    console.log(sectionsContent);
+  };
+
+  const addTextfield = () => {
+    setSectionsContent([
+      ...sectionsContent,
+      { typeOfBlock: 'textfield', blockContent: 'Write here...' },
+    ]);
     console.log(sectionsContent);
   };
 
@@ -93,16 +119,12 @@ export default function DocumentPage() {
     await setPdfLoaded(true);
   };
 
-  const bold = () => {
-    //editor.commands.insertContent('<b>BOLD!</b>');
-    editor?.commands.setBold();
-  };
-
   const editFunctions = {
-    addSection,
-    saveChanges,
+    // addSection,
+    addTextfield,
+    sendChanges,
     reloadPdf,
-    bold,
+    //bold,
   };
 
   useEffect(() => {
@@ -114,9 +136,33 @@ export default function DocumentPage() {
     setPages();
   }, [pdfLoaded]);
 
+  const renderBlock = (item, idx) => {
+    switch (item.typeOfBlock) {
+      case 'textfield':
+        return (
+          <TextfieldBlock
+            idx={idx}
+            block={item}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+            editor={editor}
+          />
+        );
+        break;
+      default:
+        return <>Block not found</>;
+    }
+  };
+
   return (
     <>
-      <Header editFunctions={editFunctions} />
+      <Header
+        editFunctions={editFunctions}
+        editor={editor}
+        saveElementChanges={saveElementChanges}
+      />
 
       <ScrollArea h="89vh" w="100vw" offsetScrollbars type="always">
         <Grid>
@@ -127,40 +173,42 @@ export default function DocumentPage() {
             {/* 
             <Button onClick={send}>Send</Button> */}
             <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
-              <div>
-                {sectionsContent.length > 0 ? (
-                  sectionsContent.map((item, idx) => (
-                    <>
-                      <h4>{item.head}</h4>
-                      <div
-                        key={idx}
-                        tabIndex={idx}
-                        onFocus={async () => {
-                          setActiveSecion(idx);
-                          item.body ? await editor?.commands.setContent(item.body) : null;
-                          console.log('onFocus', item);
-                        }}
-                        onBlur={() => {
-                          let content = sectionsContent;
-                          content[idx].body = editor?.getHTML();
-                          setSectionContent(content);
-                          console.log('OnBlur', editorContent);
-                        }}
-                      >
-                        {activeSection === idx ? (
-                          <RichTextEditor editor={editor}>
-                            <RichTextEditor.Content />
-                          </RichTextEditor>
-                        ) : sectionsContent[idx].body ? (
-                          parse(sectionsContent[idx].body)
-                        ) : null}
-                      </div>
-                    </>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </div>
+              {sectionsContent.length > 0 ? (
+                sectionsContent.map((item, idx) =>
+                  renderBlock(item, idx)
+
+                  // <>
+                  //   {/* <h4>{item.head}</h4> */}
+                  //   {/* <div
+                  //     key={idx}
+                  //     tabIndex={idx}
+                  //     onFocus={async () => {
+                  //       setActiveSecion(idx);
+                  //       item.blockContent
+                  //         ? await editor?.commands.setContent(item.blockContent)
+                  //         : null;
+                  //       console.log('onFocus', item);
+                  //     }}
+                  //     onBlur={() => {
+                  //       let content = sectionsContent;
+                  //       content[idx].blockContent = editor?.getHTML();
+                  //       setSectionsContent(content);
+                  //       //console.log('OnBlur', editorContent);
+                  //     }}
+                  //   >
+                  //     {activeSection === idx ? (
+                  //       <RichTextEditor editor={editor}>
+                  //         <RichTextEditor.Content />
+                  //       </RichTextEditor>
+                  //     ) : sectionsContent[idx].blockContent ? (
+                  //       parse(sectionsContent[idx].blockContent)
+                  //     ) : null}
+                  //   </div> */}
+                  // </>
+                )
+              ) : (
+                <></>
+              )}
             </Paper>
           </Grid.Col>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
