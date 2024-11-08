@@ -3,8 +3,9 @@ import { Editor } from '@tiptap/react';
 import parse from 'html-react-parser';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
+import { Input } from '@mantine/core';
 
-type TextfieldBlockProps = {
+type SectionBlockProps = {
   idx: number;
   block: blockType;
   activeSection: number;
@@ -15,7 +16,7 @@ type TextfieldBlockProps = {
   // editorContent;
 };
 
-export default function TextfieldBlock({
+export default function SectionBlock({
   idx,
   block,
   activeSection,
@@ -24,7 +25,7 @@ export default function TextfieldBlock({
   setSectionsContent,
   editor,
   //editorContent,
-}: TextfieldBlockProps) {
+}: SectionBlockProps) {
   return (
     <div
       key={idx}
@@ -42,9 +43,7 @@ export default function TextfieldBlock({
       }}
     >
       {activeSection === idx ? (
-        <RichTextEditor editor={editor}>
-          <RichTextEditor.Content />
-        </RichTextEditor>
+         <Input radius="md" placeholder="Input component" />
       ) : sectionsContent[idx].blockContent ? (
         parse(sectionsContent[idx].blockContent)
       ) : null}
