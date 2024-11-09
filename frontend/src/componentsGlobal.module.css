@@ -19,3 +19,24 @@ button{
         }
 }
 }
+
+input{
+    &[data-variant='header1'] {
+
+      font-weight:bolder;
+      font-size: 1.5rem;
+    
+        @mixin light {
+           background-color: var(--mantine-color-gray-white);
+           color: var(--mantine-color-gray-black)
+        }
+    
+        @mixin dark {
+            background-color: var(--mantine-color-dark-8);
+            color: var(--mantine-color-gray-white)
+        }
+    
+        &:hover{
+        }
+}
+}

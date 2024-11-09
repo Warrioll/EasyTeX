@@ -10,6 +10,7 @@ import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
 import { blockType } from '@/Types';
+import SectionBlock from './blocks/SectionBlock';
 import TextfieldBlock from './blocks/TextfieldBlock';
 import Header from './components/Header';
 import pdfClasses from './components/pdfDocument.module.css';
@@ -98,7 +99,8 @@ export default function DocumentPage() {
   const addSection = () => {
     setSectionsContent([
       ...sectionsContent,
-      { typeOfBlock: 'section', blockContent: 'Write here...' },
+      //{ typeOfBlock: 'section', blockContent: { idx: 1, sectionContent: '' } },
+      { typeOfBlock: 'section', blockContent: '' },
     ]);
     console.log(sectionsContent);
   };
@@ -124,6 +126,7 @@ export default function DocumentPage() {
     addTextfield,
     sendChanges,
     reloadPdf,
+    addSection,
     //bold,
   };
 
@@ -133,8 +136,21 @@ export default function DocumentPage() {
       setPagesNumber(document.numPages);
       console.log('pages:', pagesNumber);
     };
+
     setPages();
   }, [pdfLoaded]);
+
+  useEffect(() => {
+    const setBlocks = async () => {
+      const response = await axios.get(
+        'http://localhost:8100/document/getDocumentContent/671396c35547c1fc316c1a06'
+      );
+      console.log('doc content', response);
+      setSectionsContent(response.data);
+    };
+
+    setBlocks();
+  }, []);
 
   const renderBlock = (item, idx) => {
     switch (item.typeOfBlock) {
@@ -142,7 +158,6 @@ export default function DocumentPage() {
         return (
           <TextfieldBlock
             idx={idx}
-            block={item}
             activeSection={activeSection}
             setActiveSecion={setActiveSecion}
             sectionsContent={sectionsContent}
@@ -151,8 +166,19 @@ export default function DocumentPage() {
           />
         );
         break;
+      case 'section':
+        return (
+          <SectionBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+          />
+        );
+        break;
       default:
-        return <>Block not found</>;
+        return <></>;
     }
   };
 
@@ -174,8 +200,8 @@ export default function DocumentPage() {
             <Button onClick={send}>Send</Button> */}
             <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
               {sectionsContent.length > 0 ? (
-                sectionsContent.map((item, idx) =>
-                  renderBlock(item, idx)
+                sectionsContent.map(
+                  (item, idx) => renderBlock(item, idx)
 
                   // <>
                   //   {/* <h4>{item.head}</h4> */}

@@ -4,6 +4,9 @@ import { exec } from 'child_process';
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
+import { textfieldToTex, sectionToTex, subsectionToTex } from '../handlers/texConverters';
+import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/blockConverters';
+import { blockType } from '../types';
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
@@ -41,6 +44,28 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
   }
 };
 
+export const getDocumentContent = async (req: express.Request, res: express.Response)=>{
+  const nullBlock: blockType = {typeOfBlock: null, blockContent: null}
+  try{
+   const {id}= req.params;
+   let document: (string | undefined)[] = await loadTexFile(id);
+   const blocks: (blockType)[] = document.map((line, idx)=>{
+    //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
+      if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+      if(line.includes('\\section')) return  sectionToBlock(line);
+      //if(line.includes('\\subsection')) return  subsectionToBlock(item);
+      if(line.includes('\\begin{document}')) return nullBlock;
+      if(line.includes('\\end{document}')) return  nullBlock;
+      return  textfieldToBlock(line)
+   })
+   res
+   res.status(200).json(blocks);
+  } catch(error){
+    console.log("Get ERROR: ", error)
+    res.sendStatus(500);
+}
+}
+
 export const createDocument = async (req: express.Request, res: express.Response)=>{
 
 //const nd: (string |undefined)[]= ["\\documentclass{book}", , "\\begin{document}",, "wlazł kotek na płotek i mrugaa",, "\\end{document}"];
@@ -69,14 +94,45 @@ export const createDocument = async (req: express.Request, res: express.Response
 };
 
 export const addLine = async (req: express.Request, res: express.Response)=>{
+  // try{
+  //   const {id} = req.params;
+  //   const {lineNr, line} = req.body;
+  //   let content: (string | undefined)[] = await loadTexFile(id);
+  //   content.splice(lineNr-1,0, line);
+  //   console.log(content);
+
+  //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+
+  //   res.sendStatus(200);
+  // }catch(error){
+  //   console.log(error);
+  //   res.sendStatus(500);
+  // }
+
   try{
     const {id} = req.params;
-    const {lineNr, line} = req.body;
-    let content: (string | undefined)[] = await loadTexFile(id);
-    content.splice(lineNr-1,0, line);
-    console.log(content);
+    const {idx, block} = req.body as {idx: number, block: blockType};
 
-    fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+    let line;
+    switch(block.typeOfBlock){
+      case 'textfield':
+       line = textfieldToTex(block.blockContent as string);
+       break;
+      case 'section':
+       line = sectionToTex(block.blockContent as string);
+       break;
+       case 'subsection':
+        line = subsectionToTex(block.blockContent as string);
+        break;
+      default:
+        console.log("This type of block don't exists! ", block.typeOfBlock)
+    }
+    
+    let document: (string | undefined)[] = await loadTexFile(id);
+    document.splice(idx,0, line);
+    //console.log(content);
+
+    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
 
     res.sendStatus(200);
   }catch(error){
@@ -85,21 +141,51 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
   }
 }
 
+
+
+
+
 export const updateLine = async (req: express.Request, res: express.Response)=>{
+  // try{
+  //   const {id} = req.params;
+  //   const {lineNr, line} = req.body;
+  //   let content: (string | undefined)[] = await loadTexFile(id);
+  //   content.splice(lineNr-1,1, line);
+  //   console.log(content);
+
+  //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+
+  //   res.sendStatus(200);
+  // }catch(error){
+  //   console.log(error);
+  //   res.sendStatus(500);
+  // }
+
   try{
     const {id} = req.params;
-    const {lineNr, line} = req.body;
-    let content: (string | undefined)[] = await loadTexFile(id);
-    content.splice(lineNr-1,1, line);
-    console.log(content);
+    const {idx, block} = req.body as {idx: number, block: blockType};
 
-    fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+    let line;
+    switch(block.typeOfBlock){
+      case 'textfield':
+       line = textfieldToTex(block.blockContent as string);
+       break;
+      default:
+        console.log("This type of block don't exists! ", block.typeOfBlock)
+    }
+
+    let document: (string | undefined)[] = await loadTexFile(id);
+    document.splice(idx,1, line);
+    //console.log(content);
+
+    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
 
     res.sendStatus(200);
   }catch(error){
     console.log(error);
     res.sendStatus(500);
   }
+
 }
 
 export const updateLines = async (req: express.Request, res: express.Response)=>{

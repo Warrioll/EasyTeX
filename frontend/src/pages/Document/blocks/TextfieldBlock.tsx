@@ -6,7 +6,7 @@ import { blockType } from '@/Types';
 
 type TextfieldBlockProps = {
   idx: number;
-  block: blockType;
+
   activeSection: number;
   setActiveSecion: Dispatch<SetStateAction<number>>;
   sectionsContent: blockType[];
@@ -17,7 +17,7 @@ type TextfieldBlockProps = {
 
 export default function TextfieldBlock({
   idx,
-  block,
+
   activeSection,
   setActiveSecion,
   sectionsContent,
@@ -31,8 +31,10 @@ export default function TextfieldBlock({
       tabIndex={idx}
       onFocus={async () => {
         setActiveSecion(idx);
-        block.blockContent ? await editor?.commands.setContent(block.blockContent) : null;
-        console.log('onFocus', block);
+        sectionsContent[idx].blockContent
+          ? await editor?.commands.setContent(sectionsContent[idx].blockContent)
+          : null;
+        //console.log('onFocus', block);
       }}
       onBlur={() => {
         let content = sectionsContent;

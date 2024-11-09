@@ -1,52 +1,62 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Editor } from '@tiptap/react';
 import parse from 'html-react-parser';
+import { Flex, Input } from '@mantine/core';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
-import { Input } from '@mantine/core';
 
 type SectionBlockProps = {
   idx: number;
-  block: blockType;
   activeSection: number;
   setActiveSecion: Dispatch<SetStateAction<number>>;
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  editor: Editor;
-  // editorContent;
 };
 
 export default function SectionBlock({
   idx,
-  block,
   activeSection,
   setActiveSecion,
   sectionsContent,
   setSectionsContent,
-  editor,
-  //editorContent,
 }: SectionBlockProps) {
+  const updateSectionContent = (event) => {
+    console.log('section event', event);
+    let content = [...sectionsContent];
+    console.log('section  event.target.value', event.target.value);
+    //content[idx].blockContent = event.target.value;
+    content[idx] = {
+      ...content[idx],
+      //blockContent: { idx: 1, sectionContent: event.target.value },
+      blockContent: event.target.value,
+    };
+    console.log('section content[idx].blockContent', content[idx].blockContent);
+    setSectionsContent(content);
+  };
+
   return (
     <div
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
         setActiveSecion(idx);
-        block.blockContent ? await editor?.commands.setContent(block.blockContent) : null;
-        console.log('onFocus', block);
-      }}
-      onBlur={() => {
-        let content = sectionsContent;
-        content[idx].blockContent = editor?.getHTML();
-        setSectionsContent(content);
-        //console.log('OnBlur', editorContent);
       }}
     >
-      {activeSection === idx ? (
-         <Input radius="md" placeholder="Input component" />
-      ) : sectionsContent[idx].blockContent ? (
-        parse(sectionsContent[idx].blockContent)
-      ) : null}
+      <Flex>
+        {
+          //sectionsContent[idx].blockContent.idx //typ zrobić dla blockContent to może nie będzie errorów
+        }
+        <Input
+          radius="md"
+          placeholder="Header..."
+          variant="header1"
+          value={
+            sectionsContent[idx].blockContent === undefined ? '' : sectionsContent[idx].blockContent
+            //sectionsContent[idx].blockContent.sectionContent === undefined ? '' : sectionsContent[idx].blockContent.sectionContent
+          }
+          onChange={(event) => updateSectionContent(event)}
+        />
+      </Flex>
     </div>
   );
 }

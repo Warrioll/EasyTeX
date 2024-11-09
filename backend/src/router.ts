@@ -1,5 +1,5 @@
 import express from 'express'
-import { getDocuments, getDocumentById, createDocument, updateLine, addLine, updateLines, getPdf } from './controllers/documentController';
+import { getDocuments, getDocumentById, createDocument, updateLine, addLine, updateLines, getPdf, getDocumentContent } from './controllers/documentController';
 //import documents from './documentRouter'
 
 const router = express.Router();
@@ -11,6 +11,7 @@ export default (): express.Router =>{
         router.get('/document',getDocuments);
         router.get('/document/:id',getDocumentById);
         router.get('/document/getPdf/:id', getPdf)
+        router.get('/document/getDocumentContent/:id', getDocumentContent)
         router.post('/document',createDocument);
         router.post("/document/line/:id",addLine )
         router.put("/document/line/:id",updateLine )

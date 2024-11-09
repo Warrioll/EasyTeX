@@ -6,7 +6,8 @@
         "rootDir": "./src",
         "sourceMap": true,
         "noImplicitAny": true,
-
+        "lib": ["es2021"],
+        "target": "es2021",
 
     },
     "include": ["src/**/*"],
