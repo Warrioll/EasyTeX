@@ -148,7 +148,7 @@ export default function DocumentPage() {
       console.log('doc content', response);
       setSectionsContent(response.data);
     };
-
+    console.log("SC:", sectionsContent)
     setBlocks();
   }, []);
 
@@ -156,6 +156,7 @@ export default function DocumentPage() {
     switch (item.typeOfBlock) {
       case 'textfield':
         return (
+          <Paper p='sm' m='md'> 
           <TextfieldBlock
             idx={idx}
             activeSection={activeSection}
@@ -164,10 +165,12 @@ export default function DocumentPage() {
             setSectionsContent={setSectionsContent}
             editor={editor}
           />
+          </Paper>
         );
         break;
       case 'section':
         return (
+          <Paper p='sm' m='md'>
           <SectionBlock
             idx={idx}
             activeSection={activeSection}
@@ -175,6 +178,7 @@ export default function DocumentPage() {
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
           />
+          </Paper>
         );
         break;
       default:
@@ -198,7 +202,9 @@ export default function DocumentPage() {
             </button> */}
             {/* 
             <Button onClick={send}>Send</Button> */}
-            <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
+           {//} <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
+}
+              <Box p="xl" m="xl">
               {sectionsContent.length > 0 ? (
                 sectionsContent.map(
                   (item, idx) => renderBlock(item, idx)
@@ -235,7 +241,7 @@ export default function DocumentPage() {
               ) : (
                 <></>
               )}
-            </Paper>
+            </Box>
           </Grid.Col>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
             <Box m="xl">

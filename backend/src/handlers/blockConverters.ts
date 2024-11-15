@@ -20,13 +20,13 @@ export const sectionToBlock =(line: string) : blockType=>{
     let section = line.replace('\\section{', '')
     section= section.replace('}', '')
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
-    section= section.replace('\r', '')
+    //section= section.replace('\r', '')
     const sectionBlock: blockType = {typeOfBlock: 'section', blockContent: section}
     return sectionBlock;
 }
 export const textfieldToBlock =(line: string) : blockType=>{
      //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
-    line= line.replace('\r', '')
+    //line= line.replace('\r', '')
     let fieldLines = line.split('\\\\');
     fieldLines= fieldLines.map(temp=> '<p>'+temp+'</p>');
 

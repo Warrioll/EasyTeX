@@ -49,11 +49,14 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
   try{
    const {id}= req.params;
    let document: (string | undefined)[] = await loadTexFile(id);
+   console.log(document)
    const blocks: (blockType)[] = document.map((line, idx)=>{
     //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
+    //console.log(line)
       if(line.includes('\\documentclass')) return  documentclassToBlock(line);
       if(line.includes('\\section')) return  sectionToBlock(line);
       //if(line.includes('\\subsection')) return  subsectionToBlock(item);
+      if(line==='') return nullBlock;
       if(line.includes('\\begin{document}')) return nullBlock;
       if(line.includes('\\end{document}')) return  nullBlock;
       return  textfieldToBlock(line)

@@ -4,10 +4,10 @@ import { documentModel } from "../models/documentModel";
 export const loadTexFile = async(id: string):Promise<(string | undefined)[]> =>{
 
     try{
-        const document = await documentModel.findById(id)
-        const contentTemp = await fileHander.readFileSync("documentBase/"+document._id+".tex", 'utf8')
-        //const contentTemp = await fileHander.readFileSync("documentBase/"+id+".tex", 'utf8')
-        return contentTemp.split("\n");
+        //const document = await documentModel.findById(id)
+        //const contentTemp = await fileHander.readFileSync("documentBase/"+document._id+".tex", 'utf8')
+        const contentTemp = await fileHander.readFileSync("documentBase/"+id+".tex", 'utf8')
+        return contentTemp.split("\r\n");
     }catch(error){
         console.log("Load .tex file ERROR: ", error);
     }
