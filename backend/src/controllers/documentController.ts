@@ -4,8 +4,8 @@ import { exec } from 'child_process';
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex } from '../handlers/texConverters';
-import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/blockConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex } from '../handlers/toTexConverters';
+import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/toBlockConverters';
 import { blockType } from '../types';
 
 
@@ -50,7 +50,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
    const {id}= req.params;
    let document: (string | undefined)[] = await loadTexFile(id);
    console.log(document)
-   const blocks: (blockType)[] = document.map((line, idx)=>{
+    let blocks: (blockType)[] = document.map((line, idx)=>{
     //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
     //console.log(line)
       if(line.includes('\\documentclass')) return  documentclassToBlock(line);
@@ -61,7 +61,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
       if(line.includes('\\end{document}')) return  nullBlock;
       return  textfieldToBlock(line)
    })
-   res
+   blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
    res.status(200).json(blocks);
   } catch(error){
     console.log("Get ERROR: ", error)
@@ -233,6 +233,45 @@ export const updateLines = async (req: express.Request, res: express.Response)=>
 
     await compileTex('documentBase', id+'.tex')
     //clearCompilationFiles('documentBase', id+'.tex')
+
+    res.sendStatus(200);
+  }catch(error){
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
+
+export const updateWholeDocument  = async (req: express.Request, res: express.Response)=>{
+  try{
+  const {id} = req.params;
+  const blocks = req.body as blockType[]; 
+
+  console.log(blocks);
+
+  let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
+    switch(block.typeOfBlock){
+      case 'documentclass':
+        return documentclassToTex(block.blockContent as string);
+      case 'textfield':
+       return textfieldToTex(block.blockContent as string);
+      case 'section':
+       return sectionToTex(block.blockContent as string);
+      case 'subsection':
+       return subsectionToTex(block.blockContent as string);
+      default:
+        console.log("This type of block don't exists! ", block.typeOfBlock)
+    }
+  })
+
+      document.splice(1,0,'\\usepackage{ulem}'
+        +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'
+        +'\n\\begin{document}'
+      );
+     document.push('\\end{document}')
+    console.log(document);
+    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
+    await compileTex('documentBase', id+'.tex')
+    clearCompilationFiles('documentBase', id+'.tex')
 
     res.sendStatus(200);
   }catch(error){

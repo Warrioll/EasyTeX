@@ -1,5 +1,9 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import LinkTiptap from '@tiptap/extension-link';
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
+import Underline from '@tiptap/extension-underline';
 import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
@@ -39,7 +43,12 @@ export default function DocumentPage() {
 
   const editor = useEditor({
     extensions: [
-      StarterKit, //, Placeholder.configure({ placeholder: 'This is placeholder' })
+      StarterKit,
+      Underline,
+      Subscript,
+      Superscript,
+      LinkTiptap,
+      //, Placeholder.configure({ placeholder: 'This is placeholder' })
     ],
     //content: editorContent,
     onUpdate: ({ editor }) => {
@@ -80,15 +89,20 @@ export default function DocumentPage() {
   };
 
   const sendChanges = async () => {
-    await setPdfLoaded(false);
     const response = await axios.put(
-      'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
-      { sections: sectionsContent }
+      'http://localhost:8100/document/documentContent/671396c35547c1fc316c1a06',
+      sectionsContent
     );
-    console.log(response);
-    //kurka przy 800ms działa ale to za długo
-    //await delay(800);
-    await setPdfLoaded(true);
+
+    // await setPdfLoaded(false);
+    // const response = await axios.put(
+    //   'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
+    //   { sections: sectionsContent }
+    // );
+    // console.log(response);
+    // //kurka przy 800ms działa ale to za długo
+    // //await delay(800);
+    // await setPdfLoaded(true);
   };
 
   // const addSection = () => {
@@ -97,7 +111,7 @@ export default function DocumentPage() {
   // };
 
   const addSection = () => {
-    setSectionsContent([
+    editor?.commands.setSectionsContent([
       ...sectionsContent,
       //{ typeOfBlock: 'section', blockContent: { idx: 1, sectionContent: '' } },
       { typeOfBlock: 'section', blockContent: '' },
@@ -108,7 +122,7 @@ export default function DocumentPage() {
   const addTextfield = () => {
     setSectionsContent([
       ...sectionsContent,
-      { typeOfBlock: 'textfield', blockContent: 'Write here...' },
+      { typeOfBlock: 'textfield', blockContent: 'Write <u>here</u>...' },
     ]);
     console.log(sectionsContent);
   };
@@ -148,7 +162,7 @@ export default function DocumentPage() {
       console.log('doc content', response);
       setSectionsContent(response.data);
     };
-    console.log("SC:", sectionsContent)
+    console.log('SC:', sectionsContent);
     setBlocks();
   }, []);
 
@@ -156,28 +170,28 @@ export default function DocumentPage() {
     switch (item.typeOfBlock) {
       case 'textfield':
         return (
-          <Paper p='sm' m='md'> 
-          <TextfieldBlock
-            idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            editor={editor}
-          />
+          <Paper p="sm" m="md">
+            <TextfieldBlock
+              idx={idx}
+              activeSection={activeSection}
+              setActiveSecion={setActiveSecion}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
+              editor={editor}
+            />
           </Paper>
         );
         break;
       case 'section':
         return (
-          <Paper p='sm' m='md'>
-          <SectionBlock
-            idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-          />
+          <Paper p="sm" m="md">
+            <SectionBlock
+              idx={idx}
+              activeSection={activeSection}
+              setActiveSecion={setActiveSecion}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
+            />
           </Paper>
         );
         break;
@@ -202,9 +216,10 @@ export default function DocumentPage() {
             </button> */}
             {/* 
             <Button onClick={send}>Send</Button> */}
-           {//} <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
-}
-              <Box p="xl" m="xl">
+            {
+              //} <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
+            }
+            <Box p="xl" m="xl">
               {sectionsContent.length > 0 ? (
                 sectionsContent.map(
                   (item, idx) => renderBlock(item, idx)

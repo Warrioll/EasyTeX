@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Editor } from '@tiptap/react';
+import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
@@ -44,11 +44,12 @@ export default function TextfieldBlock({
       }}
     >
       {activeSection === idx ? (
-        <RichTextEditor editor={editor}>
-          <RichTextEditor.Content />
-        </RichTextEditor>
+        // <RichTextEditor editor={editor}>
+        //   <RichTextEditor.Content />
+        // </RichTextEditor>
+        <EditorContent editor={editor} />
       ) : sectionsContent[idx].blockContent ? (
-        parse(sectionsContent[idx].blockContent)
+        parse(sectionsContent[idx].blockContent as string)
       ) : null}
     </div>
   );
