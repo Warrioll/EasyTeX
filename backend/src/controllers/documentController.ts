@@ -59,6 +59,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
       if(line==='') return nullBlock;
       if(line.includes('\\begin{document}')) return nullBlock;
       if(line.includes('\\end{document}')) return  nullBlock;
+      if(line.includes('\\usepackage')) return  nullBlock;
       return  textfieldToBlock(line)
    })
    blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
@@ -148,100 +149,103 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
 
 
 
-export const updateLine = async (req: express.Request, res: express.Response)=>{
-  // try{
-  //   const {id} = req.params;
-  //   const {lineNr, line} = req.body;
-  //   let content: (string | undefined)[] = await loadTexFile(id);
-  //   content.splice(lineNr-1,1, line);
-  //   console.log(content);
+// export const updateLine = async (req: express.Request, res: express.Response)=>{
+//   // try{
+//   //   const {id} = req.params;
+//   //   const {lineNr, line} = req.body;
+//   //   let content: (string | undefined)[] = await loadTexFile(id);
+//   //   content.splice(lineNr-1,1, line);
+//   //   console.log(content);
 
-  //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+//   //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
 
-  //   res.sendStatus(200);
-  // }catch(error){
-  //   console.log(error);
-  //   res.sendStatus(500);
-  // }
+//   //   res.sendStatus(200);
+//   // }catch(error){
+//   //   console.log(error);
+//   //   res.sendStatus(500);
+//   // }
 
-  try{
-    const {id} = req.params;
-    const {idx, block} = req.body as {idx: number, block: blockType};
+//   try{
+//     const {id} = req.params;
+//     const {idx, block} = req.body as {idx: number, block: blockType};
 
-    let line;
-    switch(block.typeOfBlock){
-      case 'textfield':
-       line = textfieldToTex(block.blockContent as string);
-       break;
-      default:
-        console.log("This type of block don't exists! ", block.typeOfBlock)
-    }
+//     let line;
+//     switch(block.typeOfBlock){
+//       case 'textfield':
+//        line = textfieldToTex(block.blockContent as string);
+//        break;
+//       default:
+//         console.log("This type of block don't exists! ", block.typeOfBlock)
+//     }
 
-    let document: (string | undefined)[] = await loadTexFile(id);
-    document.splice(idx,1, line);
-    //console.log(content);
+//     let document: (string | undefined)[] = await loadTexFile(id);
+//     document.splice(idx,1, line);
+//     //console.log(content);
 
-    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
+//     fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
 
-    res.sendStatus(200);
-  }catch(error){
-    console.log(error);
-    res.sendStatus(500);
-  }
+//     res.sendStatus(200);
+//   }catch(error){
+//     console.log(error);
+//     res.sendStatus(500);
+//   }
 
-}
+// }
 
-export const updateLines = async (req: express.Request, res: express.Response)=>{
-  type chapterType = {
-    head: string | null | undefined,
-    body: string | null | undefined
-  }
+// export const updateLines = async (req: express.Request, res: express.Response)=>{
+//   type chapterType = {
+//     head: string | null | undefined,
+//     body: string | null | undefined
+//   }
 
-  const parseToTex = (chapter: chapterType)=>{
-      const title = `\\section{${chapter.head}}`
-      //console.log("Przed", chapter.body );
-      let content = chapter.body.split('</p>');
-      //console.log("Po split", content);
-      content = content.map(line=> line.replace('<p>', ''));
-      //console.log("Po map", content);
-      const endContent = content.join(" ");
-      //console.log("Po join", endContent);
+//   const parseToTex = (chapter: chapterType)=>{
+//       const title = `\\section{${chapter.head}}`
+//       //console.log("Przed", chapter.body );
+//       let content = chapter.body.split('</p>');
+//       //console.log("Po split", content);
+//       content = content.map(line=> line.replace('<p>', ''));
+//       //console.log("Po map", content);
+//       const endContent = content.join(" ");
+//       //console.log("Po join", endContent);
 
-      /*
-      W taki sam sposób jak <p> z boldami i resztą:
-        1. wyszukanie i podzielenie na elementy tablicy po znaku </b>
-        2. podzelenie elemenmtów na kolejene tablie tak zamo jak w 1. tylko względem <b>
-        3. powinna powstać tablica zabierajace podtablice o 2 elementach gdzioe ten drugi element ma być boldem - usunąć z niego znaczniki i opatrzyć w skłądnie Tex
-        4. złączayć wszytko w jeden string do zmiennej content (falt i join chyba trzeba bedzie)
-      */
+//       /*
+//       W taki sam sposób jak <p> z boldami i resztą:
+//         1. wyszukanie i podzielenie na elementy tablicy po znaku </b>
+//         2. podzelenie elemenmtów na kolejene tablie tak zamo jak w 1. tylko względem <b>
+//         3. powinna powstać tablica zabierajace podtablice o 2 elementach gdzioe ten drugi element ma być boldem - usunąć z niego znaczniki i opatrzyć w skłądnie Tex
+//         4. złączayć wszytko w jeden string do zmiennej content (falt i join chyba trzeba bedzie)
+//       */
 
-      return [title, endContent];
-  }
+//       return [title, endContent];
+//   }
 
-  try{
-    const {id} = req.params;
-    const {sections} = req.body;
-    console.log("section", sections);
-    const toTex = sections.map(parseToTex).flat();
-    console.log("toTex", toTex);
-    let content: (string | undefined)[] = await loadTexFile(id);
-    content.splice(4,0, toTex);
-    content=content.flat();
-    console.log("content", content);
+//   try{
+//     const {id} = req.params;
+//     const {sections} = req.body;
+//     console.log("section", sections);
+//     const toTex = sections.map(parseToTex).flat();
+//     console.log("toTex", toTex);
+//     let content: (string | undefined)[] = await loadTexFile(id);
+//     content.splice(4,0, toTex);
+//     content=content.flat();
+//     console.log("content", content);
 
-    fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
+//     fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
 
-    await compileTex('documentBase', id+'.tex')
-    //clearCompilationFiles('documentBase', id+'.tex')
+//     await compileTex('documentBase', id+'.tex')
+//     //clearCompilationFiles('documentBase', id+'.tex')
 
-    res.sendStatus(200);
-  }catch(error){
-    console.log(error);
-    res.sendStatus(500);
-  }
-}
+//     res.sendStatus(200);
+//   }catch(error){
+//     console.log(error);
+//     res.sendStatus(500);
+//   }
+// }
 
 export const updateWholeDocument  = async (req: express.Request, res: express.Response)=>{
+
+//z jakiejś duby wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
+
   try{
   const {id} = req.params;
   const blocks = req.body as blockType[]; 

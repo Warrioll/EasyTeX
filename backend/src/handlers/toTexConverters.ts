@@ -6,7 +6,8 @@ export const textfieldToTex =(blockContent:string): string =>{
     let textfield= blockContent;
     
     //znaki specjalne
-    textfield= textfield.replaceAll('\\', '\\textbackslash')
+    //z tym coś nie działa
+    //textfield= textfield.replaceAll('\\', '\\textbackslash')
 
     
 
@@ -54,7 +55,7 @@ export const textfieldToTex =(blockContent:string): string =>{
     textfield = textfield.replaceAll('<ul>', '\\begin{itemize}')
     textfield = textfield.replaceAll('</ul>', '\\end{itemize}')
     
-    //bulletlist
+    //enumaratedlist
     textfield = textfield.replaceAll('<ol>', '\\begin{enumerate}')
     textfield = textfield.replaceAll('</ol>', '\\end{enumerate}')
 
