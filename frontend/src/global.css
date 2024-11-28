@@ -6,3 +6,12 @@ body{
     }
 }
 
+.tiptap{
+    outline: none;
+
+    p{
+        margin: 0px;
+        padding: 0px;
+    }
+}
+

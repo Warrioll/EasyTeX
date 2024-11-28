@@ -9,7 +9,7 @@ import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Box, Button, Grid, Input, Paper, ScrollArea, Textarea, Title } from '@mantine/core';
+import { Box, Button, Grid, Input, Paper, ScrollArea, Textarea, Title, Group, Stack } from '@mantine/core';
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
@@ -75,7 +75,7 @@ export default function DocumentPage() {
   //     editor.commands.insertContent(replacement);
   //   }
   // };
-
+ 
   //to to przeanalizowania
   const delay = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -111,11 +111,24 @@ export default function DocumentPage() {
   // };
 
   const addSection = () => {
-    editor?.commands.setSectionsContent([
-      ...sectionsContent,
-      //{ typeOfBlock: 'section', blockContent: { idx: 1, sectionContent: '' } },
-      { typeOfBlock: 'section', blockContent: '' },
-    ]);
+    // editor?.commands.setSectionsContent([
+    //   ...sectionsContent,
+    //   //{ typeOfBlock: 'section', blockContent: { idx: 1, sectionContent: '' } },
+    //   { typeOfBlock: 'section', blockContent: '' },
+    // ]);
+    // console.log(sectionsContent);
+    if(activeSection===0){
+      setSectionsContent([
+        ...sectionsContent,
+        { typeOfBlock: 'section', blockContent: '' },
+      ]);
+    }else{
+      let blocks=sectionsContent
+      blocks.splice(activeSection+1, 0, {typeOfBlock: 'section', blockContent: ''})
+      setSectionsContent(blocks);
+    
+    }
+    
     console.log(sectionsContent);
   };
 
@@ -169,8 +182,9 @@ export default function DocumentPage() {
   const renderBlock = (item, idx) => {
     switch (item.typeOfBlock) {
       case 'textfield':
+        console.log('textfield')
         return (
-          <Paper p="sm" m="md">
+         
             <TextfieldBlock
               idx={idx}
               activeSection={activeSection}
@@ -179,20 +193,22 @@ export default function DocumentPage() {
               setSectionsContent={setSectionsContent}
               editor={editor}
             />
-          </Paper>
+         
         );
         break;
       case 'section':
+        console.log('section')
         return (
-          <Paper p="sm" m="md">
+          
             <SectionBlock
               idx={idx}
               activeSection={activeSection}
               setActiveSecion={setActiveSecion}
               sectionsContent={sectionsContent}
               setSectionsContent={setSectionsContent}
+              
             />
-          </Paper>
+         
         );
         break;
       default:
@@ -216,10 +232,10 @@ export default function DocumentPage() {
             </button> */}
             {/* 
             <Button onClick={send}>Send</Button> */}
-            {
-              //} <Paper shadow="md" radius="xs" withBorder p="xl" m="xl" w="48rem" h="69rem">
-            }
-            <Box p="xl" m="xl">
+            
+               {/* <Paper shadow="md" radius="xs" withBorder p="xs" m="xl" w="80%" > */}
+            
+            <Stack align="flex-end" mr='xs' gap='0%' w='100%' pt='xl'>
               {sectionsContent.length > 0 ? (
                 sectionsContent.map(
                   (item, idx) => renderBlock(item, idx)
@@ -256,7 +272,8 @@ export default function DocumentPage() {
               ) : (
                 <></>
               )}
-            </Box>
+            </Stack>
+            {/* </Paper> */}
           </Grid.Col>
           <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
             <Box m="xl">

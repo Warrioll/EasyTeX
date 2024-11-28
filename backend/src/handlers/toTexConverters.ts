@@ -23,12 +23,12 @@ export const textfieldToTex =(blockContent:string): string =>{
     textfield = textfield.replaceAll('<code>', '\\texttt{')
     textfield = textfield.replaceAll('</code>', '}')
 
-    //monospace
-    textfield = textfield.replaceAll('<a>', '\\underline{\\url{')
+    //link
+    textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
     textfield = textfield.replaceAll('</a>', '}}')
 
     //underline
-    textfield = textfield.replaceAll('<u>', '\\underline{')
+    textfield = textfield.replaceAll('<u>', '\\uline{')
     textfield = textfield.replaceAll('</u>', '}')
 
     //strikethorugh - używa paczki ulem

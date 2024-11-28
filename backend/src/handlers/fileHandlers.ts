@@ -4,9 +4,9 @@ import { documentModel } from "../models/documentModel";
 export const loadTexFile = async(id: string):Promise<(string | undefined)[]> =>{
 
     try{
-        const document = await documentModel.findById(id)
-        const contentTemp = await fileHander.readFileSync("documentBase/"+document._id+".tex", 'utf8')
-       //const contentTemp = await fileHander.readFileSync("documentBase/"+id+".tex", 'utf8')
+        //const document = await documentModel.findById(id)
+        //const contentTemp = await fileHander.readFileSync("documentBase/"+document._id+".tex", 'utf8')
+       const contentTemp = await fileHander.readFileSync("documentBase/"+id+".tex", 'utf8')
         let content = contentTemp.split("\n");
        content = content.map((line: (string | undefined), idx: number)=>{
         if(line.endsWith('\r')){

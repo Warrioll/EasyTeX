@@ -16,6 +16,7 @@ import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { Box, Button, Flex, Tooltip } from '@mantine/core';
 
+
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
   editor: Editor;
