@@ -8,10 +8,13 @@ body{
 
 .tiptap{
     outline: none;
+    text-align: justify;
+
 
     p{
         margin: 0px;
         padding: 0px;
     }
 }
+
 

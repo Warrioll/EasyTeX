@@ -9,7 +9,18 @@ import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
 import parse from 'html-react-parser';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Box, Button, Grid, Input, Paper, ScrollArea, Textarea, Title, Group, Stack } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Grid,
+  Group,
+  Input,
+  Paper,
+  ScrollArea,
+  Stack,
+  Textarea,
+  Title,
+} from '@mantine/core';
 import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
@@ -34,6 +45,7 @@ export default function DocumentPage() {
 
   // const [sectionsContent, setSectionsContent] = useState<chapterType[]>([]);
   const [sectionsContent, setSectionsContent] = useState<blockType[]>([]);
+  const [blocksLoaded, setBlocksLoaded] = useState<boolean>(true);
 
   const [activeSection, setActiveSecion] = useState<number>(0);
   const [editorContent, setEditorContent] = useState(sectionsContent[activeSection]);
@@ -75,7 +87,7 @@ export default function DocumentPage() {
   //     editor.commands.insertContent(replacement);
   //   }
   // };
- 
+
   //to to przeanalizowania
   const delay = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -117,27 +129,25 @@ export default function DocumentPage() {
     //   { typeOfBlock: 'section', blockContent: '' },
     // ]);
     // console.log(sectionsContent);
-    if(activeSection===0){
-      setSectionsContent([
-        ...sectionsContent,
-        { typeOfBlock: 'section', blockContent: '' },
-      ]);
-    }else{
-      let blocks=sectionsContent
-      blocks.splice(activeSection+1, 0, {typeOfBlock: 'section', blockContent: ''})
+    if (activeSection === 0) {
+      setSectionsContent([...sectionsContent, { typeOfBlock: 'section', blockContent: '' }]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'section', blockContent: '' });
       setSectionsContent(blocks);
-    
     }
-    
+
     console.log(sectionsContent);
   };
 
   const addTextfield = () => {
-    setSectionsContent([
-      ...sectionsContent,
-      { typeOfBlock: 'textfield', blockContent: 'Write <u>here</u>...' },
-    ]);
-    console.log(sectionsContent);
+    if (activeSection === 0) {
+      setSectionsContent([...sectionsContent, { typeOfBlock: 'textfield', blockContent: '' }]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'textfield', blockContent: '' });
+      setSectionsContent(blocks);
+    }
   };
 
   const reloadPdf = async () => {
@@ -172,43 +182,38 @@ export default function DocumentPage() {
       const response = await axios.get(
         'http://localhost:8100/document/getDocumentContent/671396c35547c1fc316c1a06'
       );
-      console.log('doc content', response);
+      //console.log('doc content', response);
       setSectionsContent(response.data);
     };
-    console.log('SC:', sectionsContent);
+    //console.log('SC:', sectionsContent);
     setBlocks();
   }, []);
 
   const renderBlock = (item, idx) => {
     switch (item.typeOfBlock) {
       case 'textfield':
-        console.log('textfield')
+        console.log('textfield');
         return (
-         
-            <TextfieldBlock
-              idx={idx}
-              activeSection={activeSection}
-              setActiveSecion={setActiveSecion}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
-              editor={editor}
-            />
-         
+          <TextfieldBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+            editor={editor}
+          />
         );
         break;
       case 'section':
-        console.log('section')
+        console.log('section');
         return (
-          
-            <SectionBlock
-              idx={idx}
-              activeSection={activeSection}
-              setActiveSecion={setActiveSecion}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
-              
-            />
-         
+          <SectionBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+          />
         );
         break;
       default:
@@ -224,64 +229,25 @@ export default function DocumentPage() {
         saveElementChanges={saveElementChanges}
       />
 
-      <ScrollArea h="89vh" w="100vw" offsetScrollbars type="always">
+      <ScrollArea h="89vh" w="100%" offsetScrollbars type="always">
         <Grid>
-          <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            {/* <button type="button" onClick={replaceSelectedText} style={{ marginTop: '10px' }}>
-              Podmień zaznaczony tekst
-            </button> */}
-            {/* 
-            <Button onClick={send}>Send</Button> */}
-            
-               {/* <Paper shadow="md" radius="xs" withBorder p="xs" m="xl" w="80%" > */}
-            
-            <Stack align="flex-end" mr='xs' gap='0%' w='100%' pt='xl'>
-              {sectionsContent.length > 0 ? (
-                sectionsContent.map(
-                  (item, idx) => renderBlock(item, idx)
-
-                  // <>
-                  //   {/* <h4>{item.head}</h4> */}
-                  //   {/* <div
-                  //     key={idx}
-                  //     tabIndex={idx}
-                  //     onFocus={async () => {
-                  //       setActiveSecion(idx);
-                  //       item.blockContent
-                  //         ? await editor?.commands.setContent(item.blockContent)
-                  //         : null;
-                  //       console.log('onFocus', item);
-                  //     }}
-                  //     onBlur={() => {
-                  //       let content = sectionsContent;
-                  //       content[idx].blockContent = editor?.getHTML();
-                  //       setSectionsContent(content);
-                  //       //console.log('OnBlur', editorContent);
-                  //     }}
-                  //   >
-                  //     {activeSection === idx ? (
-                  //       <RichTextEditor editor={editor}>
-                  //         <RichTextEditor.Content />
-                  //       </RichTextEditor>
-                  //     ) : sectionsContent[idx].blockContent ? (
-                  //       parse(sectionsContent[idx].blockContent)
-                  //     ) : null}
-                  //   </div> */}
-                  // </>
-                )
+          <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
+            <Stack w="100%" align="flex-end" gap="0%" pt="xl">
+              {blocksLoaded && sectionsContent.length > 0 ? (
+                sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
               ) : (
                 <></>
               )}
             </Stack>
             {/* </Paper> */}
           </Grid.Col>
-          <Grid.Col span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
+          <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
             <Box m="xl">
               {pdfLoaded ? (
                 Array(pagesNumber)
                   .fill(1)
                   .map((x, idx) => (
-                    <Box mb="sm">
+                    <Box mb="sm" key={idx}>
                       <Document file={pdfLink} className={pdfClasses.annotationLayer}>
                         <Page
                           pageNumber={idx + 1}

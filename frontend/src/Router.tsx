@@ -3,6 +3,7 @@ import MainLayout from './components/Layout/MainLayout';
 import DashboardPage from './pages/DashboardPage';
 import DocumentPage from './pages/Document/DocumentPage';
 import { HomePage } from './pages/Home.page';
+import LoginPage from './pages/Login/LoginPage';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: <MainLayout content={<DashboardPage />} />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
   },
 ]);
 

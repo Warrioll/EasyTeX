@@ -76,9 +76,12 @@ export const textfieldToTex =(blockContent:string): string =>{
 }
 
 export const sectionToTex =(blockContent:string): string =>{
+    // tu trzeba uwzględnić wystąpienie \r
+    blockContent=blockContent.replaceAll('\r', '')
     return('\\section{'+blockContent+'}');
 }
 
 export const subsectionToTex =(blockContent:string): string =>{
+   
     return('\\subsection{'+blockContent+'}');
 }

@@ -1,10 +1,12 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
+import { FocusTrap } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './MarkedBlockFrame';
-import styles from './blocks.module.css'
+import styles from './blocks.module.css';
 
 type TextfieldBlockProps = {
   idx: number;
@@ -27,15 +29,17 @@ export default function TextfieldBlock({
   editor,
   //editorContent,
 }: TextfieldBlockProps) {
+  const [focusTrap, { toggle }] = useDisclosure(false);
   return (
     <div
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
         setActiveSecion(idx);
-        sectionsContent[idx].blockContent
-          ? await editor?.commands.setContent(sectionsContent[idx].blockContent)
-          : null;
+        // sectionsContent[idx].blockContent
+        //   ?
+        await editor?.commands.setContent(sectionsContent[idx].blockContent);
+        //: null;
         //console.log('onFocus', block);
       }}
       onBlur={() => {
@@ -45,18 +49,27 @@ export default function TextfieldBlock({
         //console.log('OnBlur', editorContent);
       }}
     >
-      <MarkedBlockFrame idx={idx} activeSection={activeSection} setActiveSecion={setActiveSecion}  blockName='Textfield'>
-      {activeSection === idx ? (
-        // <RichTextEditor editor={editor}>
-        //   <RichTextEditor.Content />
-        // </RichTextEditor>
-        <EditorContent editor={editor}/>
-      ) : sectionsContent[idx].blockContent ? (
-        parse(sectionsContent[idx].blockContent as string)
-      ) : null}
-
+      <MarkedBlockFrame
+        idx={idx}
+        activeSection={activeSection}
+        setActiveSecion={setActiveSecion}
+        blockName="Textfield"
+        sectionsContent={sectionsContent}
+        setSectionsContent={setSectionsContent}
+      >
+        {activeSection === idx ? (
+          // <RichTextEditor editor={editor}>
+          //   <RichTextEditor.Content />
+          // </RichTextEditor>
+          <FocusTrap active={focusTrap}>
+            <EditorContent editor={editor} />
+          </FocusTrap>
+        ) : sectionsContent[idx].blockContent ? (
+          <div className={styles.textfieldNotFocused}>
+            {parse(sectionsContent[idx].blockContent as string)}
+          </div>
+        ) : null}
       </MarkedBlockFrame>
-     
     </div>
   );
 }

@@ -18,7 +18,7 @@ export const loadTexFile = async(id: string):Promise<(string | undefined)[]> =>{
        })
         return contentTemp.split("\n");
     }catch(error){
-        console.log("Load .tex file ERROR: ", error);
+        console.log("Load .tex file ERROR: ", error); 
     }
     
 }
