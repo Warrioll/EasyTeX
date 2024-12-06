@@ -9,12 +9,24 @@ body{
 .tiptap{
     outline: none;
     text-align: justify;
+    margin: 0px;
+    border-radius: var(--mantine-radius-md);
+    padding: 1rem;
+    
+    
+   
 
 
     p{
         margin: 0px;
         padding: 0px;
     }
+}
+
+.tiptap:focus{
+    background-color: #ebffff;
+    /* background-color: var(--mantine-color-white); */
+   
 }
 
 

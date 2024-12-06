@@ -22,6 +22,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import styles from './blocks.module.css';
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 
 type MarkedBlockFrameProps = {
   idx: number;
@@ -69,7 +70,7 @@ export default function MarkedBlockFrame({
       </Stack>
 
       <Paper
-        shadow="md"
+        shadow="md" 
         radius="xs"
         p="xl"
         pt="0px"
@@ -81,7 +82,7 @@ export default function MarkedBlockFrame({
           <Flex justify="center">
             <Menu>
               <Menu.Target>
-                <Button variant="transparent" size="compact-xs">
+                <Button variant="transparent"  size="compact-xs" m='xs'>
                   <MdOutlineAdd /> Add Block
                 </Button>
               </Menu.Target>
@@ -104,14 +105,14 @@ export default function MarkedBlockFrame({
         ) : (
           <></>
         )}
-        <Box className={idx === activeSection ? styles.sectionBlockStyle : ''} w="100%" p="xs">
+        <Box className={idx === activeSection ? styles.sectionBlockStyle : ''} w="100%" p="0px">
           {children}
         </Box>
         {idx === activeSection ? (
           <Flex justify="center">
             <Menu>
               <Menu.Target>
-                <Button variant="transparent" size="compact-xs">
+                <Button variant="transparent" size="compact-xs"  m='xs'>
                   <MdOutlineAdd /> Add Block
                 </Button>
               </Menu.Target>
@@ -151,7 +152,8 @@ export default function MarkedBlockFrame({
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item leftSection={<FiMoreHorizontal />}>Settings</Menu.Item>
+                <Menu.Item leftSection={<FaArrowUp  />}>Move up</Menu.Item>
+                <Menu.Item leftSection={<FaArrowDown />}>Move down</Menu.Item>
                 <Menu.Item leftSection={<FaRegTrashAlt />}>Delete Block</Menu.Item>
               </Menu.Dropdown>
             </Menu>

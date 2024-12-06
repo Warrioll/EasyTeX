@@ -11,24 +11,31 @@ import {
   Text,
   TextInput,
   Title,
-} from '@mantine/core';
+  BackgroundImage} from '@mantine/core';
 import styles from './loginPage.module.css';
 
+
 export default function LoginPage() {
-  return (
+  return (<>
+   <BackgroundImage
+        src="./latex-bg1.png"
+        radius="xs"
+       
+      >
     <Stack h="100vh" align="stretch" justify="center">
-      <Container w={420} mb="8%">
+      <Container w={420} mb="6%">
+       
+
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md" className={styles.paper}>
         <Title ta="center" className={styles.title}>
           Welcome back!
         </Title>
-        <Text c="dimmed" size="sm" ta="center" mt={5}>
+        <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
           Do not have an account yet?{' '}
-          <Anchor size="sm" component="button">
+          <Anchor size="sm"href="/register" target="_blank">
             Create account
           </Anchor>
         </Text>
-
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <TextInput label="Email" placeholder="you@mantine.dev" required />
           <PasswordInput label="Password" placeholder="Your password" required mt="md" />
           <Group justify="space-between" mt="lg">
@@ -37,11 +44,13 @@ export default function LoginPage() {
             Forgot password?
           </Anchor> */}
           </Group>
-          <Button fullWidth mt="xl">
+          <Button fullWidth mt="xl" >
             Sign in
           </Button>
         </Paper>
       </Container>
     </Stack>
+    </BackgroundImage>
+    </>
   );
 }
