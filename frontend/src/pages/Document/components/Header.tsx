@@ -74,7 +74,7 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
       <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
         <Center h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
           <Group justify="space-between" h="100%" w="100%">
-            <div>EasyTeX</div>
+            <Anchor href='/dashboard'>EasyTeX</Anchor>
             <Group h="100%" gap={0} visibleFrom="sm">
               <Tabs.List ref={setRootRef} className={classes.list}>
                 <Tabs.Tab value="file" ref={setControlRef('file')} className={classes.tab}>
