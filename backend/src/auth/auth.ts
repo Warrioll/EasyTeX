@@ -4,17 +4,19 @@ import { userModel } from '../models/userModel';
 export const login = async (req: express.Request, res: express.Response)=>{
 
             const {email, password}= req.body
-             const user = await userModel.find({email: email});
-           
+            console.log("email:", email)
+             const [user] = await userModel.find({email: email});
+            console.log(user)
              if(user===null || user===undefined){
                 res.status(404).send({error: 'User not found!'});
-             }
+             }else{
              if(user.password=== password){
-                res.cookie('auth', 'Warrioll', {maxAge: 60000})
+                res.cookie('auth', 'Warrioll', {maxAge: 60000, sameSite: 'strict'})
                 res.status(201).send({msg: 'Loged in'});
             }else{
-                res.status(400).send({msg: 'Not logdes in'});
+                res.status(403).send({msg: 'Not logdes in'});
             }
+        }
 
             // if(password==='abc1234?' && email==='warrioll@email.com'){
             //     res.cookie('auth', 'Warrioll', {maxAge: 60000})

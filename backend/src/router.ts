@@ -21,11 +21,11 @@ export default (): express.Router =>{
        // router.put("/document/lines/:id",updateLines )
         router.put("/document/documentContent/:id",updateWholeDocument )
 
-        //router.get('/user/:id', getUserById)
-        router.get('/user/:id', getUserByEmail)
+        router.get('/user/:id', getUserById)
+        router.get('/userByEmail', getUserByEmail)
         router.get('/user', getAllUsers)
 
-        router.get('/login',login);
+        router.post('/login',login);
     }catch(error){
         console.log(error);
     }

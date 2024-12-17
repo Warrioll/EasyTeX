@@ -10,6 +10,7 @@ const app = express();
 //dotenv.config()
 
 app.use(cors({
+    origin: 'http://localhost:5173',
     credentials: true,
 }));
 app.use(bodyParser.json());
@@ -23,7 +24,7 @@ const PORT = 8100;
 const MONGOURL = "mongodb://localhost:27017/EasyTeX"
 
 
-mongoose.Promise = Promise;
+mongoose.Promise = Promise;  
 mongoose.connect(MONGOURL);
 mongoose.connection.on('error', (error: Error)=> console.log(error));
 
