@@ -81,6 +81,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
       return  textfieldToBlock(line)
    })
    blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
+   console.log(blocks)
    res.status(200).json(blocks);
   } catch(error){
     console.log("Get ERROR: ", error)
