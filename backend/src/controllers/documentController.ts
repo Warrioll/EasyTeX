@@ -10,14 +10,32 @@ import { blockType } from '../types';
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
+
+  //--------------cookie test-------------------------
+  if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
     try{
-        const {id} = req.params;
-        const document = await documentModel.findById(id);
-        res.status(200).json(document);
-    }catch(error){
-        console.log("Get ERROR: ", error)
-        res.sendStatus(400);
-    }
+      const {id} = req.params;
+      const document = await documentModel.findById(id);
+      res.status(200).json(document);
+  }catch(error){
+      console.log("Get ERROR: ", error)
+      res.sendStatus(400);
+  }
+                res.status(201).send({msg: 'Access granted'});
+            }else{
+                res.status(403).send({msg: 'Acces denied!'});
+            }
+//--------------^cookie test^-------------------------
+
+// bez ciasteczek poniżej
+    // try{
+    //     const {id} = req.params;
+    //     const document = await documentModel.findById(id);
+    //     res.status(200).json(document);
+    // }catch(error){
+    //     console.log("Get ERROR: ", error)
+    //     res.sendStatus(400);
+    // }
 };
 
 export const  getDocuments= async (req: express.Request, res: express.Response)=>{

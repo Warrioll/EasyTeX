@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import cors from "cors";
 import bodyParser from "body-parser"
 import router from "./router";
+import cookieParser from 'cookie-parser'
 
 const app = express();
 //dotenv.config()
@@ -12,9 +13,10 @@ app.use(cors({
     credentials: true,
 }));
 app.use(bodyParser.json());
+app.use(cookieParser())
 app.use('/',router());
 
-
+ 
 //const PORT = process.env.PORT;
 const PORT = 8100;
 //const MONGOURL = process.env.MONGO_URL

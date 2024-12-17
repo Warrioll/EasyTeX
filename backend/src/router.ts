@@ -19,6 +19,23 @@ export default (): express.Router =>{
         //router.put("/document/line/:id",updateLine )
        // router.put("/document/lines/:id",updateLines )
         router.put("/document/documentContent/:id",updateWholeDocument )
+        router.get('/auth',async (req: express.Request, res: express.Response)=>{
+            const {email, password}= req.body
+           
+            if(password==='abc1234?' && email==='warrioll@email.com'){
+                res.cookie('auth', 'Warrioll', {maxAge: 60000})
+                res.status(201).send({msg: 'Loged in'});
+            }else{
+                res.status(400).send({msg: 'Not logdes in'});
+            }
+
+            // if(req.cookies.email && req.cookies.email==='abc1234?' ){
+            //     res.status(201).send({msg: 'Hello'});
+            // }else{
+            //     res.status(400).send({msg: 'No cookie!'});
+            // }
+            
+        });
     }catch(error){
         console.log(error);
     }
