@@ -5,6 +5,7 @@ import cors from "cors";
 import bodyParser from "body-parser"
 import router from "./router";
 import cookieParser from 'cookie-parser'
+import session from 'express-session'
 
 const app = express();
 //dotenv.config()
@@ -13,6 +14,17 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true,
 }));
+app.use(
+    session({
+      secret: 'easytexxx', // Klucz do podpisywania sesji
+      resave: true, 
+      saveUninitialized: true,
+      cookie: {
+        httpOnly: true, 
+        maxAge:  60 * 60 * 1000, // godz
+      },
+    })
+  );
 app.use(bodyParser.json());
 app.use(cookieParser())
 app.use('/',router());

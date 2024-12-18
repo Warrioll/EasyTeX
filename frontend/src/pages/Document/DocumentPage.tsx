@@ -180,7 +180,8 @@ export default function DocumentPage() {
   useEffect(() => {
     const setBlocks = async () => {
       const response = await axios.get(
-        'http://localhost:8100/document/getDocumentContent/671396c35547c1fc316c1a06'
+        'http://localhost:8100/document/getDocumentContent/671396c35547c1fc316c1a06',
+        { withCredentials: true }
       );
       //console.log('doc content', response);
       setSectionsContent(response.data);

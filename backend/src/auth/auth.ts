@@ -11,7 +11,9 @@ export const login = async (req: express.Request, res: express.Response)=>{
                 res.status(404).send({error: 'User not found!'});
              }else{
              if(user.password=== password){
-                res.cookie('auth', 'Warrioll', {maxAge: 60000, sameSite: 'strict'})
+                //to do
+                req.session.userId='Warrioll'
+                //res.cookie('auth', 'Warrioll', {maxAge: 600000, sameSite: 'strict'})
                 res.status(201).send({msg: 'Loged in'});
             }else{
                 res.status(403).send({msg: 'Not logdes in'});
