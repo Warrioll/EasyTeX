@@ -1,5 +1,6 @@
 import { Anchor, Text, Title } from '@mantine/core';
 import classes from './Welcome.module.css';
+import Logo from '@/svg/Logo';
 
 export function Welcome() {
   return (
@@ -18,6 +19,7 @@ export function Welcome() {
         </Anchor>
         . To get started edit pages/Home.page.tsx file.
       </Text>
+      <Logo width='5rem'/>
     </>
   );
 }

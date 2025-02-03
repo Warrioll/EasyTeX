@@ -50,6 +50,7 @@ import FontTab from './FontTab';
 //   IconChevronDown,
 // } from '@tabler/icons-react';
 import classes from './Header.module.css';
+import Logo from '@/svg/Logo';
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
@@ -74,7 +75,11 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
       <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
         <Center h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
           <Group justify="space-between" h="100%" w="100%">
-            <Anchor href='/dashboard'>EasyTeX</Anchor>
+            <Anchor href='/dashboard' className={classes.anchor} pl='xs' pr='xs'>
+            <Flex  justify='center' align='center'>
+                          <Logo width='1.3rem'/> 
+                          <Text mt='0.1rem' c='var(--mantine-color-yellow-8)'fz='md' fw='700' ml='sm'>Easy</Text><Text mt='0.1rem' fz='md' fw='700' c='var(--mantine-color-cyan-9)'>TeX</Text>
+                          </Flex></Anchor>
             <Group h="100%" gap={0} visibleFrom="sm">
               <Tabs.List ref={setRootRef} className={classes.list}>
                 <Tabs.Tab value="file" ref={setControlRef('file')} className={classes.tab}>

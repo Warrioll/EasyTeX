@@ -1,10 +1,11 @@
 import React from 'react';
-import { AppShell, Burger, Group, UnstyledButton, Box, Anchor, Button } from '@mantine/core';
+import { AppShell, Burger, Group, UnstyledButton, Box, Anchor, Button, Flex, Title, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from './guestLayout.module.css';
 import { TiHome } from "react-icons/ti";
 import { useNavigate } from 'react-router-dom';
-
+import Logo from '@/svg/Logo';
+ 
 export default function GuestLayout({ content }){
     const [opened, { toggle }] = useDisclosure();
     const navigate = useNavigate();
@@ -22,11 +23,14 @@ export default function GuestLayout({ content }){
               {
                 //<MantineLogo size={30} />
               }
-              EasyTeX
+              <Flex ml='sm' justify='center' align='center'>
+              <Logo width='1.6rem'/> 
+              <Text mt='0.2rem' c='var(--mantine-color-yellow-8)'fz='lg' fw='700' ml='sm'>Easy</Text><Text mt='0.2rem' fz='lg' fw='700' c='var(--mantine-color-cyan-9)'>TeX</Text>
+              </Flex>
               <Group ml="xl" gap={0} visibleFrom="sm">
-                <Button onClick={()=>navigate('/')} variant='transparent' leftSection={<TiHome />}className={classes.control}>Home</Button>
-                <Button onClick={()=>navigate('/login')} variant='transparent' className={classes.control}>Sign in</Button>
-                <Button onClick={()=>navigate('/register')} variant='transparent'  className={classes.control}>Sign up</Button>
+                <Button pt='0px' pb='0px' onClick={()=>navigate('/')} variant='transparent' leftSection={<TiHome />}className={classes.control}>Home</Button>
+                <Button  pt='0px' pb='0px'onClick={()=>navigate('/login')} variant='transparent' className={classes.control}>Sign in</Button>
+                <Button pt='0px' pb='0px'onClick={()=>navigate('/register')} variant='transparent'  className={classes.control}>Sign up</Button>
                
               </Group>
             </Group>

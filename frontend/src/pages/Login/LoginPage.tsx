@@ -23,9 +23,11 @@ import {
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import styles from './loginPage.module.css';
+import { useState } from 'react';
 
 export default function LoginPage() {
-  const [opened, { toggle, close }] = useDisclosure(false);
+  const [opened, { toggle, open, close }] = useDisclosure(false);
+  const [errorMsg, setErrorMsg] = useState('Invalid password or email!')
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -35,11 +37,26 @@ export default function LoginPage() {
   });
 
   const login = async (loginData) => {
-    console.log('data to - log in:', loginData.email);
-    const response = await axios.post('http://localhost:8100/login', loginData, {
-      withCredentials: true,
-    });
-    console.log('log in:', response);
+    try{
+      console.log('data to - log in:', loginData.email);
+      const response = await axios.post('http://localhost:8100/login', loginData, {
+        withCredentials: true,
+      });
+    }catch(e){
+      if(e.status===404 || e.status===403){
+        setErrorMsg('Invalid password or email!')
+        console.log(e.status)
+      }else{
+        setErrorMsg('Something went wrong!')
+        console.log(e.status)
+      }
+      
+        //close()
+      open()
+    }
+   
+
+   
   };
 
   return (
@@ -97,13 +114,13 @@ export default function LoginPage() {
                         </Text>
                         <Text ta="center" ml={5} mb={3} size="sm" c="var(--mantine-color-error)">
                           {' '}
-                          Invalid password or email!
+                          {errorMsg}
                         </Text>
                       </Flex>
                     )}
                   </Transition>
                 </Box>
-                <Button type="submit" fullWidth mt="xl" onClick={toggle}>
+                <Button type="submit" fullWidth mt="xl" onClick={close} >
                   Sign in
                 </Button>
               </form>
