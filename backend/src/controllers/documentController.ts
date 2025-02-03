@@ -64,7 +64,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
 
 export const getDocumentContent = async (req: express.Request, res: express.Response)=>{
   const nullBlock: blockType = {typeOfBlock: null, blockContent: null}
-  if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
+ // if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
   try{
    const {id}= req.params;
    let document: (string | undefined)[] = await loadTexFile(id);
@@ -88,9 +88,9 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
     console.log("Get ERROR: ", error)
     res.sendStatus(500); 
 }
-}else{
-  res.status(403).send({msg: 'Not loged in!'});
-}
+// }else{
+//   res.status(403).send({msg: 'Not loged in!'});
+// }
 }
 
 export const createDocument = async (req: express.Request, res: express.Response)=>{
