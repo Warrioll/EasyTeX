@@ -1,0 +1,17 @@
+.scrollArea{
+    width: 100%;
+    height: calc(100vh - 60px);
+    border-radius: var(--mantine-radius-md);
+    border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+   
+}
+
+.scrollAreaHeader{
+   padding-bottom: 1rem;
+    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.banner{
+    border-radius: var(--mantine-radius-md);
+    /* background: linear-gradient(to right, #ff7e5f, #feb47b); */
+}

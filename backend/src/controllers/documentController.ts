@@ -6,6 +6,7 @@ import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
 import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/toBlockConverters';
+import { verifySession, extendSession } from '../auth/auth';
 import { blockType } from '../types';
 
 
@@ -23,7 +24,7 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
   }
                 res.status(201).send({msg: 'Access granted'});
             }else{
-                res.status(403).send({msg: 'Acces denied!'});
+                res.status(401).send({msg: 'Acces denied!'});
             }
 //--------------^cookie test^-------------------------
 
@@ -48,13 +49,73 @@ export const  getDocuments= async (req: express.Request, res: express.Response)=
   }
 };
 
+export const getUserDocuments = async (req: express.Request, res: express.Response)=>{
+
+  try{
+    const {userId, documentClass} = req.params;
+   
+
+    if(req.cookies.auth && await verifySession(req.cookies.auth)===userId ){
+      await extendSession(req.cookies.auth,res)
+      let  userDocuments;
+      switch (documentClass){
+        case 'all':
+        userDocuments = await documentModel.find({userId: userId})
+        break;
+        case 'article':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'article'})
+        break;
+        case 'beamer':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'beamer'})
+        break;
+        case 'report':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'report'})
+        break;
+        case 'book':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'book'})
+        break;
+        case 'letter':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'letter'})
+        break;
+        case 'slides':
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'slides'})
+        break;
+        default:
+        userDocuments = null
+        break;
+      }
+      //const userDocuments = await documentModel.find({userId: userId})
+
+      res.status(200).json(userDocuments)
+    }else{
+      res.sendStatus(401)
+    }
+  }catch(error){
+    console.log("getUserDocuments error: ", error)
+    res.sendStatus(500)
+  }
+
+}
+
 export const  getPdf= async (req: express.Request, res: express.Response)=>{
  
   try{
     const {id} = req.params;
+    const documentInstantion = await documentModel.findById(id)
+
+
+    //console.log("cookie:", req.cookies.auth)
+    //console.log("usrId1:", documentInstantion.userId)
+    //console.log("usrId2:", await verifySession(req.cookies.auth))
+    //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
+
+    // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
     res.setHeader('Content-type', 'application/pdf')
-   
     fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
+
+  // }else{
+  //   res.status(403).send({msg: 'Not loged in!'});
+  // }
       //res.status(200).json(documents);
   }catch(error){
       console.log("Get ERROR: ", error)
@@ -64,33 +125,52 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
 
 export const getDocumentContent = async (req: express.Request, res: express.Response)=>{
   const nullBlock: blockType = {typeOfBlock: null, blockContent: null}
- // if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
+ 
   try{
-   const {id}= req.params;
-   let document: (string | undefined)[] = await loadTexFile(id);
-   console.log(document)
-    let blocks: (blockType)[] = document.map((line, idx)=>{
-    //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
-    //console.log(line)
-      if(line.includes('\\documentclass')) return  documentclassToBlock(line);
-      if(line.includes('\\section')) return  sectionToBlock(line);
-      //if(line.includes('\\subsection')) return  subsectionToBlock(item);
-      if(line==='') return nullBlock;
-      if(line.includes('\\begin{document}')) return nullBlock;
-      if(line.includes('\\end{document}')) return  nullBlock;
-      if(line.includes('\\usepackage')) return  nullBlock;
-      return  textfieldToBlock(line)
-   })
-   blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
-   console.log(blocks)
-   res.status(200).json(blocks);
+
+    const logedUser = await verifySession(req.cookies.auth);
+
+    //sprawdzenie czy jest sesja i czy użytkenik isntienie
+      if(logedUser!==null && logedUser!== undefined){
+        const {id}= req.params;
+        const documentInstantion = await documentModel.findById(id)
+
+        //sprawdzenie czy id z sesji zgadza sie z id właściiciela dokumnetu
+        if(logedUser===documentInstantion.userId ){
+          await extendSession(req.cookies.auth,res)
+
+          let document: (string | undefined)[] = await loadTexFile(id);
+          //console.log(document)
+          let blocks: (blockType)[] = document.map((line, idx)=>{
+            //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
+            //console.log(line)
+            if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+            if(line.includes('\\section')) return  sectionToBlock(line);
+            //if(line.includes('\\subsection')) return  subsectionToBlock(item);
+            if(line==='') return nullBlock;
+            if(line.includes('\\begin{document}')) return nullBlock;
+            if(line.includes('\\end{document}')) return  nullBlock;
+            if(line.includes('\\usepackage')) return  nullBlock;
+            return  textfieldToBlock(line)
+            })
+          blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
+          //console.log(blocks)
+
+    // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
+    // })
+          res.status(200).json(blocks);
+
+        }else{
+          res.status(401).send({msg: 'Not loged in!'});
+        }
+      }else{
+       res.status(401).send({msg: 'Not loged in!'});
+      }
   } catch(error){
     console.log("Get ERROR: ", error)
     res.sendStatus(500); 
 }
-// }else{
-//   res.status(403).send({msg: 'Not loged in!'});
-// }
+
 }
 
 export const createDocument = async (req: express.Request, res: express.Response)=>{
@@ -98,14 +178,25 @@ export const createDocument = async (req: express.Request, res: express.Response
 //const nd: (string |undefined)[]= ["\\documentclass{book}", , "\\begin{document}",, "wlazł kotek na płotek i mrugaa",, "\\end{document}"];
 
     try{
+      const userId = await verifySession(req.cookies.auth)
 
-        const document= new documentModel(req.body);
+      if(req.cookies.auth &&  userId){
+        await extendSession(req.cookies.auth,res)
+
+        const documentData= {name: req.body.name, 
+                    userId: userId,
+                    documentClass:  req.body.documentClass,
+                    creationDate: new Date(Date.now()),
+                   lastUpdate: new Date(Date.now()),
+        }
+
+        const document= new documentModel(documentData);
         const savedDocument = await document.save();
+
+
 
         const content: (string |undefined)[] = [`\\documentclass{${savedDocument.documentClass}}`, , 
           "\\begin{document}",, "\\end{document}"];
-
-
         const fileName: string= savedDocument._id+".tex"
         const path: string = "documentBase" 
         fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
@@ -113,7 +204,10 @@ export const createDocument = async (req: express.Request, res: express.Response
         //compileTex(path, fileName);
         //clearCompilationFiles(path, fileName);
 
-        res.status(200).json(savedDocument);
+        res.status(201).json(savedDocument);}
+        else{
+          res.sendStatus(401)
+        }
     }catch(error){
         console.log("Post ERROR: ", error) 
         res.sendStatus(400);
@@ -265,7 +359,7 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
 //   }
 // }
 
-export const updateWholeDocument  = async (req: express.Request, res: express.Response)=>{
+export const updateWholeDocumentContent  = async (req: express.Request, res: express.Response)=>{
 
 //z jakiejś duby wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
 
@@ -300,11 +394,36 @@ export const updateWholeDocument  = async (req: express.Request, res: express.Re
     await compileTex('documentBase', id+'.tex')
     clearCompilationFiles('documentBase', id+'.tex')
 
+    await extendSession(req.cookies.auth,res )
     res.sendStatus(200);
   }catch(error){
     console.log(error);
     res.sendStatus(500);
   }
 }
+
+
+export const renameDocument  = async (req: express.Request, res: express.Response)=>{
+  try{
+    const {id}=req.params
+    const userId = await verifySession(req.cookies.auth)
+   
+    const document = await documentModel.findById(id)
+   // console.log('userId',id)
+    if(req.cookies.auth && userId && userId===document.userId){
+      await extendSession(req.cookies.auth,res)
+
+      const updatedDocument = await documentModel.findByIdAndUpdate(id, {name: req.body.name, lastUpdate: new Date(Date.now())})
+
+      res.sendStatus(200)
+    
+    }else{
+      res.sendStatus(401)
+    }
+  }catch(error){
+    console.log('rename document error: ', error)
+  }
+}
+
 
 

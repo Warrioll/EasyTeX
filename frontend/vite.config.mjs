@@ -10,4 +10,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './vitest.setup.mjs',
   },
+  server: {
+    proxy: {
+      "/auth": "http://localhost:8100",
+    },
+  },
 });

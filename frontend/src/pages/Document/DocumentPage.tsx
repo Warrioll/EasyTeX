@@ -52,6 +52,7 @@ export default function DocumentPage() {
 
   const [pdfLoaded, setPdfLoaded] = useState(true);
   const [pagesNumber, setPagesNumber] = useState<number>(0);
+  const [pdf, setPdf] = useState<Any>(null);
 
   const editor = useEditor({
     extensions: [
@@ -168,13 +169,27 @@ export default function DocumentPage() {
   };
 
   useEffect(() => {
-    const setPages = async () => {
+    const setPdfFile = async () => {
+      //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
+      const response = await axios.get(
+        'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06',
+        {
+          withCredentials: true,
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/pdf',
+          },
+        }
+      );
+
+      setPdf(URL.createObjectURL(await response.data));
+
       const document = await pdfjs.getDocument(pdfLink).promise;
       setPagesNumber(document.numPages);
       console.log('pages:', pagesNumber);
     };
 
-    setPages();
+    setPdfFile();
   }, [pdfLoaded]);
 
   useEffect(() => {
@@ -249,7 +264,7 @@ export default function DocumentPage() {
                   .fill(1)
                   .map((x, idx) => (
                     <Box mb="sm" key={idx}>
-                      <Document file={pdfLink} className={pdfClasses.annotationLayer}>
+                      <Document file={pdf} className={pdfClasses.annotationLayer}>
                         <Page
                           pageNumber={idx + 1}
                           renderTextLayer={false}
