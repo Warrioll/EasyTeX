@@ -4,134 +4,21 @@ import { BiSolidCategory, BiSolidReport } from 'react-icons/bi';
 import { MdEmail } from 'react-icons/md';
 import { PiPresentationChartFill } from 'react-icons/pi';
 import { RiArticleFill, RiBook2Fill, RiSlideshow2Fill } from 'react-icons/ri';
-import {
-  BackgroundImage,
-  Box,
-  Button,
-  Container,
-  Flex,
-  Group,
-  ScrollArea,
-  SimpleGrid,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Box, Button, Container, Flex, ScrollArea, SimpleGrid, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
-import Logo from '@/svg/Logo';
-import { documentClassType } from '@/Types';
+import BasicBanner from './components/banners/BasicBanner';
+import SearchBanner from './components/banners/searchBanner';
+import CreateDocumentModal from './components/createDocumentModal/CreateDocumentModal';
 import DocumentCard from './components/documentCard/DocumentCard';
 import NavBar from './components/navBar/NavBar';
-import CreateDocumentModal from './createDocumentModal/CreateDocumentModal';
 import classes from './dashboardPage.module.css';
 
-const mockdata = [
-  {
-    title: 'Extreme perfor mancegwejfhauojgn srtagiujreagujwnagjpanergjksbnrjk',
-
-    type: 'article',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Privacy focused',
-
-    type: 'book',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'No third parties',
-    type: 'beamer',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-  },
-  {
-    title: 'Privacy focused',
-
-    type: 'report',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'No third parties',
-    type: 'beamer',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'slides',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'letter',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'article',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Privacy focused',
-
-    type: 'report',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'No third parties',
-    type: 'beamer',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'slides',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'letter',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-  {
-    title: 'Extreme performanceg',
-
-    type: 'article',
-    creationDate: '12.12.2025',
-    lastUpdate: '31.12.2025',
-    color: '',
-  },
-];
-
 export default function DashboardPage() {
-  const [bannerBg, setBannerBg] = useState(
-    'linear-gradient(to right,var(--mantine-color-cyan-7),var(--mantine-color-cyan-3)'
-  );
   const activeTab = useState<string>('all');
   const updateReleaser = useState<number>(0);
+  const searchType = useState<string>('all');
+  const searchName = useState<string>('');
   const [documentData, setDocumentData] = useState<any>(null);
   const [createModalOpened, createModalHandlers] = useDisclosure(false);
 
@@ -148,83 +35,141 @@ export default function DashboardPage() {
       const userId = await checkIfLoggedIn();
       //console.log(userId);
       try {
-        const response = await axios.get(
-          `http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
-          {
-            withCredentials: true,
+        if (activeTab[0] !== 'search') {
+          const response = await axios.get(
+            `http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
+            {
+              withCredentials: true,
+            }
+          );
+          //console.log('data ', response.data);
+          if (response.data === null || response.data === undefined) {
+            setDocumentData(null);
+          } else {
+            setDocumentData(response.data);
           }
-        );
-        console.log('response ', response);
-        console.log('data ', response.data);
-        if (response.data === null || response.data === undefined) {
-          setDocumentData(null);
         } else {
-          setDocumentData(response.data);
+          const response = await axios.get(
+            `http://localhost:8100/document/user/${userId}/${searchType[0]}`,
+            {
+              withCredentials: true,
+            }
+          );
+
+          if (response.data === null || response.data === undefined) {
+            setDocumentData(null);
+          } else {
+            setDocumentData(
+              response.data.filter((phrase) =>
+                phrase.name.toLowerCase().includes(searchName[0].toLowerCase())
+              )
+            );
+          }
         }
       } catch (error) {
-        console.log('getUserDocuemnts error: ', error);
+        //console.log('getUserDocuemnts error: ', error);
         setDocumentData(null);
       }
     };
     checkLogged();
-  }, [activeTab[0], updateReleaser[0]]);
-
-  const basicBanner = (
-    color: string,
-    icon: ReactElement,
-    documentClassName: string
-  ): ReactElement => {
-    return (
-      <Group
-        p="xl"
-        className={classes.banner}
-        w="90%"
-        style={{
-          background: `linear-gradient(to right,var(--mantine-color-${color}-7),var(--mantine-color-${color}-3)`,
-        }}
-        c="var(--mantine-color-white)"
-        justify="flex-start"
-      >
-        <Text fz="4.5rem" mr="md" ml="sm" mb="-13px">
-          {icon}
-        </Text>
-        <Box w="90%">
-          <Title>Welcome to EasyTeX!</Title>
-          <Group justify="space-between">
-            <Text>Create and edit {documentClassName} based on LaTeX in EASY way!</Text>
-            <Button
-              bg="var(--mantine-color-white)"
-              c={`var(--mantine-color-${color}-7)`}
-              onClick={createModalHandlers.open}
-            >
-              Create new Document
-            </Button>
-          </Group>
-        </Box>
-      </Group>
-    );
-  };
+  }, [activeTab[0], updateReleaser[0], searchName[0], searchType[0]]);
 
   const chooseBanner = (): ReactElement => {
     switch (activeTab[0]) {
       case 'all':
-        return basicBanner('cyan', <BiSolidCategory />, 'documents');
+        return (
+          <BasicBanner
+            color="cyan"
+            icon={<BiSolidCategory />}
+            documentClassName="documents"
+            createDocumentModal={createDocumentModal}
+          />
+        );
       case 'article':
-        return basicBanner('blue', <RiArticleFill />, 'articles');
+        return (
+          <BasicBanner
+            color="blue"
+            icon={<RiArticleFill />}
+            documentClassName="articles"
+            createDocumentModal={createDocumentModal}
+          />
+        );
       case 'report':
-        return basicBanner('grape', <BiSolidReport />, 'reports');
+        return (
+          <BasicBanner
+            color="grape"
+            icon={<BiSolidReport />}
+            documentClassName="reports"
+            createDocumentModal={createDocumentModal}
+          />
+        ); //basicBanner('grape', <BiSolidReport />, 'reports');
       case 'book':
-        return basicBanner('teal', <RiBook2Fill />, 'books');
+        return (
+          <BasicBanner
+            color="teal"
+            icon={<RiBook2Fill />}
+            documentClassName="books"
+            createDocumentModal={createDocumentModal}
+          />
+        ); //basicBanner('teal', <RiBook2Fill />, 'books');
       case 'letter':
-        return basicBanner('lime', <MdEmail />, 'letters');
+        return (
+          <BasicBanner
+            color="lime"
+            icon={<MdEmail />}
+            documentClassName="letters"
+            createDocumentModal={createDocumentModal}
+          />
+        ); //basicBanner('lime', <MdEmail />, 'letters');
       case 'beamer':
-        return basicBanner('orange', <PiPresentationChartFill />, 'presentations');
+        return (
+          <BasicBanner
+            color="orange"
+            icon={<PiPresentationChartFill />}
+            documentClassName="presentations"
+            createDocumentModal={createDocumentModal}
+          />
+        ); //basicBanner('orange', <PiPresentationChartFill />, 'presentations');
       case 'slides':
-        return basicBanner('pink', <RiSlideshow2Fill />, 'slides');
+        return (
+          <BasicBanner
+            color="pink"
+            icon={<RiSlideshow2Fill />}
+            documentClassName="slides"
+            createDocumentModal={createDocumentModal}
+          />
+        ); //basicBanner('pink', <RiSlideshow2Fill />, 'slides');
       case 'search':
-        return <>Search</>;
+        return (
+          <SearchBanner
+            createDocumentModal={createDocumentModal}
+            inputState={searchName}
+            comboboxState={searchType}
+          />
+        );
       default:
         return <></>;
+    }
+  };
+
+  const toTabLabelConverter = (): any => {
+    switch (activeTab[0]) {
+      case 'all':
+        return 'documents';
+      case 'article':
+        return 'articles';
+      case 'report':
+        return 'reports';
+      case 'book':
+        return 'books';
+      case 'letter':
+        return 'letters';
+      case 'beamer':
+        return 'presentations';
+      case 'slides':
+        return 'slides';
+      default:
+        return '';
     }
   };
 
@@ -241,53 +186,70 @@ export default function DashboardPage() {
           p="0px"
         >
           <Container size="100rem" w="100%" pt="xl" pb="xl">
-            <Flex justify="center">
-              {/* <Group
-                p="xl"
-                className={classes.banner}
-                w="90%"
-                style={{ background: bannerBg }}
-                c="var(--mantine-color-white)"
-                justify="flex-start"
-              >
-                <Text fz="4.5rem" mr="md" ml="sm" mb="-13px">
-                  <BiSolidCategory />
-                </Text>
-                <Box w="90%">
-                  <Title>Welcome to EasyTeX!</Title>
-                  <Group justify="space-between">
-                    <Text>Create and edit documents based on LaTeX in EASY way!</Text>
-                    <Button
-                      bg="var(--mantine-color-white)"
-                      c="var(--mantine-color-cyan-7)"
-                      onClick={createModalHandlers.open}
-                    >
-                      Create new Document
-                    </Button>
-                  </Group>
-                </Box>
-              </Group> */}
-              {chooseBanner()}
-            </Flex>
+            <Flex justify="center">{chooseBanner()}</Flex>
             <Flex p="0px" m="0px" justify="center">
-              <SimpleGrid cols={{ base: 1, lg: 2, xl: 3 }} spacing="xs" mt={50}>
-                {documentData ? (
-                  documentData.map((doc) => (
-                    <Box m="sm">
-                      <DocumentCard
-                        documentId={doc._id}
-                        title={doc.name}
-                        type={doc.documentClass}
-                        creationDate={doc.creationDate}
-                        lastUpdate={doc.lastUpdate}
-                        updateReleaser={updateReleaser}
-                      />
-                    </Box>
-                  ))
+              {documentData ? (
+                documentData.length !== 0 ? (
+                  <SimpleGrid cols={{ base: 1, lg: 2, xl: 3 }} spacing="xs" mt={50}>
+                    {documentData.map((doc) => (
+                      <Box m="sm">
+                        <DocumentCard
+                          documentId={doc._id}
+                          title={doc.name}
+                          type={doc.documentClass}
+                          creationDate={doc.creationDate}
+                          lastUpdate={doc.lastUpdate}
+                          updateReleaser={updateReleaser}
+                        />
+                      </Box>
+                    ))}
+                  </SimpleGrid>
                 ) : (
-                  <Title>Sorry, something went wrong.</Title>
-                )}
-              </SimpleGrid>
+                  <Flex
+                    direction="column"
+                    gap="xl"
+                    m="xl"
+                    w="100%"
+                    h="50vh"
+                    justify="center"
+                    align="center"
+                  >
+                    <Title c="var(--mantine-color-gray-6)">
+                      {activeTab[0] === 'search'
+                        ? 'No results found.'
+                        : `You have no ${toTabLabelConverter()}.`}
+                    </Title>
+                    <Button
+                      variant="light"
+                      color="var(--mantine-color-gray-6)"
+                      onClick={createDocumentModal.modalHandlers.open}
+                    >
+                      Click here to create new document
+                    </Button>
+                  </Flex>
+                )
+              ) : (
+                <Flex
+                  direction="column"
+                  gap="xl"
+                  m="xl"
+                  w="100%"
+                  h="50vh"
+                  justify="center"
+                  align="center"
+                >
+                  <Title c="var(--mantine-color-gray-6)">Sorry, something went wrong.</Title>
+                  <Button
+                    variant="light"
+                    color="var(--mantine-color-gray-6)"
+                    onClick={() => {
+                      updateReleaser[1](updateReleaser[0] + 1);
+                    }}
+                  >
+                    Click here to refresh
+                  </Button>
+                </Flex>
+              )}
             </Flex>
           </Container>
         </ScrollArea>

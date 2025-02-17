@@ -425,5 +425,27 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
   }
 }
 
+export const deleteDocument  = async (req: express.Request, res: express.Response)=>{
+  try{
+    const {id}=req.params
+    const userId = await verifySession(req.cookies.auth)
+   
+    const document = await documentModel.findById(id)
+   // console.log('userId',id)
+    if(req.cookies.auth && userId && userId===document.userId){
+      await extendSession(req.cookies.auth,res)
+
+      const updatedDocument = await documentModel.findByIdAndDelete(id)
+
+      res.sendStatus(200)
+    
+    }else{
+      res.sendStatus(401)
+    }
+  }catch(error){
+    console.log('rename document error: ', error)
+  }
+}
+
 
 

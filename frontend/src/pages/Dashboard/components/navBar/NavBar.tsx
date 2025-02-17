@@ -20,7 +20,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import CreateDocumentModal from '../../createDocumentModal/CreateDocumentModal';
+import CreateDocumentModal from '../createDocumentModal/CreateDocumentModal';
 import classes from './navBar.module.css';
 
 const data = [

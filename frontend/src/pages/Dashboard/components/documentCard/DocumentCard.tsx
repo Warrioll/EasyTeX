@@ -115,7 +115,6 @@ export default function DocumentCard({
 
   const renameDocument = async () => {
     try {
-      console.log('renemae work ');
       const response = await axios.put(
         `http://localhost:8100/document/${documentId}`,
         {
@@ -124,7 +123,6 @@ export default function DocumentCard({
         { withCredentials: true }
       );
 
-      //console.log('renemae response: ', response);
       renameModalHandlers.close();
       updateReleaser[1](updateReleaser[0] + 1);
     } catch (error) {
@@ -132,7 +130,19 @@ export default function DocumentCard({
     }
   };
 
-  const deleteDocuemnt = () => {};
+  const deleteDocuemnt = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:8100/document/${documentId}`, {
+        withCredentials: true,
+      });
+
+      //console.log('renemae response: ', response);
+      deleteModalHandlers.close();
+      updateReleaser[1](updateReleaser[0] + 1);
+    } catch (error) {
+      console.log('delete error: ', error);
+    }
+  };
 
   return (
     <>
@@ -260,32 +270,38 @@ export default function DocumentCard({
           </Text>
         }
       >
-        <SimpleGrid mt="0px" cols={1} verticalSpacing="xl" ta="center" p="xl" pt="md" pb="md">
-          <Text fz="1.3rem" m="xl">
+        <SimpleGrid mt="0px" cols={1} verticalSpacing="md" ta="center" p="xl" pt="md" pb="md">
+          <Text fz="1.3rem" m="lg" mb="0px">
             Are you sure you want to delete this document?
           </Text>
           <Group justify="center" m="0px" p="0px">
             <SimpleGrid
               ml="xl"
               mr="xl"
+              mb="md"
               mt="0px"
               cols={2}
               ta="left"
               verticalSpacing="0.1rem"
-              pt="md"
+              pt="0px"
               pb="md"
-              w="52%"
+              w="84%"
+              spacing="xl"
             >
               <b>Name: </b>
+
               {title}
 
               <b>Type: </b>
+
               {cardContent.typeLabel}
 
               <b>Created: </b>
+
               {creationDateString}
 
               <b>Last update: </b>
+
               {lastUpdateDateString}
             </SimpleGrid>
           </Group>

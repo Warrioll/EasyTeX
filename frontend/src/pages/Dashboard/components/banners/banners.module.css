@@ -1,0 +1,8 @@
+.banner{
+    border-radius: var(--mantine-radius-md);
+    /* background: linear-gradient(to right, #ff7e5f, #feb47b); */
+}
+
+.searchBar{
+    border-radius: var(--mantine-radius-md);
+}

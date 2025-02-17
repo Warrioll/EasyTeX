@@ -115,7 +115,7 @@ export default function MainLayout({ content }: LayoutProps) {
             Are you sure you want to log out?
           </Text>
           <SimpleGrid cols={2} spacing="xl" mt="md">
-            <Button onClick={logout}>Yes</Button>
+            <Button onClick={logout}>Log out</Button>
             <Button variant="outline" onClick={logoutModalHandlers.close}>
               Cancel
             </Button>

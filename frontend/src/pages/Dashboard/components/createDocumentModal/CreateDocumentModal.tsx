@@ -102,6 +102,7 @@ export default function CreateDocumentModal({
             <SegmentedControl
               mt="lg"
               value={documentType}
+              withItemsBorders={false}
               onChange={(value) => {
                 setDocumentType(value);
                 switch (value) {

@@ -1,7 +1,8 @@
 import express from 'express'
 import { getDocuments, getDocumentById, createDocument,  addLine, getPdf, getDocumentContent, updateWholeDocumentContent, // updateLines, updateLine,
 getUserDocuments,
-renameDocument} from './controllers/documentController';
+renameDocument,
+deleteDocument} from './controllers/documentController';
 import { login, verifySessionEndPoint, logout } from './auth/auth';
 import { getUserById, getAllUsers, getUserByEmail, createUser } from './controllers/userController';
 //import documents from './documentRouter'
@@ -23,6 +24,7 @@ export default (): express.Router =>{
        // router.put("/document/lines/:id",updateLines )
         router.put("/document/documentContent/:id",updateWholeDocumentContent )
         router.put("/document/:id",renameDocument )
+        router.delete("/document/:id",deleteDocument )
 
         router.get('/user/:id', getUserById)
         router.get('/userByEmail', getUserByEmail)

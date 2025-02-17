@@ -142,7 +142,7 @@ export const extendSession = async (sessionId: string, res: express.Response) =>
         const newSession= new sessionModel({userId: userId, expiresAt: new Date(Date.now() + expireTime)});
         const savedSession = await newSession.save();
 
-        console.log("extended sessionID: ",savedSession.id )
+        //console.log("extended sessionID: ",savedSession.id )
         res.cookie('auth',savedSession.id, {maxAge: expireTime, sameSite: 'lax', httpOnly: true
         })
     }catch(error){
