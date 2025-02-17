@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.30)  28 NOV 2024 15:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.30)  13 FEB 2025 12:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -185,7 +185,7 @@ File: l3backend-pdftex.def 2022-10-26 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count271
 \l__pdf_internal_box=\box54
 )
-(documentBase/671396c35547c1fc316c1a06.aux)
+No file 671396c35547c1fc316c1a06.aux.
 \openout1 = `671396c35547c1fc316c1a06.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 4.
@@ -206,7 +206,6 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
-
 (c:/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
 Package: color 2022/01/06 v1.3d Standard LaTeX Color (DPC)
 
@@ -233,9 +232,6 @@ File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
 \everyMPtoPDFconversion=\toks19
 )) (c:/texlive/2022/texmf-dist/tex/latex/graphics/mathcolor.ltx))
 Package hyperref Info: Link coloring ON on input line 4.
-
-(documentBase/671396c35547c1fc316c1a06.out)
-(documentBase/671396c35547c1fc316c1a06.out)
 \@outlinefile=\write3
 \openout3 = `671396c35547c1fc316c1a06.out'.
 
@@ -243,6 +239,21 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 5.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 5.
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--5
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--5
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--5
+
+ []
+
 
 Underfull \hbox (badness 10000) in paragraph at lines 5--5
 
@@ -298,14 +309,14 @@ Package rerunfilecheck Warning: File `671396c35547c1fc316c1a06.out' has changed
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `671396c35547c1fc316c1a06.out':
-(rerunfilecheck)             Before: B9B89097B5EEEA6EEEE58BB8E3364DBC;512
+(rerunfilecheck)             Before: <no file>
 (rerunfilecheck)             After:  DF3C0AB92564EA77BCCE7BA598C73C31;525.
  ) 
 Here is how much of TeX's memory you used:
- 7929 strings out of 476093
- 125213 string characters out of 5795582
- 1861787 words of memory out of 5000000
- 28239 multiletter control sequences out of 15000+600000
+ 7918 strings out of 476093
+ 124916 string characters out of 5795582
+ 1868787 words of memory out of 5000000
+ 28233 multiletter control sequences out of 15000+600000
  514155 words of font info for 39 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  72i,5n,77p,2592b,452s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -316,11 +327,11 @@ st/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2022/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2022/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmtt10.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/cm-sup
 er/sfrm1000.pfb>
-Output written on documentBase/671396c35547c1fc316c1a06.pdf (3 pages, 85810 byt
+Output written on documentBase/671396c35547c1fc316c1a06.pdf (3 pages, 87246 byt
 es).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
- 61 compressed objects within 1 object stream
- 12 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 65 PDF objects out of 1000 (max. 8388607)
+ 47 compressed objects within 1 object stream
+ 13 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

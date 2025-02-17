@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { MdError } from 'react-icons/md';
 import { RiErrorWarningFill } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import {
   Alert,
   Anchor,
@@ -20,44 +23,65 @@ import {
   Title,
   Transition,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { isEmail, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { checkIfLoggedIn, checkIfNotLoggedIn } from '@/ApiHandlers/AuthHandler';
 import styles from './loginPage.module.css';
-import { useState } from 'react';
 
 export default function LoginPage() {
   const [opened, { toggle, open, close }] = useDisclosure(false);
-  const [errorMsg, setErrorMsg] = useState('Invalid password or email!')
+  const [errorMsg, setErrorMsg] = useState('Invalid password or email!');
+  const navigate = useNavigate();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
       email: '',
       password: '',
     },
+    // validate: {
+    //   email: isEmail('Not an email address'),
+    // },
   });
 
   const login = async (loginData) => {
-    try{
-      console.log('data to - log in:', loginData.email);
-      const response = await axios.post('http://localhost:8100/login', loginData, {
+    console.log('login Data: ', loginData);
+    try {
+      //console.log('data to - log in:', loginData.email);
+      const response = await axios.post('http://localhost:8100/auth/login', loginData, {
         withCredentials: true,
       });
-    }catch(e){
-      if(e.status===404 || e.status===403){
-        setErrorMsg('Invalid password or email!')
-        console.log(e.status)
-      }else{
-        setErrorMsg('Something went wrong!')
-        console.log(e.status)
+      navigate('/dashboard');
+    } catch (e) {
+      if (e.status === 404 || e.status === 403) {
+        setErrorMsg('Invalid password or email!');
+        console.log(e.status);
+      } else {
+        setErrorMsg('Something went wrong!');
+        console.log(e.status);
       }
-      
-        //close()
-      open()
-    }
-   
 
-   
+      //close()
+      //open();
+      setTimeout(() => {
+        open();
+      }, 150);
+    }
   };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      //const authCookie = Cookies.get('auth');
+      // if (authCookie !== undefined || authCookie != null) {
+      //   navigate('/dashboard');
+      // }
+      await checkIfNotLoggedIn();
+      // console.log('userId:', userId);
+      // if (userId !== null || userId !== undefined) {
+      //   // navigate('/dashboard');
+      // }
+    };
+    checkAuth();
+  }, []);
 
   return (
     // 14 lub 13
@@ -120,7 +144,7 @@ export default function LoginPage() {
                     )}
                   </Transition>
                 </Box>
-                <Button type="submit" fullWidth mt="xl" onClick={close} >
+                <Button type="submit" fullWidth mt="xl" onClick={close}>
                   Sign in
                 </Button>
               </form>
