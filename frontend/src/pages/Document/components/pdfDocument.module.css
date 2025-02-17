@@ -1,0 +1,15 @@
+ 
+  .annotationLayer {
+    overflow: hidden;
+    display: flex;
+
+    position:static;
+
+  
+    pointer-events: none; /* Umożliwia kliknięcie na inne elementy */
+    
+  }
+
+  .page{
+
+  }

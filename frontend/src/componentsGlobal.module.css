@@ -1,0 +1,42 @@
+button{
+    &[data-variant='format'] {
+      padding: 0.5rem;
+      margin-left: 0.2rem;
+      margin-right: 0.2rem;
+    
+        @mixin light {
+           background-color: var(--mantine-color-gray-white);
+           color: var(--mantine-color-gray-black)
+        }
+    
+        @mixin dark {
+            background-color: var(--mantine-color-dark-8);
+            color: var(--mantine-color-gray-white)
+        }
+    
+        &:hover{
+            background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8));
+        }
+}
+}
+
+input{
+    &[data-variant='header1'] {
+
+      font-weight:bolder;
+      font-size: 1.5rem;
+    
+        @mixin light {
+           background-color: var(--mantine-color-gray-white);
+           color: var(--mantine-color-gray-black)
+        }
+    
+        @mixin dark {
+            background-color: var(--mantine-color-dark-8);
+            color: var(--mantine-color-gray-white)
+        }
+    
+        &:hover{
+        }
+}
+}
