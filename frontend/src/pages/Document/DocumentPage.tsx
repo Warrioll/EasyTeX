@@ -1,5 +1,5 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
@@ -8,10 +8,20 @@ import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
 import parse from 'html-react-parser';
+//import { Document, Page, pdfjs } from 'react-pdf';
 import { Document, Page, pdfjs } from 'react-pdf';
+
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+
+import Split from '@uiw/react-split';
+import { useParams } from 'react-router-dom';
+//import Split from 'react-split';
 import {
+  AspectRatio,
   Box,
   Button,
+  Center,
   Grid,
   Group,
   Input,
@@ -29,6 +39,12 @@ import SectionBlock from './blocks/SectionBlock';
 import TextfieldBlock from './blocks/TextfieldBlock';
 import Header from './components/Header';
 import pdfClasses from './components/pdfDocument.module.css';
+import classes from './documentPage.module.css';
+
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   'pdfjs-dist/build/pdf.worker.min.mjs',
+//   import.meta.url
+// ).toString();
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -53,6 +69,10 @@ export default function DocumentPage() {
   const [pdfLoaded, setPdfLoaded] = useState(true);
   const [pagesNumber, setPagesNumber] = useState<number>(0);
   const [pdf, setPdf] = useState<Any>(null);
+  const pdfZoom = useState<string | null>('1');
+  const pdfZoomValue = useState<number>(1);
+
+  const { id } = useParams();
 
   const editor = useEditor({
     extensions: [
@@ -103,7 +123,7 @@ export default function DocumentPage() {
 
   const sendChanges = async () => {
     const response = await axios.put(
-      'http://localhost:8100/document/documentContent/671396c35547c1fc316c1a06',
+      `http://localhost:8100/document/documentContent/${id}`,
       sectionsContent
     );
 
@@ -169,18 +189,19 @@ export default function DocumentPage() {
   };
 
   useEffect(() => {
+    pdfZoomValue[1](1.4 * Number(pdfZoom[0]));
+  }, [pdfZoom[0]]);
+
+  useEffect(() => {
     const setPdfFile = async () => {
       //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
-      const response = await axios.get(
-        'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06',
-        {
-          withCredentials: true,
-          responseType: 'blob',
-          headers: {
-            'Content-Type': 'application/pdf',
-          },
-        }
-      );
+      const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+        withCredentials: true,
+        responseType: 'blob',
+        headers: {
+          'Content-Type': 'application/pdf',
+        },
+      });
 
       setPdf(URL.createObjectURL(await response.data));
 
@@ -194,10 +215,9 @@ export default function DocumentPage() {
 
   useEffect(() => {
     const setBlocks = async () => {
-      const response = await axios.get(
-        'http://localhost:8100/document/getDocumentContent/671396c35547c1fc316c1a06',
-        { withCredentials: true }
-      );
+      const response = await axios.get(`http://localhost:8100/document/getDocumentContent/${id}`, {
+        withCredentials: true,
+      });
       //console.log('doc content', response);
       setSectionsContent(response.data);
     };
@@ -237,18 +257,37 @@ export default function DocumentPage() {
     }
   };
 
+  //const pageRefs = useRef([]);
+
   return (
     <>
       <Header
         editFunctions={editFunctions}
         editor={editor}
         saveElementChanges={saveElementChanges}
+        pdfZoom={pdfZoom}
       />
-
-      <ScrollArea h="89vh" w="100%" offsetScrollbars type="always">
-        <Grid>
-          <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            <Stack w="100%" align="flex-end" gap="0%" pt="xl">
+      <Split
+        className={classes.bar}
+        lineBar
+        style={{ width: '100vw', border: 'none' }}
+        renderBar={({ onMouseDown, ...props }) => {
+          return (
+            <div {...props} style={{ boxShadow: 'none' }}>
+              <div onMouseDown={onMouseDown} />
+            </div>
+          );
+        }}
+      >
+        <ScrollArea
+          h="90vh"
+          w="100%"
+          offsetScrollbars //type="always"
+        >
+          {/* <Grid> */}
+          {/* <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+          <Center p={0} h="100%">
+            <Stack h="100%" align="flex-end" gap="0%" pt="xl">
               {blocksLoaded && sectionsContent.length > 0 ? (
                 sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
               ) : (
@@ -256,32 +295,59 @@ export default function DocumentPage() {
               )}
             </Stack>
             {/* </Paper> */}
-          </Grid.Col>
-          <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%">
-            <Box m="xl">
-              {pdfLoaded ? (
+            {/* </Grid.Col> */}
+          </Center>
+        </ScrollArea>
+        <ScrollArea h="90vh" w="100%">
+          {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+          <Center m="xl" p={0}>
+            {/* {pdfLoaded ? (
                 Array(pagesNumber)
                   .fill(1)
                   .map((x, idx) => (
                     <Box mb="sm" key={idx}>
                       <Document file={pdf} className={pdfClasses.annotationLayer}>
-                        <Page
-                          pageNumber={idx + 1}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                          className={pdfClasses.page}
-                          scale={1.31}
-                        />
+                        <div
+                          style={{ position: 'relative' }}
+                          ref={(el) => (pageRefs.current[idx + 1] = el)}
+                        >
+                          <Page
+                            pageNumber={idx + 1}
+                            //renderTextLayer={false}
+                            //renderAnnotationLayer={false}
+                            className={pdfClasses.page}
+                            //scale={1.31}
+                            containerRef={pageRefs.current[idx + 1]}
+                          />
+                        </div>
                       </Document>
                     </Box>
                   ))
               ) : (
                 <>PDF Not found</>
-              )}
-            </Box>
-          </Grid.Col>
-        </Grid>
-      </ScrollArea>
+              )} */}
+
+            <Document
+              file={pdf}
+              //onLoadSuccess={onDocumentLoadSuccess}
+              //options={options}
+            >
+              {Array.from(new Array(pagesNumber), (_el, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  className={pdfClasses.page}
+                  scale={pdfZoomValue[0]}
+                  // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                />
+              ))}
+            </Document>
+          </Center>
+
+          {/* </Grid.Col> */}
+          {/* </Grid> */}
+        </ScrollArea>
+      </Split>
     </>
   );
 }

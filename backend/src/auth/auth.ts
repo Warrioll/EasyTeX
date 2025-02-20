@@ -9,7 +9,7 @@ const sessionSchema= new mongoose.Schema({
 
 const sessionModel = mongoose.model('Session', sessionSchema, 'Session');
 
-const expireTime= 1000 * 60 * 60
+const expireTime= 1000 * 60 * 60 * 12
 
 export const login = async (req: express.Request, res: express.Response)=>{
 

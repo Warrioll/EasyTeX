@@ -31,13 +31,14 @@
     "@tiptap/extension-underline": "^2.9.1",
     "@tiptap/react": "^2.8.0",
     "@tiptap/starter-kit": "^2.8.0",
+    "@uiw/react-split": "^5.9.3",
     "axios": "^1.7.7",
     "html-react-parser": "^5.1.18",
     "js-cookie": "^3.0.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-pdf": "^9.1.1",
+    "react-pdf": "^9.2.1",
     "react-router-dom": "^6.27.0"
   },
   "devDependencies": {

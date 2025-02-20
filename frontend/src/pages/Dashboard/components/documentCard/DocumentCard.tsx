@@ -27,6 +27,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
 import { documentClassType } from '@/Types';
 import classes from './documentCard.module.css';
 
@@ -52,9 +53,12 @@ export default function DocumentCard({
   const [cardBorder, setCardBorder] = useState(
     ' 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
   );
+  const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [renameModalOpened, renameModalHandlers] = useDisclosure(false);
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  const [documentName, setDocumentName] = useState(title);
+  const [documentName, setDocumentName] = useState<string>(title);
+  const [renameError, setRenemeError] = useState<string | null>(null);
+  const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
   console.log('doc, id: ', documentId);
   const chooseCardContent = (): { typeLabel: string; icon: any; color: string } => {
     // return <RiArticleFill size={50} stroke={2} color={theme.colors.blue[6]} />;
@@ -124,8 +128,10 @@ export default function DocumentCard({
       );
 
       renameModalHandlers.close();
+      errorDialogHandlers.close();
       updateReleaser[1](updateReleaser[0] + 1);
     } catch (error) {
+      errorDialogHandlers.open();
       console.log('reneme error: ', error);
     }
   };
@@ -154,7 +160,7 @@ export default function DocumentCard({
         className={classes.card}
         padding="xl"
         onDoubleClick={() => {
-          window.location.href = 'http://localhost:5173/document';
+          window.location.href = `http://localhost:5173/document/${documentId}`;
         }}
         bd={cardBorder}
         onMouseEnter={() => setCardBorder(`1px solid ${cardContent.color}`)}
@@ -177,13 +183,24 @@ export default function DocumentCard({
             <MenuDropdown>
               <Menu.Item
                 onClick={() => {
-                  window.location.href = '/document';
+                  window.location.href = `http://localhost:5173/document/${documentId}`;
                 }}
                 leftSection={<FaArrowRightFromBracket />}
               >
                 Open
               </Menu.Item>
-              <Menu.Item onClick={renameModalHandlers.open} leftSection={<FaRegEdit />}>
+              <Menu.Item
+                onClick={() => {
+                  setDocumentName(title);
+                  if (docuemntNameRegex.test(title)) {
+                    setRenemeError(null);
+                  } else {
+                    setRenemeError('Invalid name');
+                  }
+                  renameModalHandlers.open();
+                }}
+                leftSection={<FaRegEdit />}
+              >
                 Rename
               </Menu.Item>
               <Menu.Item
@@ -208,6 +225,7 @@ export default function DocumentCard({
           fw={500}
           className={classes.cardTitle}
           mt="md"
+          href={`http://localhost:5173/document/${documentId}`}
         >
           {title}
         </Anchor>
@@ -224,10 +242,13 @@ export default function DocumentCard({
       </Card>
       <Modal
         opened={renameModalOpened}
-        onClose={renameModalHandlers.close}
+        onClose={() => {
+          renameModalHandlers.close();
+          errorDialogHandlers.close();
+        }}
         transitionProps={{ transition: 'fade-up' }}
         size="lg"
-        yOffset="14%"
+        yOffset="15%"
         title={
           <Text c="var(--mantine-color-cyan-8)">
             <b>Rename document</b>
@@ -235,7 +256,7 @@ export default function DocumentCard({
         }
       >
         <SimpleGrid mt="0px" cols={1} verticalSpacing="xl" p="xl" pt="md" pb="md">
-          <Text fz="1.3rem" m="xl" mt="0px">
+          <Box h="4.5rem" m="xl" mt="0px">
             <TextInput
               mt="lg"
               label="Document name"
@@ -243,16 +264,29 @@ export default function DocumentCard({
               variant="filled"
               required
               value={documentName}
+              error={renameError}
               onChange={(event) => {
                 setDocumentName(event.currentTarget.value);
+                if (docuemntNameRegex.test(event.currentTarget.value)) {
+                  setRenemeError(null);
+                } else {
+                  setRenemeError('Invalid name');
+                }
               }}
               // key={form.key('email')}
               // {...form.getInputProps('email')}
             />
-          </Text>
+          </Box>
+
           <SimpleGrid cols={2} spacing="xl" mt="md">
             <Button onClick={renameDocument}>Rename</Button>
-            <Button variant="outline" onClick={renameModalHandlers.close}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                renameModalHandlers.close();
+                errorDialogHandlers.close();
+              }}
+            >
               Cancel
             </Button>
           </SimpleGrid>
@@ -289,19 +323,12 @@ export default function DocumentCard({
               spacing="xl"
             >
               <b>Name: </b>
-
               {title}
-
               <b>Type: </b>
-
               {cardContent.typeLabel}
-
               <b>Created: </b>
-
               {creationDateString}
-
               <b>Last update: </b>
-
               {lastUpdateDateString}
             </SimpleGrid>
           </Group>
@@ -315,6 +342,25 @@ export default function DocumentCard({
           </SimpleGrid>
         </SimpleGrid>
       </Modal>
+      <InfoErrorDialog
+        title="Document name requirements"
+        errorDialogHandlers={errorDialogHandlers}
+        errorDialogOpened={errorDialogOpened}
+        content={
+          <Box mb="sm">
+            <b>Document name</b> must:
+            <li> be 3-255 characters long</li>
+            <li>
+              not contain any other special{' '}
+              <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&-</span>
+            </li>
+            <li>
+              not start or end with ._ special{' '}
+              <span style={{ marginLeft: '1.25rem' }}>characters</span>
+            </li>
+          </Box>
+        }
+      />
     </>
   );
 }
