@@ -1,6 +1,5 @@
 import express from 'express'
 import * as fileHander from "fs";
-import { exec } from 'child_process';
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
@@ -12,8 +11,7 @@ import { blockType } from '../types';
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
 
-  //--------------cookie test-------------------------
-  if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
+  
     try{
       const {id} = req.params;
       const document = await documentModel.findById(id);
@@ -22,11 +20,8 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
       console.log("Get ERROR: ", error)
       res.sendStatus(400);
   }
-                res.status(201).send({msg: 'Access granted'});
-            }else{
-                res.status(401).send({msg: 'Acces denied!'});
-            }
-//--------------^cookie test^-------------------------
+          
+
 
 // bez ciasteczek poniżej
     // try{
@@ -108,11 +103,16 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
     //console.log("usrId1:", documentInstantion.userId)
     //console.log("usrId2:", await verifySession(req.cookies.auth))
     //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
+      //await extendSession(req.cookies.auth,res)
+
 
     // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
+
+    await compileTex('documentBase', id+'.tex')
+    clearCompilationFiles('documentBase', id+'.tex')
     res.setHeader('Content-type', 'application/pdf')
     fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
-
+ 
   // }else{
   //   res.status(403).send({msg: 'Not loged in!'});
   // }
@@ -137,7 +137,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
         //sprawdzenie czy id z sesji zgadza sie z id właściiciela dokumnetu
         if(logedUser===documentInstantion.userId ){
-          await extendSession(req.cookies.auth,res)
+          //await extendSession(req.cookies.auth,res)
 
           let document: (string | undefined)[] = await loadTexFile(id);
           //console.log(document)
@@ -179,10 +179,12 @@ export const createDocument = async (req: express.Request, res: express.Response
 
     try{
       const userId = await verifySession(req.cookies.auth)
+       const documentNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
 
       if(req.cookies.auth &&  userId){
         await extendSession(req.cookies.auth,res)
 
+        if(documentNameRegex.test(req.body.name)){
         const documentData= {name: req.body.name, 
                     userId: userId,
                     documentClass:  req.body.documentClass,
@@ -196,7 +198,7 @@ export const createDocument = async (req: express.Request, res: express.Response
 
 
         const content: (string |undefined)[] = [`\\documentclass{${savedDocument.documentClass}}`, , 
-          "\\begin{document}",, "\\end{document}"];
+          "\\begin{document}",'New document', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
         const path: string = "documentBase" 
         fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
@@ -204,7 +206,12 @@ export const createDocument = async (req: express.Request, res: express.Response
         //compileTex(path, fileName);
         //clearCompilationFiles(path, fileName);
 
-        res.status(201).json(savedDocument);}
+        res.status(201).json(savedDocument);
+      }
+      else{
+        res.sendStatus(403)
+      }
+    }
         else{
           res.sendStatus(401)
         }
@@ -407,15 +414,19 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
   try{
     const {id}=req.params
     const userId = await verifySession(req.cookies.auth)
+    const documentNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
    
     const document = await documentModel.findById(id)
    // console.log('userId',id)
     if(req.cookies.auth && userId && userId===document.userId){
       await extendSession(req.cookies.auth,res)
 
+      if(documentNameRegex.test(req.body.name)){
       const updatedDocument = await documentModel.findByIdAndUpdate(id, {name: req.body.name, lastUpdate: new Date(Date.now())})
-
       res.sendStatus(200)
+      }else{
+        res.sendStatus(403)
+      }
     
     }else{
       res.sendStatus(401)

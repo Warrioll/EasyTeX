@@ -60,3 +60,13 @@
     text-decoration: none;
     background-color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-6));
   }
+
+  .barLeftBorder{
+    margin-left: 0px;
+    border-left: 3px solid var(--mantine-color-gray-3);
+  }
+
+  .barRightBorder{
+    margin-right: 0px;
+    border-right: 3px solid var(--mantine-color-gray-3);
+  }

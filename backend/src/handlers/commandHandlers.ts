@@ -1,17 +1,28 @@
 import { exec } from 'child_process';
+import { promisify } from 'util';
+import { spawn } from 'child_process';
+
+const execPromisify = promisify(exec)
 
 //exec jest asynchroniczny!
 const execute = async (command: string):Promise<void> =>{
-    await exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`Error executing command: ${error.message}`);
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-        }
-        console.log(`stdout: ${stdout}`);
-        return ;
-      });
+  try{
+
+    
+    const {stdout, stderr} = await execPromisify(command);
+
+    if (stderr) {
+      console.log(`Error executing command: ${stderr}`);
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+    }
+    console.log(`stdout: ${stdout}`);
+    //return ;
+  }catch(error){
+    console.error("execution function error: ", error)
+  }
+
 } 
 
 
