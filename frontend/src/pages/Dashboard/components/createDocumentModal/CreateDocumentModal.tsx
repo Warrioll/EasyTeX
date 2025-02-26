@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
 
 type createDocumentModalPropsType = {
@@ -118,22 +119,24 @@ export default function CreateDocumentModal({
                   setDocumentType(value);
                   switch (value) {
                     case 'Article':
-                      setSegmentedControlColor('var(--mantine-color-blue-4)');
+                      setSegmentedControlColor(
+                        `var(--mantine-color-${documentColor('article')}-5)`
+                      );
                       break;
                     case 'Report':
-                      setSegmentedControlColor('var(--mantine-color-grape-4)');
+                      setSegmentedControlColor(`var(--mantine-color-${documentColor('report')}-5)`);
                       break;
                     case 'Book':
-                      setSegmentedControlColor('var(--mantine-color-teal-4)');
+                      setSegmentedControlColor(`var(--mantine-color-${documentColor('book')}-5)`);
                       break;
                     case 'Letter':
-                      setSegmentedControlColor('var(--mantine-color-lime-4)');
+                      setSegmentedControlColor(`var(--mantine-color-${documentColor('letter')}-5)`);
                       break;
                     case 'Presentation':
-                      setSegmentedControlColor('var(--mantine-color-orange-4)');
+                      setSegmentedControlColor(`var(--mantine-color-${documentColor('beamer')}-5)`);
                       break;
                     case 'Slides':
-                      setSegmentedControlColor('var(--mantine-color-pink-4)');
+                      setSegmentedControlColor(`var(--mantine-color-${documentColor('slides')}-5)`);
                       break;
                   }
                 }}

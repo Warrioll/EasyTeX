@@ -14,6 +14,7 @@ import {
   Title,
   useCombobox,
 } from '@mantine/core';
+import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './banners.module.css';
 
 type searchBannerPropsType = {
@@ -37,20 +38,8 @@ export default function SearchBanner({
     switch (comboboxValue) {
       case 'all':
         return 'All';
-      case 'article':
-        return 'Article';
-      case 'report':
-        return 'Report';
-      case 'book':
-        return 'Book';
-      case 'letter':
-        return 'Letter';
-      case 'beamer':
-        return 'Presentation';
-      case 'slides':
-        return 'Slide';
       default:
-        return '';
+        return documentMainLabels(comboboxValue);
     }
   };
 
@@ -58,20 +47,8 @@ export default function SearchBanner({
     switch (comboboxValue) {
       case 'all':
         return 'cyan';
-      case 'article':
-        return 'blue';
-      case 'report':
-        return 'grape';
-      case 'book':
-        return 'teal';
-      case 'letter':
-        return 'lime';
-      case 'beamer':
-        return 'orange';
-      case 'slides':
-        return 'pink';
       default:
-        return '';
+        return documentColor(comboboxValue);
     }
   };
 

@@ -37,18 +37,21 @@ import {
   HoverCard,
   Input,
   InputBase,
+  LoadingOverlay,
   rem,
   ScrollArea,
   SimpleGrid,
   Tabs,
   Text,
   ThemeIcon,
+  Tooltip,
   UnstyledButton,
   useCombobox,
   useMantineTheme,
 } from '@mantine/core';
 //import { MantineLogo } from '@mantinex/mantine-logo';
 import { useDisclosure } from '@mantine/hooks';
+import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
 import FontTab from './FontTab';
 // import {
@@ -155,12 +158,48 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
           </Group>
 
           <Center>
-            {documentName.documentClass} | {documentName.name}
+            <HoverCard
+              color="cyan"
+              position="bottom"
+              offset={5}
+              withArrow
+              arrowOffset={50}
+              arrowSize={7}
+              arrowRadius={2}
+            >
+              <HoverCard.Target>
+                <Button variant="transparent">
+                  <Text mr="xs" c={documentColor(documentName.documentClass)}>
+                    <b>{documentMainLabels(documentName.documentClass)}</b>
+                  </Text>{' '}
+                  |
+                  <Text className={classes.documentName} ml="xs" c="var(--mantine-color-gray-7)">
+                    <b> {documentName.name}</b>
+                  </Text>
+                </Button>
+              </HoverCard.Target>
+              <HoverCard.Dropdown>
+                <Box maw="20vw">
+                  <Flex>
+                    <b>Type:</b>
+                    <Text ml="lg" c={documentColor(documentName.documentClass)}>
+                      {documentMainLabels(documentName.documentClass)}
+                    </Text>
+                  </Flex>
+                  <Flex>
+                    <b>Name:</b>
+                    <Text ml="xs" c="var(--mantine-color-gray-7)">
+                      {documentName.name}
+                    </Text>
+                  </Flex>
+                </Box>
+              </HoverCard.Dropdown>
+            </HoverCard>
           </Center>
           <Group justify="end" gap="0px">
-            <Button variant="transparent">
+            {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
-            </Button>
+            </Button> */}
             <Button variant="transparent" leftSection={<RiFileDownloadLine />}>
               .tex
             </Button>

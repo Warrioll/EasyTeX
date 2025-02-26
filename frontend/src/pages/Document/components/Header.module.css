@@ -70,3 +70,9 @@
     margin-right: 0px;
     border-right: 3px solid var(--mantine-color-gray-3);
   }
+
+  .documentName{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }

@@ -28,6 +28,11 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import {
+  documentColor,
+  DocumentIcon,
+  documentMainLabels,
+} from '@/components/other/documentLabelsAndColors';
 import { documentClassType } from '@/Types';
 import classes from './documentCard.module.css';
 
@@ -60,52 +65,52 @@ export default function DocumentCard({
   const [renameError, setRenemeError] = useState<string | null>(null);
   const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
   console.log('doc, id: ', documentId);
-  const chooseCardContent = (): { typeLabel: string; icon: any; color: string } => {
-    // return <RiArticleFill size={50} stroke={2} color={theme.colors.blue[6]} />;
+  // const chooseCardContent = (): { typeLabel: string; icon: any; color: string } => {
+  //   // return <RiArticleFill size={50} stroke={2} color={theme.colors.blue[6]} />;
 
-    switch (type) {
-      case 'article':
-        return {
-          typeLabel: 'Article',
-          icon: <RiArticleFill size={50} color="var(--mantine-color-blue-5)" />,
-          color: 'var(--mantine-color-blue-5)',
-        };
-      case 'book':
-        return {
-          typeLabel: 'Book',
-          icon: <RiBook2Fill size={50} color="var(--mantine-color-teal-5)" />,
-          color: 'var(--mantine-color-teal-5)',
-        };
-      case 'beamer':
-        return {
-          typeLabel: 'Presentation',
-          icon: <PiPresentationChartFill size={50} color="var(--mantine-color-orange-5)" />,
-          color: 'var(--mantine-color-orange-5)',
-        };
-      case 'report':
-        return {
-          typeLabel: 'Report',
-          icon: <BiSolidReport size={50} color="var(--mantine-color-grape-5)" />,
-          color: 'var(--mantine-color-grape-5)',
-        };
-      case 'letter':
-        return {
-          typeLabel: 'Letter',
-          icon: <MdEmail size={50} color="var(--mantine-color-lime-5)" />,
-          color: 'var(--mantine-color-lime-5)',
-        };
-      case 'slides':
-        return {
-          typeLabel: 'Slides',
-          icon: <RiSlideshow2Fill size={50} color="var(--mantine-color-pink-5)" />,
-          color: 'var(--mantine-color-pink-5)',
-        };
-      default:
-        return { typeLabel: '', icon: null, color: '' };
-    }
-  };
+  //   switch (type) {
+  //     case 'article':
+  //       return {
+  //         typeLabel: 'Article',
+  //         icon: <RiArticleFill size={50} color="var(--mantine-color-blue-5)" />,
+  //         color: 'var(--mantine-color-blue-5)',
+  //       };
+  //     case 'book':
+  //       return {
+  //         typeLabel: 'Book',
+  //         icon: <RiBook2Fill size={50} color="var(--mantine-color-teal-5)" />,
+  //         color: 'var(--mantine-color-teal-5)',
+  //       };
+  //     case 'beamer':
+  //       return {
+  //         typeLabel: 'Presentation',
+  //         icon: <PiPresentationChartFill size={50} color="var(--mantine-color-orange-5)" />,
+  //         color: 'var(--mantine-color-orange-5)',
+  //       };
+  //     case 'report':
+  //       return {
+  //         typeLabel: 'Report',
+  //         icon: <BiSolidReport size={50} color="var(--mantine-color-grape-5)" />,
+  //         color: 'var(--mantine-color-grape-5)',
+  //       };
+  //     case 'letter':
+  //       return {
+  //         typeLabel: 'Letter',
+  //         icon: <MdEmail size={50} color="var(--mantine-color-lime-5)" />,
+  //         color: 'var(--mantine-color-lime-5)',
+  //       };
+  //     case 'slides':
+  //       return {
+  //         typeLabel: 'Slides',
+  //         icon: <RiSlideshow2Fill size={50} color="var(--mantine-color-pink-5)" />,
+  //         color: 'var(--mantine-color-pink-5)',
+  //       };
+  //     default:
+  //       return { typeLabel: '', icon: null, color: '' };
+  //   }
+  // };
 
-  const cardContent = chooseCardContent();
+  // const cardContent = chooseCardContent();
 
   const creationWholeDateSplited: Array<string> = creationDate.toString().split('T');
   const creationDateSplited: Array<string> = creationWholeDateSplited[0].split('-').reverse();
@@ -150,6 +155,9 @@ export default function DocumentCard({
     }
   };
 
+  const choosenDocumentColor = `var(--mantine-color-${documentColor(type)}-5)`;
+  const choosenDocumentMainLabel = documentMainLabels(type);
+
   return (
     <>
       <Card
@@ -163,7 +171,7 @@ export default function DocumentCard({
           window.location.href = `http://localhost:5173/document/${documentId}`;
         }}
         bd={cardBorder}
-        onMouseEnter={() => setCardBorder(`1px solid ${cardContent.color}`)}
+        onMouseEnter={() => setCardBorder(`1px solid ${choosenDocumentColor}`)}
         onMouseLeave={() =>
           setCardBorder(
             `1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))`
@@ -173,7 +181,10 @@ export default function DocumentCard({
       >
         {/* <icon size={50} stroke={2} color={theme.colors.blue[6]} /> */}
         <Group justify="space-between">
-          {cardContent.icon}
+          {
+            //cardContent.icon
+          }
+          <DocumentIcon type={type} color={null} size={50} />
           <Menu position="right-start" offset={-20}>
             <Menu.Target>
               <Button fz="xl" c="black" variant="transparent" className={classes.cardMoreButton}>
@@ -218,7 +229,7 @@ export default function DocumentCard({
         </Group>
 
         <Anchor
-          onMouseEnter={() => setAnchorColor(cardContent.color)}
+          onMouseEnter={() => setAnchorColor(choosenDocumentColor)}
           onMouseLeave={() => setAnchorColor('black')}
           fz="lg"
           c={anchorColor}
@@ -229,9 +240,9 @@ export default function DocumentCard({
         >
           {title}
         </Anchor>
-        <Box className={classes.underline} bg={cardContent.color} />
+        <Box className={classes.underline} bg={choosenDocumentColor} />
         <Text fz="sm" c="dimmed" mt="sm" mb="0.3rem">
-          <b>Type: </b> {cardContent.typeLabel}
+          <b>Type: </b> {choosenDocumentMainLabel}
         </Text>
         <Text fz="sm" c="dimmed" mb="0.3rem">
           <b>Created: </b> {creationDateString}
@@ -325,7 +336,7 @@ export default function DocumentCard({
               <b>Name: </b>
               {title}
               <b>Type: </b>
-              {cardContent.typeLabel}
+              {choosenDocumentMainLabel}
               <b>Created: </b>
               {creationDateString}
               <b>Last update: </b>

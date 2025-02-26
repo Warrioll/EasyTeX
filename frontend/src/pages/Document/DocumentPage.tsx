@@ -25,6 +25,7 @@ import {
   Grid,
   Group,
   Input,
+  LoadingOverlay,
   Paper,
   ScrollArea,
   Stack,
@@ -121,22 +122,22 @@ export default function DocumentPage() {
     //console.log('OnBlur', editorContent);
   };
 
-  const sendChanges = async () => {
-    const response = await axios.put(
-      `http://localhost:8100/document/documentContent/${id}`,
-      sectionsContent
-    );
+  // const sendChanges = async () => {
+  //   const response = await axios.put(
+  //     `http://localhost:8100/document/documentContent/${id}`,
+  //     sectionsContent
+  //   );
 
-    // await setPdfLoaded(false);
-    // const response = await axios.put(
-    //   'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
-    //   { sections: sectionsContent }
-    // );
-    // console.log(response);
-    // //kurka przy 800ms działa ale to za długo
-    // //await delay(800);
-    // await setPdfLoaded(true);
-  };
+  // await setPdfLoaded(false);
+  // const response = await axios.put(
+  //   'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
+  //   { sections: sectionsContent }
+  // );
+  // console.log(response);
+  // //kurka przy 800ms działa ale to za długo
+  // //await delay(800);
+  // await setPdfLoaded(true);
+  //}
 
   // const addSection = () => {
   //   setSectionsContent([...sectionsContent, { head: 'New Chapter', body: '<u>Write</u> here...' }]);
@@ -172,18 +173,52 @@ export default function DocumentPage() {
   };
 
   const reloadPdf = async () => {
+    // await setTimeout(() => {
+    //   console.log('timeout');
+    // }, 5000);
+  };
+
+  const setPdfFile = async () => {
+    //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
+    //console.log()
     await setPdfLoaded(false);
-    await setTimeout(() => {
-      console.log('timeout');
-    }, 5000);
+    const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+      withCredentials: true,
+      responseType: 'blob',
+      headers: {
+        'Content-Type': 'application/pdf',
+      },
+    });
+
+    setPdf(URL.createObjectURL(await response.data));
+
+    const document = await pdfjs.getDocument(pdfLink).promise;
+    setPagesNumber(document.numPages);
+    console.log('pages:', pagesNumber);
     await setPdfLoaded(true);
+  };
+
+  const sendChanges = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8100/document/documentContent/${id}`,
+        sectionsContent,
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        const reload = await setPdfFile();
+      }
+    } catch (error) {
+      console.log('save and reaload error:', error);
+    }
   };
 
   const editFunctions = {
     // addSection,
     addTextfield,
     sendChanges,
-    reloadPdf,
+    reloadPdf: setPdfFile,
     addSection,
     //bold,
   };
@@ -192,26 +227,30 @@ export default function DocumentPage() {
     pdfZoomValue[1](1.4 * Number(pdfZoom[0]));
   }, [pdfZoom[0]]);
 
+  // useEffect(() => {
+  //   const setPdfFile = async () => {
+  //     //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
+  //     const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+  //       withCredentials: true,
+  //       responseType: 'blob',
+  //       headers: {
+  //         'Content-Type': 'application/pdf',
+  //       },
+  //     });
+
+  //     setPdf(URL.createObjectURL(await response.data));
+
+  //     const document = await pdfjs.getDocument(pdfLink).promise;
+  //     setPagesNumber(document.numPages);
+  //     console.log('pages:', pagesNumber);
+  //   };
+
+  //   setPdfFile();
+  // }, [pdfLoaded]);
+
   useEffect(() => {
-    const setPdfFile = async () => {
-      //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
-      const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
-        withCredentials: true,
-        responseType: 'blob',
-        headers: {
-          'Content-Type': 'application/pdf',
-        },
-      });
-
-      setPdf(URL.createObjectURL(await response.data));
-
-      const document = await pdfjs.getDocument(pdfLink).promise;
-      setPagesNumber(document.numPages);
-      console.log('pages:', pagesNumber);
-    };
-
     setPdfFile();
-  }, [pdfLoaded]);
+  }, []);
 
   useEffect(() => {
     const setBlocks = async () => {
@@ -298,10 +337,17 @@ export default function DocumentPage() {
             {/* </Grid.Col> */}
           </Center>
         </ScrollArea>
-        <ScrollArea h="90vh" w="100%">
-          {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
-          <Center m="xl" p={0}>
-            {/* {pdfLoaded ? (
+        <Box w="100vw" pos="relative">
+          <LoadingOverlay
+            visible={!pdfLoaded}
+            zIndex={1000}
+            overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
+            loaderProps={{ color: 'cyan' }}
+          />
+          <ScrollArea h="90vh">
+            {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+            <Center m="xl" p={0}>
+              {/* {pdfLoaded ? (
                 Array(pagesNumber)
                   .fill(1)
                   .map((x, idx) => (
@@ -327,26 +373,27 @@ export default function DocumentPage() {
                 <>PDF Not found</>
               )} */}
 
-            <Document
-              file={pdf}
-              //onLoadSuccess={onDocumentLoadSuccess}
-              //options={options}
-            >
-              {Array.from(new Array(pagesNumber), (_el, index) => (
-                <Page
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  className={pdfClasses.page}
-                  scale={pdfZoomValue[0]}
-                  // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
-                />
-              ))}
-            </Document>
-          </Center>
+              <Document
+                file={pdf}
+                //onLoadSuccess={onDocumentLoadSuccess}
+                //options={options}
+              >
+                {Array.from(new Array(pagesNumber), (_el, index) => (
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    className={pdfClasses.page}
+                    scale={pdfZoomValue[0]}
+                    // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                  />
+                ))}
+              </Document>
+            </Center>
 
-          {/* </Grid.Col> */}
-          {/* </Grid> */}
-        </ScrollArea>
+            {/* </Grid.Col> */}
+            {/* </Grid> */}
+          </ScrollArea>
+        </Box>
       </Split>
     </>
   );

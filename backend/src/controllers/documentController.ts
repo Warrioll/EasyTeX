@@ -99,7 +99,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
     const documentInstantion = await documentModel.findById(id)
 
 
-    //console.log("cookie:", req.cookies.auth)
+    //console.log("cookie:", req.cookies.auth)  
     //console.log("usrId1:", documentInstantion.userId)
     //console.log("usrId2:", await verifySession(req.cookies.auth))
     //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
@@ -111,6 +111,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
     await compileTex('documentBase', id+'.tex')
     clearCompilationFiles('documentBase', id+'.tex')
     res.setHeader('Content-type', 'application/pdf')
+    await extendSession(req.cookies.auth,res)
     fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
  
   // }else{
@@ -398,8 +399,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
      document.push('\\end{document}')
     console.log(document);
     fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
-    await compileTex('documentBase', id+'.tex')
-    clearCompilationFiles('documentBase', id+'.tex')
+    //console.log('saved, now compiling...')
+    //await compileTex('documentBase', id+'.tex')
+   // clearCompilationFiles('documentBase', id+'.tex')
 
     await extendSession(req.cookies.auth,res )
     res.sendStatus(200);

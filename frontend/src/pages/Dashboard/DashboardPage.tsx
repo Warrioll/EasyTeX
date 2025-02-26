@@ -7,6 +7,12 @@ import { RiArticleFill, RiBook2Fill, RiSlideshow2Fill } from 'react-icons/ri';
 import { Box, Button, Container, Flex, ScrollArea, SimpleGrid, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
+import {
+  documentColor,
+  DocumentIcon,
+  documentMainLabels,
+  documentPluralNonCapitalLabels,
+} from '@/components/other/documentLabelsAndColors';
 import BasicBanner from './components/banners/BasicBanner';
 import SearchBanner from './components/banners/searchBanner';
 import CreateDocumentModal from './components/createDocumentModal/CreateDocumentModal';
@@ -85,60 +91,60 @@ export default function DashboardPage() {
             createDocumentModal={createDocumentModal}
           />
         );
-      case 'article':
-        return (
-          <BasicBanner
-            color="blue"
-            icon={<RiArticleFill />}
-            documentClassName="articles"
-            createDocumentModal={createDocumentModal}
-          />
-        );
-      case 'report':
-        return (
-          <BasicBanner
-            color="grape"
-            icon={<BiSolidReport />}
-            documentClassName="reports"
-            createDocumentModal={createDocumentModal}
-          />
-        ); //basicBanner('grape', <BiSolidReport />, 'reports');
-      case 'book':
-        return (
-          <BasicBanner
-            color="teal"
-            icon={<RiBook2Fill />}
-            documentClassName="books"
-            createDocumentModal={createDocumentModal}
-          />
-        ); //basicBanner('teal', <RiBook2Fill />, 'books');
-      case 'letter':
-        return (
-          <BasicBanner
-            color="lime"
-            icon={<MdEmail />}
-            documentClassName="letters"
-            createDocumentModal={createDocumentModal}
-          />
-        ); //basicBanner('lime', <MdEmail />, 'letters');
-      case 'beamer':
-        return (
-          <BasicBanner
-            color="orange"
-            icon={<PiPresentationChartFill />}
-            documentClassName="presentations"
-            createDocumentModal={createDocumentModal}
-          />
-        ); //basicBanner('orange', <PiPresentationChartFill />, 'presentations');
-      case 'slides':
-        return (
-          <BasicBanner
-            color="pink"
-            icon={<RiSlideshow2Fill />}
-            documentClassName="slides"
-            createDocumentModal={createDocumentModal}
-          />
-        ); //basicBanner('pink', <RiSlideshow2Fill />, 'slides');
+      // case 'article':
+      //   return (
+      //     <BasicBanner
+      //       color="blue"
+      //       icon={<RiArticleFill />}
+      //       documentClassName="articles"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   );
+      // case 'report':
+      //   return (
+      //     <BasicBanner
+      //       color="grape"
+      //       icon={<BiSolidReport />}
+      //       documentClassName="reports"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   ); //basicBanner('grape', <BiSolidReport />, 'reports');
+      // case 'book':
+      //   return (
+      //     <BasicBanner
+      //       color="teal"
+      //       icon={<RiBook2Fill />}
+      //       documentClassName="books"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   ); //basicBanner('teal', <RiBook2Fill />, 'books');
+      // case 'letter':
+      //   return (
+      //     <BasicBanner
+      //       color="lime"
+      //       icon={<MdEmail />}
+      //       documentClassName="letters"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   ); //basicBanner('lime', <MdEmail />, 'letters');
+      // case 'beamer':
+      //   return (
+      //     <BasicBanner
+      //       color="orange"
+      //       icon={<PiPresentationChartFill />}
+      //       documentClassName="presentations"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   ); //basicBanner('orange', <PiPresentationChartFill />, 'presentations');
+      // case 'slides':
+      //   return (
+      //     <BasicBanner
+      //       color="pink"
+      //       icon={<RiSlideshow2Fill />}
+      //       documentClassName="slides"
+      //       createDocumentModal={createDocumentModal}
+      //     />
+      //   ); //basicBanner('pink', <RiSlideshow2Fill />, 'slides');
       case 'search':
         return (
           <SearchBanner
@@ -148,7 +154,14 @@ export default function DashboardPage() {
           />
         );
       default:
-        return <></>;
+        return (
+          <BasicBanner
+            color={documentColor(activeTab[0])}
+            icon={<DocumentIcon type={activeTab[0]} color="var(--mantine-color-white)" size="" />}
+            documentClassName={documentPluralNonCapitalLabels(activeTab[0])}
+            createDocumentModal={createDocumentModal}
+          />
+        );
     }
   };
 
@@ -156,20 +169,8 @@ export default function DashboardPage() {
     switch (activeTab[0]) {
       case 'all':
         return 'documents';
-      case 'article':
-        return 'articles';
-      case 'report':
-        return 'reports';
-      case 'book':
-        return 'books';
-      case 'letter':
-        return 'letters';
-      case 'beamer':
-        return 'presentations';
-      case 'slides':
-        return 'slides';
       default:
-        return '';
+        return documentPluralNonCapitalLabels(activeTab[0]);
     }
   };
 
