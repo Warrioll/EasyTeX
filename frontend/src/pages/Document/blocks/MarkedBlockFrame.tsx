@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, ReactElement, SetStateAction } from 'react';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { LuHeading1, LuHeading2 } from 'react-icons/lu';
@@ -21,6 +21,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import { IoMdMore } from 'react-icons/io';
 import styles from './blocks.module.css';
 
 type MarkedBlockFrameProps = {
@@ -56,17 +57,78 @@ export default function MarkedBlockFrame({
     setSectionsContent(blocks);
   };
 
+
+  const frameToolBar = (addBlockFunction: (block: blockType)=> void): ReactElement=>{
+    return( <>
+      {idx === activeSection ? (
+        <Flex justify="space-between">
+          <Stack w="6vw"  ml='0px' justify="flex-end" >
+     
+        <Badge m="xs" ml='md' mt='sm' mr={0} radius="md" color="cyan" variant="transparent">
+          {blockName}
+        </Badge>
+    </Stack>
+    <Flex gap="0px">
+          <Menu>
+            <Menu.Target>
+              <Button variant="transparent" size="compact-xs"  mt="xs" w='2rem' h='1.5rem' m='0px'>
+                <MdOutlineAdd />
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
+                leftSection={<LuHeading1 />}
+              >
+                Section
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => addBlockFunction({ typeOfBlock: 'textfield', blockContent: '' })}
+                leftSection={<PiTextTBold />}
+              >
+                Textfield
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+          <Flex>
+        
+          <Menu position="left-start">
+            <Menu.Target>
+              <Button variant="transparent" mt="xs" size="compact-sm"  w='2rem' h='1.5rem' m='0px'>
+                <IoMdMore />
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item leftSection={<FaArrowUp />}>Move up</Menu.Item>
+              <Menu.Item leftSection={<FaArrowDown />}>Move down</Menu.Item>
+              <Menu.Item leftSection={<FaRegTrashAlt />}>Delete Block</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+
+          <Button
+           variant="transparent"
+            size="compact-sm"
+            mt="xs"
+            onClick={() => setActiveSecion(0)}
+            className={styles.stickyElement}
+           
+            w='2rem' h='1.5rem' m='0px'
+          >
+            <TbForbid2 />
+          </Button>
+        
+ 
+    </Flex>
+    </Flex>
+        </Flex>
+      ) : (
+        <></>
+      )} </>)
+  }
+
   return (
     <Flex>
-      <Stack w="6vw" align="flex-end" pr="xs">
-        {idx === activeSection ? (
-          <Badge mt="lg" mr={0} radius="md" color="cyan" variant="light">
-            {blockName}
-          </Badge>
-        ) : (
-          <></>
-        )}
-      </Stack>
+      
 
       <Paper
         radius="0px"
@@ -76,38 +138,14 @@ export default function MarkedBlockFrame({
         w="40vw"
         className={idx === activeSection ? styles.blockFrameStyle : ''}
       >
-        {idx === activeSection ? (
-          <Flex justify="center">
-            <Menu>
-              <Menu.Target>
-                <Button variant="transparent" size="compact-xs" m="xs">
-                  <MdOutlineAdd /> Add Block
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  onClick={() => addBlockAbove({ typeOfBlock: 'section', blockContent: '' })}
-                  leftSection={<LuHeading1 />}
-                >
-                  Section
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() => addBlockAbove({ typeOfBlock: 'textfield', blockContent: '' })}
-                  leftSection={<PiTextTBold />}
-                >
-                  Textfield
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Flex>
-        ) : (
-          <></>
-        )}
+        
+     {frameToolBar(addBlockAbove)}
         <Box className={idx === activeSection ? styles.sectionBlockStyle : ''} w="100%" p="0px">
           {children}
         </Box>
-        {idx === activeSection ? (
-          <Flex justify="center">
+        {frameToolBar(addBlockBelow)}
+        {/* {idx === activeSection ? (
+          <Flex justify="center" >
             <Menu>
               <Menu.Target>
                 <Button variant="transparent" size="compact-xs" m="xs">
@@ -132,46 +170,10 @@ export default function MarkedBlockFrame({
           </Flex>
         ) : (
           <></>
-        )}
+        )} */}
       </Paper>
 
-      <Box w="3rem">
-        {idx === activeSection ? (
-          //     <Stack
-          //   align="flex-end"
-          //   justify="flex-start"
-          //   gap="0%"
-          // >
-          <Stack gap="xs" m="10%">
-            <Menu position="left-start">
-              <Menu.Target>
-                <Button variant="light" mt="xs" size="compact-md">
-                  <FiMoreHorizontal />
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item leftSection={<FaArrowUp />}>Move up</Menu.Item>
-                <Menu.Item leftSection={<FaArrowDown />}>Move down</Menu.Item>
-                <Menu.Item leftSection={<FaRegTrashAlt />}>Delete Block</Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-
-            <Button
-              variant="light"
-              size="compact-md"
-              onClick={() => setActiveSecion(0)}
-              className={styles.stickyElement}
-            >
-              <TbForbid2 />
-            </Button>
-          </Stack>
-        ) : (
-          // <Button variant="format" disabled style={{ opacity: '0%' }}>
-          //   <FiMoreHorizontal />
-          // </Button>
-          <></>
-        )}
-      </Box>
+     
     </Flex>
   );
 }
