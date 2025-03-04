@@ -71,7 +71,9 @@ export default function DocumentPage() {
   const [pagesNumber, setPagesNumber] = useState<number>(0);
   const [pdf, setPdf] = useState<Any>(null);
   const pdfZoom = useState<string | null>('1');
+  const workspaceZoom = useState<string | null>('1');
   const pdfZoomValue = useState<number>(1);
+  const workspaceZoomValue = useState<number>(1);
 
   const { id } = useParams();
 
@@ -162,12 +164,19 @@ export default function DocumentPage() {
     console.log(sectionsContent);
   };
 
+  //puste text fieldy się nie wyświetlają!!!
   const addTextfield = () => {
     if (activeSection === 0) {
-      setSectionsContent([...sectionsContent, { typeOfBlock: 'textfield', blockContent: '' }]);
+      setSectionsContent([
+        ...sectionsContent,
+        { typeOfBlock: 'textfield', blockContent: 'New textfield' },
+      ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'textfield', blockContent: '' });
+      blocks.splice(activeSection + 1, 0, {
+        typeOfBlock: 'textfield',
+        blockContent: 'New textfield',
+      });
       setSectionsContent(blocks);
     }
   };
@@ -226,6 +235,10 @@ export default function DocumentPage() {
   useEffect(() => {
     pdfZoomValue[1](1.4 * Number(pdfZoom[0]));
   }, [pdfZoom[0]]);
+
+  useEffect(() => {
+    workspaceZoomValue[1](Number(workspaceZoom[0]));
+  }, [workspaceZoom[0]]);
 
   // useEffect(() => {
   //   const setPdfFile = async () => {
@@ -305,7 +318,9 @@ export default function DocumentPage() {
         editor={editor}
         saveElementChanges={saveElementChanges}
         pdfZoom={pdfZoom}
+        workspaceZoom={workspaceZoom}
       />
+
       <Split
         className={classes.bar}
         lineBar
@@ -318,25 +333,32 @@ export default function DocumentPage() {
           );
         }}
       >
-        <ScrollArea
-          h="90vh"
-          w="100%"
-          offsetScrollbars //type="always"
-        >
-          {/* <Grid> */}
-          {/* <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
-          <Center p={0} h="100%">
-            <Stack h="100%" align="flex-end" gap="0%" pt="xl">
-              {blocksLoaded && sectionsContent.length > 0 ? (
-                sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
-              ) : (
-                <></>
-              )}
-            </Stack>
-            {/* </Paper> */}
-            {/* </Grid.Col> */}
-          </Center>
-        </ScrollArea>
+        <Center w="100vw" h="90vh" p="0px">
+          <ScrollArea h="100%" w="100%">
+            {/* <Grid> */}
+            {/* <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+            <Box
+              h="100%"
+              w="100%"
+              m="xl"
+              style={{
+                transform: `scale(${workspaceZoomValue[0]})`,
+                transformOrigin: 'top left',
+              }}
+              p="0px"
+            >
+              <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                {blocksLoaded && sectionsContent.length > 0 ? (
+                  sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
+                ) : (
+                  <></>
+                )}
+              </Stack>
+              {/* </Paper> */}
+              {/* </Grid.Col> */}
+            </Box>
+          </ScrollArea>
+        </Center>
         <Box w="100vw" pos="relative">
           <LoadingOverlay
             visible={!pdfLoaded}

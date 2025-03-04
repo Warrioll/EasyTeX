@@ -30,6 +30,11 @@ export const compileTex = async (path:string, fileName: string): Promise<void>=>
     await execute(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
 }
 
-export const clearCompilationFiles = (path:string, fileName: string): void=>{
-    execute(`latexmk -c -cd -output-directory=${path} ${ fileName}`)
+export const clearCompilationFiles = async (path:string, fileName: string): Promise<void>=>{
+    await execute(`latexmk -c -cd -output-directory=${path} ${ fileName}`)
+}
+
+export const deleteDocumentFiles = async (path:string, fileId: string) : Promise<void>=>{
+  await execute(`rm ${[path, fileId.concat('.pdf')].join("/")}`) 
+  await execute(`rm ${[path, fileId.concat('.tex')].join("/")}`)
 }

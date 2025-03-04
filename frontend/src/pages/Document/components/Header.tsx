@@ -54,6 +54,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
 import FontTab from './FontTab';
+import ZoomTools from './ZoomTools';
 // import {
 //   IconNotification,
 //   IconCode,
@@ -70,9 +71,16 @@ type headerProps = {
   editor: Editor;
   saveElementChanges: () => void;
   pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
+  workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
 };
 
-const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChanges, pdfZoom }) => {
+const Header: React.FC<headerProps> = ({
+  editFunctions,
+  editor,
+  saveElementChanges,
+  pdfZoom,
+  workspaceZoom,
+}) => {
   //const theme = useMantineTheme();
 
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
@@ -89,17 +97,82 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
 
   const { id } = useParams();
 
-  const [zoomValue, setZoomValue] = pdfZoom;
+  //const [zoomValue, setZoomValue] = pdfZoom;
 
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-  const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-  const options = zoomValuesList.map((item) => (
-    <Combobox.Option value={item.toString()} key={item.toString()}>
-      {item * 100}%
-    </Combobox.Option>
-  ));
+  // const combobox = useCombobox({
+  //   onDropdownClose: () => combobox.resetSelectedOption(),
+  // });
+  // const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+  // const options = zoomValuesList.map((item) => (
+  //   <Combobox.Option value={item.toString()} key={item.toString()}>
+  //     {item * 100}%
+  //   </Combobox.Option>
+  // ));
+
+  const insertTools = (
+    <>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        fw="bold"
+        onClick={editFunctions.addSection}
+      >
+        <MdOutlineAdd />
+        <LuHeading1 />
+      </Button>
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSection}>
+        <MdOutlineAdd />
+        <LuHeading2 />
+      </Button>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addTextfield}
+      >
+        <MdOutlineAdd />
+        <PiTextTBold />
+      </Button>
+    </>
+  );
+
+  const fontTools = (
+    <FontTab
+      editFunctions={editFunctions}
+      editor={editor}
+      saveElementChanges={saveElementChanges}
+    />
+  );
+
+  const viewTools = (
+    <>
+      <ZoomTools zoomState={workspaceZoom} />
+    </>
+  );
+
+  const modifyTools = <>Modify tools</>;
+
+  const tabs = [
+    {
+      value: 'insert',
+      label: 'Insert',
+      tools: insertTools,
+    },
+    {
+      value: 'font',
+      label: 'Font',
+      tools: fontTools,
+    },
+    {
+      value: 'view',
+      label: 'View',
+      tools: viewTools,
+    },
+    {
+      value: 'modify',
+      label: 'Modify',
+      tools: modifyTools,
+    },
+  ];
 
   useEffect(() => {
     const getTitle = async () => {
@@ -139,16 +212,11 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
           </Group>
           <Group h="100%">
             <Tabs.List ref={setRootRef} className={classes.list}>
-              <Tabs.Tab value="file" ref={setControlRef('file')} className={classes.tab}>
-                File
-              </Tabs.Tab>
-              <Tabs.Tab value="insert" ref={setControlRef('insert')} className={classes.tab}>
-                Insert
-              </Tabs.Tab>
-              <Tabs.Tab value="font" ref={setControlRef('font')} className={classes.tab}>
-                Font
-              </Tabs.Tab>
-
+              {tabs.map((tab) => (
+                <Tabs.Tab value={tab.value} ref={setControlRef(tab.value)} className={classes.tab}>
+                  {tab.label}
+                </Tabs.Tab>
+              ))}
               <FloatingIndicator
                 target={value ? controlsRefs[value] : null}
                 parent={rootRef}
@@ -223,49 +291,9 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
             mr="xs"
             className={classes.band}
           >
-            <Tabs.Panel value="file">File tools</Tabs.Panel>
-
-            <Tabs.Panel value="insert">
-              <Button
-                variant="format"
-                fz="var(--mantine-font-size-lg)"
-                fw="bold"
-                onClick={editFunctions.addSection}
-              >
-                <MdOutlineAdd />
-                <LuHeading1 />
-              </Button>
-              <Button
-                variant="format"
-                fz="var(--mantine-font-size-lg)"
-                onClick={editFunctions.addSection}
-              >
-                <MdOutlineAdd />
-                <LuHeading2 />
-              </Button>
-              <Button
-                variant="format"
-                fz="var(--mantine-font-size-lg)"
-                onClick={editFunctions.addTextfield}
-              >
-                <MdOutlineAdd />
-                <PiTextTBold />
-              </Button>
-              {/* <Button variant="format" onClick={editFunctions.sendChanges}>
-                Save Changes
-              </Button>
-              <Button variant="format" onClick={editFunctions.reloadPdf}>
-                Reload PDF
-              </Button> */}
-            </Tabs.Panel>
-
-            <Tabs.Panel value="font">
-              <FontTab
-                editFunctions={editFunctions}
-                editor={editor}
-                saveElementChanges={saveElementChanges}
-              />
-            </Tabs.Panel>
+            {tabs.map((tab) => (
+              <Tabs.Panel value={tab.value}>{tab.tools}</Tabs.Panel>
+            ))}
           </Center>
           <Center
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
@@ -291,61 +319,7 @@ const Header: React.FC<headerProps> = ({ editFunctions, editor, saveElementChang
                 Reload PDF
               </Button>
             </Box>
-            <Flex ml="2rem" mr="2rem">
-              <Button
-                variant="format"
-                fz="var(--mantine-font-size-lg)"
-                onClick={() => {
-                  const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) - 1;
-                  if (zoomIdx >= 0) {
-                    setZoomValue(zoomValuesList[zoomIdx].toString());
-                  }
-                }}
-              >
-                <FiZoomOut />
-              </Button>
-              <Combobox
-                store={combobox}
-                onOptionSubmit={(val) => {
-                  setZoomValue(val);
-                  combobox.closeDropdown();
-                }}
-              >
-                <Combobox.Target>
-                  <InputBase
-                    w="5rem"
-                    component="button"
-                    type="button"
-                    pointer
-                    rightSection={<Combobox.Chevron />}
-                    rightSectionPointerEvents="none"
-                    onClick={() => combobox.toggleDropdown()}
-                    variant="filled"
-                    p="0px"
-                  >
-                    {(Number(zoomValue) * 100).toString().concat('%') || (
-                      <Input.Placeholder>Pick value</Input.Placeholder>
-                    )}
-                  </InputBase>
-                </Combobox.Target>
-
-                <Combobox.Dropdown>
-                  <Combobox.Options>{options}</Combobox.Options>
-                </Combobox.Dropdown>
-              </Combobox>
-              <Button
-                variant="format"
-                fz="var(--mantine-font-size-lg)"
-                onClick={() => {
-                  const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) + 1;
-                  if (zoomIdx < zoomValuesList.length) {
-                    setZoomValue(zoomValuesList[zoomIdx].toString());
-                  }
-                }}
-              >
-                <FiZoomIn />
-              </Button>
-            </Flex>
+            <ZoomTools zoomState={pdfZoom} />
           </Center>
         </SimpleGrid>
 

@@ -1,7 +1,7 @@
 import express from 'express'
 import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
-import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
+import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
 import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/toBlockConverters';
@@ -376,6 +376,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
   const blocks = req.body as blockType[]; 
 
   console.log(blocks);
+  
 
   let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
     switch(block.typeOfBlock){
@@ -399,6 +400,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
      document.push('\\end{document}')
     console.log(document);
     fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
+
+    const updatedDocument = await documentModel.findByIdAndUpdate(id, {lastUpdate: new Date(Date.now())})
+
     //console.log('saved, now compiling...')
     //await compileTex('documentBase', id+'.tex')
    // clearCompilationFiles('documentBase', id+'.tex')
@@ -448,6 +452,7 @@ export const deleteDocument  = async (req: express.Request, res: express.Respons
     if(req.cookies.auth && userId && userId===document.userId){
       await extendSession(req.cookies.auth,res)
 
+      await deleteDocumentFiles('documentBase',id)
       const updatedDocument = await documentModel.findByIdAndDelete(id)
 
       res.sendStatus(200)
