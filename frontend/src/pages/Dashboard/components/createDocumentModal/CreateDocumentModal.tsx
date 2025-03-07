@@ -31,7 +31,7 @@ export default function CreateDocumentModal({
   const [documentType, setDocumentType] = useState('Article');
   //const [createModalOpened, createModalHandlers] = useDisclosure(false);
   const [segmentedControlColor, setSegmentedControlColor] = useState<string>(
-    'var(--mantine-color-cyan-4)'
+    'var(--mantine-color-blue-5)'
   );
   const [documentName, setDocumentName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);

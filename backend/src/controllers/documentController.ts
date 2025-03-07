@@ -3,8 +3,8 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex } from '../handlers/toTexConverters';
-import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/toBlockConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex } from '../handlers/toTexConverters';
+import { sectionToBlock, documentclassToBlock, textfieldToBlock, subsectionToBlock, subsubsectionToBlock } from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
 import { blockType } from '../types';
 
@@ -147,7 +147,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             //console.log(line)
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
             if(line.includes('\\section')) return  sectionToBlock(line);
-            //if(line.includes('\\subsection')) return  subsectionToBlock(item);
+            if(line.includes('\\subsection')) return  subsectionToBlock(line);
+            if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
             if(line==='') return nullBlock;
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
@@ -388,6 +389,8 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
        return sectionToTex(block.blockContent as string);
       case 'subsection':
        return subsectionToTex(block.blockContent as string);
+       case 'subsubsection':
+        return subsubsectionToTex(block.blockContent as string);
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }

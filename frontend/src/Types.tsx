@@ -2,6 +2,7 @@ export type typeOfBlockType =
   | 'textfield'
   | 'section'
   | 'subsection'
+   | 'subsubsection'
   | 'documentclass'
   | null
   | undefined;

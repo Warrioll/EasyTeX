@@ -41,6 +41,9 @@ import TextfieldBlock from './blocks/TextfieldBlock';
 import Header from './components/Header';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
+import SubsectionBlock from './blocks/SubsectionBlock';
+import SubsubsectionBlock from './blocks/SubsubsectionBlock';
+import TitlePageBlock from './blocks/TitlePageBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -164,6 +167,30 @@ export default function DocumentPage() {
     console.log(sectionsContent);
   };
 
+  const addSubsection = () => {
+    if (activeSection === 0) {
+      setSectionsContent([...sectionsContent, { typeOfBlock: 'subsection', blockContent: '' }]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'subsection', blockContent: '' });
+      setSectionsContent(blocks);
+    }
+
+    console.log(sectionsContent);
+  };
+
+  const addSubsubsection = () => {
+    if (activeSection === 0) {
+      setSectionsContent([...sectionsContent, { typeOfBlock: 'subsubsection', blockContent: '' }]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'subsubsection', blockContent: '' });
+      setSectionsContent(blocks);
+    }
+
+    console.log(sectionsContent);
+  };
+
   //puste text fieldy się nie wyświetlają!!!
   const addTextfield = () => {
     if (activeSection === 0) {
@@ -229,6 +256,8 @@ export default function DocumentPage() {
     sendChanges,
     reloadPdf: setPdfFile,
     addSection,
+    addSubsection,
+    addSubsubsection
     //bold,
   };
 
@@ -304,6 +333,30 @@ export default function DocumentPage() {
           />
         );
         break;
+        case 'subsection':
+          console.log('section');
+          return (
+            <SubsectionBlock
+              idx={idx}
+              activeSection={activeSection}
+              setActiveSecion={setActiveSecion}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
+            />
+          );
+          break;
+          case 'subsubsection':
+            console.log('section');
+            return (
+              <SubsubsectionBlock
+                idx={idx}
+                activeSection={activeSection}
+                setActiveSecion={setActiveSecion}
+                sectionsContent={sectionsContent}
+                setSectionsContent={setSectionsContent}
+              />
+            );
+            break;
       default:
         return <></>;
     }
@@ -348,6 +401,11 @@ export default function DocumentPage() {
               p="0px"
             >
               <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                <TitlePageBlock idx={-1}
+              activeSection={activeSection}
+              setActiveSecion={setActiveSecion}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}/>
                 {blocksLoaded && sectionsContent.length > 0 ? (
                   sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
                 ) : (

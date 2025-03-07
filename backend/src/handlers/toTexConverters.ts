@@ -85,3 +85,8 @@ export const subsectionToTex =(blockContent:string): string =>{
    
     return('\\subsection{'+blockContent+'}');
 }
+
+export const subsubsectionToTex =(blockContent:string): string =>{
+   
+    return('\\subsubsection{'+blockContent+'}');
+}

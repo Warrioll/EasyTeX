@@ -25,6 +25,28 @@ export const sectionToBlock =(line: string) : blockType=>{
     return sectionBlock;
 }
 
+export const subsectionToBlock =(line: string) : blockType=>{
+
+    //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
+    let section = line.replace('\\subsection{', '')
+    section= section.replace('}', '')
+    //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
+    //section= section.replace('\r', '')
+    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent: section}
+    return sectionBlock;
+}
+
+export const subsubsectionToBlock =(line: string) : blockType=>{
+
+    //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
+    let section = line.replace('\\subsubsection{', '')
+    section= section.replace('}', '')
+    //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
+    //section= section.replace('\r', '')
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: section}
+    return sectionBlock;
+}
+
 export const textfieldToBlock =(line: string) : blockType=>{
     //poza indeksami działa
 

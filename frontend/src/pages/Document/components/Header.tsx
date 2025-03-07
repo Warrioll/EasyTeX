@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import { FaListOl } from 'react-icons/fa6';
 import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import { LuHeading1, LuHeading2, LuRefreshCcw } from 'react-icons/lu';
+import { LuHeading1, LuHeading2, LuHeading3, LuRefreshCcw } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { RiFileDownloadFill, RiFileDownloadLine, RiSplitCellsHorizontal } from 'react-icons/ri';
@@ -117,19 +117,22 @@ const Header: React.FC<headerProps> = ({
         fw="bold"
         onClick={editFunctions.addSection}
       >
-        <MdOutlineAdd />
+       
         <LuHeading1 />
       </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSection}>
-        <MdOutlineAdd />
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSubsection}>
+      
         <LuHeading2 />
+      </Button>
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSubsubsection}>
+      
+        <LuHeading3 />
       </Button>
       <Button
         variant="format"
         fz="var(--mantine-font-size-lg)"
         onClick={editFunctions.addTextfield}
       >
-        <MdOutlineAdd />
         <PiTextTBold />
       </Button>
     </>

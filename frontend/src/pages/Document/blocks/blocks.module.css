@@ -26,3 +26,12 @@
     text-align: justify;
 }
 
+.centeredInput{
+
+}
+
+.titlePageContent{
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+    border-top: 1px solid var(--mantine-color-gray-1);
+}
+

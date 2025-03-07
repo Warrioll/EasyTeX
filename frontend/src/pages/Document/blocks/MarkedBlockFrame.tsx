@@ -63,7 +63,7 @@ export default function MarkedBlockFrame({
         {idx === activeSection ? (
           <Flex justify="space-between">
             <Stack w="6vw" ml="0px" justify="flex-end">
-              <Badge m="xs" ml="md" mt="sm" mr={0} radius="md" color="cyan" variant="transparent">
+              <Badge m="xs" ml="md" mt="sm" mr={0} radius="md" w='100%' color="cyan" variant="transparent">
                 {blockName}
               </Badge>
             </Stack>
@@ -85,6 +85,7 @@ export default function MarkedBlockFrame({
                   <Menu.Item
                     onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
                     leftSection={<LuHeading1 />}
+                    
                   >
                     Section
                   </Menu.Item>
@@ -111,8 +112,12 @@ export default function MarkedBlockFrame({
                     </Button>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item leftSection={<FaArrowUp />}>Move up</Menu.Item>
-                    <Menu.Item leftSection={<FaArrowDown />}>Move down</Menu.Item>
+                    <Menu.Item leftSection={<FaArrowUp />}
+                    disabled={activeSection===1 ? true : false}
+                    >Move up</Menu.Item>
+                    <Menu.Item leftSection={<FaArrowDown />}
+                     disabled={activeSection===sectionsContent.length-1 ? true : false}
+                    >Move down</Menu.Item>
                     <Menu.Item leftSection={<FaRegTrashAlt />}>Delete Block</Menu.Item>
                   </Menu.Dropdown>
                 </Menu>
