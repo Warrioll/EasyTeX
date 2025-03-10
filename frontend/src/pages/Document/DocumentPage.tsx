@@ -67,8 +67,11 @@ export default function DocumentPage() {
   const [sectionsContent, setSectionsContent] = useState<blockType[]>([]);
   const [blocksLoaded, setBlocksLoaded] = useState<boolean>(true);
 
-  const [activeSection, setActiveSecion] = useState<number>(0);
-  const [editorContent, setEditorContent] = useState(sectionsContent[activeSection]);
+  const activeBlockState = useState<number>(0);
+  const [activeBlock, setActiveBlock] = activeBlockState;
+  const activeTextInputState = useState<string>('');
+
+  const [editorContent, setEditorContent] = useState(sectionsContent[activeBlock]);
 
   const [pdfLoaded, setPdfLoaded] = useState(true);
   const [pagesNumber, setPagesNumber] = useState<number>(0);
@@ -122,7 +125,7 @@ export default function DocumentPage() {
 
   const saveElementChanges = () => {
     let content = sectionsContent;
-    content[activeSection].blockContent = editor?.getHTML();
+    content[activeBlock].blockContent = editor?.getHTML();
     setSectionsContent(content);
     //console.log('OnBlur', editorContent);
   };
@@ -167,14 +170,14 @@ export default function DocumentPage() {
 
     // console.log(sectionsContent);
 
-    if (activeSection === 0) {
+    if (activeBlock === 0) {
       setSectionsContent([
         ...sectionsContent,
         { typeOfBlock: 'section', blockContent: '<b>New Section</b>' },
       ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, {
+      blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'section',
         blockContent: '<b>New Section</b>',
       });
@@ -183,14 +186,14 @@ export default function DocumentPage() {
   };
 
   const addSubsection = () => {
-    if (activeSection === 0) {
+    if (activeBlock === 0) {
       setSectionsContent([
         ...sectionsContent,
         { typeOfBlock: 'subsection', blockContent: 'New Subection' },
       ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, {
+      blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'subsection',
         blockContent: 'New Subsection',
       });
@@ -199,14 +202,14 @@ export default function DocumentPage() {
   };
 
   const addSubsubsection = () => {
-    if (activeSection === 0) {
+    if (activeBlock === 0) {
       setSectionsContent([
         ...sectionsContent,
         { typeOfBlock: 'subsection', blockContent: 'New Subsubection' },
       ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, {
+      blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'subsection',
         blockContent: 'New Subsubsection',
       });
@@ -216,14 +219,14 @@ export default function DocumentPage() {
 
   //puste text fieldy się nie wyświetlają!!!
   const addTextfield = () => {
-    if (activeSection === 0) {
+    if (activeBlock === 0) {
       setSectionsContent([
         ...sectionsContent,
         { typeOfBlock: 'textfield', blockContent: 'New textfield' },
       ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, {
+      blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'textfield',
         blockContent: 'New textfield',
       });
@@ -335,11 +338,11 @@ export default function DocumentPage() {
         return (
           <TitlePageBlock
             idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
+            activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
+            activeTextInputState={activeTextInputState}
           />
           // <>
           //   {item.blockContent.title} | {item.blockContent.author} | {item.blockContent.date}
@@ -350,8 +353,7 @@ export default function DocumentPage() {
         return (
           <TextfieldBlock
             idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
+            activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
@@ -363,11 +365,11 @@ export default function DocumentPage() {
         return (
           <SectionBlock
             idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
+            activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
+            activeTextInputState={activeTextInputState}
           />
         );
         break;
@@ -376,8 +378,7 @@ export default function DocumentPage() {
         return (
           <SubsectionBlock
             idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
+            activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
@@ -389,8 +390,7 @@ export default function DocumentPage() {
         return (
           <SubsubsectionBlock
             idx={idx}
-            activeSection={activeSection}
-            setActiveSecion={setActiveSecion}
+            activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
@@ -412,7 +412,7 @@ export default function DocumentPage() {
         saveElementChanges={saveElementChanges}
         pdfZoom={pdfZoom}
         workspaceZoom={workspaceZoom}
-        activeSection={activeSection}
+        activeSection={activeBlock}
         sectionsContent={sectionsContent}
       />
 

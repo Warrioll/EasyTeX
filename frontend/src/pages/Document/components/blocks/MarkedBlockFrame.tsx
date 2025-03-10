@@ -31,8 +31,9 @@ import classes from './blocks.module.css';
 
 type MarkedBlockFrameProps = {
   idx: number;
-  activeSection: number;
-  setActiveSecion: Dispatch<SetStateAction<number>>;
+  activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeSection: number;
+  //setActiveSecion: Dispatch<SetStateAction<number>>;
   blockName: string;
   children: React.ReactNode;
   sectionsContent: blockType[];
@@ -42,46 +43,48 @@ type MarkedBlockFrameProps = {
 export default function MarkedBlockFrame({
   children,
   idx,
-  activeSection,
-  setActiveSecion,
+  //activeSection,
+  //setActiveSecion,
+  activeBlockState,
   blockName,
   sectionsContent,
   setSectionsContent,
 }: MarkedBlockFrameProps) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
+  const [activeBlock, setActiveBlock] = activeBlockState;
 
   //editor trzeba wyczyszczać czy coś przy dodawaniu textfiesd
   const addBlockBelow = (block: blockType) => {
     let blocks = [...sectionsContent];
-    blocks.splice(activeSection + 1, 0, block);
+    blocks.splice(activeBlock + 1, 0, block);
     setSectionsContent(blocks);
-    setActiveSecion(activeSection + 1);
+    setActiveBlock(activeBlock + 1);
   };
 
   const addBlockAbove = (block: blockType) => {
     let blocks = [...sectionsContent];
-    blocks.splice(activeSection, 0, block);
+    blocks.splice(activeBlock, 0, block);
     setSectionsContent(blocks);
   };
 
   const moveBlockUp = () => {
     let blocks = [...sectionsContent];
-    const [block] = blocks.splice(activeSection, 1);
-    blocks.splice(activeSection - 1, 0, block);
+    const [block] = blocks.splice(activeBlock, 1);
+    blocks.splice(activeBlock - 1, 0, block);
     setSectionsContent(blocks);
-    setActiveSecion(activeSection - 1);
+    setActiveBlock(activeBlock - 1);
   };
   const moveBlockDown = () => {
     let blocks = [...sectionsContent];
-    const [block] = blocks.splice(activeSection, 1);
-    blocks.splice(activeSection + 1, 0, block);
+    const [block] = blocks.splice(activeBlock, 1);
+    blocks.splice(activeBlock + 1, 0, block);
     setSectionsContent(blocks);
-    setActiveSecion(activeSection + 1);
+    setActiveBlock(activeBlock + 1);
   };
 
   const deleteBlock = () => {
     let blocks = [...sectionsContent];
-    blocks.splice(activeSection, 1);
+    blocks.splice(activeBlock, 1);
     setSectionsContent(blocks);
     deleteModalHandlers.close();
   };
@@ -89,7 +92,7 @@ export default function MarkedBlockFrame({
   const frameToolBar = (addBlockFunction: (block: blockType) => void): ReactElement => {
     return (
       <>
-        {idx === activeSection ? (
+        {idx === activeBlock ? (
           <Flex justify="space-between">
             <Stack w="100%" ml="0px" align="flex-start" justify="flex-end">
               <Badge m="xs" ml="md" mt="sm" mr={0} radius="md" color="cyan" variant="transparent">
@@ -142,14 +145,14 @@ export default function MarkedBlockFrame({
                   <Menu.Dropdown>
                     <Menu.Item
                       leftSection={<FaArrowUp />}
-                      disabled={activeSection === 1 ? true : false}
+                      disabled={activeBlock === 1 ? true : false}
                       onClick={moveBlockUp}
                     >
                       Move up
                     </Menu.Item>
                     <Menu.Item
                       leftSection={<FaArrowDown />}
-                      disabled={activeSection === sectionsContent.length - 1 ? true : false}
+                      disabled={activeBlock === sectionsContent.length - 1 ? true : false}
                       onClick={moveBlockDown}
                     >
                       Move down
@@ -168,7 +171,7 @@ export default function MarkedBlockFrame({
                   variant="transparent"
                   size="compact-sm"
                   mt="xs"
-                  onClick={() => setActiveSecion(0)}
+                  onClick={() => setActiveBlock(0)}
                   className={classes.stickyElement}
                   w="2rem"
                   h="1.5rem"
@@ -191,14 +194,17 @@ export default function MarkedBlockFrame({
       <Flex>
         <Paper
           radius="0px"
-          p="xl"
           pt="0px"
           pb="0px"
           w="40vw"
-          className={idx === activeSection ? classes.blockFrameStyle : ''}
+          className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
         >
           {frameToolBar(addBlockAbove)}
-          <Box className={idx === activeSection ? classes.sectionBlockStyle : ''} w="100%" p="0px">
+          <Box
+            className={idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : ''}
+            w="100%"
+            p="0px"
+          >
             {children}
           </Box>
           {frameToolBar(addBlockBelow)}

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
 import { Badge, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/core';
@@ -7,31 +8,82 @@ import styles from './blocks.module.css';
 
 type BasicTextfieldProps = {
   idx: number | string;
-  activeSection: number | string;
+  idxInput: string;
+  activeBlockState: [number, Dispatch<SetStateAction<number>>];
   editor: Editor;
-  textFieldContent: string;
+
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  contentToRead: string;
+  sectionsContent: blockType[];
+  setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
 };
 
 export default function BasicTexfield({
   idx,
-  activeSection,
+  activeBlockState,
   editor,
-  textFieldContent,
+  activeTextInputState,
+  idxInput,
+  contentToRead,
+  sectionsContent,
+  setSectionsContent,
 }: BasicTextfieldProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const [activeBlock, setActiveBlock] = activeBlockState;
+  const [activeTextInput, setActiveTextInput] = activeTextInputState;
+
+  const onBlurSaveContentMethod = (sectionsContentCopy, toSave: string) => {
+    switch (sectionsContent[activeBlock].typeOfBlock) {
+      case 'titlePage':
+        console.log('titlePageeee');
+        if (idxInput.includes('title')) {
+          sectionsContentCopy[idx].blockContent.title = toSave;
+        }
+        if (idxInput.includes('author')) {
+          sectionsContentCopy[idx].blockContent.author = toSave;
+        }
+        if (idxInput.includes('date')) {
+          sectionsContentCopy[idx].blockContent.date = toSave;
+        }
+        break;
+      default:
+        sectionsContentCopy[idx].blockContent = toSave;
+        break;
+    }
+    setSectionsContent(sectionsContentCopy);
+  };
 
   return (
-    <>
-      {activeSection === idx ? (
+    <div
+      style={{ marginLeft: 'var(--mantine-spacing-xl)', marginRight: 'var(--mantine-spacing-xl)' }}
+      key={idxInput}
+      tabIndex={idx}
+      onFocus={async () => {
+        setActiveTextInput(idxInput);
+        // sectionsContent[idx].blockContent
+        //   ?
+        await editor?.commands.setContent(contentToRead);
+        //: null;
+        //console.log('onFocus', block);
+      }}
+      onBlur={() => {
+        let content = sectionsContent;
+        onBlurSaveContentMethod(sectionsContent, editor?.getHTML());
+        setActiveTextInput('');
+        //setSectionsContent(content);
+        //console.log('OnBlur', editorContent);
+      }}
+    >
+      {activeTextInput === idxInput ? (
         // <RichTextEditor editor={editor}>
         //   <RichTextEditor.Content />
         // </RichTextEditor>
         <FocusTrap active={focusTrap}>
           <EditorContent editor={editor} />
         </FocusTrap>
-      ) : textFieldContent ? (
-        <div className={styles.textfieldNotFocused}>yolo{parse(textFieldContent)}</div>
+      ) : contentToRead ? (
+        <div className={styles.textfieldNotFocused}>{parse(contentToRead)}</div>
       ) : null}
-    </>
+    </div>
   );
 }

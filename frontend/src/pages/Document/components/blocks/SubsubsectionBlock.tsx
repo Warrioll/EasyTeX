@@ -10,8 +10,7 @@ import styles from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  activeSection: number;
-  setActiveSecion: Dispatch<SetStateAction<number>>;
+  activeBlockState: [number, Dispatch<SetStateAction<number>>];
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
   editor: Editor;
@@ -19,13 +18,13 @@ type SectionBlockProps = {
 
 export default function SubsubsectionBlock({
   idx,
-  activeSection,
-  setActiveSecion,
+  activeBlockState,
   sectionsContent,
   setSectionsContent,
   editor,
 }: SectionBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const [activeBlock, setActiveBlock] = activeBlockState;
 
   const updateSectionContent = (event) => {
     console.log('section event', event);
@@ -46,7 +45,7 @@ export default function SubsubsectionBlock({
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
-        setActiveSecion(idx);
+        setActiveBlock(idx);
         // sectionsContent[idx].blockContent
         //   ?
         await editor?.commands.setContent(sectionsContent[idx].blockContent);
@@ -86,8 +85,7 @@ export default function SubsubsectionBlock({
         }
         <MarkedBlockFrame
           idx={idx}
-          activeSection={activeSection}
-          setActiveSecion={setActiveSecion}
+          activeBlockState={activeBlockState}
           blockName="Subsubsection"
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
@@ -108,7 +106,7 @@ export default function SubsubsectionBlock({
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
           </FocusTrap> */}
-          {activeSection === idx ? (
+          {activeBlock === idx ? (
             // <RichTextEditor editor={editor}>
             //   <RichTextEditor.Content />
             // </RichTextEditor>

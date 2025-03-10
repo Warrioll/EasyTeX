@@ -24,23 +24,24 @@ import classes from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  activeSection: number;
-  setActiveSecion: Dispatch<SetStateAction<number>>;
+  activeBlockState: [number, Dispatch<SetStateAction<number>>];
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
   editor: Editor;
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function TitlePageBlock({
   idx,
-  activeSection,
-  setActiveSecion,
+  activeBlockState,
   sectionsContent,
   setSectionsContent,
   editor,
+  activeTextInputState,
 }: SectionBlockProps) {
   const [activeTextfield, setActiveTextfield] = useState<string>('');
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const [activeBlock, setActiveBlock] = activeBlockState;
 
   const updateSectionContent = (event) => {
     console.log('section event', event);
@@ -56,17 +57,13 @@ export default function TitlePageBlock({
     setSectionsContent(content);
   };
 
-  useEffect(() => {
-    //setActiveTextfield('');
-  }, [activeSection]);
-
   return (
     <div
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
         toggle();
-        setActiveSecion(idx);
+        setActiveBlock(idx);
       }}
 
       // onFocus={async () => {
@@ -87,41 +84,26 @@ export default function TitlePageBlock({
       <Flex>
         <MarkedBlockFrame
           idx={idx}
-          activeSection={activeSection}
-          setActiveSecion={setActiveSecion}
+          activeBlockState={activeBlockState}
           blockName="Title, author, date"
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
         >
           <Stack justify="center" align="center" ta="center" pt="xl" pb="xl" m="xl">
-            {/* <TextInput
-              className={classes.centeredInput}
-              label="Title"
-              radius="md"
-              placeholder="Title..."
-              variant="header1"
-              //   value={
-              //     sectionsContent[idx].blockContent === undefined
-              //       ? ''
-              //       : sectionsContent[idx].blockContent
-              //     //sectionsContent[idx].blockContent.sectionContent === undefined ? '' : sectionsContent[idx].blockContent.sectionContent
-              //   }
-              //onChange={(event) => updateSectionContent(event)}
-              w="100%"
-              style={{ borderRadius: 'var(--mantine-radius-md)', textAlign: 'center' }}
-            /> */}
             Title
-            <div
-              key={idx.toString().concat('title')}
+            {/* <div
+              key={idx}
               tabIndex={idx}
               onFocus={async () => {
                 setActiveTextfield(idx.toString().concat('title'));
-                //setActiveSecion(idx);
+                //setActiveSecion(3);
                 // sectionsContent[idx].blockContent
                 //   ?
-                console.log(idx.toString().concat('title'));
-                console.log(sectionsContent[idx].blockContent.title);
-                await editor?.commands.setContent(sectionsContent[idx].blockContent.title);
+                // console.log(idx.toString().concat('title'));
+                //console.log(sectionsContent[idx].blockContent.title);
+                await editor?.commands.setContent(
+                  sectionsContent[Math.floor(idx)].blockContent.title
+                );
                 //: null;
                 //console.log('onFocus', block);
               }}
@@ -133,14 +115,28 @@ export default function TitlePageBlock({
                 //console.log('OnBlur', editorContent);
               }}
               style={{ backgroundColor: 'pink', padding: '5px' }}
-            >
-              <BasicTexfield
-                idx={idx.toString().concat('title')}
-                activeSection={activeTextfield}
-                textFieldContent={sectionsContent[activeSection].blockContent.title}
-                editor={editor}
-              />
-            </div>
+            > */}
+            <BasicTexfield
+              idx={idx}
+              activeBlockState={activeBlockState}
+              contentToRead={sectionsContent[idx].blockContent.title}
+              editor={editor}
+              activeTextInputState={activeTextInputState}
+              idxInput={idx.toString().concat('title')}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
+            />
+            <BasicTexfield
+              idx={idx}
+              activeBlockState={activeBlockState}
+              contentToRead={sectionsContent[idx].blockContent.author}
+              editor={editor}
+              activeTextInputState={activeTextInputState}
+              idxInput={idx.toString().concat('author')}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
+            />
+            {/* </div>
             <div
               key={idx.toString().concat('author')}
               tabIndex={idx}
@@ -164,10 +160,10 @@ export default function TitlePageBlock({
               <BasicTexfield
                 idx={idx.toString().concat('author')}
                 activeSection={activeTextfield}
-                textFieldContent={sectionsContent[activeSection].blockContent.author}
+                textFieldContent={sectionsContent[activeBlock].blockContent.author}
                 editor={editor}
               />
-            </div>
+            </div> */}
             <TextInput
               label="Author"
               radius="md"

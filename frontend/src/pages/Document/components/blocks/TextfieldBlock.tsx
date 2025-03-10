@@ -10,9 +10,9 @@ import styles from './blocks.module.css';
 
 type TextfieldBlockProps = {
   idx: number;
-
-  activeSection: number;
-  setActiveSecion: Dispatch<SetStateAction<number>>;
+  activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeSection: number;
+  //setActiveSecion: Dispatch<SetStateAction<number>>;
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
   editor: Editor;
@@ -21,21 +21,23 @@ type TextfieldBlockProps = {
 
 export default function TextfieldBlock({
   idx,
-
-  activeSection,
-  setActiveSecion,
+  activeBlockState,
+  //activeSection,
+  //setActiveSecion,
   sectionsContent,
   setSectionsContent,
   editor,
   //editorContent,
 }: TextfieldBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const [activeBlock, setActiveBlock] = activeBlockState;
+
   return (
     <div
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
-        setActiveSecion(idx);
+        setActiveBlock(idx);
         // sectionsContent[idx].blockContent
         //   ?
         await editor?.commands.setContent(sectionsContent[idx].blockContent);
@@ -51,13 +53,12 @@ export default function TextfieldBlock({
     >
       <MarkedBlockFrame
         idx={idx}
-        activeSection={activeSection}
-        setActiveSecion={setActiveSecion}
+        activeBlockState={activeBlockState}
         blockName="Textfield"
         sectionsContent={sectionsContent}
         setSectionsContent={setSectionsContent}
       >
-        {activeSection === idx ? (
+        {activeBlock === idx ? (
           // <RichTextEditor editor={editor}>
           //   <RichTextEditor.Content />
           // </RichTextEditor>
