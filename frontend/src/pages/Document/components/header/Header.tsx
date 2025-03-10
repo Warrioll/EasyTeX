@@ -53,7 +53,9 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
+import { blockType } from '@/Types';
 import FontTab from './FontTab';
+import ModifyTab from './ModifyTab';
 import ZoomTools from './ZoomTools';
 // import {
 //   IconNotification,
@@ -72,6 +74,8 @@ type headerProps = {
   saveElementChanges: () => void;
   pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
   workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
+  activeSection: number;
+  sectionsContent: blockType[];
 };
 
 const Header: React.FC<headerProps> = ({
@@ -80,9 +84,11 @@ const Header: React.FC<headerProps> = ({
   saveElementChanges,
   pdfZoom,
   workspaceZoom,
+  activeSection,
+  sectionsContent,
 }) => {
   //const theme = useMantineTheme();
-
+  //const []
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('insert');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
@@ -117,15 +123,20 @@ const Header: React.FC<headerProps> = ({
         fw="bold"
         onClick={editFunctions.addSection}
       >
-       
         <LuHeading1 />
       </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSubsection}>
-      
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addSubsection}
+      >
         <LuHeading2 />
       </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addSubsubsection}>
-      
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addSubsubsection}
+      >
         <LuHeading3 />
       </Button>
       <Button
@@ -146,13 +157,31 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
+  const modifyTools = (
+    <ModifyTab
+      editFunctions={editFunctions}
+      editor={editor}
+      saveElementChanges={saveElementChanges}
+      activeSection={activeSection}
+      sectionsContent={sectionsContent}
+    />
+  );
+
   const viewTools = (
     <>
       <ZoomTools zoomState={workspaceZoom} />
     </>
   );
 
-  const modifyTools = <>Modify tools</>;
+  const takeActiveBlockType = (): string => {
+    if (activeSection !== 0) {
+      if (sectionsContent[activeSection].typeOfBlock === 'textfield') {
+        return 'Textfield ';
+      }
+      return '';
+    }
+    return '';
+  };
 
   const tabs = [
     {
@@ -172,10 +201,28 @@ const Header: React.FC<headerProps> = ({
     },
     {
       value: 'modify',
-      label: 'Modify',
+      label: `${takeActiveBlockType()}`,
       tools: modifyTools,
     },
   ];
+
+  const isDisabledtab = (tab: string): boolean => {
+    if (
+      tab === 'modify' &&
+      (activeSection === 0 ||
+        sectionsContent[activeSection].typeOfBlock === 'section' ||
+        sectionsContent[activeSection].typeOfBlock === 'subsection' ||
+        sectionsContent[activeSection].typeOfBlock === 'subsubsection')
+    ) {
+      //setValue('insert');
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    setValue('insert');
+  }, [activeSection]);
 
   useEffect(() => {
     const getTitle = async () => {
@@ -216,7 +263,12 @@ const Header: React.FC<headerProps> = ({
           <Group h="100%">
             <Tabs.List ref={setRootRef} className={classes.list}>
               {tabs.map((tab) => (
-                <Tabs.Tab value={tab.value} ref={setControlRef(tab.value)} className={classes.tab}>
+                <Tabs.Tab
+                  value={tab.value}
+                  ref={setControlRef(tab.value)}
+                  className={classes.tab}
+                  disabled={isDisabledtab(tab.value)}
+                >
                   {tab.label}
                 </Tabs.Tab>
               ))}

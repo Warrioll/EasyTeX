@@ -1,4 +1,8 @@
 export type blockType = {
-    typeOfBlock: 'textfield' | 'section' | 'subsection' | 'subsubsection' | "documentclass" | null | undefined;
-    blockContent: string | object |null | undefined; 
+    typeOfBlock: 'textfield' | 'section' | 'subsection' | 'subsubsection' | "documentclass" |'titlePage'| null | undefined;
+    blockContent: string | titlePageType |null | undefined; 
   };
+
+  export type titlePageType = {
+    title: string, author: string, date: string
+  }

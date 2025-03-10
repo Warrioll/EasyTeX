@@ -221,8 +221,9 @@ export default function DocumentCard({
                     <FaRegTrashAlt />
                   </Text>
                 }
+                color="red"
               >
-                <Text c="var(--mantine-color-error)"> Delete</Text>
+                <Text> Delete</Text>
               </Menu.Item>
             </MenuDropdown>
           </Menu>
@@ -347,7 +348,7 @@ export default function DocumentCard({
             <Button leftSection={<FaRegTrashAlt />} color="red" onClick={deleteDocuemnt}>
               Delete
             </Button>
-            <Button color="red" variant="outline" onClick={deleteModalHandlers.close}>
+            <Button color="cyan" variant="outline" onClick={deleteModalHandlers.close}>
               Cancel
             </Button>
           </SimpleGrid>

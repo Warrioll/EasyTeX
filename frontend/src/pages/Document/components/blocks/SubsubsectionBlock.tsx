@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Editor } from '@tiptap/react';
+import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
 import { Badge, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
@@ -14,14 +14,16 @@ type SectionBlockProps = {
   setActiveSecion: Dispatch<SetStateAction<number>>;
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  editor: Editor;
 };
 
-export default function SectionBlock({
+export default function SubsubsectionBlock({
   idx,
   activeSection,
   setActiveSecion,
   sectionsContent,
   setSectionsContent,
+  editor,
 }: SectionBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
 
@@ -44,11 +46,19 @@ export default function SectionBlock({
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
-        toggle();
         setActiveSecion(idx);
+        // sectionsContent[idx].blockContent
+        //   ?
+        await editor?.commands.setContent(sectionsContent[idx].blockContent);
+        //: null;
+        //console.log('onFocus', block);
       }}
-
-      //ref={ref}
+      onBlur={() => {
+        let content = sectionsContent;
+        content[idx].blockContent = editor?.getHTML();
+        setSectionsContent(content);
+        //console.log('OnBlur', editorContent);
+      }}
     >
       {
         //     idx===activeSection ?
@@ -78,11 +88,11 @@ export default function SectionBlock({
           idx={idx}
           activeSection={activeSection}
           setActiveSecion={setActiveSecion}
-          blockName="Section"
+          blockName="Subsubsection"
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
         >
-          <FocusTrap active={focusTrap}>
+          {/* <FocusTrap active={focusTrap}>
             <Input
               radius="md"
               placeholder="Header..."
@@ -97,7 +107,19 @@ export default function SectionBlock({
               w="100%"
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
-          </FocusTrap>
+          </FocusTrap> */}
+          {activeSection === idx ? (
+            // <RichTextEditor editor={editor}>
+            //   <RichTextEditor.Content />
+            // </RichTextEditor>
+            <FocusTrap active={focusTrap}>
+              <EditorContent editor={editor} />
+            </FocusTrap>
+          ) : sectionsContent[idx].blockContent ? (
+            <div className={styles.textfieldNotFocused}>
+              {parse(sectionsContent[idx].blockContent as string)}
+            </div>
+          ) : null}
         </MarkedBlockFrame>
       </Flex>
     </div>

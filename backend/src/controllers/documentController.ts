@@ -3,10 +3,17 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex } from '../handlers/toTexConverters';
-import { sectionToBlock, documentclassToBlock, textfieldToBlock, subsectionToBlock, subsubsectionToBlock } from '../handlers/toBlockConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter, } from '../handlers/toTexConverters';
+import { sectionToBlock, 
+  documentclassToBlock, 
+  textfieldToBlock, 
+  subsectionToBlock, 
+  subsubsectionToBlock, 
+  getAuthorFromTex, 
+  getDateFromTex, 
+  getTitleFromTex } from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
-import { blockType } from '../types';
+import { blockType, titlePageType } from '../types';
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
@@ -142,10 +149,23 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
           let document: (string | undefined)[] = await loadTexFile(id);
           //console.log(document)
+
+          let titlePageData = {
+            title: '',
+            author: '',
+            date: ''
+          }
+
           let blocks: (blockType)[] = document.map((line, idx)=>{
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
             //console.log(line)
+
+            
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+            if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
+            if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
+            if(line.includes('\\date')) {titlePageData.date=getDateFromTex(line); return  nullBlock};
+            if(line.includes('\\maketitle')) return  {typeOfBlock: 'titlePage', blockContent: titlePageData};
             if(line.includes('\\section')) return  sectionToBlock(line);
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
@@ -378,11 +398,17 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
   console.log(blocks);
   
-
+    let titlePageData = {title: '', author: '', date: ''}
   let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
     switch(block.typeOfBlock){
       case 'documentclass':
         return documentclassToTex(block.blockContent as string);
+      case 'titlePage':
+        if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
+          titlePageData=block.blockContent;
+            return '\\maketitle'
+        }
+        return ''
       case 'textfield':
        return textfieldToTex(block.blockContent as string);
       case 'section':
@@ -395,6 +421,12 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
   })
+
+ 
+    document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
+      +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
+      +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}`
+    );
 
       document.splice(1,0,'\\usepackage{ulem}'
         +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'

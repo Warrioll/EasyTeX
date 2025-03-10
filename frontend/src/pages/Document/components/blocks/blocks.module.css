@@ -35,3 +35,9 @@
     border-top: 1px solid var(--mantine-color-gray-1);
 }
 
+.trunckedText{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

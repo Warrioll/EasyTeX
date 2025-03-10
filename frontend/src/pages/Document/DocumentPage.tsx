@@ -36,14 +36,14 @@ import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
 import { blockType } from '@/Types';
-import SectionBlock from './blocks/SectionBlock';
-import TextfieldBlock from './blocks/TextfieldBlock';
-import Header from './components/Header';
+import SectionBlock from './components/blocks/SectionBlock';
+import SubsectionBlock from './components/blocks/SubsectionBlock';
+import SubsubsectionBlock from './components/blocks/SubsubsectionBlock';
+import TextfieldBlock from './components/blocks/TextfieldBlock';
+import TitlePageBlock from './components/blocks/TitlePageBlock';
+import Header from './components/header/Header';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
-import SubsectionBlock from './blocks/SubsectionBlock';
-import SubsubsectionBlock from './blocks/SubsubsectionBlock';
-import TitlePageBlock from './blocks/TitlePageBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -156,39 +156,62 @@ export default function DocumentPage() {
     //   { typeOfBlock: 'section', blockContent: '' },
     // ]);
     // console.log(sectionsContent);
+
+    // if (activeSection === 0) {
+    //   setSectionsContent([...sectionsContent, { typeOfBlock: 'section', blockContent: '' }]);
+    // } else {
+    //   let blocks = [...sectionsContent];
+    //   blocks.splice(activeSection + 1, 0, { typeOfBlock: 'section', blockContent: '' });
+    //   setSectionsContent(blocks);
+    // }
+
+    // console.log(sectionsContent);
+
     if (activeSection === 0) {
-      setSectionsContent([...sectionsContent, { typeOfBlock: 'section', blockContent: '' }]);
+      setSectionsContent([
+        ...sectionsContent,
+        { typeOfBlock: 'section', blockContent: '<b>New Section</b>' },
+      ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'section', blockContent: '' });
+      blocks.splice(activeSection + 1, 0, {
+        typeOfBlock: 'section',
+        blockContent: '<b>New Section</b>',
+      });
       setSectionsContent(blocks);
     }
-
-    console.log(sectionsContent);
   };
 
   const addSubsection = () => {
     if (activeSection === 0) {
-      setSectionsContent([...sectionsContent, { typeOfBlock: 'subsection', blockContent: '' }]);
+      setSectionsContent([
+        ...sectionsContent,
+        { typeOfBlock: 'subsection', blockContent: 'New Subection' },
+      ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'subsection', blockContent: '' });
+      blocks.splice(activeSection + 1, 0, {
+        typeOfBlock: 'subsection',
+        blockContent: 'New Subsection',
+      });
       setSectionsContent(blocks);
     }
-
-    console.log(sectionsContent);
   };
 
   const addSubsubsection = () => {
     if (activeSection === 0) {
-      setSectionsContent([...sectionsContent, { typeOfBlock: 'subsubsection', blockContent: '' }]);
+      setSectionsContent([
+        ...sectionsContent,
+        { typeOfBlock: 'subsection', blockContent: 'New Subsubection' },
+      ]);
     } else {
       let blocks = [...sectionsContent];
-      blocks.splice(activeSection + 1, 0, { typeOfBlock: 'subsubsection', blockContent: '' });
+      blocks.splice(activeSection + 1, 0, {
+        typeOfBlock: 'subsection',
+        blockContent: 'New Subsubsection',
+      });
       setSectionsContent(blocks);
     }
-
-    console.log(sectionsContent);
   };
 
   //puste text fieldy się nie wyświetlają!!!
@@ -257,7 +280,7 @@ export default function DocumentPage() {
     reloadPdf: setPdfFile,
     addSection,
     addSubsection,
-    addSubsubsection
+    addSubsubsection,
     //bold,
   };
 
@@ -299,7 +322,7 @@ export default function DocumentPage() {
       const response = await axios.get(`http://localhost:8100/document/getDocumentContent/${id}`, {
         withCredentials: true,
       });
-      //console.log('doc content', response);
+      console.log('doc content', response);
       setSectionsContent(response.data);
     };
     //console.log('SC:', sectionsContent);
@@ -308,6 +331,20 @@ export default function DocumentPage() {
 
   const renderBlock = (item, idx) => {
     switch (item.typeOfBlock) {
+      case 'titlePage':
+        return (
+          <TitlePageBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+            editor={editor}
+          />
+          // <>
+          //   {item.blockContent.title} | {item.blockContent.author} | {item.blockContent.date}
+          // </>
+        );
       case 'textfield':
         console.log('textfield');
         return (
@@ -330,33 +367,36 @@ export default function DocumentPage() {
             setActiveSecion={setActiveSecion}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
+            editor={editor}
           />
         );
         break;
-        case 'subsection':
-          console.log('section');
-          return (
-            <SubsectionBlock
-              idx={idx}
-              activeSection={activeSection}
-              setActiveSecion={setActiveSecion}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
-            />
-          );
-          break;
-          case 'subsubsection':
-            console.log('section');
-            return (
-              <SubsubsectionBlock
-                idx={idx}
-                activeSection={activeSection}
-                setActiveSecion={setActiveSecion}
-                sectionsContent={sectionsContent}
-                setSectionsContent={setSectionsContent}
-              />
-            );
-            break;
+      case 'subsection':
+        console.log('section');
+        return (
+          <SubsectionBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+            editor={editor}
+          />
+        );
+        break;
+      case 'subsubsection':
+        console.log('section');
+        return (
+          <SubsubsectionBlock
+            idx={idx}
+            activeSection={activeSection}
+            setActiveSecion={setActiveSecion}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+            editor={editor}
+          />
+        );
+        break;
       default:
         return <></>;
     }
@@ -372,6 +412,8 @@ export default function DocumentPage() {
         saveElementChanges={saveElementChanges}
         pdfZoom={pdfZoom}
         workspaceZoom={workspaceZoom}
+        activeSection={activeSection}
+        sectionsContent={sectionsContent}
       />
 
       <Split
@@ -401,11 +443,13 @@ export default function DocumentPage() {
               p="0px"
             >
               <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
-                <TitlePageBlock idx={-1}
-              activeSection={activeSection}
-              setActiveSecion={setActiveSecion}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}/>
+                {/* <TitlePageBlock
+                  idx={-1}
+                  activeSection={activeSection}
+                  setActiveSecion={setActiveSecion}
+                  sectionsContent={sectionsContent}
+                  setSectionsContent={setSectionsContent}
+                /> */}
                 {blocksLoaded && sectionsContent.length > 0 ? (
                   sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
                 ) : (
