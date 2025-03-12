@@ -12,9 +12,9 @@ import {
   Input,
   Menu,
   Stack,
+  Text,
   TextInput,
   Title,
-  Text
 } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
@@ -60,27 +60,27 @@ export default function TitlePageBlock({
 
   return (
     <div
-      // key={idx}
-      // tabIndex={idx}
-      // onFocus={async () => {
-      //   toggle();
-      //   setActiveBlock(idx);
-      // }}
+    // key={idx}
+    // tabIndex={idx}
+    // onFocus={async () => {
+    //   toggle();
+    //   setActiveBlock(idx);
+    // }}
 
-      // onFocus={async () => {
-      //   setActiveSecion(idx);
-      //   // sectionsContent[idx].blockContent
-      //   //   ?
-      //   await editor?.commands.setContent(sectionsContent[idx].blockContent);
-      //   //: null;
-      //   //console.log('onFocus', block);
-      // }}
-      // onBlur={() => {
-      //   let content = sectionsContent;
-      //   content[idx].blockContent = editor?.getHTML();
-      //   setSectionsContent(content);
-      //   //console.log('OnBlur', editorContent);
-      // }}
+    // onFocus={async () => {
+    //   setActiveSecion(idx);
+    //   // sectionsContent[idx].blockContent
+    //   //   ?
+    //   await editor?.commands.setContent(sectionsContent[idx].blockContent);
+    //   //: null;
+    //   //console.log('onFocus', block);
+    // }}
+    // onBlur={() => {
+    //   let content = sectionsContent;
+    //   content[idx].blockContent = editor?.getHTML();
+    //   setSectionsContent(content);
+    //   //console.log('OnBlur', editorContent);
+    // }}
     >
       <Flex>
         <MarkedBlockFrame
@@ -90,35 +90,48 @@ export default function TitlePageBlock({
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
         >
-          <Stack justify="center" align="flex-start"  pt="xl" pb="xl" m="xl" className={classes.titlePage}>
-            <Text fw={500} size='sm'>Title</Text>
-  
+          <Stack
+            justify="center"
+            align="flex-start"
+            pt="xl"
+            pb="xl"
+            m="xl"
+            className={classes.titlePage}
+          >
+            <Text fw={500} size="sm">
+              Title
+            </Text>
+
             <BasicTexfield
               idx={idx}
               activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.title}
+              contentToRead={sectionsContent[idx].blockContent.title as string}
               editor={editor}
               activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('title')}
               sectionsContent={sectionsContent}
               setSectionsContent={setSectionsContent}
             />
-             <Text fw={500} size='sm'>Author</Text>
+            <Text fw={500} size="sm">
+              Author
+            </Text>
             <BasicTexfield
               idx={idx}
               activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.author}
+              contentToRead={sectionsContent[idx].blockContent.author as string}
               editor={editor}
               activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('author')}
               sectionsContent={sectionsContent}
               setSectionsContent={setSectionsContent}
             />
-      <Text fw={500} size='sm'>Date</Text>
-      <BasicTexfield
+            <Text fw={500} size="sm">
+              Date
+            </Text>
+            <BasicTexfield
               idx={idx}
               activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.date}
+              contentToRead={sectionsContent[idx].blockContent.date as string}
               editor={editor}
               activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('date')}

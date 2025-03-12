@@ -48,7 +48,7 @@ export default function SectionBlock({
   // };
 
   return (
-<>
+    <>
       {
         //     idx===activeSection ?
         //     <Group justify="space-between">
@@ -122,6 +122,6 @@ export default function SectionBlock({
           </FocusTrap>*/}
         </MarkedBlockFrame>
       </Flex>
-</>
+    </>
   );
 }
