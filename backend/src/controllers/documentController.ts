@@ -173,6 +173,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
+            if(line==='') return  nullBlock;
             return  textfieldToBlock(line)
             })
           blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))

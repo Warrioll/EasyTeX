@@ -33,39 +33,22 @@ export default function SectionBlock({
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
 
-  const updateSectionContent = (event) => {
-    console.log('section event', event);
-    let content = [...sectionsContent];
-    console.log('section  event.target.value', event.target.value);
-    //content[idx].blockContent = event.target.value;
-    content[idx] = {
-      ...content[idx],
-      //blockContent: { idx: 1, sectionContent: event.target.value },
-      blockContent: event.target.value,
-    };
-    console.log('section content[idx].blockContent', content[idx].blockContent);
-    setSectionsContent(content);
-  };
+  // const updateSectionContent = (event) => {
+  //   console.log('section event', event);
+  //   let content = [...sectionsContent];
+  //   console.log('section  event.target.value', event.target.value);
+  //   //content[idx].blockContent = event.target.value;
+  //   content[idx] = {
+  //     ...content[idx],
+  //     //blockContent: { idx: 1, sectionContent: event.target.value },
+  //     blockContent: event.target.value,
+  //   };
+  //   console.log('section content[idx].blockContent', content[idx].blockContent);
+  //   setSectionsContent(content);
+  // };
 
   return (
-    <div
-      key={idx}
-      tabIndex={idx}
-      onFocus={async () => {
-        setActiveBlock(idx);
-        // sectionsContent[idx].blockContent
-        //   ?
-        await editor?.commands.setContent(sectionsContent[idx].blockContent);
-        //: null;
-        //console.log('onFocus', block);
-      }}
-      onBlur={() => {
-        let content = sectionsContent;
-        content[idx].blockContent = editor?.getHTML();
-        setSectionsContent(content);
-        //console.log('OnBlur', editorContent);
-      }}
-    >
+<>
       {
         //     idx===activeSection ?
         //     <Group justify="space-between">
@@ -118,6 +101,7 @@ export default function SectionBlock({
             activeTextInputState={activeTextInputState}
             idxInput={idx.toString()}
             sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
           />
 
           {/* <FocusTrap active={focusTrap}>
@@ -138,6 +122,6 @@ export default function SectionBlock({
           </FocusTrap>*/}
         </MarkedBlockFrame>
       </Flex>
-    </div>
+</>
   );
 }

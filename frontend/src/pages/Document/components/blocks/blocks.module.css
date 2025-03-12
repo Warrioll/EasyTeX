@@ -41,3 +41,12 @@
     white-space: nowrap;
 }
 
+.titlePage{
+    text-align: center;
+
+    .titiptap{
+    
+        text-align: center !important;
+    }
+}
+

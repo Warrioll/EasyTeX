@@ -1,10 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
-import { Badge, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/core';
+import { Badge, Button, Flex, FocusTrap, Group, Input, Menu,Box } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import styles from './blocks.module.css';
+import { chceckIfBlockContentEmpty } from '../../documentHandlers';
 
 type BasicTextfieldProps = {
   idx: number | string;
@@ -32,7 +33,8 @@ export default function BasicTexfield({
   const [activeBlock, setActiveBlock] = activeBlockState;
   const [activeTextInput, setActiveTextInput] = activeTextInputState;
 
-  const onBlurSaveContentMethod = (sectionsContentCopy, toSave: string) => {
+  const onBlurSaveContentMethod = (sectionsContent, toSave: string) => {
+    let sectionsContentCopy = sectionsContent;
     switch (sectionsContent[activeBlock].typeOfBlock) {
       case 'titlePage':
         console.log('titlePageeee');
@@ -53,37 +55,52 @@ export default function BasicTexfield({
     setSectionsContent(sectionsContentCopy);
   };
 
+ 
+
   return (
     <div
-      style={{ marginLeft: 'var(--mantine-spacing-xl)', marginRight: 'var(--mantine-spacing-xl)' }}
+      style={{ width: '100%', height: '100%' }}
       key={idxInput}
       tabIndex={idx}
       onFocus={async () => {
         setActiveTextInput(idxInput);
         // sectionsContent[idx].blockContent
         //   ?
+        console.log("contentToREad:", contentToRead)
         await editor?.commands.setContent(contentToRead);
         //: null;
         //console.log('onFocus', block);
       }}
       onBlur={() => {
-        let content = sectionsContent;
-        onBlurSaveContentMethod(sectionsContent, editor?.getHTML());
-        setActiveTextInput('');
-        //setSectionsContent(content);
+        const fromTextInput=editor?.getHTML()
+        //let content= sectionsContent;
+        if(chceckIfBlockContentEmpty(fromTextInput)){
+          onBlurSaveContentMethod(sectionsContent, '<p>...</p>');
+        }else{
+          
+          onBlurSaveContentMethod(sectionsContent, fromTextInput);
+        }
+        //setActiveTextInput('');
+
+       // setSectionsContent(content);
         //console.log('OnBlur', editorContent);
       }}
     >
+      
       {activeTextInput === idxInput ? (
         // <RichTextEditor editor={editor}>
         //   <RichTextEditor.Content />
         // </RichTextEditor>
+        
         <FocusTrap active={focusTrap}>
           <EditorContent editor={editor} />
         </FocusTrap>
+    
       ) : contentToRead ? (
-        <div className={styles.textfieldNotFocused}>{parse(contentToRead)}</div>
+        <Box pl='lg' pr='lg'>
+        <div className={styles.textfieldNotFocused}>{parse(contentToRead)}</div></Box>
       ) : null}
+     
     </div>
   );
 }

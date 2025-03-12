@@ -7,6 +7,7 @@ import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './MarkedBlockFrame';
 import styles from './blocks.module.css';
+import BasicTexfield from './basicTextfield';
 
 type TextfieldBlockProps = {
   idx: number;
@@ -16,6 +17,7 @@ type TextfieldBlockProps = {
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
   editor: Editor;
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
   // editorContent;
 };
 
@@ -27,30 +29,14 @@ export default function TextfieldBlock({
   sectionsContent,
   setSectionsContent,
   editor,
+  activeTextInputState
   //editorContent,
 }: TextfieldBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
 
   return (
-    <div
-      key={idx}
-      tabIndex={idx}
-      onFocus={async () => {
-        setActiveBlock(idx);
-        // sectionsContent[idx].blockContent
-        //   ?
-        await editor?.commands.setContent(sectionsContent[idx].blockContent);
-        //: null;
-        //console.log('onFocus', block);
-      }}
-      onBlur={() => {
-        let content = sectionsContent;
-        content[idx].blockContent = editor?.getHTML();
-        setSectionsContent(content);
-        //console.log('OnBlur', editorContent);
-      }}
-    >
+   
       <MarkedBlockFrame
         idx={idx}
         activeBlockState={activeBlockState}
@@ -58,19 +44,16 @@ export default function TextfieldBlock({
         sectionsContent={sectionsContent}
         setSectionsContent={setSectionsContent}
       >
-        {activeBlock === idx ? (
-          // <RichTextEditor editor={editor}>
-          //   <RichTextEditor.Content />
-          // </RichTextEditor>
-          <FocusTrap active={focusTrap}>
-            <EditorContent editor={editor} />
-          </FocusTrap>
-        ) : sectionsContent[idx].blockContent ? (
-          <div className={styles.textfieldNotFocused}>
-            {parse(sectionsContent[idx].blockContent as string)}
-          </div>
-        ) : null}
+       <BasicTexfield
+                            idx={idx}
+                            activeBlockState={activeBlockState}
+                            contentToRead={sectionsContent[idx].blockContent as string}
+                            editor={editor}
+                            activeTextInputState={activeTextInputState}
+                            idxInput={idx.toString()}
+                            sectionsContent={sectionsContent}
+                            setSectionsContent={setSectionsContent}
+                          />
       </MarkedBlockFrame>
-    </div>
   );
 }

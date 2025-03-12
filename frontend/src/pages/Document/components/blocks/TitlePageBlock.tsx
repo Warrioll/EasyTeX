@@ -14,6 +14,7 @@ import {
   Stack,
   TextInput,
   Title,
+  Text
 } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
@@ -43,28 +44,28 @@ export default function TitlePageBlock({
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
 
-  const updateSectionContent = (event) => {
-    console.log('section event', event);
-    let content = [...sectionsContent];
-    console.log('section  event.target.value', event.target.value);
-    //content[idx].blockContent = event.target.value;
-    content[idx] = {
-      ...content[idx],
-      //blockContent: { idx: 1, sectionContent: event.target.value },
-      blockContent: event.target.value,
-    };
-    console.log('section content[idx].blockContent', content[idx].blockContent);
-    setSectionsContent(content);
-  };
+  // const updateSectionContent = (event) => {
+  //   console.log('section event', event);
+  //   let content = [...sectionsContent];
+  //   console.log('section  event.target.value', event.target.value);
+  //   //content[idx].blockContent = event.target.value;
+  //   content[idx] = {
+  //     ...content[idx],
+  //     //blockContent: { idx: 1, sectionContent: event.target.value },
+  //     blockContent: event.target.value,
+  //   };
+  //   console.log('section content[idx].blockContent', content[idx].blockContent);
+  //   setSectionsContent(content);
+  // };
 
   return (
     <div
-      key={idx}
-      tabIndex={idx}
-      onFocus={async () => {
-        toggle();
-        setActiveBlock(idx);
-      }}
+      // key={idx}
+      // tabIndex={idx}
+      // onFocus={async () => {
+      //   toggle();
+      //   setActiveBlock(idx);
+      // }}
 
       // onFocus={async () => {
       //   setActiveSecion(idx);
@@ -89,33 +90,9 @@ export default function TitlePageBlock({
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
         >
-          <Stack justify="center" align="center" ta="center" pt="xl" pb="xl" m="xl">
-            Title
-            {/* <div
-              key={idx}
-              tabIndex={idx}
-              onFocus={async () => {
-                setActiveTextfield(idx.toString().concat('title'));
-                //setActiveSecion(3);
-                // sectionsContent[idx].blockContent
-                //   ?
-                // console.log(idx.toString().concat('title'));
-                //console.log(sectionsContent[idx].blockContent.title);
-                await editor?.commands.setContent(
-                  sectionsContent[Math.floor(idx)].blockContent.title
-                );
-                //: null;
-                //console.log('onFocus', block);
-              }}
-              onBlur={() => {
-                let content = sectionsContent;
-                content[idx].blockContent.title = editor?.getHTML();
-                setSectionsContent(content);
-                //setActiveTextfield('');
-                //console.log('OnBlur', editorContent);
-              }}
-              style={{ backgroundColor: 'pink', padding: '5px' }}
-            > */}
+          <Stack justify="center" align="flex-start"  pt="xl" pb="xl" m="xl" className={classes.titlePage}>
+            <Text fw={500} size='sm'>Title</Text>
+  
             <BasicTexfield
               idx={idx}
               activeBlockState={activeBlockState}
@@ -126,6 +103,7 @@ export default function TitlePageBlock({
               sectionsContent={sectionsContent}
               setSectionsContent={setSectionsContent}
             />
+             <Text fw={500} size='sm'>Author</Text>
             <BasicTexfield
               idx={idx}
               activeBlockState={activeBlockState}
@@ -136,63 +114,16 @@ export default function TitlePageBlock({
               sectionsContent={sectionsContent}
               setSectionsContent={setSectionsContent}
             />
-            {/* </div>
-            <div
-              key={idx.toString().concat('author')}
-              tabIndex={idx}
-              onFocus={async () => {
-                setActiveTextfield(idx.toString().concat('author'));
-                //setActiveSecion(idx);
-                // sectionsContent[idx].blockContent
-                //   ?
-                await editor?.commands.setContent(sectionsContent[idx].blockContent.author);
-                //: null;
-                //console.log('onFocus', block);
-              }}
-              onBlur={() => {
-                let content = sectionsContent;
-                content[idx].blockContent.author = editor?.getHTML();
-                setSectionsContent(content);
-                //setActiveTextfield('');
-                //console.log('OnBlur', editorContent);
-              }}
-            >
-              <BasicTexfield
-                idx={idx.toString().concat('author')}
-                activeSection={activeTextfield}
-                textFieldContent={sectionsContent[activeBlock].blockContent.author}
-                editor={editor}
-              />
-            </div> */}
-            <TextInput
-              label="Author"
-              radius="md"
-              placeholder="Author..."
-              variant="header1"
-              //   value={
-              //     sectionsContent[idx].blockContent === undefined
-              //       ? ''
-              //       : sectionsContent[idx].blockContent
-              //     //sectionsContent[idx].blockContent.sectionContent === undefined ? '' : sectionsContent[idx].blockContent.sectionContent
-              //   }
-              //onChange={(event) => updateSectionContent(event)}
-              w="100%"
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
-            <TextInput
-              label="Date"
-              radius="md"
-              placeholder="Date..."
-              variant="header1"
-              //   value={
-              //     sectionsContent[idx].blockContent === undefined
-              //       ? ''
-              //       : sectionsContent[idx].blockContent
-              //     //sectionsContent[idx].blockContent.sectionContent === undefined ? '' : sectionsContent[idx].blockContent.sectionContent
-              //   }
-              //onChange={(event) => updateSectionContent(event)}
-              w="100%"
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+      <Text fw={500} size='sm'>Date</Text>
+      <BasicTexfield
+              idx={idx}
+              activeBlockState={activeBlockState}
+              contentToRead={sectionsContent[idx].blockContent.date}
+              editor={editor}
+              activeTextInputState={activeTextInputState}
+              idxInput={idx.toString().concat('date')}
+              sectionsContent={sectionsContent}
+              setSectionsContent={setSectionsContent}
             />
           </Stack>
         </MarkedBlockFrame>

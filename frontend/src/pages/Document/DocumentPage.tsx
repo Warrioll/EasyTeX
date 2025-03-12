@@ -44,6 +44,7 @@ import TitlePageBlock from './components/blocks/TitlePageBlock';
 import Header from './components/header/Header';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
+import { chceckIfBlockContentEmpty } from './documentHandlers';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -262,9 +263,21 @@ export default function DocumentPage() {
 
   const sendChanges = async () => {
     try {
+      const blocks = sectionsContent.filter(block =>{
+        switch(block.typeOfBlock){
+          case 'titlePage':
+            if(chceckIfBlockContentEmpty(block.blockContent.title) && chceckIfBlockContentEmpty(block.blockContent.author) && chceckIfBlockContentEmpty(block.blockContent.date)){
+              return false
+            }
+            return true
+          default:
+            return !chceckIfBlockContentEmpty(block.blockContent)
+        }
+       })
+
       const response = await axios.put(
         `http://localhost:8100/document/documentContent/${id}`,
-        sectionsContent,
+        blocks,
         { withCredentials: true }
       );
 
@@ -357,6 +370,7 @@ export default function DocumentPage() {
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
+            activeTextInputState={activeTextInputState}
           />
         );
         break;
@@ -382,6 +396,7 @@ export default function DocumentPage() {
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
             editor={editor}
+            activeTextInputState={activeTextInputState}
           />
         );
         break;
@@ -393,6 +408,7 @@ export default function DocumentPage() {
             activeBlockState={activeBlockState}
             sectionsContent={sectionsContent}
             setSectionsContent={setSectionsContent}
+            activeTextInputState={activeTextInputState}
             editor={editor}
           />
         );

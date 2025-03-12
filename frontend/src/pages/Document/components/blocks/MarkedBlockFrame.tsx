@@ -190,12 +190,21 @@ export default function MarkedBlockFrame({
   };
 
   return (
-    <>
+        <div
+    key={idx}
+    tabIndex={idx}
+    onFocus={async () => {
+      //toggle();
+      setActiveBlock(idx);
+    }}
+    >
       <Flex>
         <Paper
           radius="0px"
           pt="0px"
           pb="0px"
+          pl='lg'
+          pr='lg'
           w="40vw"
           className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
         >
@@ -204,6 +213,7 @@ export default function MarkedBlockFrame({
             className={idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : ''}
             w="100%"
             p="0px"
+
           >
             {children}
           </Box>
@@ -289,6 +299,6 @@ export default function MarkedBlockFrame({
           </SimpleGrid>
         </SimpleGrid>
       </Modal>
-    </>
+      </div>
   );
 }

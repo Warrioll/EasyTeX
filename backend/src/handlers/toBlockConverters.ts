@@ -50,8 +50,9 @@ export const sectionToBlock =(line: string) : blockType=>{
     let section= basicToBlockFontConverter (line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-     section = section.replace('\\section{\\textnormal{', '')
-    section= section.replace('}}', '')
+     section = section.replace('\\section{', '')
+     section = section.replace('\\textnormal{', '')
+    section= section.replaceAll('}', '')
 
    
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
@@ -65,8 +66,9 @@ export const subsectionToBlock =(line: string) : blockType=>{
     let section= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    section = section.replace('\\subsection{\\textnormal{', '')
-    section= section.replace('}}', '')
+    section = section.replace('\\subsection{', '')
+    section = section.replace('\\textnormal{', '')
+   section= section.replaceAll('}', '')
 
    
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
@@ -80,8 +82,9 @@ export const subsubsectionToBlock =(line: string) : blockType=>{
     let section= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-   section = section.replace('\\subsubsection{\\textnormal{', '')
-    section= section.replace('}}', '')
+    section = section.replace('\\subsubsection{', '')
+    section = section.replace('\\textnormal{', '')
+   section= section.replaceAll('}', '')
 
     
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r

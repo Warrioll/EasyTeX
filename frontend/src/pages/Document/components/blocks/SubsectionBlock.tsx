@@ -7,12 +7,14 @@ import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './MarkedBlockFrame';
 import styles from './blocks.module.css';
+import BasicTexfield from './basicTextfield';
 
 type SectionBlockProps = {
   idx: number;
   activeBlockState: [number, Dispatch<SetStateAction<number>>];
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
   editor: Editor;
 };
 
@@ -22,6 +24,7 @@ export default function SubsectionBlock({
   sectionsContent,
   setSectionsContent,
   editor,
+  activeTextInputState
 }: SectionBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
@@ -49,53 +52,16 @@ export default function SubsectionBlock({
         sectionsContent={sectionsContent}
         setSectionsContent={setSectionsContent}
       >
-        <div
-          key={idx}
-          tabIndex={idx}
-          onFocus={async () => {
-            setActiveBlock(idx);
-            // sectionsContent[idx].blockContent
-            //   ?
-            await editor?.commands.setContent(sectionsContent[idx].blockContent);
-            //: null;
-            //console.log('onFocus', block);
-          }}
-          onBlur={() => {
-            let content = sectionsContent;
-            content[idx].blockContent = editor?.getHTML();
-            setSectionsContent(content);
-            //console.log('OnBlur', editorContent);
-          }}
-        >
-          {/* <FocusTrap active={focusTrap}>
-            <Input
-              radius="md"
-              placeholder="Header..."
-              variant="header1"
-              value={
-                sectionsContent[idx].blockContent === undefined
-                  ? ''
-                  : sectionsContent[idx].blockContent
-                //sectionsContent[idx].blockContent.sectionContent === undefined ? '' : sectionsContent[idx].blockContent.sectionContent
-              }
-              onChange={(event) => updateSectionContent(event)}
-              w="100%"
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
-          </FocusTrap> */}
-          {activeBlock === idx ? (
-            // <RichTextEditor editor={editor}>
-            //   <RichTextEditor.Content />
-            // </RichTextEditor>
-            <FocusTrap active={focusTrap}>
-              <EditorContent editor={editor} />
-            </FocusTrap>
-          ) : sectionsContent[idx].blockContent ? (
-            <div className={styles.textfieldNotFocused}>
-              {parse(sectionsContent[idx].blockContent as string)}
-            </div>
-          ) : null}
-        </div>
+        <BasicTexfield
+                    idx={idx}
+                    activeBlockState={activeBlockState}
+                    contentToRead={sectionsContent[idx].blockContent as string}
+                    editor={editor}
+                    activeTextInputState={activeTextInputState}
+                    idxInput={idx.toString()}
+                    sectionsContent={sectionsContent}
+                    setSectionsContent={setSectionsContent}
+                  />
       </MarkedBlockFrame>
     </Flex>
   );
