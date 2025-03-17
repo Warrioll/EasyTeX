@@ -5,9 +5,9 @@ import { FocusTrap } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
-import MarkedBlockFrame from './MarkedBlockFrame';
+import BasicTexfield from './blocksComponents/basicTextfield';
+import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
-import BasicTexfield from './basicTextfield';
 
 type TextfieldBlockProps = {
   idx: number;
@@ -29,31 +29,30 @@ export default function TextfieldBlock({
   sectionsContent,
   setSectionsContent,
   editor,
-  activeTextInputState
+  activeTextInputState,
   //editorContent,
 }: TextfieldBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
 
   return (
-   
-      <MarkedBlockFrame
+    <MarkedBlockFrame
+      idx={idx}
+      activeBlockState={activeBlockState}
+      blockName="Textfield"
+      sectionsContent={sectionsContent}
+      setSectionsContent={setSectionsContent}
+    >
+      <BasicTexfield
         idx={idx}
         activeBlockState={activeBlockState}
-        blockName="Textfield"
+        contentToRead={sectionsContent[idx].blockContent as string}
+        editor={editor}
+        activeTextInputState={activeTextInputState}
+        idxInput={idx.toString()}
         sectionsContent={sectionsContent}
         setSectionsContent={setSectionsContent}
-      >
-       <BasicTexfield
-                            idx={idx}
-                            activeBlockState={activeBlockState}
-                            contentToRead={sectionsContent[idx].blockContent as string}
-                            editor={editor}
-                            activeTextInputState={activeTextInputState}
-                            idxInput={idx.toString()}
-                            sectionsContent={sectionsContent}
-                            setSectionsContent={setSectionsContent}
-                          />
-      </MarkedBlockFrame>
+      />
+    </MarkedBlockFrame>
   );
 }

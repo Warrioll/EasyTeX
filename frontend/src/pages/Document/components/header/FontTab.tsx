@@ -51,7 +51,7 @@ const FontTab: React.FC<headerProps> = ({ editFunctions, editor, saveElementChan
       tooltip: 'Typewriter',
     },
   ];
-  FaLink;
+  //FaLink;
 
   const withLine: buttonType[] = [
     {

@@ -110,3 +110,15 @@ export const subsubsectionToTex =(blockContent:string): string =>{
     blockContent=erasePTags(blockContent)
     return('\\subsubsection{\\textnormal{'+blockContent+'}}');
 }
+
+export const titlePageToTex =(blockContent:{title:string, author: string, date: string}): string =>{
+    const title = erasePTags(basicToTexFontConverter( blockContent.title))
+    const author = erasePTags(basicToTexFontConverter( blockContent.author))
+    const date = erasePTags(basicToTexFontConverter( blockContent.date))
+
+
+    return `\\title{${title}}`
+          +`\n\\author{${author}}`
+          +`\n\\date{${date}}` 
+          + '\n\\maketitle'
+}

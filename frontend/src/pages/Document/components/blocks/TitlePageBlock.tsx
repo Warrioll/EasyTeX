@@ -19,8 +19,8 @@ import {
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
-import BasicTexfield from './basicTextfield';
-import MarkedBlockFrame from './MarkedBlockFrame';
+import BasicTexfield from './blocksComponents/basicTextfield';
+import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type SectionBlockProps = {

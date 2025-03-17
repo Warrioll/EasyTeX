@@ -4,11 +4,11 @@ import parse from 'html-react-parser';
 import { Badge, Box, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { blockType } from '@/Types';
-import { chceckIfBlockContentEmpty } from '../../documentHandlers';
-import styles from './blocks.module.css';
+import { chceckIfBlockContentEmpty, saveBasicTextInputChanges } from '../../../documentHandlers';
+import styles from '../blocks.module.css';
 
 type BasicTextfieldProps = {
-  idx: number | string;
+  idx: number;
   idxInput: string;
   activeBlockState: [number, Dispatch<SetStateAction<number>>];
   editor: Editor;
@@ -32,6 +32,7 @@ export default function BasicTexfield({
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
   const [activeTextInput, setActiveTextInput] = activeTextInputState;
+  const blocksContentState = [sectionsContent, setSectionsContent];
 
   const onBlurSaveContentMethod = (sectionsContent, toSave: string) => {
     let sectionsContentCopy = sectionsContent;
@@ -75,9 +76,10 @@ export default function BasicTexfield({
         const fromTextInput = editor?.getHTML();
         //let content= sectionsContent;
         if (chceckIfBlockContentEmpty(fromTextInput)) {
-          onBlurSaveContentMethod(sectionsContent, '<p>...</p>');
+          //onBlurSaveContentMethod(sectionsContent, '<p>...</p>');
+          saveBasicTextInputChanges(idx, idxInput, blocksContentState, '<p>...</p>');
         } else {
-          onBlurSaveContentMethod(sectionsContent, fromTextInput);
+          saveBasicTextInputChanges(idx, idxInput, blocksContentState, fromTextInput);
         }
         //setActiveTextInput('');
 
@@ -89,11 +91,10 @@ export default function BasicTexfield({
         // <RichTextEditor editor={editor}>
         //   <RichTextEditor.Content />
         // </RichTextEditor>
-        <Box bg="pink">
-          <FocusTrap active={focusTrap}>
-            <EditorContent editor={editor} />
-          </FocusTrap>
-        </Box>
+
+        <FocusTrap active={focusTrap}>
+          <EditorContent editor={editor} />
+        </FocusTrap>
       ) : contentToRead ? (
         <Box pl="lg" pr="lg">
           <div className={styles.textfieldNotFocused}>{parse(contentToRead)}</div>

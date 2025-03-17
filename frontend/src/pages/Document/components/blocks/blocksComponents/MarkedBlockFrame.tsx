@@ -27,7 +27,8 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
-import classes from './blocks.module.css';
+import ButtonsOfMarkedBlock from './ButtonsOfMarkedBlock';
+import classes from '../blocks.module.css';
 
 type MarkedBlockFrameProps = {
   idx: number;
@@ -190,34 +191,45 @@ export default function MarkedBlockFrame({
   };
 
   return (
-        <div
-    key={idx}
-    tabIndex={idx}
-    onFocus={async () => {
-      //toggle();
-      setActiveBlock(idx);
-    }}
+    <div
+      key={idx}
+      tabIndex={idx}
+      onFocus={async () => {
+        //toggle();
+        setActiveBlock(idx);
+      }}
     >
       <Flex>
         <Paper
           radius="0px"
           pt="0px"
           pb="0px"
-          pl='lg'
-          pr='lg'
+          pl="lg"
+          pr="lg"
           w="40vw"
           className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
         >
-          {frameToolBar(addBlockAbove)}
+          <ButtonsOfMarkedBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blockName={blockName}
+            blockContentState={[sectionsContent, setSectionsContent]}
+            typeOfAddBlockFunction="above"
+          />
           <Box
             className={idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : ''}
             w="100%"
             p="0px"
-
           >
             {children}
           </Box>
-          {frameToolBar(addBlockBelow)}
+          <ButtonsOfMarkedBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blockName={blockName}
+            blockContentState={[sectionsContent, setSectionsContent]}
+            typeOfAddBlockFunction="below"
+          />
           {/* {idx === activeSection ? (
           <Flex justify="center" >
             <Menu>
@@ -299,6 +311,6 @@ export default function MarkedBlockFrame({
           </SimpleGrid>
         </SimpleGrid>
       </Modal>
-      </div>
+    </div>
   );
 }

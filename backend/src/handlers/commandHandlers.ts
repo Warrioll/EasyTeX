@@ -28,6 +28,7 @@ const execute = async (command: string):Promise<void> =>{
 
 export const compileTex = async (path:string, fileName: string): Promise<void>=>{
     await execute(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
+    await execute(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
 }
 
 export const clearCompilationFiles = async (path:string, fileName: string): Promise<void>=>{

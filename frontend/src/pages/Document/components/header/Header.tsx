@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
+import { BiFont } from 'react-icons/bi';
 import {
   FaBold,
   FaCode,
@@ -15,8 +16,19 @@ import {
 } from 'react-icons/fa';
 import { FaListOl } from 'react-icons/fa6';
 import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import { LuHeading1, LuHeading2, LuHeading3, LuRefreshCcw } from 'react-icons/lu';
-import { MdOutlineAdd } from 'react-icons/md';
+import {
+  LuHeading1,
+  LuHeading2,
+  LuHeading3,
+  LuRefreshCcw,
+  //LuTableOfContents,
+} from 'react-icons/lu';
+import {
+  MdFormatListNumberedRtl,
+  MdOutlineAdd,
+  MdOutlineInsertPageBreak,
+  MdOutlineTitle,
+} from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { RiFileDownloadFill, RiFileDownloadLine, RiSplitCellsHorizontal } from 'react-icons/ri';
 import { useParams } from 'react-router-dom';
@@ -144,7 +156,28 @@ const Header: React.FC<headerProps> = ({
         fz="var(--mantine-font-size-lg)"
         onClick={editFunctions.addTextfield}
       >
-        <PiTextTBold />
+        <BiFont />
+      </Button>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addTitlePage}
+      >
+        <MdOutlineTitle />
+      </Button>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addTableOfContents}
+      >
+        <MdFormatListNumberedRtl />
+      </Button>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addPageBreak}
+      >
+        <MdOutlineInsertPageBreak />
       </Button>
     </>
   );

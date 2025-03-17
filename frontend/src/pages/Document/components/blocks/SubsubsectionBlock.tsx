@@ -5,9 +5,9 @@ import { Badge, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/cor
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
-import MarkedBlockFrame from './MarkedBlockFrame';
+import BasicTexfield from './blocksComponents/basicTextfield';
+import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
-import BasicTexfield from './basicTextfield';
 
 type SectionBlockProps = {
   idx: number;
@@ -24,7 +24,7 @@ export default function SubsubsectionBlock({
   sectionsContent,
   setSectionsContent,
   editor,
-  activeTextInputState
+  activeTextInputState,
 }: SectionBlockProps) {
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
@@ -45,22 +45,22 @@ export default function SubsubsectionBlock({
 
   return (
     <div
-      // key={idx}
-      // tabIndex={idx}
-      // onFocus={async () => {
-      //   setActiveBlock(idx);
-      //   // sectionsContent[idx].blockContent
-      //   //   ?
-      //   await editor?.commands.setContent(sectionsContent[idx].blockContent);
-      //   //: null;
-      //   //console.log('onFocus', block);
-      // }}
-      // onBlur={() => {
-      //   let content = sectionsContent;
-      //   content[idx].blockContent = editor?.getHTML();
-      //   setSectionsContent(content);
-      //   //console.log('OnBlur', editorContent);
-      // }}
+    // key={idx}
+    // tabIndex={idx}
+    // onFocus={async () => {
+    //   setActiveBlock(idx);
+    //   // sectionsContent[idx].blockContent
+    //   //   ?
+    //   await editor?.commands.setContent(sectionsContent[idx].blockContent);
+    //   //: null;
+    //   //console.log('onFocus', block);
+    // }}
+    // onBlur={() => {
+    //   let content = sectionsContent;
+    //   content[idx].blockContent = editor?.getHTML();
+    //   setSectionsContent(content);
+    //   //console.log('OnBlur', editorContent);
+    // }}
     >
       {
         //     idx===activeSection ?
@@ -93,16 +93,16 @@ export default function SubsubsectionBlock({
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
         >
-                  <BasicTexfield
-                     idx={idx}
-                     activeBlockState={activeBlockState}
-                     contentToRead={sectionsContent[idx].blockContent as string}
-                     editor={editor}
-                     activeTextInputState={activeTextInputState}
-                     idxInput={idx.toString()}
-                     sectionsContent={sectionsContent}
-                     setSectionsContent={setSectionsContent}
-                   />
+          <BasicTexfield
+            idx={idx}
+            activeBlockState={activeBlockState}
+            contentToRead={sectionsContent[idx].blockContent as string}
+            editor={editor}
+            activeTextInputState={activeTextInputState}
+            idxInput={idx.toString()}
+            sectionsContent={sectionsContent}
+            setSectionsContent={setSectionsContent}
+          />
         </MarkedBlockFrame>
       </Flex>
     </div>

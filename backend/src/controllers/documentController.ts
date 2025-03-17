@@ -3,7 +3,7 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter, } from '../handlers/toTexConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -166,6 +166,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
             if(line.includes('\\date')) {titlePageData.date=getDateFromTex(line); return  nullBlock};
             if(line.includes('\\maketitle')) return  {typeOfBlock: 'titlePage', blockContent: titlePageData};
+            if(line.includes('\\tableofcontents')) return  {typeOfBlock: 'tableOfContents', blockContent: ''};
+            if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
             if(line.includes('\\section')) return  sectionToBlock(line);
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
@@ -399,17 +401,22 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
   console.log(blocks);
   
-    let titlePageData = {title: '', author: '', date: ''}
+   // let titlePageData = {title: '', author: '', date: ''}
   let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
     switch(block.typeOfBlock){
       case 'documentclass':
         return documentclassToTex(block.blockContent as string);
       case 'titlePage':
         if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
-          titlePageData=block.blockContent;
-            return '\\maketitle'
+          // titlePageData=block.blockContent;
+          //   return '\\maketitle'
+          return titlePageToTex(block.blockContent)
         }
         return ''
+      case 'tableOfContents':
+        return '\\tableofcontents'
+      case 'pageBreak':
+        return '\\newpage'
       case 'textfield':
        return textfieldToTex(block.blockContent as string);
       case 'section':
@@ -424,10 +431,10 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
   })
 
  
-    document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
-      +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
-      +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}`
-    );
+    // document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
+    //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
+    //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}`
+    // );
 
       document.splice(1,0,'\\usepackage{ulem}'
         +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'

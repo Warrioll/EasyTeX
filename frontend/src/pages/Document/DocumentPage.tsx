@@ -36,15 +36,17 @@ import { useTextSelection } from '@mantine/hooks';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { theme } from '@/theme';
 import { blockType } from '@/Types';
+import PageBreakBlock from './components/blocks/PageBreakBlock';
 import SectionBlock from './components/blocks/SectionBlock';
 import SubsectionBlock from './components/blocks/SubsectionBlock';
 import SubsubsectionBlock from './components/blocks/SubsubsectionBlock';
+import TableOfContentsBlock from './components/blocks/TableOfContentsBlock';
 import TextfieldBlock from './components/blocks/TextfieldBlock';
 import TitlePageBlock from './components/blocks/TitlePageBlock';
 import Header from './components/header/Header';
+import { chceckIfBlockContentEmpty, saveBasicTextInputChanges } from './documentHandlers';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
-import { chceckIfBlockContentEmpty } from './documentHandlers';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -65,12 +67,14 @@ export default function DocumentPage() {
   const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
 
   // const [sectionsContent, setSectionsContent] = useState<chapterType[]>([]);
-  const [sectionsContent, setSectionsContent] = useState<blockType[]>([]);
+  const blocksContentState = useState<blockType[]>([]);
+  const [sectionsContent, setSectionsContent] = blocksContentState;
   const [blocksLoaded, setBlocksLoaded] = useState<boolean>(true);
 
   const activeBlockState = useState<number>(0);
   const [activeBlock, setActiveBlock] = activeBlockState;
   const activeTextInputState = useState<string>('');
+  const [activeTextInput, setActiveTextInput] = activeTextInputState;
 
   const [editorContent, setEditorContent] = useState(sectionsContent[activeBlock]);
 
@@ -124,12 +128,19 @@ export default function DocumentPage() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
-  const saveElementChanges = () => {
-    let content = sectionsContent;
-    content[activeBlock].blockContent = editor?.getHTML();
-    setSectionsContent(content);
-    //console.log('OnBlur', editorContent);
-  };
+  // const saveFontTextInputChanges = () => {
+  //   saveBasicTextInputChanges(
+  //     activeBlock,
+  //     activeTextInput,
+  //     blocksContentState,
+  //     editor?.getHTML() as string
+  //   );
+  //   // let content = sectionsContent;
+  //   // content[activeBlock].blockContent = editor?.getHTML();
+  //   // setSectionsContent(content);
+
+  //   //console.log('OnBlur', editorContent);
+  // };
 
   // const sendChanges = async () => {
   //   const response = await axios.put(
@@ -235,6 +246,62 @@ export default function DocumentPage() {
     }
   };
 
+  const addTitlePage = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'titlePage',
+          blockContent: { title: 'Title', author: 'Author', date: 'Date' },
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'titlePage',
+        blockContent: { title: 'Title', author: 'Author', date: 'Date' },
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
+  const addTableOfContents = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'tableOfContents',
+          blockContent: '',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'tableOfContents',
+        blockContent: '',
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
+  const addPageBreak = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'pageBreak',
+          blockContent: '',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'pageBreak',
+        blockContent: '',
+      });
+      setSectionsContent(blocks);
+    }
+  };
   const reloadPdf = async () => {
     // await setTimeout(() => {
     //   console.log('timeout');
@@ -263,17 +330,25 @@ export default function DocumentPage() {
 
   const sendChanges = async () => {
     try {
-      const blocks = sectionsContent.filter(block =>{
-        switch(block.typeOfBlock){
+      const blocks = sectionsContent.filter((block) => {
+        switch (block.typeOfBlock) {
           case 'titlePage':
-            if(chceckIfBlockContentEmpty(block.blockContent.title) && chceckIfBlockContentEmpty(block.blockContent.author) && chceckIfBlockContentEmpty(block.blockContent.date)){
-              return false
+            if (
+              chceckIfBlockContentEmpty(block.blockContent.title as string) &&
+              chceckIfBlockContentEmpty(block.blockContent.author as string) &&
+              chceckIfBlockContentEmpty(block.blockContent.date as string)
+            ) {
+              return false;
             }
-            return true
+            return true;
+          case 'tableOfContents':
+            return true;
+          case 'pageBreak':
+            return true;
           default:
-            return !chceckIfBlockContentEmpty(block.blockContent)
+            return !chceckIfBlockContentEmpty(block.blockContent);
         }
-       })
+      });
 
       const response = await axios.put(
         `http://localhost:8100/document/documentContent/${id}`,
@@ -297,6 +372,9 @@ export default function DocumentPage() {
     addSection,
     addSubsection,
     addSubsubsection,
+    addTitlePage,
+    addTableOfContents,
+    addPageBreak,
     //bold,
   };
 
@@ -357,12 +435,25 @@ export default function DocumentPage() {
             editor={editor}
             activeTextInputState={activeTextInputState}
           />
-          // <>
-          //   {item.blockContent.title} | {item.blockContent.author} | {item.blockContent.date}
-          // </>
+        );
+      case 'tableOfContents':
+        return (
+          <TableOfContentsBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+          />
+        );
+      case 'pageBreak':
+        return (
+          <PageBreakBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+          />
         );
       case 'textfield':
-        console.log('textfield');
+        //console.log('textfield');
         return (
           <TextfieldBlock
             idx={idx}
@@ -375,7 +466,7 @@ export default function DocumentPage() {
         );
         break;
       case 'section':
-        console.log('section');
+        //console.log('section');
         return (
           <SectionBlock
             idx={idx}
@@ -388,7 +479,7 @@ export default function DocumentPage() {
         );
         break;
       case 'subsection':
-        console.log('section');
+        //console.log('section');
         return (
           <SubsectionBlock
             idx={idx}
@@ -401,7 +492,7 @@ export default function DocumentPage() {
         );
         break;
       case 'subsubsection':
-        console.log('section');
+        //console.log('section');
         return (
           <SubsubsectionBlock
             idx={idx}
@@ -425,7 +516,14 @@ export default function DocumentPage() {
       <Header
         editFunctions={editFunctions}
         editor={editor}
-        saveElementChanges={saveElementChanges}
+        saveElementChanges={() => {
+          saveBasicTextInputChanges(
+            activeBlock,
+            activeTextInput,
+            blocksContentState,
+            editor?.getHTML() as string
+          );
+        }}
         pdfZoom={pdfZoom}
         workspaceZoom={workspaceZoom}
         activeSection={activeBlock}
