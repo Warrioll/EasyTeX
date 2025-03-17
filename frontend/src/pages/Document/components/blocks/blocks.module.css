@@ -1,0 +1,52 @@
+.sectionBlockStyle{
+    width: 100%;
+     background-color: var(--mantine-color-white);
+   /* border: 1px solid var(--mantine-color-cyan-0); */
+   /* border-left: 3px solid var(--mantine-color-cyan-3); */
+  /* background-color: #ebffff; */
+    border-radius: var(--mantine-radius-md);
+
+}
+
+.blockFrameStyle{
+    /* background-color: var(--mantine-color-cyan-0); */
+    border-left: 3px solid var(--mantine-color-cyan-3);
+    border-right: 3px solid var(--mantine-color-cyan-3);
+  
+}
+
+.stickyElement{
+    position: sticky;
+    top: 100
+}
+
+.textfieldNotFocused{
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: justify;
+}
+
+.centeredInput{
+
+}
+
+.titlePageContent{
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+    border-top: 1px solid var(--mantine-color-gray-1);
+}
+
+.trunckedText{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.titlePage{
+    text-align: center;
+
+    .titiptap{
+    
+        text-align: center !important;
+    }
+}
+

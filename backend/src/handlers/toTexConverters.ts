@@ -2,38 +2,51 @@ export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
 }
 
-export const textfieldToTex =(blockContent:string): string =>{
-    let textfield= blockContent;
-    
-    //znaki specjalne
+export const basicToTexFontConverter = (fontToConvert:string): string=>{
+//znaki specjalne
     //z tym coś nie działa
     //textfield= textfield.replaceAll('\\', '\\textbackslash')
 
     
 
     //bold
-    textfield = textfield.replaceAll('<strong>', '\\textbf{')
-    textfield = textfield.replaceAll('</strong>', '}')
+    fontToConvert = fontToConvert.replaceAll('<strong>', '\\textbf{')
+    fontToConvert = fontToConvert.replaceAll('</strong>', '}')
 
     //italic
-    textfield = textfield.replaceAll('<em>', '\\textit{')
-    textfield = textfield.replaceAll('</em>', '}')
+    fontToConvert = fontToConvert.replaceAll('<em>', '\\textit{')
+    fontToConvert = fontToConvert.replaceAll('</em>', '}')
 
     //monospace
-    textfield = textfield.replaceAll('<code>', '\\texttt{')
-    textfield = textfield.replaceAll('</code>', '}')
+    fontToConvert = fontToConvert.replaceAll('<code>', '\\texttt{')
+    fontToConvert = fontToConvert.replaceAll('</code>', '}')
 
-    //link
-    textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
-    textfield = textfield.replaceAll('</a>', '}}')
 
     //underline
-    textfield = textfield.replaceAll('<u>', '\\uline{')
-    textfield = textfield.replaceAll('</u>', '}')
+    fontToConvert = fontToConvert.replaceAll('<u>', '\\uline{')
+    fontToConvert = fontToConvert.replaceAll('</u>', '}')
 
     //strikethorugh - używa paczki ulem
-     textfield = textfield.replaceAll('<s>', '\\sout{')
-     textfield = textfield.replaceAll('</s>', '}')
+    fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
+    fontToConvert = fontToConvert.replaceAll('</s>', '}')
+
+return fontToConvert
+}
+
+const erasePTags = (fontToConvert:string): string =>{
+    fontToConvert= fontToConvert.replaceAll('<p>', "");
+    fontToConvert= fontToConvert.replaceAll('</p>', "");
+    return fontToConvert
+}
+
+export const textfieldToTex =(blockContent:string): string =>{
+    let textfield= blockContent;
+    
+    textfield=basicToTexFontConverter(textfield);
+
+        //link
+    textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
+    textfield = textfield.replaceAll('</a>', '}}')
 
     //subscript
     textfield = textfield.replaceAll('<sub>', '$_{\\textnormal{')
@@ -77,11 +90,35 @@ export const textfieldToTex =(blockContent:string): string =>{
 
 export const sectionToTex =(blockContent:string): string =>{
     // tu trzeba uwzględnić wystąpienie \r
+    blockContent=basicToTexFontConverter(blockContent);
+
     blockContent=blockContent.replaceAll('\r', '')
-    return('\\section{'+blockContent+'}');
+    blockContent=erasePTags(blockContent)
+    return('\\section{\\textnormal{'+blockContent+'}}');
 }
 
 export const subsectionToTex =(blockContent:string): string =>{
+
+   blockContent=basicToTexFontConverter(blockContent);
+   blockContent=erasePTags(blockContent)
+    return('\\subsection{\\textnormal{'+blockContent+'}}');
+}
+
+export const subsubsectionToTex =(blockContent:string): string =>{
    
-    return('\\subsection{'+blockContent+'}');
+    blockContent=basicToTexFontConverter(blockContent);
+    blockContent=erasePTags(blockContent)
+    return('\\subsubsection{\\textnormal{'+blockContent+'}}');
+}
+
+export const titlePageToTex =(blockContent:{title:string, author: string, date: string}): string =>{
+    const title = erasePTags(basicToTexFontConverter( blockContent.title))
+    const author = erasePTags(basicToTexFontConverter( blockContent.author))
+    const date = erasePTags(basicToTexFontConverter( blockContent.date))
+
+
+    return `\\title{${title}}`
+          +`\n\\author{${author}}`
+          +`\n\\date{${date}}` 
+          + '\n\\maketitle'
 }

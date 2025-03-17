@@ -1,19 +1,24 @@
 import express from 'express'
 import * as fileHander from "fs";
-import { exec } from 'child_process';
 import { documentModel } from '../models/documentModel'
-import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
+import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex } from '../handlers/toTexConverters';
-import { sectionToBlock, documentclassToBlock, textfieldToBlock } from '../handlers/toBlockConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex } from '../handlers/toTexConverters';
+import { sectionToBlock, 
+  documentclassToBlock, 
+  textfieldToBlock, 
+  subsectionToBlock, 
+  subsubsectionToBlock, 
+  getAuthorFromTex, 
+  getDateFromTex, 
+  getTitleFromTex } from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
-import { blockType } from '../types';
+import { blockType, titlePageType } from '../types';
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
 
-  //--------------cookie test-------------------------
-  if(req.cookies.auth && req.cookies.auth==='Warrioll' ){
+  
     try{
       const {id} = req.params;
       const document = await documentModel.findById(id);
@@ -22,11 +27,8 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
       console.log("Get ERROR: ", error)
       res.sendStatus(400);
   }
-                res.status(201).send({msg: 'Access granted'});
-            }else{
-                res.status(401).send({msg: 'Acces denied!'});
-            }
-//--------------^cookie test^-------------------------
+          
+
 
 // bez ciasteczek poniżej
     // try{
@@ -104,15 +106,21 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
     const documentInstantion = await documentModel.findById(id)
 
 
-    //console.log("cookie:", req.cookies.auth)
+    //console.log("cookie:", req.cookies.auth)  
     //console.log("usrId1:", documentInstantion.userId)
     //console.log("usrId2:", await verifySession(req.cookies.auth))
     //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
+      //await extendSession(req.cookies.auth,res)
+
 
     // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
-    res.setHeader('Content-type', 'application/pdf')
-    fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
 
+    await compileTex('documentBase', id+'.tex')
+    clearCompilationFiles('documentBase', id+'.tex')
+    res.setHeader('Content-type', 'application/pdf')
+    await extendSession(req.cookies.auth,res)
+    fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
+ 
   // }else{
   //   res.status(403).send({msg: 'Not loged in!'});
   // }
@@ -137,20 +145,37 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
         //sprawdzenie czy id z sesji zgadza sie z id właściiciela dokumnetu
         if(logedUser===documentInstantion.userId ){
-          await extendSession(req.cookies.auth,res)
+          //await extendSession(req.cookies.auth,res)
 
           let document: (string | undefined)[] = await loadTexFile(id);
           //console.log(document)
+
+          let titlePageData = {
+            title: '',
+            author: '',
+            date: ''
+          }
+
           let blocks: (blockType)[] = document.map((line, idx)=>{
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
             //console.log(line)
+
+            
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+            if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
+            if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
+            if(line.includes('\\date')) {titlePageData.date=getDateFromTex(line); return  nullBlock};
+            if(line.includes('\\maketitle')) return  {typeOfBlock: 'titlePage', blockContent: titlePageData};
+            if(line.includes('\\tableofcontents')) return  {typeOfBlock: 'tableOfContents', blockContent: ''};
+            if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
             if(line.includes('\\section')) return  sectionToBlock(line);
-            //if(line.includes('\\subsection')) return  subsectionToBlock(item);
+            if(line.includes('\\subsection')) return  subsectionToBlock(line);
+            if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
             if(line==='') return nullBlock;
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
+            if(line==='') return  nullBlock;
             return  textfieldToBlock(line)
             })
           blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
@@ -179,10 +204,12 @@ export const createDocument = async (req: express.Request, res: express.Response
 
     try{
       const userId = await verifySession(req.cookies.auth)
+       const documentNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
 
       if(req.cookies.auth &&  userId){
         await extendSession(req.cookies.auth,res)
 
+        if(documentNameRegex.test(req.body.name)){
         const documentData= {name: req.body.name, 
                     userId: userId,
                     documentClass:  req.body.documentClass,
@@ -196,7 +223,7 @@ export const createDocument = async (req: express.Request, res: express.Response
 
 
         const content: (string |undefined)[] = [`\\documentclass{${savedDocument.documentClass}}`, , 
-          "\\begin{document}",, "\\end{document}"];
+          "\\begin{document}",'New document', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
         const path: string = "documentBase" 
         fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
@@ -204,7 +231,12 @@ export const createDocument = async (req: express.Request, res: express.Response
         //compileTex(path, fileName);
         //clearCompilationFiles(path, fileName);
 
-        res.status(201).json(savedDocument);}
+        res.status(201).json(savedDocument);
+      }
+      else{
+        res.sendStatus(403)
+      }
+    }
         else{
           res.sendStatus(401)
         }
@@ -368,21 +400,41 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
   const blocks = req.body as blockType[]; 
 
   console.log(blocks);
-
+  
+   // let titlePageData = {title: '', author: '', date: ''}
   let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
     switch(block.typeOfBlock){
       case 'documentclass':
         return documentclassToTex(block.blockContent as string);
+      case 'titlePage':
+        if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
+          // titlePageData=block.blockContent;
+          //   return '\\maketitle'
+          return titlePageToTex(block.blockContent)
+        }
+        return ''
+      case 'tableOfContents':
+        return '\\tableofcontents'
+      case 'pageBreak':
+        return '\\newpage'
       case 'textfield':
        return textfieldToTex(block.blockContent as string);
       case 'section':
        return sectionToTex(block.blockContent as string);
       case 'subsection':
        return subsectionToTex(block.blockContent as string);
+       case 'subsubsection':
+        return subsubsectionToTex(block.blockContent as string);
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
   })
+
+ 
+    // document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
+    //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
+    //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}`
+    // );
 
       document.splice(1,0,'\\usepackage{ulem}'
         +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'
@@ -391,8 +443,12 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
      document.push('\\end{document}')
     console.log(document);
     fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
-    await compileTex('documentBase', id+'.tex')
-    clearCompilationFiles('documentBase', id+'.tex')
+
+    const updatedDocument = await documentModel.findByIdAndUpdate(id, {lastUpdate: new Date(Date.now())})
+
+    //console.log('saved, now compiling...')
+    //await compileTex('documentBase', id+'.tex')
+   // clearCompilationFiles('documentBase', id+'.tex')
 
     await extendSession(req.cookies.auth,res )
     res.sendStatus(200);
@@ -407,15 +463,19 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
   try{
     const {id}=req.params
     const userId = await verifySession(req.cookies.auth)
+    const documentNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
    
     const document = await documentModel.findById(id)
    // console.log('userId',id)
     if(req.cookies.auth && userId && userId===document.userId){
       await extendSession(req.cookies.auth,res)
 
+      if(documentNameRegex.test(req.body.name)){
       const updatedDocument = await documentModel.findByIdAndUpdate(id, {name: req.body.name, lastUpdate: new Date(Date.now())})
-
       res.sendStatus(200)
+      }else{
+        res.sendStatus(403)
+      }
     
     }else{
       res.sendStatus(401)
@@ -435,6 +495,7 @@ export const deleteDocument  = async (req: express.Request, res: express.Respons
     if(req.cookies.auth && userId && userId===document.userId){
       await extendSession(req.cookies.auth,res)
 
+      await deleteDocumentFiles('documentBase',id)
       const updatedDocument = await documentModel.findByIdAndDelete(id)
 
       res.sendStatus(200)
