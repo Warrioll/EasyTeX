@@ -50,7 +50,7 @@ export default function BasicTexfield({
         }
         break;
       default:
-        console.log('default on blur save');
+        //console.log('default on blur save');
         sectionsContentCopy[idx].blockContent = toSave;
         break;
     }

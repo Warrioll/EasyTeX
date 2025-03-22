@@ -89,6 +89,7 @@ export default function TitlePageBlock({
           blockName="Title, author, date"
           sectionsContent={sectionsContent}
           setSectionsContent={setSectionsContent}
+          activeTextInputState={activeTextInputState}
         >
           <Stack
             justify="center"

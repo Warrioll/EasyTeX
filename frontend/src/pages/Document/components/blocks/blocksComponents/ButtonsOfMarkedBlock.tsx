@@ -5,10 +5,11 @@ import { LuHeading1, LuHeading2 } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { TbForbid2 } from 'react-icons/tb';
-import { Badge, Button, Flex, Menu, Stack } from '@mantine/core';
+import { Badge, Button, Flex, Menu, Stack,Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import classes from '../blocks.module.css';
+import { blocksList } from '../blocksList';
 
 type ButtonsOfMarkedBlockPropsType = {
   idx: number;
@@ -16,18 +17,25 @@ type ButtonsOfMarkedBlockPropsType = {
   blockName: string;
   blockContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
   typeOfAddBlockFunction: 'above' | 'below';
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  deleteModalHandlers: any
 };
 
-export default function ({
+
+
+export default function ButtonsOfMarkedBlock({
   idx,
   activeBlockState,
   blockName,
   blockContentState,
   typeOfAddBlockFunction,
+  activeTextInputState,
+  deleteModalHandlers
 }: ButtonsOfMarkedBlockPropsType) {
-  const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
+  //const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
   const [sectionsContent, setSectionsContent] = blockContentState;
+  const [activeTextInput, setActiveTextInput]= activeTextInputState;
 
   const moveBlockUp = () => {
     let blocks = [...sectionsContent];
@@ -35,6 +43,7 @@ export default function ({
     blocks.splice(activeBlock - 1, 0, block);
     setSectionsContent(blocks);
     setActiveBlock(activeBlock - 1);
+    setActiveTextInput('')
   };
   const moveBlockDown = () => {
     let blocks = [...sectionsContent];
@@ -42,6 +51,7 @@ export default function ({
     blocks.splice(activeBlock + 1, 0, block);
     setSectionsContent(blocks);
     setActiveBlock(activeBlock + 1);
+    setActiveTextInput('')
   };
 
   const addBlockBelow = (block: blockType) => {
@@ -76,7 +86,17 @@ export default function ({
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item
+                {blocksList.map((block)=>{
+                  return (
+                    <Menu.Item
+                    onClick={() => addBlockFunction(block.blockToAdd)}
+                    leftSection={block.icon}
+                  >
+                   {block.blockName}
+                  </Menu.Item>
+                  )
+                })}
+                {/* <Menu.Item
                   onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
                   leftSection={<LuHeading1 />}
                 >
@@ -87,7 +107,7 @@ export default function ({
                   leftSection={<PiTextTBold />}
                 >
                   Textfield
-                </Menu.Item>
+                </Menu.Item> */}
               </Menu.Dropdown>
             </Menu>
             <Flex>
@@ -145,7 +165,7 @@ export default function ({
           </Flex>
         </Flex>
       ) : (
-        <></>
+        <Box h='42px'/>
       )}
     </>
   );

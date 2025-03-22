@@ -42,6 +42,7 @@ export default function TextfieldBlock({
       blockName="Textfield"
       sectionsContent={sectionsContent}
       setSectionsContent={setSectionsContent}
+      activeTextInputState={activeTextInputState}
     >
       <BasicTexfield
         idx={idx}

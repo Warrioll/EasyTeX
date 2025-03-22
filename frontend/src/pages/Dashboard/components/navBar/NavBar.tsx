@@ -99,10 +99,10 @@ export default function NavBar({ createDocumentModal, activeTab }: navBarPropsTy
             <span>My assets</span>
           </a>
 
-          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          {/* <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}> */}
             {/* <IconLogout className={classes.linkIcon} stroke={1.5} /> */}
-            <span>Upload TeX file</span>
-          </a>
+            {/* <span>Upload TeX file</span> */}
+          {/* </a> */}
         </div>
       </nav>
       {/* <Modal

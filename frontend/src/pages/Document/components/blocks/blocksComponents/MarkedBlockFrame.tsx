@@ -28,6 +28,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import ButtonsOfMarkedBlock from './ButtonsOfMarkedBlock';
+import DeleteBlockModal from './DeleteBlockModal';
 import classes from '../blocks.module.css';
 
 type MarkedBlockFrameProps = {
@@ -39,6 +40,7 @@ type MarkedBlockFrameProps = {
   children: React.ReactNode;
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function MarkedBlockFrame({
@@ -50,9 +52,11 @@ export default function MarkedBlockFrame({
   blockName,
   sectionsContent,
   setSectionsContent,
+  activeTextInputState
 }: MarkedBlockFrameProps) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
+ 
 
   //editor trzeba wyczyszczać czy coś przy dodawaniu textfiesd
   const addBlockBelow = (block: blockType) => {
@@ -90,105 +94,105 @@ export default function MarkedBlockFrame({
     deleteModalHandlers.close();
   };
 
-  const frameToolBar = (addBlockFunction: (block: blockType) => void): ReactElement => {
-    return (
-      <>
-        {idx === activeBlock ? (
-          <Flex justify="space-between">
-            <Stack w="100%" ml="0px" align="flex-start" justify="flex-end">
-              <Badge m="xs" ml="md" mt="sm" mr={0} radius="md" color="cyan" variant="transparent">
-                {blockName}
-              </Badge>
-            </Stack>
-            <Flex gap="0px">
-              <Menu>
-                <Menu.Target>
-                  <Button
-                    variant="transparent"
-                    size="compact-xs"
-                    mt="xs"
-                    w="2rem"
-                    h="1.5rem"
-                    m="0px"
-                  >
-                    <MdOutlineAdd />
-                  </Button>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
-                    leftSection={<LuHeading1 />}
-                  >
-                    Section
-                  </Menu.Item>
-                  <Menu.Item
-                    onClick={() => addBlockFunction({ typeOfBlock: 'textfield', blockContent: '' })}
-                    leftSection={<PiTextTBold />}
-                  >
-                    Textfield
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-              <Flex>
-                <Menu position="left-start">
-                  <Menu.Target>
-                    <Button
-                      variant="transparent"
-                      mt="xs"
-                      size="compact-sm"
-                      w="2rem"
-                      h="1.5rem"
-                      m="0px"
-                    >
-                      <IoMdMore />
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      leftSection={<FaArrowUp />}
-                      disabled={activeBlock === 1 ? true : false}
-                      onClick={moveBlockUp}
-                    >
-                      Move up
-                    </Menu.Item>
-                    <Menu.Item
-                      leftSection={<FaArrowDown />}
-                      disabled={activeBlock === sectionsContent.length - 1 ? true : false}
-                      onClick={moveBlockDown}
-                    >
-                      Move down
-                    </Menu.Item>
-                    <Menu.Item
-                      color="red"
-                      leftSection={<FaRegTrashAlt />}
-                      onClick={deleteModalHandlers.open}
-                    >
-                      Delete Block
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
+  // const frameToolBar = (addBlockFunction: (block: blockType) => void): ReactElement => {
+  //   return (
+  //     <>
+  //       {idx === activeBlock ? (
+  //         <Flex justify="space-between">
+  //           <Stack w="100%" ml="0px" align="flex-start" justify="flex-end">
+  //             <Badge m="xs" ml="md" mt="sm" mr={0} radius="md" color="cyan" variant="transparent">
+  //               {blockName}
+  //             </Badge>
+  //           </Stack>
+  //           <Flex gap="0px">
+  //             <Menu>
+  //               <Menu.Target>
+  //                 <Button
+  //                   variant="transparent"
+  //                   size="compact-xs"
+  //                   mt="xs"
+  //                   w="2rem"
+  //                   h="1.5rem"
+  //                   m="0px"
+  //                 >
+  //                   <MdOutlineAdd />
+  //                 </Button>
+  //               </Menu.Target>
+  //               <Menu.Dropdown>
+  //                 <Menu.Item
+  //                   onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
+  //                   leftSection={<LuHeading1 />}
+  //                 >
+  //                   Section
+  //                 </Menu.Item>
+  //                 <Menu.Item
+  //                   onClick={() => addBlockFunction({ typeOfBlock: 'textfield', blockContent: '' })}
+  //                   leftSection={<PiTextTBold />}
+  //                 >
+  //                   Textfield
+  //                 </Menu.Item>
+  //               </Menu.Dropdown>
+  //             </Menu>
+  //             <Flex>
+  //               <Menu position="left-start">
+  //                 <Menu.Target>
+  //                   <Button
+  //                     variant="transparent"
+  //                     mt="xs"
+  //                     size="compact-sm"
+  //                     w="2rem"
+  //                     h="1.5rem"
+  //                     m="0px"
+  //                   >
+  //                     <IoMdMore />
+  //                   </Button>
+  //                 </Menu.Target>
+  //                 <Menu.Dropdown>
+  //                   <Menu.Item
+  //                     leftSection={<FaArrowUp />}
+  //                     disabled={activeBlock === 1 ? true : false}
+  //                     onClick={moveBlockUp}
+  //                   >
+  //                     Move up
+  //                   </Menu.Item>
+  //                   <Menu.Item
+  //                     leftSection={<FaArrowDown />}
+  //                     disabled={activeBlock === sectionsContent.length - 1 ? true : false}
+  //                     onClick={moveBlockDown}
+  //                   >
+  //                     Move down
+  //                   </Menu.Item>
+  //                   <Menu.Item
+  //                     color="red"
+  //                     leftSection={<FaRegTrashAlt />}
+  //                     onClick={deleteModalHandlers.open}
+  //                   >
+  //                     Delete Block
+  //                   </Menu.Item>
+  //                 </Menu.Dropdown>
+  //               </Menu>
 
-                <Button
-                  variant="transparent"
-                  size="compact-sm"
-                  mt="xs"
-                  onClick={() => setActiveBlock(0)}
-                  className={classes.stickyElement}
-                  w="2rem"
-                  h="1.5rem"
-                  m="0px"
-                >
-                  <TbForbid2 />
-                </Button>
-              </Flex>
-            </Flex>
-          </Flex>
-        ) : (
-          <></>
-        )}
-      </>
-    );
-  };
+  //               <Button
+  //                 variant="transparent"
+  //                 size="compact-sm"
+  //                 mt="xs"
+  //                 onClick={() => setActiveBlock(0)}
+  //                 className={classes.stickyElement}
+  //                 w="2rem"
+  //                 h="1.5rem"
+  //                 m="0px"
+  //               >
+  //                 <TbForbid2 />
+  //               </Button>
+  //             </Flex>
+  //           </Flex>
+  //         </Flex>
+  //       ) : (
+  //         <></>
+  //       )}
+  //     </>
+  //   );
+  // };
 
   return (
     <div
@@ -215,6 +219,8 @@ export default function MarkedBlockFrame({
             blockName={blockName}
             blockContentState={[sectionsContent, setSectionsContent]}
             typeOfAddBlockFunction="above"
+            activeTextInputState={activeTextInputState}
+            deleteModalHandlers={deleteModalHandlers}
           />
           <Box
             className={idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : ''}
@@ -229,6 +235,8 @@ export default function MarkedBlockFrame({
             blockName={blockName}
             blockContentState={[sectionsContent, setSectionsContent]}
             typeOfAddBlockFunction="below"
+            activeTextInputState={activeTextInputState}
+            deleteModalHandlers={deleteModalHandlers}
           />
           {/* {idx === activeSection ? (
           <Flex justify="center" >
@@ -259,7 +267,8 @@ export default function MarkedBlockFrame({
         )} */}
         </Paper>
       </Flex>
-      <Modal
+      <DeleteBlockModal deleteModalHandlers={deleteModalHandlers} deleteModalOpened={deleteModalOpened} blockContentState={[sectionsContent, setSectionsContent]} activeBlock={activeBlock}/>
+      {/* <Modal
         opened={deleteModalOpened}
         onClose={deleteModalHandlers.close}
         transitionProps={{ transition: 'fade-up' }}
@@ -310,7 +319,7 @@ export default function MarkedBlockFrame({
             </Button>
           </SimpleGrid>
         </SimpleGrid>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

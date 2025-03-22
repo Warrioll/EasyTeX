@@ -442,6 +442,7 @@ export default function DocumentPage() {
             idx={idx}
             activeBlockState={activeBlockState}
             blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
           />
         );
       case 'pageBreak':
@@ -450,6 +451,7 @@ export default function DocumentPage() {
             idx={idx}
             activeBlockState={activeBlockState}
             blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
           />
         );
       case 'textfield':
@@ -557,6 +559,7 @@ export default function DocumentPage() {
               p="0px"
             >
               <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h='50px'/>
                 {/* <TitlePageBlock
                   idx={-1}
                   activeSection={activeSection}
@@ -569,6 +572,7 @@ export default function DocumentPage() {
                 ) : (
                   <></>
                 )}
+                 <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h='50px'/>
               </Stack>
               {/* </Paper> */}
               {/* </Grid.Col> */}
