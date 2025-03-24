@@ -52,11 +52,10 @@ export default function MarkedBlockFrame({
   blockName,
   sectionsContent,
   setSectionsContent,
-  activeTextInputState
+  activeTextInputState,
 }: MarkedBlockFrameProps) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
- 
 
   //editor trzeba wyczyszczać czy coś przy dodawaniu textfiesd
   const addBlockBelow = (block: blockType) => {
@@ -238,88 +237,15 @@ export default function MarkedBlockFrame({
             activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
           />
-          {/* {idx === activeSection ? (
-          <Flex justify="center" >
-            <Menu>
-              <Menu.Target>
-                <Button variant="transparent" size="compact-xs" m="xs">
-                  <MdOutlineAdd /> Add Block
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item
-                  onClick={() => addBlockBelow({ typeOfBlock: 'section', blockContent: '' })}
-                  leftSection={<LuHeading1 />}
-                >
-                  Section
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() => addBlockBelow({ typeOfBlock: 'textfield', blockContent: '' })}
-                  leftSection={<PiTextTBold />}
-                >
-                  Textfield
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Flex>
-        ) : (
-          <></>
-        )} */}
         </Paper>
       </Flex>
-      <DeleteBlockModal deleteModalHandlers={deleteModalHandlers} deleteModalOpened={deleteModalOpened} blockContentState={[sectionsContent, setSectionsContent]} activeBlock={activeBlock}/>
-      {/* <Modal
-        opened={deleteModalOpened}
-        onClose={deleteModalHandlers.close}
-        transitionProps={{ transition: 'fade-up' }}
-        yOffset="12%"
-        size="lg"
-        title={
-          <Text c="var(--mantine-color-cyan-8)">
-            <b>Delete block</b>
-          </Text>
-        }
-      >
-        <SimpleGrid mt="0px" cols={1} verticalSpacing="md" ta="center" p="xl" pt="md" pb="md">
-          <Text fz="1.3rem" m="lg" mb="0px">
-            Are you sure you want to delete this block?
-          </Text>
-          <Group justify="center" m="0px" mt="lg" p="0px">
-            <SimpleGrid
-              ml="xl"
-              mr="xl"
-              mb="md"
-              mt="0px"
-              cols={2}
-              ta="left"
-              verticalSpacing="0.1rem"
-              pt="0px"
-              pb="md"
-              w="84%"
-              spacing="xl"
-            >
-              <b>Type:</b>
-              {
-                //sectionsContent[activeSection].typeOfBlock
-              }
-              <b>Content: </b>
-              <Text className={classes.trunckedText}>
-                {
-                  //sanitizeHtml(sectionsContent[activeSection].blockContent, { allowedTags: [] })
-                }
-              </Text>
-            </SimpleGrid>
-          </Group>
-          <SimpleGrid cols={2} spacing="xl" mt="md">
-            <Button leftSection={<FaRegTrashAlt />} color="red" onClick={deleteBlock}>
-              Delete
-            </Button>
-            <Button color="cyan" variant="outline" onClick={deleteModalHandlers.close}>
-              Cancel
-            </Button>
-          </SimpleGrid>
-        </SimpleGrid>
-      </Modal> */}
+
+      <DeleteBlockModal
+        deleteModalHandlers={deleteModalHandlers}
+        deleteModalOpened={deleteModalOpened}
+        blockContentState={[sectionsContent, setSectionsContent]}
+        activeBlock={activeBlock}
+      />
     </div>
   );
 }

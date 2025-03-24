@@ -1,13 +1,12 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
-import { BubbleMenu, useEditor } from '@tiptap/react';
+import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import axios from 'axios';
-import parse from 'html-react-parser';
 //import { Document, Page, pdfjs } from 'react-pdf';
 import { Document, Page, pdfjs } from 'react-pdf';
 
@@ -17,25 +16,9 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import Split from '@uiw/react-split';
 import { useParams } from 'react-router-dom';
 //import Split from 'react-split';
-import {
-  AspectRatio,
-  Box,
-  Button,
-  Center,
-  Grid,
-  Group,
-  Input,
-  LoadingOverlay,
-  Paper,
-  ScrollArea,
-  Stack,
-  Textarea,
-  Title,
-} from '@mantine/core';
-import { useTextSelection } from '@mantine/hooks';
-import { Link, RichTextEditor } from '@mantine/tiptap';
-import { theme } from '@/theme';
+import { Box, Center, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
 import { blockType } from '@/Types';
+import EquationBlock from './components/blocks/EquationBlock';
 import PageBreakBlock from './components/blocks/PageBreakBlock';
 import SectionBlock from './components/blocks/SectionBlock';
 import SubsectionBlock from './components/blocks/SubsectionBlock';
@@ -47,6 +30,10 @@ import Header from './components/header/Header';
 import { chceckIfBlockContentEmpty, saveBasicTextInputChanges } from './documentHandlers';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
+
+import 'katex/dist/katex.min.css';
+
+import Latex from 'react-latex-next';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -80,7 +67,7 @@ export default function DocumentPage() {
 
   const [pdfLoaded, setPdfLoaded] = useState(true);
   const [pagesNumber, setPagesNumber] = useState<number>(0);
-  const [pdf, setPdf] = useState<Any>(null);
+  const [pdf, setPdf] = useState<any>(null);
   const pdfZoom = useState<string | null>('1');
   const workspaceZoom = useState<string | null>('1');
   const pdfZoomValue = useState<number>(1);
@@ -302,6 +289,26 @@ export default function DocumentPage() {
       setSectionsContent(blocks);
     }
   };
+
+  const addEquation = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'equation',
+          blockContent: 'New equation',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'equation',
+        blockContent: 'New equation',
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
   const reloadPdf = async () => {
     // await setTimeout(() => {
     //   console.log('timeout');
@@ -375,6 +382,7 @@ export default function DocumentPage() {
     addTitlePage,
     addTableOfContents,
     addPageBreak,
+    addEquation,
     //bold,
   };
 
@@ -505,7 +513,15 @@ export default function DocumentPage() {
             editor={editor}
           />
         );
-        break;
+      case 'equation':
+        return (
+          <EquationBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
+          />
+        );
       default:
         return <></>;
     }
@@ -559,7 +575,7 @@ export default function DocumentPage() {
               p="0px"
             >
               <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
-                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h='50px'/>
+                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
                 {/* <TitlePageBlock
                   idx={-1}
                   activeSection={activeSection}
@@ -572,7 +588,7 @@ export default function DocumentPage() {
                 ) : (
                   <></>
                 )}
-                 <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h='50px'/>
+                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
               </Stack>
               {/* </Paper> */}
               {/* </Grid.Col> */}
@@ -582,7 +598,7 @@ export default function DocumentPage() {
         <Box w="100vw" pos="relative">
           <LoadingOverlay
             visible={!pdfLoaded}
-            zIndex={1000}
+            zIndex={100}
             overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
             loaderProps={{ color: 'cyan' }}
           />

@@ -192,3 +192,11 @@ export const textfieldToBlock =(line: string) : blockType=>{
     const textfieldBlock: blockType = {typeOfBlock: 'textfield', blockContent: fieldLines.join('')}
     return textfieldBlock;
 }
+
+export const equationToBlock =(line: string) : blockType=>{
+
+    let equation = line.replace('\\begin{equation}', '')
+    equation = equation.replace('\\end{equation}', '')
+
+    return {typeOfBlock: 'equation', blockContent: equation}
+}

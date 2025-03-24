@@ -122,3 +122,7 @@ export const titlePageToTex =(blockContent:{title:string, author: string, date: 
           +`\n\\date{${date}}` 
           + '\n\\maketitle'
 }
+
+export const equationToTex =(blockContent:string): string =>{
+    return '\\begin{equation} '+blockContent+' \\end{equation}'
+}

@@ -7,6 +7,7 @@ export type typeOfBlockType =
   | 'titlePage'
   | 'tableOfContents'
   | 'pageBreak'
+  | 'equation'
   | null
   | undefined;
 

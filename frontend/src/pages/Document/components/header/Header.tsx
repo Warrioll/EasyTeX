@@ -25,6 +25,7 @@ import {
 } from 'react-icons/lu';
 import {
   MdFormatListNumberedRtl,
+  MdFunctions,
   MdOutlineAdd,
   MdOutlineInsertPageBreak,
   MdOutlineTitle,
@@ -132,6 +133,13 @@ const Header: React.FC<headerProps> = ({
       <Button
         variant="format"
         fz="var(--mantine-font-size-lg)"
+        onClick={editFunctions.addTextfield}
+      >
+        <BiFont />
+      </Button>
+      <Button
+        variant="format"
+        fz="var(--mantine-font-size-lg)"
         fw="bold"
         onClick={editFunctions.addSection}
       >
@@ -151,12 +159,8 @@ const Header: React.FC<headerProps> = ({
       >
         <LuHeading3 />
       </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addTextfield}
-      >
-        <BiFont />
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addEquation}>
+        <MdFunctions />
       </Button>
       <Button
         variant="format"

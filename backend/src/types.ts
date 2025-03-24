@@ -8,6 +8,7 @@ export type blockType = {
     |'titlePage'
     | 'tableOfContents'
     | 'pageBreak'
+    | 'equation'
     | null | undefined;
     blockContent: string | titlePageType |null | undefined; 
   };

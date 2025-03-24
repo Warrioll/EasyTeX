@@ -3,7 +3,7 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex } from '../handlers/toTexConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -11,7 +11,8 @@ import { sectionToBlock,
   subsubsectionToBlock, 
   getAuthorFromTex, 
   getDateFromTex, 
-  getTitleFromTex } from '../handlers/toBlockConverters';
+  getTitleFromTex, 
+  equationToBlock} from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
 import { blockType, titlePageType } from '../types';
 
@@ -171,7 +172,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\section')) return  sectionToBlock(line);
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
-            if(line==='') return nullBlock;
+            if(line.includes('\\begin{equation}')) return equationToBlock(line);
+            if(line==='' || line==='\r') return nullBlock;
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
@@ -425,6 +427,8 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
        return subsectionToTex(block.blockContent as string);
        case 'subsubsection':
         return subsubsectionToTex(block.blockContent as string);
+      case 'equation':
+        return equationToTex(block.blockContent as string)
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
