@@ -13,8 +13,11 @@ import {
   Stack,
   Text,
   Tree,
+  Button,
+  Menu
 } from '@mantine/core';
 import classes from './equationEditor.module.css';
+import { MdOutlineAdd } from 'react-icons/md';
 
 const data = [
   {
@@ -28,6 +31,15 @@ const data = [
   },
   { value: 'src/hooks', label: 'package.jsosssn' },
 ];
+
+const elementsTypes=[
+  {
+    label: 'Fraction'
+  },
+  {
+    label: 'Integral'
+  }
+]
 
 type VisualEditorTabTabPropsType = {
   equationFormulaState: [string, Dispatch<SetStateAction<string>>];
@@ -70,10 +82,35 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     );
   }
 
+const inputAndAddElement=(
+  <Flex>
+    <Input/>
+  <Menu>
+                <Menu.Target>
+                  <Button variant="outline" size="compact-xs"  w="2rem" h="2rem" m="0px" p='0px'>
+                    <MdOutlineAdd />
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {elementsTypes.map((element)=>{
+                    return (
+                      <Menu.Item
+                      //onClick={() => addBlockFunction(block.blockToAdd)}
+                      //leftSection={block.icon}
+                    >
+                     {element.label}
+                    </Menu.Item>
+                    )
+                  })}  
+                </Menu.Dropdown>
+              </Menu>
+              </Flex>
+)
+
   const chooseElementEditor = () => {
     switch (activeElement.label) {
       case 'Fraction':
-        return <>Fracion</>;
+        return <>{inputAndAddElement}</>;
       default:
         return <>Default</>;
     }

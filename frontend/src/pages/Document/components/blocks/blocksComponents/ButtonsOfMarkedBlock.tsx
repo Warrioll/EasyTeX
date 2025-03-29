@@ -95,13 +95,13 @@ export default function ButtonsOfMarkedBlock({
                    {block.blockName}
                   </Menu.Item>
                   )
-                })}
+                })}  
                 {/* <Menu.Item
                   onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
                   leftSection={<LuHeading1 />}
                 >
                   Section
-                </Menu.Item>
+                </Menu.Item> 
                 <Menu.Item
                   onClick={() => addBlockFunction({ typeOfBlock: 'textfield', blockContent: '' })}
                   leftSection={<PiTextTBold />}
