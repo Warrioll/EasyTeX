@@ -352,20 +352,20 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
               </Button>
               <Button
                 variant="transparent"
-                // onClick={() => {
-                //   insertElement(
-                //     activeTreeElement,
-                //     elementsContent,
-                //     {
-                //       value: '0.1.1.1',
-                //       label: 'Expression',
-                //       belonging: 'down',
-                //       content: 'yolo',
-                //       children: [],
-                //     },
-                //     0
-                //   );
-                // }}
+                onClick={() => {setElementsContent(
+                  insertElement(
+                    activeTreeElement,
+                    elementsContent,
+                    {
+                      value: '0.1.1.1',
+                      label: 'Expression',
+                      belonging: 'down',
+                      content: 'yolo',
+                      children: [],
+                    },
+                    1
+                  ));
+                }}
               >
                 <MdOutlineAdd />
                 <Text fz="xs" m="0px">
@@ -391,7 +391,7 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
           //bg="var(--mantine-color-gray-1)"
           p="sm"
           pt="xs"
-          className={classes.elementsTree}
+          //className={classes.elementsTree}
         >
           <Tree
             data={elementsContent}
