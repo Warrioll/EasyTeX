@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
 import Latex from 'react-latex-next';
@@ -187,7 +187,7 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
   ]);
   const [elementsContent, setElementsContent] = elementsContentState;
 
-  const activeTreeElementState = useState<string>('0');
+  const activeTreeElementState = useState<string>('0.1.1.0');
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
 
   const activeEditorElementState = useState<string>('');
@@ -210,7 +210,18 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     return element;
   };
 
-  const insertElement = (idx, array, newContent, deleteAmount) => {
+  const updateIdx = (array, preIdx) => {
+    for (let i = 0; i < array.length; i++) {
+      let idxs = [...preIdx, i];
+      array[i].value = idxs.join('.');
+      array[i].children = updateIdx(array[i].children, idxs);
+    }
+    console.log('updateX:', array);
+    return array;
+  };
+
+  const insertElement = (idx, originAarray, newContent, deleteAmount) => {
+    let array = [...originAarray];
     const idxs = idx.split('.').map(Number);
 
     let rest = [];
@@ -220,18 +231,22 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
       Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
     }
 
-    let newElement = newContent;
+    let partOfTree = newContent;
     for (let i = 0; i < rest.length; i++) {
       let tmp = rest[i];
       if (Array.isArray(tmp)) {
-        tmp.splice(idxs[idxs.length - 1 - i], deleteAmount, newElement);
+        i === 0
+          ? tmp.splice(idxs[idxs.length - 1 - i], deleteAmount, partOfTree)
+          : tmp.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
       } else {
-        tmp.children.splice(idxs[idxs.length - 1 - i], deleteAmount, newElement);
+        i === 0
+          ? tmp.children.splice(idxs[idxs.length - 1 - i], deleteAmount, partOfTree)
+          : tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
       }
-      newElement = tmp;
+      partOfTree = tmp;
     }
 
-    return newElement;
+    return updateIdx(partOfTree, []);
   };
 
   const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
@@ -334,6 +349,49 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     // return <>From chooseElementEditor fun</>;
   };
 
+  const addElementAbove = () => {
+    setElementsContent(
+      insertElement(
+        activeTreeElement,
+        elementsContent,
+        {
+          value: '0',
+          label: 'Expression',
+          belonging: 'downnnnnn',
+          content: 'yolo',
+          children: [],
+        },
+        0
+      ) //.map((item) => {
+      //   return item;
+      // })
+    );
+  };
+
+  const addElementBelow = () => {
+    let idxs = activeTreeElement.split('.').map(Number);
+    idxs[idxs.length - 1] = idxs[idxs.length - 1] + 1;
+
+    setElementsContent(
+      insertElement(
+        idxs.join('.'),
+        elementsContent,
+        {
+          value: '0',
+          label: 'Expression',
+          belonging: 'downnnnnn',
+          content: 'yolo',
+          children: [],
+        },
+        0
+      ) //.map((item) => {
+      //   return item;
+      // })
+    );
+
+    setActiveTreeElement(idxs.join('.'));
+  };
+
   return (
     <Grid w="100%" h="100%">
       <Grid.Col span={4}>
@@ -347,38 +405,34 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
               <Button fz="xs" variant="transparent">
                 <FaArrowUp />
               </Button>
-              <Button fz="xs" variant="transparent">
+              <Button fz="xs" variant="transparent" onClick={() => console.log('yolo')}>
                 <FaArrowDown />
               </Button>
-              <Button
-                variant="transparent"
-                onClick={() => {setElementsContent(
-                  insertElement(
-                    activeTreeElement,
-                    elementsContent,
-                    {
-                      value: '0.1.1.1',
-                      label: 'Expression',
-                      belonging: 'down',
-                      content: 'yolo',
-                      children: [],
-                    },
-                    1
-                  ));
-                }}
-              >
+              <Button variant="transparent" onClick={addElementAbove}>
                 <MdOutlineAdd />
                 <Text fz="xs" m="0px">
                   up
                 </Text>
-                <Button variant="transparent">
-                  <MdOutlineAdd />
-                  <Text fz="xs" m="0px">
-                    down
-                  </Text>
-                </Button>
               </Button>
-              <Button fz="xs" variant="transparent">
+              <Button variant="transparent" onClick={addElementBelow}>
+                <MdOutlineAdd />
+                <Text fz="xs" m="0px">
+                  down
+                </Text>
+              </Button>
+              <Button
+                fz="xs"
+                variant="transparent"
+                // onClick={() => {
+                //     setElementsContent(
+                //       insertElement(
+                //         activeTreeElement,
+                //         elementsContent,
+                //         null,
+                //         1
+                //       )
+                //     );}}
+              >
                 <FaTrashAlt />
               </Button>
             </>
@@ -399,6 +453,8 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
             expandOnClick={false}
             levelOffset={15}
           />
+          {/* <EquationElementsList tree={elementsContent} />
+          {/* <MemoTree /> */}
         </ScrollArea>
       </Grid.Col>
       <Grid.Col span={8}>
