@@ -23,30 +23,13 @@ import {
   Tree,
   TreeNodeData,
   useCombobox,
+  Textarea
 } from '@mantine/core';
 import classes from './equationEditor.module.css';
+import {elementsPrototypes} from './equationsElementsPrototypes'
+import cloneDeep from 'lodash/cloneDeep'
 
-const data = [
-  {
-    value: 'frac1',
-    label: 'Fraction',
-    content: '\\frac{8}{9}',
-    children: [
-      { value: 'src/componddfents', label: 'componentssss' },
-      { value: '\\fracccc', label: 'Fraction' },
-    ],
-  },
-  { value: 'src/hooks', label: 'package.jsosssn' },
-];
 
-const elementsTypes = [
-  {
-    label: 'Fraction',
-  },
-  {
-    label: 'Integral',
-  },
-];
 
 type elementType = {
   label: 'Expression' | 'Integral' | 'Fraction' | 'Numerator' | 'Denominator';
@@ -57,137 +40,19 @@ type elementType = {
   children?: elementType[];
 };
 
-// export function ExpressionInput({ elementsState }) {
-//   const combobox = useCombobox({
-//     onDropdownClose: () => combobox.resetSelectedOption(),
-//   });
-//   const [value, setValue] = useState('');
-//   const shouldFilterOptions = !elementsTypes.some((item) => item.label === value);
-//   const filteredOptions = shouldFilterOptions
-//     ? elementsTypes.filter((item) => item.label.toLowerCase().includes(value.toLowerCase().trim()))
-//     : elementsTypes;
-
-//   const options = filteredOptions.map((item) => (
-//     <Combobox.Option value={item.label} key={item.label}>
-//       <Highlight highlight={value} size="sm">
-//         {item.label}
-//       </Highlight>
-//     </Combobox.Option>
-//   ));
-
-//   return (
-//     <Combobox
-//       onOptionSubmit={(optionValue) => {
-//         elementsState[1]([optionValue, ...elementsState[0]]);
-//         //setValue(optionValue);
-//         combobox.closeDropdown();
-//       }}
-//       withinPortal={false}
-//       store={combobox}
-//     >
-//       <Combobox.Target>
-//         <TextInput
-//           variant="filled"
-//           placeholder="Enter expression"
-//           value={value}
-//           onChange={(event) => {
-//             setValue(event.currentTarget.value);
-//             combobox.updateSelectedOptionIndex();
-//             combobox.openDropdown();
-//           }}
-//           onClick={() => combobox.openDropdown()}
-//           onFocus={() => combobox.openDropdown()}
-//           onBlur={() => combobox.closeDropdown()}
-//         />
-//       </Combobox.Target>
-
-//       <Combobox.Dropdown>
-//         <Combobox.Options>
-//           {options.length === 0 ? (
-//             <Combobox.Option value="">Add expression</Combobox.Option>
-//           ) : (
-//             options
-//           )}
-//         </Combobox.Options>
-//       </Combobox.Dropdown>
-//     </Combobox>
-//   );
-// }
 
 type VisualEditorTabTabPropsType = {
   equationFormulaState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function VisualEditorTab({ equationFormulaState }: VisualEditorTabTabPropsType) {
-  // const [activeElement, setActiveElement] = useState<{
-  //   value: string;
-  //   label: '' | 'Fraction' | 'Integral';
-  // }>({ value: '', label: '' });
-  const elementsContentState = useState<elementType[]>([
-    {
-      value: '0',
-      label: 'Integral',
-      belonging: '',
-      content: 'yolo',
-      children: [
-        {
-          value: '0.0',
-          label: 'Expression',
-          belonging: '',
-          content: 'yolo',
-          children: [],
-        },
-        {
-          value: '0.1',
-          label: 'Fraction',
-          belonging: '',
-          content: 'yolo',
-          children: [
-            {
-              value: '0.1.0',
-              label: 'Numerator',
-              belonging: 'up',
-              content: 'yolo',
-              children: [
-                {
-                  value: '0.1.0.0',
-                  label: 'Expression',
-                  belonging: 'down',
-                  content: 'yolo',
-                  children: [],
-                },
-              ],
-            },
-            {
-              value: '0.1.1',
-              label: 'Denominator',
-              belonging: 'up',
-              content: 'yolo',
-              children: [
-                {
-                  value: '0.1.1.0',
-                  label: 'Expression',
-                  belonging: 'down',
-                  content: 'yolo',
-                  children: [],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      value: '1',
-      label: 'Expression',
-      belonging: '',
-      content: 'yolo',
-      children: [],
-    },
+  
+  const elementsContentState = useState<any[]>([
+ {...elementsPrototypes.expression}
   ]);
   const [elementsContent, setElementsContent] = elementsContentState;
 
-  const activeTreeElementState = useState<string>('0.1.1.0');
+  const activeTreeElementState = useState<string>('0');
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
 
   const activeEditorElementState = useState<string>('');
@@ -196,25 +61,27 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
   const nodeContentState = useState(['']);
   const [nodeContent, setNodeContent] = nodeContentState;
 
-  const getElementIdx = () => {};
-
   const getElementByIdx = (idx, array) => {
     const idxs = idx.split('.').map(Number);
-    console.log('idxs: ', idxs);
+    //console.log('idxs: ', idxs);
 
     let element = array;
     for (let idx of idxs) {
-      console.log('idx: ', idx);
+      //console.log('idx: ', idx);
       Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
     }
     return element;
   };
 
   const updateIdx = (array, preIdx) => {
+    const preIdxCopy=[...preIdx]
     for (let i = 0; i < array.length; i++) {
-      let idxs = [...preIdx, i];
-      array[i].value = idxs.join('.');
-      array[i].children = updateIdx(array[i].children, idxs);
+      let idxs = [...preIdxCopy, i];
+      if(array[i]!==null){
+        array[i].value = idxs.join('.');
+        array[i].children = updateIdx(array[i].children, idxs);
+      }
+     
     }
     console.log('updateX:', array);
     return array;
@@ -234,6 +101,7 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     let partOfTree = newContent;
     for (let i = 0; i < rest.length; i++) {
       let tmp = rest[i];
+      //if(partOfTree!==null){
       if (Array.isArray(tmp)) {
         i === 0
           ? tmp.splice(idxs[idxs.length - 1 - i], deleteAmount, partOfTree)
@@ -244,10 +112,78 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
           : tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
       }
       partOfTree = tmp;
-    }
+  //  }
+    } 
 
     return updateIdx(partOfTree, []);
   };
+
+
+  const deleteElement = (idx) => {
+    let array = [...elementsContent];
+    const idxs = idx.split('.').map(Number);
+
+    let rest = [];
+    let element = array;
+    for (let idx of idxs) {
+      rest = [element, ...rest];
+      Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
+    }
+
+    let partOfTree
+    for (let i = 0; i < rest.length; i++) {
+      let tmp = rest[i];
+      //if(partOfTree!==null){
+      if (Array.isArray(tmp)) {
+        i === 0
+          ? tmp.splice(idxs[idxs.length - 1 - i], 1)
+          : tmp.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
+      } else {
+        i === 0
+          ? tmp.children.splice(idxs[idxs.length - 1 - i], 1)
+          : tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
+      }
+      partOfTree = tmp;
+  //  }
+    } 
+    setElementsContent(updateIdx(partOfTree, []))
+    setActiveTreeElement('0')
+  };
+
+
+  const moveUpElement = (idx) => {
+//TODO !!!!!!!!!!!!!
+
+    let array = [...elementsContent];
+    const idxs = idx.split('.').map(Number);
+
+    let rest = [];
+    let element = array;
+    for (let idx of idxs) {
+      rest = [element, ...rest];
+      Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
+    }
+
+    let partOfTree //= newContent;
+    for (let i = 0; i < rest.length; i++) {
+      let tmp = rest[i];
+      //if(partOfTree!==null){
+      if (Array.isArray(tmp)) {
+        i === 0
+          ? tmp.splice(idxs[idxs.length - 1 - i], deleteAmount, partOfTree)
+          : tmp.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
+      } else {
+        i === 0
+          ? tmp.children.splice(idxs[idxs.length - 1 - i], deleteAmount, partOfTree)
+          : tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
+      }
+      partOfTree = tmp;
+  //  }
+    } 
+
+    return updateIdx(partOfTree, []);
+  };
+
 
   const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
     return (
@@ -264,10 +200,10 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
           <Box
             p="0.25rem"
             pl="0.35rem"
-            onClick={() => setActiveTreeElement(node.value)}
+            onClick={() => {node.editable ? (setActiveTreeElement(node.value)):null}}
             onDoubleClick={() => tree.toggleExpanded(node.value)}
             className={
-              activeTreeElement === node.value ? classes.markedElement : classes.unmarkedelement
+              activeTreeElement === node.value ? classes.markedElement : (node.editable ? classes.unmarkedelement  : classes.noneditableElement ) 
             }
             w="100%"
             //bg="var(--mantine-color-gray-1)"
@@ -280,87 +216,31 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     );
   };
 
-  // const inputAndAddElement = (
-  //   <Flex>
-  //     <Input />
-  //     <Menu>
-  //       <Menu.Target>
-  //         <Button variant="outline" size="compact-xs" w="2rem" h="2rem" m="0px" p="0px">
-  //           <MdOutlineAdd />
-  //         </Button>
-  //       </Menu.Target>
-  //       <Menu.Dropdown>
-  //         {elementsTypes.map((element) => {
-  //           return (
-  //             <Menu.Item
-  //             //onClick={() => addBlockFunction(block.blockToAdd)}
-  //             //leftSection={block.icon}
-  //             >
-  //               {element.label}
-  //             </Menu.Item>
-  //           );
-  //         })}
-  //       </Menu.Dropdown>
-  //     </Menu>
-  //   </Flex>
-  // );
+  
 
   const chooseElementEditor = () => {
-    const label = getElementByIdx(activeTreeElement, elementsContent).label;
-    if (label === 'Expression') {
-      return <Input />;
-    }
-    return <>Expression element is not selected {`(currently selected: ${label})`}</>;
+    const element = getElementByIdx(activeTreeElement, elementsContent);
+    if (element.label === 'Expression') {
+      return <Textarea variant='filled' w='100%' value={():string=>{return getElementByIdx( element.value, elementsContent).content}} onChange={(e)=>{
+        element.content=e.currentTarget.value
+        insertElement(element.value, elementsContent,element,1)
 
-    // switch (getElementByIdx(activeTreeElement, elementsContent).label) {
-    //   case 'Fraction':
-    //     return (
-    //       <>
-    //         {getElementByIdx(activeTreeElement, elementsContent).children.map((item) => {
-    //           switch (item.label) {
-    //             case 'Fraction':
-    //               return (
-    //                 <Pill size="xl" withRemoveButton>
-    //                   a/b
-    //                 </Pill>
-    //               );
-    //             case 'Integral':
-    //               return (
-    //                 <Pill size="xl" withRemoveButton>
-    //                   ∫dx
-    //                 </Pill>
-    //               );
-    //             default:
-    //               return (
-    //                 <>
-    //                   <Input value={item.content} />
-    //                 </>
-    //               );
-    //           }
-    //         })}
-    //         {/* <ExpressionInput elementsState={nodeContentState} /> */}
-    //       </>
-    //     );
-    //   case 'Expression':
-    //     return <Input value={getElementByIdx(activeTreeElement, elementsContent).content} />;
-    //   default:
-    //     return <>Default</>;
-    // }
-    // return <>From chooseElementEditor fun</>;
+      }}/>;
+    }
+    return <>Expression element is not selected {`(currently selected: ${element.label})`}</>;
+
+
   };
 
-  const addElementAbove = () => {
+
+
+  const addElementAbove = (toAdd) => {
+    const elementToAdd = cloneDeep(toAdd)
     setElementsContent(
       insertElement(
         activeTreeElement,
         elementsContent,
-        {
-          value: '0',
-          label: 'Expression',
-          belonging: 'downnnnnn',
-          content: 'yolo',
-          children: [],
-        },
+       elementToAdd,
         0
       ) //.map((item) => {
       //   return item;
@@ -368,7 +248,8 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     );
   };
 
-  const addElementBelow = () => {
+  const addElementBelow = (toAdd) => {
+    const elementToAdd = cloneDeep(toAdd)
     let idxs = activeTreeElement.split('.').map(Number);
     idxs[idxs.length - 1] = idxs[idxs.length - 1] + 1;
 
@@ -376,13 +257,7 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
       insertElement(
         idxs.join('.'),
         elementsContent,
-        {
-          value: '0',
-          label: 'Expression',
-          belonging: 'downnnnnn',
-          content: 'yolo',
-          children: [],
-        },
+       elementToAdd,
         0
       ) //.map((item) => {
       //   return item;
@@ -393,45 +268,126 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
   };
 
   return (
-    <Grid w="100%" h="100%">
-      <Grid.Col span={4}>
+    <Grid w="100%" h="100%" mt='0px' pt='0'>
+      <Grid.Col span={4} h='63vh'>
         <Text fw={500} size="sm">
           Elements:
         </Text>
         <Flex justify="center" p="0px" m="0px" h="2rem">
-          {getElementByIdx(activeTreeElement, elementsContent).label !== 'Numerator' &&
-          getElementByIdx(activeTreeElement, elementsContent).label !== 'Denominator' ? (
+          {getElementByIdx(activeTreeElement, elementsContent).editable ? (
             <>
               <Button fz="xs" variant="transparent">
                 <FaArrowUp />
               </Button>
-              <Button fz="xs" variant="transparent" onClick={() => console.log('yolo')}>
+              <Button fz="xs" variant="transparent" //onClick={() => console.log('yolo')}
+                >
                 <FaArrowDown />
-              </Button>
-              <Button variant="transparent" onClick={addElementAbove}>
-                <MdOutlineAdd />
-                <Text fz="xs" m="0px">
-                  up
-                </Text>
-              </Button>
-              <Button variant="transparent" onClick={addElementBelow}>
+              </Button>  
+              <Menu >
+                              <Menu.Target>
+                              <Button variant="transparent" >
+                                  <MdOutlineAdd />
+                                  <Text fz="xs" m="0px">
+                                   up
+                                  </Text>
+                                </Button>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                              <Menu.Item
+                                                                   
+                                  onClick={()=>addElementAbove({...elementsPrototypes.expression})}
+                                >
+                                 Expression
+                                </Menu.Item>
+                                <Menu.Item
+                                  
+                                  
+                                  onClick={()=>addElementAbove({...elementsPrototypes.fraction})}
+                                >
+                                 Fraction
+                                </Menu.Item>
+                                <Menu.Item
+                                 
+                                  onClick={()=>addElementAbove({...elementsPrototypes.integral})}
+                                >
+                                 Integral
+                                </Menu.Item>
+                                <Menu.Item
+                                  
+                                  onClick={()=>addElementAbove({...elementsPrototypes.root})}
+                                >
+                                 Root
+                                </Menu.Item>
+                                <Menu.Item
+                                  
+                                  onClick={()=>addElementAbove({...elementsPrototypes.upperIndex})}
+                                >
+                                 Upper inrex
+                                </Menu.Item>
+                                <Menu.Item
+                                 
+                                  onClick={()=>addElementAbove({...elementsPrototypes.lowerIndex})}
+                                >
+                                Lower index
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
+              
+              
+              <Menu >
+                              <Menu.Target>
+                              <Button variant="transparent">
                 <MdOutlineAdd />
                 <Text fz="xs" m="0px">
                   down
                 </Text>
               </Button>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                              <Menu.Item
+                                                                   
+                                                                   onClick={()=>addElementAbove({...elementsPrototypes.expression})}
+                                                                 >
+                                                                  Expression
+                                                                 </Menu.Item> 
+                                <Menu.Item
+                                  
+                                  
+                                  onClick={()=>addElementBelow({...elementsPrototypes.fraction})}
+                                >
+                                 Fraction
+                                </Menu.Item>
+                                <Menu.Item
+                                 
+                                  onClick={()=>addElementBelow({...elementsPrototypes.integral})}
+                                >
+                                 Integral
+                                </Menu.Item>
+                                <Menu.Item 
+                                  
+                                  onClick={()=>addElementBelow({...elementsPrototypes.root})}
+                                >
+                                 Root
+                                </Menu.Item>
+                                <Menu.Item
+                                  
+                                  onClick={()=>addElementBelow({...elementsPrototypes.upperIndex})}
+                                >
+                                 Upper inrex
+                                </Menu.Item>
+                                <Menu.Item
+                                 
+                                  onClick={()=>addElementBelow({...elementsPrototypes.lowerIndex})}
+                                >
+                                Lower index
+                                </Menu.Item>
+                              </Menu.Dropdown>
+                            </Menu>
               <Button
                 fz="xs"
                 variant="transparent"
-                // onClick={() => {
-                //     setElementsContent(
-                //       insertElement(
-                //         activeTreeElement,
-                //         elementsContent,
-                //         null,
-                //         1
-                //       )
-                //     );}}
+                onClick={() => {
+                  deleteElement(activeTreeElement)}}
               >
                 <FaTrashAlt />
               </Button>
@@ -444,7 +400,8 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
           h="100%"
           //bg="var(--mantine-color-gray-1)"
           p="sm"
-          pt="xs"
+          pt="0px"
+          pb='0px'
           //className={classes.elementsTree}
         >
           <Tree
@@ -460,11 +417,11 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
       <Grid.Col span={8}>
         <Stack>
           <Box h="20vh">
-            <Text fw={500} size="sm">
+            <Text fw={500} size="sm" >
               Edit:
             </Text>
-            <ScrollArea h="100%" w="100%">
-              <Center h="20vh">{chooseElementEditor()}</Center>
+            <ScrollArea h="100%" w="100%"  >
+              <Center h="20vh" p='0px'>{chooseElementEditor()}</Center>
             </ScrollArea>
           </Box>
           <Box h="35vh">

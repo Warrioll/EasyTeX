@@ -24,3 +24,12 @@
 .elementsTree{
         border-radius: var(--mantine-radius-md);
 }
+
+.noneditableElement{
+        border-radius: var(--mantine-radius-md);
+         border: 1px solid var(--mantine-color-gray-1); 
+        background-color: var(--mantine-color-gray-0);
+
+        color: var(--mantine-color-gray-6);
+
+}

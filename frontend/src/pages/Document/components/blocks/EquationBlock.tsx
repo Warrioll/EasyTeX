@@ -103,7 +103,7 @@ export default function EquationBlock({
           </Flex>
         }
       >
-        <Center h="70vh" p="xl">
+        <Center h="70vh" p="xl" pt='sm'>
           {editorTab === 'Visual editor' ? (
             <VisualEditorTab equationFormulaState={equationFormulaState} />
           ) : (
