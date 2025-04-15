@@ -129,12 +129,46 @@ const fraction={
     ],
   }
 
+  const upperAndLowerIndex={
+    value: '0',
+    label: 'Upper & lower index',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper index',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.0',
+        label: 'Lower index',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Base',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
 export const elementsPrototypes={
-  expression,
-    fraction,
-    integral,
-    root,
-    lowerIndex,
-    upperIndex
+
+  expression: {label: 'Expression', elementPrototype: expression},
+    fraction: {label: 'Fraction', elementPrototype: fraction},
+    integral: {label: 'Integral', elementPrototype: integral},
+    root: {label: 'Root', elementPrototype: root},
+    lowerIndex: {label: 'Lower index', elementPrototype: lowerIndex},
+    upperIndex: {label: 'Upper index', elementPrototype: upperIndex},
+    upperAndLowerIndex: {label: 'Upper & lower index', elementPrototype: upperAndLowerIndex}
 }
 
