@@ -161,6 +161,30 @@ const fraction={
     ],
   }
 
+  const sum={
+    value: '0',
+    label: 'Sum',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper index',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower index',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
 export const elementsPrototypes={
 
   expression: {label: 'Expression', elementPrototype: expression},
@@ -169,6 +193,7 @@ export const elementsPrototypes={
     root: {label: 'Root', elementPrototype: root},
     lowerIndex: {label: 'Lower index', elementPrototype: lowerIndex},
     upperIndex: {label: 'Upper index', elementPrototype: upperIndex},
-    upperAndLowerIndex: {label: 'Upper & lower index', elementPrototype: upperAndLowerIndex}
+    upperAndLowerIndex: {label: 'Upper & lower index', elementPrototype: upperAndLowerIndex},
+    sum: {label:'Sum', elementsPrototype: sum}
 }
 

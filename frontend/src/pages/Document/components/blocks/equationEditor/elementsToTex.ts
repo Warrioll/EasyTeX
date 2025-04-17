@@ -24,6 +24,9 @@ export function elementsToTex(array:any):string{
             case 'Upper & lower index':
                         formula+=`${elementsToTex(array[i].children[2].children)}^{${elementsToTex(array[i].children[0].children)}}_{${elementsToTex(array[i].children[1].children)}}`   
                         break;
+            case 'Sum':
+                formula+=`$\\sum^{${elementsToTex(array[i].children[0].children)}}_{${elementsToTex(array[i].children[1].children)}}`   
+                break;
             default:
                 break;
         }
@@ -32,4 +35,10 @@ export function elementsToTex(array:any):string{
 
 
     return formula;
+}
+
+
+export function texToelements(formula:string):any{
+return ''
+
 }
