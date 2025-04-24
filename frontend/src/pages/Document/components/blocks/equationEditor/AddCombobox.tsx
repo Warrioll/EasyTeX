@@ -1,23 +1,27 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, ReactNode, SetStateAction, useState } from 'react';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Combobox, Flex, useCombobox } from '@mantine/core';
-
-const groceries = [
-  { icon: 'π', label: 'Pi' },
-  { icon: 'Π', label: 'Capital pi' },
-  { icon: 'α', label: 'Alpha' },
-];
+import { Box, Button, Combobox, Flex, Text, useCombobox } from '@mantine/core';
 
 type addSpecialCharacterComboboxPropsType = {
-  expressionInputContentState: [string, Dispatch<SetStateAction<string>>];
-  insertElement: (specialCharacter: string) => void;
+  data: { label: string; icon: ReactNode; value: object | string }[];
+  placeholder: string;
+  buttonContent: ReactNode;
+  //expressionInputContentState: [string, Dispatch<SetStateAction<string>>];
+  insertFunction: (value: any) => any;
+  iconSize: string | number;
+  floatingStrategy: 'fixed' | 'absolute';
 };
 
-export function AddSpecialCharacterComboox({
-  expressionInputContentState,
-  insertElement,
+export function AddComboox({
+  data,
+  placeholder,
+  buttonContent,
+  //expressionInputContentState,
+  insertFunction,
+  iconSize,
+  floatingStrategy,
 }: addSpecialCharacterComboboxPropsType) {
-  const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
+  //const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [search, setSearch] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const combobox = useCombobox({
@@ -32,26 +36,26 @@ export function AddSpecialCharacterComboox({
     },
   });
 
-  const addSpecialCharacter = (specialCharacter: string) => {
-    setExpressionInputContent(expressionInputContent.concat(specialCharacter));
-    insertElement(expressionInputContent.concat(specialCharacter));
-  };
+  //   const addSpecialCharacter = (specialCharacter: string) => {
+  //     setExpressionInputContent(expressionInputContent.concat(specialCharacter));
+  //     insertElement(expressionInputContent.concat(specialCharacter));
+  //   };
 
-  const options = groceries
+  const options = data
     .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
     .map((item) => (
       <Combobox.Option
         value={item.label}
         key={item.label}
         onClick={() => {
-          addSpecialCharacter(item.icon);
+          insertFunction(item.value);
         }}
       >
         <Flex align="center">
-          <Box w="2rem" fz="1.1rem" fw={500}>
+          <Box w="2rem" fz={iconSize} fw={500} p="0px" m="0px">
             {item.icon}
           </Box>
-          {item.label}
+          <Text ml="sm"> {item.label}</Text>
         </Flex>
       </Combobox.Option>
     ));
@@ -68,12 +72,12 @@ export function AddSpecialCharacterComboox({
           combobox.closeDropdown();
         }}
         zIndex={2000}
-        floatingStrategy="fixed"
-        position="bottom-end"
+        position="bottom"
+        floatingStrategy={floatingStrategy}
       >
         <Combobox.Target withAriaAttributes={false}>
           <Button onClick={() => combobox.toggleDropdown()} variant="transparent">
-            <MdOutlineAdd />
+            {buttonContent}
           </Button>
         </Combobox.Target>
 
@@ -81,9 +85,9 @@ export function AddSpecialCharacterComboox({
           <Combobox.Search
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
-            placeholder="Search special characters"
+            placeholder={`Search ${placeholder}`}
           />
-          <Combobox.Options>
+          <Combobox.Options style={{ overflowY: 'auto' }} mah="50vh" mb="0px">
             {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
           </Combobox.Options>
         </Combobox.Dropdown>

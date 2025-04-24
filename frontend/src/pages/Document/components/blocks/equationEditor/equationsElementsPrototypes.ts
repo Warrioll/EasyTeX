@@ -1,4 +1,11 @@
+import { object } from "prop-types";
 import { FaRegClosedCaptioning } from "react-icons/fa";
+
+type elementFieldType={
+label:string,
+ elementPrototype: object,
+ latexRepresentation: string
+}
 
 const expression={
         value: '0',
@@ -40,7 +47,7 @@ const fraction={
     children: [
       {
         value: '0.0',
-        label: 'Upper border',
+        label: 'Upper limit',
         editable: false,
         children: [
           {...expression}
@@ -48,7 +55,31 @@ const fraction={
       },
       {
         value: '0.1',
-        label: 'Lower border',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const lineIntegral={
+    value: '0',
+    label: 'Line integral',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
         editable: false,
         children: [
           {...expression}
@@ -161,6 +192,24 @@ const fraction={
     ],
   }
 
+  // const upperIndex={
+  //   value: '0',
+  //   label: 'Upper index',
+  //   editable: true,
+  //   children: [
+  //     {...expression}
+  //   ],
+  // }
+
+  // const lowerIndex={
+  //   value: '0',
+  //   label: 'Lower index',
+  //   editable: true,
+  //   children: [
+  //     {...expression}
+  //   ],
+  // }
+
   const sum={
     value: '0',
     label: 'Sum',
@@ -168,7 +217,7 @@ const fraction={
     children: [
       {
         value: '0.0',
-        label: 'Upper index',
+        label: 'Upper limit',
         editable: false,
         children: [
           {...expression}
@@ -176,24 +225,195 @@ const fraction={
       },
       {
         value: '0.1',
-        label: 'Lower index',
+        label: 'Lower limit',
         editable: false,
         children: [
-          {...expression}
+          {...expression} 
         ],
       },
     ],
   }
 
-export const elementsPrototypes={
+  const product={
+    value: '0',
+    label: 'Product',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
 
-  expression: {label: 'Expression', elementPrototype: expression},
-    fraction: {label: 'Fraction', elementPrototype: fraction},
-    integral: {label: 'Integral', elementPrototype: integral},
-    root: {label: 'Root', elementPrototype: root},
-    lowerIndex: {label: 'Lower index', elementPrototype: lowerIndex},
-    upperIndex: {label: 'Upper index', elementPrototype: upperIndex},
-    upperAndLowerIndex: {label: 'Upper & lower index', elementPrototype: upperAndLowerIndex},
-    sum: {label:'Sum', elementsPrototype: sum}
+  const limes={
+    value: '0',
+    label: 'Limes',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Limit condition',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
+  const bigUnion={
+    value: '0',
+    label: 'Big union',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
+  const bigIntersection={
+    value: '0',
+    label: 'Big intersection',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
+  const bigDisjunction={
+    value: '0',
+    label: 'Big Disjunction',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
+  const bigConjunction={
+    value: '0',
+    label: 'Big conjunction',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+  
+  const combination={
+    value: '0',
+    label: 'Combination',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper limit',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower limit',
+        editable: false,
+        children: [
+          {...expression} 
+        ],
+      },
+    ],
+  }
+
+
+export const elementsPrototypes: Record<string,elementFieldType>={
+
+  expression: {label: 'Expression', elementPrototype: expression,  latexRepresentation: 'abc'},
+    fraction: {label: 'Fraction', elementPrototype: fraction, latexRepresentation: '\\frac{a}{b}'},
+    integral: {label: 'Integral', elementPrototype: integral, latexRepresentation: '\\int^{a}_{b}'},
+    lineIntegral: {label: 'Line integral', elementPrototype: lineIntegral, latexRepresentation:'\\oint^{a}_{b}'},
+    root: {label: 'Root', elementPrototype: root, latexRepresentation: '\\sqrt[b]{a}'},
+    lowerIndex: {label: 'Lower index', elementPrototype: lowerIndex, latexRepresentation: 'a_b'},
+    upperIndex: {label: 'Upper index', elementPrototype: upperIndex, latexRepresentation: 'a^b'},
+    upperAndLowerIndex: {label: 'Upper & lower index', elementPrototype: upperAndLowerIndex, latexRepresentation: 'a^b_c'},
+    sum: {label:'Sum', elementPrototype: sum, latexRepresentation: '\\sum^a_b'},
+    product: {label:'Product', elementPrototype: product, latexRepresentation: '\\prod^a_b'},
+    limes: {label: 'Limes', elementPrototype: limes , latexRepresentation: '\\lim_{a \\to b}'},
+    bigUnion: {label: 'Big union', elementPrototype: bigUnion , latexRepresentation: '\\bigcup^a_b'},
+    bigIntersection: {label: 'Big intersection', elementPrototype: bigIntersection , latexRepresentation: '\\bigcap^a_b'},
+    bigDisjunction: {label: 'Big disjunction', elementPrototype: bigDisjunction, latexRepresentation: '\\bigvee^a_b'},
+    bigConjunction: {label: 'Big conjunction', elementPrototype: bigConjunction, latexRepresentation: '\\bigwedge^a_b'},
+    combination: {label: 'Combination', elementPrototype: combination, latexRepresentation: '\\binom{a}{b}'}
 }
+
+
 

@@ -1,99 +1,224 @@
- import { Flex,Group, Box, Text,   RenderTreeNodePayload, ScrollArea, Button, Menu, Tree } from "@mantine/core";
- import classes from './equationEditor.module.css'
- import { Dispatch, SetStateAction } from "react";
- import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
- import cloneDeep from 'lodash/cloneDeep';
- import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
- import { elementsPrototypes } from "./equationsElementsPrototypes";
+import { Dispatch, SetStateAction } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
+import { number } from 'prop-types';
+import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
+import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
+import Latex from 'react-latex-next';
+import {
+  Box,
+  Button,
+  Flex,
+  Group,
+  Menu,
+  RenderTreeNodePayload,
+  ScrollArea,
+  Text,
+  Tree,
+} from '@mantine/core';
+import { AddComboox } from './addCombobox';
+import { elementsPrototypes } from './equationsElementsPrototypes';
+import classes from './equationEditor.module.css';
 
- type elementsTreePropsType = {
-    activeTreeElementState: [string, Dispatch<SetStateAction<string>>],
-    expressionInputContentState: [string, Dispatch<SetStateAction<string>>],
-    elementsContentState: [any, Dispatch<SetStateAction<any>>],
-    getElementByIdx: (idx:any, array: any)=>any,
-    insertElement: (idx, originAarray, newContent, deleteAmount)=>any
-    updateIdx: (array, preIdx)=>any
- }
+type elementsTreePropsType = {
+  activeTreeElementState: [string, Dispatch<SetStateAction<string>>];
+  expressionInputContentState: [string, Dispatch<SetStateAction<string>>];
+  elementsContentState: [any, Dispatch<SetStateAction<any>>];
+  getElementByIdx: (idx: any, array: any) => any;
+  insertElement: (idx, originAarray, newContent, deleteAmount) => any;
+  updateIdx: (array, preIdx) => any;
+};
 
-
- 
- export default function ElementsTree({activeTreeElementState, expressionInputContentState, elementsContentState, getElementByIdx, insertElement, updateIdx}: elementsTreePropsType){
-
-  const [activeTreeElement, setActiveTreeElement]=activeTreeElementState;
-  const [expressionInputContent, setExpressionInputContent]=expressionInputContentState;
-  const [elementsContent, setElementsContent]=elementsContentState;
-
+export default function ElementsTree({
+  activeTreeElementState,
+  expressionInputContentState,
+  elementsContentState,
+  getElementByIdx,
+  insertElement,
+  updateIdx,
+}: elementsTreePropsType) {
+  const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
+  const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
+  const [elementsContent, setElementsContent] = elementsContentState;
 
   const addElementAbove = (toAdd) => {
-      const elementToAdd = cloneDeep(toAdd);
-      setElementsContent(
-        insertElement(activeTreeElement, elementsContent, elementToAdd, 0) //.map((item) => {
-        //   return item;
-        // })
-      );
-    };
-  
-    const addElementBelow = (toAdd) => {
-      const elementToAdd = cloneDeep(toAdd);
-      let idxs = activeTreeElement.split('.').map(Number);
-      idxs[idxs.length - 1] = idxs[idxs.length - 1] + 1;
-  
-      setElementsContent(
-        insertElement(idxs.join('.'), elementsContent, elementToAdd, 0) //.map((item) => {
-        //   return item;
-        // })
-      );
-  
-      setActiveTreeElement(idxs.join('.'));
-    };
+    const elementToAdd = cloneDeep(toAdd);
+    const ec = insertElement(activeTreeElement, elementsContent, elementToAdd, 0);
+    setElementsContent(
+      ec
+      //.map((item) => {
+      //   return item;
+      // })
+    );
+    console.log('up insert: ', ec);
+  };
 
+  const addElementBelow = (toAdd) => {
+    const elementToAdd = cloneDeep(toAdd);
+    let idxs = activeTreeElement.split('.').map(Number);
+    idxs[idxs.length - 1] = idxs[idxs.length - 1] + 1;
 
-      const deleteElement = (idx) => {
-        let array = [...elementsContent];
-        const idxs = idx.split('.').map(Number);
-    
-        let rest = [];
-        let element = array;
-        for (let idx of idxs) {
-          rest = [element, ...rest];
-          Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
+    setElementsContent(
+      insertElement(idxs.join('.'), elementsContent, elementToAdd, 0) //.map((item) => {
+      //   return item;
+      // })
+    );
+
+    setActiveTreeElement(idxs.join('.'));
+  };
+
+  const deleteElement = (idx) => {
+    let array = [...elementsContent];
+    const idxs = idx.split('.').map(Number);
+
+    let rest = [];
+    let element = array;
+    for (let idx of idxs) {
+      rest = [element, ...rest];
+      Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
+    }
+
+    let partOfTree;
+    for (let i = 0; i < rest.length; i++) {
+      let tmp = rest[i];
+      //if(partOfTree!==null){
+      if (Array.isArray(tmp)) {
+        if (i === 0) {
+          tmp.length === 1
+            ? tmp.splice(idxs[idxs.length - 1 - i], 1, {
+                ...elementsPrototypes.expression.elementPrototype,
+              })
+            : tmp.splice(idxs[idxs.length - 1 - i], 1);
+        } else {
+          tmp.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
         }
-    
-        let partOfTree;
-        for (let i = 0; i < rest.length; i++) {
-          let tmp = rest[i];
-          //if(partOfTree!==null){
-          if (Array.isArray(tmp)) {
-            if (i === 0) {
-              tmp.length === 1
-                ? tmp.splice(idxs[idxs.length - 1 - i], 1, {
-                    ...elementsPrototypes.expression.elementPrototype,
-                  })
-                : tmp.splice(idxs[idxs.length - 1 - i], 1);
-            } else {
-              tmp.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
-            }
-          } else {
-            if (i === 0) {
-              tmp.children.length === 1
-                ? tmp.children.splice(idxs[idxs.length - 1 - i], 1, {
-                    ...elementsPrototypes.expression.elementPrototype,
-                  })
-                : tmp.children.splice(idxs[idxs.length - 1 - i], 1);
-            } else {
-              tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
-            }
-          }
-          partOfTree = tmp;
-          //  }
+      } else {
+        if (i === 0) {
+          tmp.children.length === 1
+            ? tmp.children.splice(idxs[idxs.length - 1 - i], 1, {
+                ...elementsPrototypes.expression.elementPrototype,
+              })
+            : tmp.children.splice(idxs[idxs.length - 1 - i], 1);
+        } else {
+          tmp.children.splice(idxs[idxs.length - 1 - i], 1, partOfTree);
         }
-        setElementsContent(updateIdx(partOfTree, []));
-        setActiveTreeElement('0');
-      };
+      }
+      partOfTree = tmp;
+      //  }
+    }
 
- const TreeNode  =({ node, expanded, hasChildren, elementProps, tree }:  RenderTreeNodePayload)=>  {
+    setElementsContent((ec) => updateIdx(partOfTree, []));
+    setActiveTreeElement('0');
+  };
 
+  const moveUp = () => {
+    const idxs = activeTreeElement.split('.').map(Number);
 
+    let rest = [];
+    let element = cloneDeep(elementsContent);
+    let isMoreThan1: boolean = false;
+    for (let i = 0; i < idxs.length - 1; i++) {
+      rest = [cloneDeep(element), ...rest];
+      Array.isArray(element);
+      Array.isArray(element)
+        ? (element = cloneDeep(element[idxs[i]]))
+        : (element = cloneDeep(element.children[idxs[i]]));
+    }
+
+    if (Array.isArray(element)) {
+      element.length > 1 ? (isMoreThan1 = true) : (isMoreThan1 = false);
+    } else {
+      element.children.length > 1 ? (isMoreThan1 = true) : (isMoreThan1 = false);
+    }
+    if (isMoreThan1) {
+      if (Array.isArray(element)) {
+        const lowerElement = { ...element[idxs[idxs.length - 1]] };
+        const upperElement = { ...element[idxs[idxs.length - 1] - 1] };
+        element[idxs[idxs.length - 1]] = upperElement;
+        element[idxs[idxs.length - 1] - 1] = lowerElement;
+      } else {
+        const lowerElement = { ...element.children[idxs[idxs.length - 1]] };
+        const upperElement = { ...element.children[idxs[idxs.length - 1] - 1] };
+        element.children[idxs[idxs.length - 1]] = upperElement;
+        element.children[idxs[idxs.length - 1] - 1] = lowerElement;
+      }
+
+      let partOfTree = cloneDeep(element);
+      for (let i = 0; i < rest.length; i++) {
+        let tmp = cloneDeep(rest[i]);
+        //if(partOfTree!==null){
+        if (Array.isArray(tmp)) {
+          tmp.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
+        } else {
+          tmp.children.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
+        }
+        partOfTree = cloneDeep(tmp);
+        //  }
+      }
+      setElementsContent(updateIdx(partOfTree, []));
+      let newIdxs = [...idxs];
+      newIdxs[newIdxs.length - 1] = newIdxs[newIdxs.length - 1] - 1;
+
+      setActiveTreeElement(newIdxs.join('.'));
+    }
+  };
+
+  const moveDown = () => {
+    const idxs = activeTreeElement.split('.').map(Number);
+
+    let rest = [];
+    let element = cloneDeep(elementsContent);
+    let moreThanLength: boolean = false;
+    for (let i = 0; i < idxs.length - 1; i++) {
+      rest = [cloneDeep(element), ...rest];
+      Array.isArray(element);
+      Array.isArray(element)
+        ? (element = cloneDeep(element[idxs[i]]))
+        : (element = cloneDeep(element.children[idxs[i]]));
+    }
+
+    if (Array.isArray(element)) {
+      element.length > idxs[idxs.length - 1] ? (moreThanLength = true) : (moreThanLength = false);
+    } else {
+      element.children.length > idxs[idxs.length - 1]
+        ? (moreThanLength = true)
+        : (moreThanLength = false);
+    }
+    console.log('x1');
+    if (moreThanLength) {
+      console.log('x2');
+      if (Array.isArray(element)) {
+        const lowerElement = { ...element[idxs[idxs.length - 1] + 1] };
+        const upperElement = { ...element[idxs[idxs.length - 1]] };
+        element[idxs[idxs.length - 1] + 1] = upperElement;
+        element[idxs[idxs.length - 1]] = lowerElement;
+      } else {
+        const lowerElement = { ...element.children[idxs[idxs.length - 1] + 1] };
+        const upperElement = { ...element.children[idxs[idxs.length - 1]] };
+        element.children[idxs[idxs.length - 1] + 1] = upperElement;
+        element.children[idxs[idxs.length - 1]] = lowerElement;
+      }
+
+      let partOfTree = cloneDeep(element);
+      for (let i = 0; i < rest.length; i++) {
+        let tmp = cloneDeep(rest[i]);
+        //if(partOfTree!==null){
+        if (Array.isArray(tmp)) {
+          tmp.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
+        } else {
+          tmp.children.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
+        }
+        partOfTree = cloneDeep(tmp);
+        //  }
+      }
+      setElementsContent(updateIdx(partOfTree, []));
+      let newIdxs = [...idxs];
+      newIdxs[newIdxs.length - 1] = newIdxs[newIdxs.length - 1] + 1;
+
+      setActiveTreeElement(newIdxs.join('.'));
+    }
+  };
+
+  const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
     // const isExpression = (element) => {
     //   return element.label === 'Expression';
     // };
@@ -152,7 +277,6 @@
                   : classes.noneditableElement
             }
             w="100%"
-            //bg="var(--mantine-color-gray-1)"
             m="2px"
           >
             <Flex>
@@ -178,88 +302,128 @@
     );
   };
 
-
-  return(<><Flex justify="center" p="0px" m="0px" h="2rem">
-            {getElementByIdx(activeTreeElement, elementsContent).editable ? (
-              <>
-                <Button fz="xs" variant="transparent">
-                  <FaArrowUp />
-                </Button>
-                <Button
-                  fz="xs"
-                  variant="transparent" //onClick={() => console.log('yolo')}
-                >
-                  <FaArrowDown />
-                </Button>
-                <Menu>
-                  <Menu.Target>
-                    <Button variant="transparent">
-                      <MdOutlineAdd />
-                      <Text fz="xs" m="0px">
-                        up
-                      </Text>
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {Object.entries(elementsPrototypes).map(([key, value]) => {
-                      return (
-                        <Menu.Item onClick={() => addElementAbove({ ...value.elementPrototype })}>
-                          {value.label}
-                        </Menu.Item>
-                      );
-                    })}
-                  </Menu.Dropdown>
-                </Menu>
-  
-                <Menu>
-                  <Menu.Target>
-                    <Button variant="transparent">
-                      <MdOutlineAdd />
-                      <Text fz="xs" m="0px">
-                        down
-                      </Text>
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {Object.entries(elementsPrototypes).map(([key, value]) => {
-                      return (
-                        <Menu.Item onClick={() => addElementBelow({ ...value.elementPrototype })}>
-                          {value.label}
-                        </Menu.Item>
-                      );
-                    })}
-                  </Menu.Dropdown>
-                </Menu>
-                <Button
-                  fz="xs"
-                  variant="transparent"
-                  onClick={() => {
-                    deleteElement(activeTreeElement);
-                  }}
-                >
-                  <FaTrashAlt />
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
-          </Flex>
-          <ScrollArea
-            h="100%"
-            //bg="var(--mantine-color-gray-1)"
-            p="sm"
-            pt="0px"
-            pb="0px"
-            //className={classes.elementsTree}
-          >
-            <Tree
-              data={elementsContent}
-              renderNode={TreeNode}
-              expandOnClick={false}
-              levelOffset={20}
+  return (
+    <>
+      <Flex justify="center" p="0px" m="0px" h="2rem">
+        {getElementByIdx(activeTreeElement, elementsContent).editable ? (
+          <>
+            <Button fz="xs" variant="transparent" onClick={moveUp}>
+              <FaArrowUp />
+            </Button>
+            <Button fz="xs" variant="transparent" onClick={moveDown}>
+              <FaArrowDown />
+            </Button>
+            <AddComboox
+              insertFunction={addElementAbove}
+              placeholder="elements"
+              buttonContent={
+                <>
+                  {' '}
+                  <MdOutlineAdd />
+                  <Text fz="xs" m="0px">
+                    up
+                  </Text>
+                </>
+              }
+              data={Object.entries(elementsPrototypes).map(([key, value]) => {
+                return {
+                  label: value.label,
+                  icon: <Latex>$${value.latexRepresentation}$$</Latex>,
+                  value: { ...value.elementPrototype },
+                };
+              })}
+              iconSize="0.8rem"
+              floatingStrategy=""
             />
-            {/* <EquationElementsList tree={elementsContent} />
-            {/* <MemoTree /> */}
-          </ScrollArea></>)
+            {/* <Menu.Target>
+                <Button variant="transparent">
+                  <MdOutlineAdd />
+                  <Text fz="xs" m="0px">
+                    up
+                  </Text>
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {Object.entries(elementsPrototypes).map(([key, value]) => {
+                  return (
+                    <Menu.Item
+                      onClick={() => {
+                        addElementAbove({ ...value.elementPrototype });
+                      }}
+                    >
+                      {value.label}
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.Dropdown> 
+            </Menu>*/}
 
+            <AddComboox
+              insertFunction={addElementBelow}
+              placeholder="elements"
+              buttonContent={
+                <>
+                  <MdOutlineAdd />
+                  <Text fz="xs" m="0px">
+                    down
+                  </Text>
+                </>
+              }
+              data={Object.entries(elementsPrototypes).map(([key, value]) => {
+                return {
+                  label: value.label,
+                  icon: <Latex>$${value.latexRepresentation}$$</Latex>,
+                  value: { ...value.elementPrototype },
+                };
+              })}
+              iconSize="0.8rem"
+              floatingStrategy="absolute"
+            />
+            {/* <Menu>
+              <Menu.Target>
+                <Button variant="transparent">
+                  <MdOutlineAdd />
+                  <Text fz="xs" m="0px">
+                    down
+                  </Text>
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {Object.entries(elementsPrototypes).map(([key, value]) => {
+                  return (
+                    <Menu.Item onClick={() => addElementBelow({ ...value.elementPrototype })}>
+                      {value.label}
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.Dropdown>
+            </Menu> */}
+            <Button
+              fz="xs"
+              variant="transparent"
+              onClick={() => {
+                deleteElement(activeTreeElement);
+              }}
+            >
+              <FaTrashAlt />
+            </Button>
+          </>
+        ) : (
+          <></>
+        )}
+      </Flex>
+      <ScrollArea
+        h="100%"
+        //bg="var(--mantine-color-gray-1)"
+        p="sm"
+        pt="0px"
+        pb="0px"
+        //className={classes.elementsTree}
+      >
+        <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
+        {/* <EquationElementsList tree={elementsContent} />
+            {/* <MemoTree /> */}
+      </ScrollArea>
+    </>
+  );
 }

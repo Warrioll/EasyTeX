@@ -1,6 +1,6 @@
 import 'katex/dist/katex.min.css';
 
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Latex from 'react-latex-next';
 import {
   Box,
@@ -16,6 +16,8 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
+import { elementsToTex } from './equationEditor/equationConverters';
+import { elementsPrototypes } from './equationEditor/equationsElementsPrototypes';
 import LatexFormulaTab from './equationEditor/LatexFormulaTab';
 import VisualEditorTab from './equationEditor/VisualEditorTab';
 import classes from './blocks.module.css';
@@ -36,16 +38,47 @@ export default function EquationBlock({
   const [blocksContent, setBlocksContent] = blocksContentState;
   const [activeBlock, setActiveBlock] = activeBlockState;
   const [modalOpened, modalHandlers] = useDisclosure(false);
-  const [editorTab, setEditorTab] = useState<string>('Visual editor');
+  const [editorTab, setEditorTab] = useState<'Visual editor' | 'LaTeX fromula'>('Visual editor');
   const equationFormulaState = useState<string>('');
   const [equationFormula, setEquationFormula] = equationFormulaState;
+  const elementsContentState = useState<any[]>([
+    { ...elementsPrototypes.expression.elementPrototype },
+  ]);
+  const [eqautionCopies, setEquationCopies] = useState<{
+    visualEditor: Array<any>;
+    latexFormula: string;
+  }>({
+    visualEditor: [],
+    latexFormula: '',
+  });
+  const [eqautionSaved, setEquationSaved] = useState<{
+    visualEditor: Array<any>;
+    latexFormula: string;
+  }>({
+    visualEditor: [],
+    latexFormula: '',
+  });
 
   const saveEquationChange = () => {
+    setEquationSaved({ visualEditor: elementsContentState[0], latexFormula: equationFormula });
     let blocks = blocksContent;
-    blocks[idx].blockContent = equationFormula;
+    if (editorTab === 'Visual editor') {
+      blocks[idx].blockContent = elementsToTex(elementsContentState[0]);
+    } else {
+      blocks[idx].blockContent = equationFormula;
+    }
+
     setBlocksContent(blocks);
     modalHandlers.close();
   };
+
+  useEffect(() => {
+    setEquationFormula(blocksContent[idx].blockContent);
+    // setEquationSaved({
+    //   visualEditor: elementsContentState[0],
+    //   latexFormula: blocksContent[activeBlock].blockContent,
+    // });
+  }, []);
 
   return (
     <>
@@ -65,7 +98,19 @@ export default function EquationBlock({
               onKeyDown={() => {}}
               //style={{ backgroundColor: 'pink' }}
               onClick={() => {
-                setEquationFormula(blocksContent[idx].blockContent);
+                //setEquationFormula(blocksContent[idx].blockContent);
+
+                // visualEditorCopy = [...elementsContentState[0]];
+                // console.log('open:', visualEditorCopy);
+                // latexFormulaCopy = equationFormula;
+
+                setEquationCopies({
+                  visualEditor: elementsContentState[0],
+                  latexFormula: equationFormula,
+                });
+                // elementsContentState[1](eqautionSaved.visualEditor);
+                // setEquationFormula(eqautionSaved.latexFormula);
+
                 modalHandlers.open();
               }}
               className={classes.openEquationEditorButton}
@@ -79,7 +124,12 @@ export default function EquationBlock({
       </MarkedBlockFrame>
       <Modal
         opened={modalOpened}
-        onClose={modalHandlers.close}
+        onClose={() => {
+          setEquationFormula(eqautionCopies.latexFormula);
+          //console.log('cancel:', visualEditorCopy);
+          elementsContentState[1]([...eqautionCopies.visualEditor]);
+          modalHandlers.close();
+        }}
         transitionProps={{ transition: 'fade-up' }}
         yOffset="3.5%"
         size="85vw"
@@ -103,18 +153,35 @@ export default function EquationBlock({
           </Flex>
         }
       >
-        <Center h="70vh" p="xl" pt='sm'>
+        <Center h="70vh" p="xl" pt="sm">
           {editorTab === 'Visual editor' ? (
-            <VisualEditorTab equationFormulaState={equationFormulaState} />
+            <VisualEditorTab
+              equationFormulaState={equationFormulaState}
+              elementsContentState={elementsContentState}
+            />
           ) : (
             <LatexFormulaTab equationFormulaState={equationFormulaState} />
           )}
         </Center>
         <Flex justify="center" mb="sm">
           <Button w="20vw" mr="xl" onClick={saveEquationChange}>
-            Ok
+            {editorTab === 'Visual editor' ? (
+              <>Set equation (from visual editor)</>
+            ) : (
+              <>Set equation (from LaTeX formula)</>
+            )}
           </Button>
-          <Button ml="xl" variant="outline" w="20vw" onClick={() => modalHandlers.close()}>
+          <Button
+            ml="xl"
+            variant="outline"
+            w="20vw"
+            onClick={() => {
+              setEquationFormula(eqautionCopies.latexFormula);
+              //console.log('cancel:', visualEditorCopy);
+              elementsContentState[1]([...eqautionCopies.visualEditor]);
+              modalHandlers.close();
+            }}
+          >
             Cancel
           </Button>
         </Flex>

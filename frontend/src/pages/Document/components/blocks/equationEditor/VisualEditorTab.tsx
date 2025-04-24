@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
-
+import { TbOmega } from 'react-icons/tb';
 import Latex from 'react-latex-next';
 import {
   Box,
@@ -26,11 +26,13 @@ import {
   TreeNodeData,
   useCombobox,
 } from '@mantine/core';
-import { elementsToTex } from './elementsToTex';
-import { elementsPrototypes } from './equationsElementsPrototypes';
-import classes from './equationEditor.module.css';
-import ElementsTree from './ElementsTree'
+import { AddComboox } from './addCombobox';
 import { AddSpecialCharacterComboox } from './AddSpecialCharacterCombobox';
+import ElementsTree from './ElementsTree';
+import { elementsToTex, texToElements } from './equationConverters';
+import { elementsPrototypes } from './equationsElementsPrototypes';
+import { specialCharacters } from './SpecialCharacters';
+import classes from './equationEditor.module.css';
 
 type elementType = {
   label: 'Expression' | 'Integral' | 'Fraction' | 'Numerator' | 'Denominator';
@@ -43,16 +45,18 @@ type elementType = {
 
 type VisualEditorTabTabPropsType = {
   equationFormulaState: [string, Dispatch<SetStateAction<string>>];
+  elementsContentState: [Array<any>, Dispatch<SetStateAction<Array<any>>>];
 };
 
-
-
-export default function VisualEditorTab({ equationFormulaState }: VisualEditorTabTabPropsType) {
-  const elementsContentState = useState<any[]>([
-    { ...elementsPrototypes.expression.elementPrototype },
-  ]);
+export default function VisualEditorTab({
+  equationFormulaState,
+  elementsContentState,
+}: VisualEditorTabTabPropsType) {
+  // const elementsContentState = useState<any[]>([
+  //   { ...elementsPrototypes.expression.elementPrototype },
+  // ]);
   const [elementsContent, setElementsContent] = elementsContentState;
-  const [latexFormula, setLatexFormula] = equationFormulaState;//useState<string>('yolo');
+  const [latexFormula, setLatexFormula] = equationFormulaState; //useState<string>('yolo');
   const [expressionInputContent, setExpressionInputContent] = useState<string>('');
 
   const activeTreeElementState = useState<string>('0');
@@ -114,35 +118,73 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
     return updateIdx(partOfTree, []);
   };
 
-
-
-
   const chooseElementEditor = () => {
     const element = getElementByIdx(activeTreeElement, elementsContent);
+
+    const addSpecialCharacter = (specialCharacter: string) => {
+      setExpressionInputContent(expressionInputContent.concat(specialCharacter));
+      element.content = element.content.concat(specialCharacter);
+      insertElement(element.value, elementsContent, element, 1);
+      //insertElement(expressionInputContent.concat(specialCharacter));
+    };
+
     if (element.label === 'Expression') {
-      return (<Flex w='100%'  align='center'>
-        <Textarea
-          variant="filled"
-          w="100%"
-          value={expressionInputContent}
-          onChange={(e) => {
-            setExpressionInputContent(e.currentTarget.value);
-            element.content = e.currentTarget.value;
-            insertElement(element.value, elementsContent, element, 1);
-          }}
-        />
-        <AddSpecialCharacterComboox/>
+      return (
+        <Flex w="100%" align="center">
+          <Textarea
+            variant="filled"
+            w="100%"
+            value={expressionInputContent}
+            onChange={(e) => {
+              setExpressionInputContent(e.currentTarget.value);
+              element.content = e.currentTarget.value;
+              insertElement(element.value, elementsContent, element, 1);
+            }}
+          />
+          <AddComboox
+            insertFunction={addSpecialCharacter}
+            placeholder="elements"
+            buttonContent={
+              <Text fz="1.5rem">
+                <TbOmega />
+              </Text>
+            }
+            data={specialCharacters.map((item) => {
+              return {
+                label: item.label,
+                icon: <Latex>$${item.latexRepresentation}$$</Latex>,
+                value: item.value,
+              };
+            })}
+            iconSize="0.8rem"
+            floatingStrategy="fixed"
+          />
+
+          {/* <AddSpecialCharacterComboox
+            expressionInputContentState={[expressionInputContent, setExpressionInputContent]}
+            insertElement={(withSpecialCharacter) =>
+              insertElement(element.value, withSpecialCharacter, element, 1)
+            }
+          /> */}
         </Flex>
       );
     }
-    return <>Expression element is not selected {`(currently selected: ${element.label})`}</>;
+    return (
+      <Text c="var(--mantine-color-gray-6)">
+        Expression element is not selected {`(currently selected: ${element.label})`}
+      </Text>
+    );
   };
 
+  // useEffect(() => {
+  //   setLatexFormula(elementsToTex(elementsContent));
+  //   console.log('useEffect');
+  // }, [elementsContent, expressionInputContent]);
 
-  useEffect(() => {
-    setLatexFormula(elementsToTex(elementsContent));
-    console.log('useEffect');
-  }, [elementsContent, expressionInputContent]);
+  // useEffect(() => {
+  //   console.log('texToElements: ', texToElements(latexFormula));
+  //   setElementsContent(texToElements(latexFormula));
+  // }, []);
 
   return (
     <Grid w="100%" h="100%" mt="0px" pt="0">
@@ -150,27 +192,34 @@ export default function VisualEditorTab({ equationFormulaState }: VisualEditorTa
         <Text fw={500} size="sm">
           Elements:
         </Text>
-        <ElementsTree activeTreeElementState={activeTreeElementState} expressionInputContentState={[expressionInputContent, setExpressionInputContent]} elementsContentState={elementsContentState} getElementByIdx={getElementByIdx} insertElement={insertElement} updateIdx={updateIdx}/>
+        <ElementsTree
+          activeTreeElementState={activeTreeElementState}
+          expressionInputContentState={[expressionInputContent, setExpressionInputContent]}
+          elementsContentState={elementsContentState}
+          getElementByIdx={getElementByIdx}
+          insertElement={insertElement}
+          updateIdx={updateIdx}
+        />
       </Grid.Col>
       <Grid.Col span={8}>
         <Stack>
-          <Box h="20vh">
+          <Box h="10vh">
             <Text fw={500} size="sm">
               Edit:
             </Text>
             <ScrollArea h="100%" w="100%">
-              <Center h="20vh" p="0px">
+              <Center h="10vh" p="0px">
                 {chooseElementEditor()}
               </Center>
             </ScrollArea>
           </Box>
-          <Box h="35vh">
+          <Box h="50vh">
             <Text fw={500} size="sm">
               Preview:
             </Text>
             <ScrollArea h="100%">
-              <Center w="100%" mih="35vh">
-                <Latex>{`$$${latexFormula}$$`}</Latex>
+              <Center w="100%" mih="50vh">
+                <Latex>{`$$${elementsToTex(elementsContent)}$$`}</Latex>
               </Center>
             </ScrollArea>
           </Box>
