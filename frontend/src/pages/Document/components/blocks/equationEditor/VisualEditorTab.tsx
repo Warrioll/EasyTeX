@@ -127,8 +127,9 @@ export default function VisualEditorTab({
       insertElement(element.value, elementsContent, element, 1);
       //insertElement(expressionInputContent.concat(specialCharacter));
     };
-
+    console.log('ceE1')
     if (element.label === 'Expression') {
+      console.log('ceE2')
       return (
         <Flex w="100%" align="center">
           <Textarea
@@ -149,15 +150,16 @@ export default function VisualEditorTab({
                 <TbOmega />
               </Text>
             }
-            data={specialCharacters.map((item) => {
+            data={specialCharacters.map((group)=>{return {label: group.label, group: group.group.map((item) => {
               return {
                 label: item.label,
                 icon: <Latex>$${item.latexRepresentation}$$</Latex>,
                 value: item.value,
               };
-            })}
+            })}})}
             iconSize="0.8rem"
             floatingStrategy="fixed"
+            withGroups
           />
 
           {/* <AddSpecialCharacterComboox
@@ -169,6 +171,7 @@ export default function VisualEditorTab({
         </Flex>
       );
     }
+    console.log('ceE3')
     return (
       <Text c="var(--mantine-color-gray-6)">
         Expression element is not selected {`(currently selected: ${element.label})`}
@@ -181,13 +184,13 @@ export default function VisualEditorTab({
   //   console.log('useEffect');
   // }, [elementsContent, expressionInputContent]);
 
-  // useEffect(() => {
-  //   console.log('texToElements: ', texToElements(latexFormula));
-  //   setElementsContent(texToElements(latexFormula));
-  // }, []);
+  useEffect(() => {
+    console.log('texToElements: ', texToElements(latexFormula));
+    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)),[]));
+  }, []);
 
   return (
-    <Grid w="100%" h="100%" mt="0px" pt="0">
+    <Grid w="100%" h="100%" mt="0px" pt="0" >
       <Grid.Col span={4} h="63vh">
         <Text fw={500} size="sm">
           Elements:
@@ -209,7 +212,8 @@ export default function VisualEditorTab({
             </Text>
             <ScrollArea h="100%" w="100%">
               <Center h="10vh" p="0px">
-                {chooseElementEditor()}
+                {chooseElementEditor()
+                }
               </Center>
             </ScrollArea>
           </Box>

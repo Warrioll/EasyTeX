@@ -218,6 +218,8 @@ export default function ElementsTree({
     }
   };
 
+
+
   const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
     // const isExpression = (element) => {
     //   return element.label === 'Expression';
@@ -302,6 +304,17 @@ export default function ElementsTree({
     );
   };
 
+
+  const treeWithTryCatch=()=>{
+    try{
+      console.log('ft: ',elementsContent)
+      return  <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
+    }catch(e){
+      console.log('treeTryCatch')
+      return <></>
+    }
+  }
+
   return (
     <>
       <Flex justify="center" p="0px" m="0px" h="2rem">
@@ -334,29 +347,8 @@ export default function ElementsTree({
               })}
               iconSize="0.8rem"
               floatingStrategy=""
+              withGroups={false}
             />
-            {/* <Menu.Target>
-                <Button variant="transparent">
-                  <MdOutlineAdd />
-                  <Text fz="xs" m="0px">
-                    up
-                  </Text>
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {Object.entries(elementsPrototypes).map(([key, value]) => {
-                  return (
-                    <Menu.Item
-                      onClick={() => {
-                        addElementAbove({ ...value.elementPrototype });
-                      }}
-                    >
-                      {value.label}
-                    </Menu.Item>
-                  );
-                })}
-              </Menu.Dropdown> 
-            </Menu>*/}
 
             <AddComboox
               insertFunction={addElementBelow}
@@ -378,26 +370,8 @@ export default function ElementsTree({
               })}
               iconSize="0.8rem"
               floatingStrategy="absolute"
+              withGroups={false}
             />
-            {/* <Menu>
-              <Menu.Target>
-                <Button variant="transparent">
-                  <MdOutlineAdd />
-                  <Text fz="xs" m="0px">
-                    down
-                  </Text>
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {Object.entries(elementsPrototypes).map(([key, value]) => {
-                  return (
-                    <Menu.Item onClick={() => addElementBelow({ ...value.elementPrototype })}>
-                      {value.label}
-                    </Menu.Item>
-                  );
-                })}
-              </Menu.Dropdown>
-            </Menu> */}
             <Button
               fz="xs"
               variant="transparent"
@@ -420,7 +394,9 @@ export default function ElementsTree({
         pb="0px"
         //className={classes.elementsTree}
       >
-        <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
+         {/* <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />  */}
+        {treeWithTryCatch()
+        }
         {/* <EquationElementsList tree={elementsContent} />
             {/* <MemoTree /> */}
       </ScrollArea>

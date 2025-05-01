@@ -12,7 +12,9 @@ import {
   SegmentedControl,
   Text,
   Textarea,
+  RemoveScroll
 } from '@mantine/core';
+
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
@@ -60,7 +62,7 @@ export default function EquationBlock({
   });
 
   const saveEquationChange = () => {
-    setEquationSaved({ visualEditor: elementsContentState[0], latexFormula: equationFormula });
+    //setEquationSaved({ visualEditor: elementsContentState[0], latexFormula: equationFormula });
     let blocks = blocksContent;
     if (editorTab === 'Visual editor') {
       blocks[idx].blockContent = elementsToTex(elementsContentState[0]);
@@ -123,6 +125,8 @@ export default function EquationBlock({
         </Center>
       </MarkedBlockFrame>
       <Modal
+      //className={RemoveScroll.classNames.fullWidth}
+      className={RemoveScroll.classNames.zeroRight}
         opened={modalOpened}
         onClose={() => {
           setEquationFormula(eqautionCopies.latexFormula);
@@ -134,6 +138,7 @@ export default function EquationBlock({
         yOffset="3.5%"
         size="85vw"
         scrollAreaComponent={ScrollArea.Autosize}
+        style={{overflowY: 'hidden', maxHeight: '20vh'}}
         title={
           <Flex>
             <Text c="var(--mantine-color-cyan-8)">

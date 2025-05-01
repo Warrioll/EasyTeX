@@ -1,15 +1,21 @@
 import { elementsPrototypes } from "./equationsElementsPrototypes";
 import { specialCharacters } from "./SpecialCharacters";
+import { cloneDeep } from "lodash";
 
 export function elementsToTex(array:any):string{
     let formula:string ='';
-
+    let tmp
     for (let i=0; i<array.length ; i++){
         switch(array[i].label){
             case 'Expression':
-                let tmp=array[i].content;
+               tmp=array[i].content;
+               //console.log('expr', tmp)
                 for(let i of specialCharacters){
-                    tmp=tmp.replaceAll(i.value, ` ${i.latexRepresentation} `)
+                    //console.log('value: ', i.group)
+                    for(let j of i.group ){
+                        tmp=tmp.replaceAll(j.value, ` ${j.latexRepresentation} `)
+                    }
+                    
                 }
                 // tmp=tmp.replaceAll('π', '\\pi ')
                 // tmp=tmp.replaceAll('Π', '\\Pi ')
@@ -140,8 +146,8 @@ export function texToElements(originalString:string):any{
                 expr.content=parts[i].replace('\\frac', '')
                 
                 let nfrac={...elementsPrototypes.fraction.elementPrototype}
-                nfrac.children[0].children=texToElements(parts[i+1])
-                nfrac.children[1].children=texToElements(parts[i+2])
+                nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                nfrac.children[1].children=cloneDeep(texToElements(parts[i+2]))
                 elements=[...elements, expr, nfrac]
                 i=i+3
                 continue
