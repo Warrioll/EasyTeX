@@ -441,6 +441,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
     // );
 
       document.splice(1,0,'\\usepackage{ulem}'
+        +'\\usepackage{amsmath}'
         +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'
         +'\n\\begin{document}'
       );

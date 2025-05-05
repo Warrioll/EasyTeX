@@ -63,13 +63,34 @@ export default function VisualEditorTab({
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
 
   const getElementByIdx = (idx, array) => {
+    console.log('getelementByIdx array: ', array);
     const idxs = idx.split('.').map(Number);
-    //console.log('idxs: ', idxs);
+    console.log('idxs: ', idxs);
 
     let element = array;
-    for (let idx of idxs) {
-      //console.log('idx: ', idx);
-      Array.isArray(element) ? (element = element[idx]) : (element = element.children[idx]);
+    for (let i of idxs) {
+      console.log('i: ', i, 'element: ', element);
+      // try {
+      //   Array.isArray(element) ? (element = element[i]) : (element = element.children[i]);
+      // } catch (e) {
+      //   console.log('Too deep or sth wrong: ', e);
+      //   break;
+      // }
+
+      if (Array.isArray(element)) {
+        if (element[i] === undefined) {
+          break;
+        } else {
+          element = element[i];
+        }
+      } else {
+        if (element.children[i] === undefined) {
+          break;
+        } else {
+          element = element.children[i];
+        }
+        //Array.isArray(element) ? (element = element[i]) : (element = element.children[i]);
+      }
     }
     return element;
   };
@@ -127,9 +148,9 @@ export default function VisualEditorTab({
       insertElement(element.value, elementsContent, element, 1);
       //insertElement(expressionInputContent.concat(specialCharacter));
     };
-    console.log('ceE1')
+    console.log('ceE1');
     if (element.label === 'Expression') {
-      console.log('ceE2')
+      console.log('ceE2');
       return (
         <Flex w="100%" align="center">
           <Textarea
@@ -150,13 +171,18 @@ export default function VisualEditorTab({
                 <TbOmega />
               </Text>
             }
-            data={specialCharacters.map((group)=>{return {label: group.label, group: group.group.map((item) => {
+            data={specialCharacters.map((group) => {
               return {
-                label: item.label,
-                icon: <Latex>$${item.latexRepresentation}$$</Latex>,
-                value: item.value,
+                label: group.label,
+                group: group.group.map((item) => {
+                  return {
+                    label: item.label,
+                    icon: <Latex>$${item.latexRepresentation}$$</Latex>,
+                    value: item.value,
+                  };
+                }),
               };
-            })}})}
+            })}
             iconSize="0.8rem"
             floatingStrategy="fixed"
             withGroups
@@ -171,7 +197,7 @@ export default function VisualEditorTab({
         </Flex>
       );
     }
-    console.log('ceE3')
+    console.log('ceE3');
     return (
       <Text c="var(--mantine-color-gray-6)">
         Expression element is not selected {`(currently selected: ${element.label})`}
@@ -186,11 +212,11 @@ export default function VisualEditorTab({
 
   useEffect(() => {
     console.log('texToElements: ', texToElements(latexFormula));
-    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)),[]));
+    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []));
   }, []);
 
   return (
-    <Grid w="100%" h="100%" mt="0px" pt="0" >
+    <Grid w="100%" h="100%" mt="0px" pt="0">
       <Grid.Col span={4} h="63vh">
         <Text fw={500} size="sm">
           Elements:
@@ -212,8 +238,7 @@ export default function VisualEditorTab({
             </Text>
             <ScrollArea h="100%" w="100%">
               <Center h="10vh" p="0px">
-                {chooseElementEditor()
-                }
+                {chooseElementEditor()}
               </Center>
             </ScrollArea>
           </Box>

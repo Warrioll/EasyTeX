@@ -324,7 +324,7 @@ const fraction={
 
   const bigDisjunction={
     value: '0',
-    label: 'Big Disjunction',
+    label: 'Big disjunction',
     editable: true,
     children: [
       {
@@ -394,6 +394,353 @@ const fraction={
     ],
   }
 
+  const caseStructureLeftCurlyBracket={
+    value: '0',
+    label: 'Case structure (left curly bracket)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Upper right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.0',
+        label: 'Lower left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const caseStructureRightCurlyBracket={
+    value: '0',
+    label: 'Case structure (right curly bracket)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Upper right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.0',
+        label: 'Lower left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const caseStructureCurlyBrackets={
+    value: '0',
+    label: 'Case structure (curly brackets)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Upper left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Upper right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.0',
+        label: 'Lower left',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: 'Lower right',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const row2ElementsLeft={
+    value: '0',
+    label: 'Row (2 elements, left aligned)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const row3ElementsLeft={
+    value: '0',
+    label: 'Row (3 elements, left aligned)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.2',
+        label: '3rd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const column2ElementsLeft={
+    value: '0',
+    label: 'Column (2 elements, left aligned)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const column3ElementsLeft={
+    value: '0',
+    label: 'Column (3 elements, left aligned)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.2',
+        label: '3rd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const row2ElementsCenter={
+    value: '0',
+    label: 'Row (2 elements, centered)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const row3ElementsCenter={
+    value: '0',
+    label: 'Row (3 elements, centered)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.2',
+        label: '3rd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const column2ElementsCenter={
+    value: '0',
+    label: 'Column (2 elements, centered)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const column3ElementsCenter={
+    value: '0',
+    label: 'Column (3 elements, centered)',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: '1st element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.1',
+        label: '2nd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+      {
+        value: '0.2',
+        label: '3rd element',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+
+
+
 
 export const elementsPrototypes: Record<string,elementFieldType>={
 
@@ -412,8 +759,20 @@ export const elementsPrototypes: Record<string,elementFieldType>={
     bigIntersection: {label: 'Big intersection', elementPrototype: bigIntersection , latexRepresentation: '\\bigcap^a_b'},
     bigDisjunction: {label: 'Big disjunction', elementPrototype: bigDisjunction, latexRepresentation: '\\bigvee^a_b'},
     bigConjunction: {label: 'Big conjunction', elementPrototype: bigConjunction, latexRepresentation: '\\bigwedge^a_b'},
-    combination: {label: 'Combination', elementPrototype: combination, latexRepresentation: '\\binom{a}{b}'}
-}
+    combination: {label: 'Combination', elementPrototype: combination, latexRepresentation: '\\binom{a}{b}'},
+    caseStructureLeftBracket: {label: 'Case structure (left curly bracket)', elementPrototype: caseStructureLeftCurlyBracket, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right.'},
+    caseStructureRightBracket: {label: 'Case structure (right curly bracket)', elementPrototype: caseStructureRightCurlyBracket, latexRepresentation: '\\left.\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
+    caseStructureCurlyBrackets: {label: 'Case structure (curly brackets)', elementPrototype: caseStructureCurlyBrackets, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
+    row2ElementsLeft: {label: 'Row (2 elements, left aligned)', elementPrototype: row2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b\\end{array}\\right.'},
+    row3ElementsLeft: {label: 'Row (3 elements, left aligned)', elementPrototype: row3ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b&c\\end{array}\\right.'},
+    column2ElementsLeft: {label: 'Column (2 elements, left aligned)', elementPrototype: column2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\end{array}\\right.'},
+    column3ElementsLeft: {label: 'Column (3 elements, left aligned)', elementPrototype: column3ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\\\c\\end{array}\\right.'},
+    row2ElementsCenter: {label: 'Row (2 elements, center)', elementPrototype: row2ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a&b\\end{array}\\right.'},
+    row3ElementsCenter: {label: 'Row (3 elements, center)', elementPrototype: row3ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a&b&c\\end{array}\\right.'},
+    column2ElementsCenter: {label: 'Column (2 elements, center)', elementPrototype: column2ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\end{array}\\right.'},
+    column3ElementsCenter: {label: 'Column (3 elements, center)', elementPrototype: column3ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\\\c\\end{array}\\right.'},
+  
+  }
 
 
 

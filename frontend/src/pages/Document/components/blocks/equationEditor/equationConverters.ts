@@ -56,7 +56,7 @@ export function elementsToTex(array:any):string{
                 formula+=`\\prod^{${elementsToTex(array[i].children[0].children)}}_{${elementsToTex(array[i].children[1].children)}}`   
                 break;
             case 'Limes':
-                formula+=`\\lim_{${elementsToTex(array[i].children)}}`
+                formula+=`\\lim_{${elementsToTex(array[i].children[0].children)}}`
                 break;   
             case 'Big union':
                 formula+=`\\bigcup^{${elementsToTex(array[i].children[0].children)}}_{${elementsToTex(array[i].children[1].children)}}`   
@@ -73,6 +73,39 @@ export function elementsToTex(array:any):string{
             case 'Combination':
                 formula+=`\\binom{${elementsToTex(array[i].children[0].children)}}{${elementsToTex(array[i].children[1].children)}}`   
                 break;
+            case 'Case structure (left curly bracket)':
+                formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right.`   
+                break;
+            case 'Case structure (right curly bracket)':
+                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
+                break;
+            case 'Case structure (curly brackets)':
+                formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
+                break;
+            case 'Row (2 elements, left aligned)':
+                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                break;
+            case 'Row (3 elements, left aligned)':
+                formula+=`\\left.\\begin{array}{lll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}&${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                break;
+            case 'Column (2 elements, left aligned)':
+                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                break;
+            case 'Column (3 elements, left aligned)':
+                formula+=`\\left.\\begin{array}{lll}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                break;
+            case 'Row (2 elements, centered)':
+                formula+=`\\left.\\begin{array}{}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                break;
+            case 'Row (3 elements, centered)':
+                formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}&${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                break;
+            case 'Column (2 elements, centered)':
+                formula+=`\\left.\\begin{array}{}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                break;
+            case 'Column (3 elements, centered)':
+                formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                break;
             default:
                 break;
         } 
@@ -85,7 +118,7 @@ export function elementsToTex(array:any):string{
 
 
 export function texToElements(originalString:string):any{
-
+        //originalString=originalString.replaceAll('\r','').replaceAll('\n','').replaceAll('\t','')
         let parts=[]
         if( originalString!==undefined &&originalString.includes('{') && originalString.includes('}')){
             let counter=0
@@ -125,7 +158,7 @@ export function texToElements(originalString:string):any{
     
             parts=[...parts, originalString.slice(toSplit[toSplit.length-2]+1)]
         
-            parts=parts.filter(part=>part!=='')
+            parts=parts.filter(part=>part!=='' && part!==' ' )
         
         //console.log('original: ', originalString, 'parts: ',parts)
         
@@ -141,34 +174,219 @@ export function texToElements(originalString:string):any{
             //     i++
             //     continue
             // }
-            if(parts[i].includes('\\frac')){
+            if(parts[i].includes('\\frac') || parts[i].includes('\\binom')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=parts[i].replace('\\frac', '')
+                let nfrac
+                if(parts[i].includes('\\frac') ){
+                    expr.content=parts[i].replace('\\frac', '')
+                    nfrac={...elementsPrototypes.fraction.elementPrototype}
+                }
+                if(parts[i].includes('\\binom') ){
+                    expr.content=parts[i].replace('\\binom', '')
+                    nfrac={...elementsPrototypes.combination.elementPrototype}
+                }
                 
-                let nfrac={...elementsPrototypes.fraction.elementPrototype}
+               
                 nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                 nfrac.children[1].children=cloneDeep(texToElements(parts[i+2]))
-                elements=[...elements, expr, nfrac]
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
                 i=i+3
                 continue
             }
-            if(parts[i].includes('\\sum')){
-                let nsum={...elementsPrototypes.sum.elementPrototype}
-                 let tmp =parts[i].split('\\sum')
-                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=tmp[0]
-                 if(tmp[1]==='^'){
-                     nsum.children[0].children=texToElements(parts[i+1])
-                     nsum.children[1].children=texToElements(parts[i+3])
-                     //console.log(parts[i+3])
-                 }else{
+            // if(parts[i].includes('\\sum')){
+            //     let nsum={...elementsPrototypes.sum.elementPrototype}
+            //      let tmp =parts[i].split('\\sum')
+            //      let expr={...elementsPrototypes.expression.elementPrototype}
+            //     expr.content=tmp[0]
+            //      if(tmp[1]==='^'){
+            //          nsum.children[0].children=texToElements(parts[i+1])
+            //          nsum.children[1].children=texToElements(parts[i+3])
+            //          //console.log(parts[i+3])
+            //      }else{
                      
-                     nsum.children[1].children=texToElements(parts[i+1])
-                     nsum.children[0].children=texToElements(parts[i+3])
-                 }
-                 elements=[...elements,expr, sum]
-                 i=i+4
-                 continue
+            //          nsum.children[1].children=texToElements(parts[i+1])
+            //          nsum.children[0].children=texToElements(parts[i+3])
+            //      }
+            //      if(expr.content==='' || expr.content===' '){
+            //         elements=[...elements,  nsum]
+            //     }else{
+            //         elements=[...elements, expr,  nsum]
+            //     }
+            //      //elements=[...elements,expr, nsum]
+            //      i=i+4
+            //      continue
+            // }
+
+            // if(parts[i].includes('\\int')){
+            //     let nint={...elementsPrototypes.integral.elementPrototype}
+            //     let tmp =parts[i].split('\\int')
+            //     let expr={...elementsPrototypes.expression.elementPrototype}
+            //    expr.content=tmp[0]
+            //     if(tmp[1]==='^'){
+            //        nint.children[0].children=texToElements(parts[i+1])
+            //        nint.children[1].children=texToElements(parts[i+3])
+            //         //console.log(parts[i+3])
+            //     }else{
+                    
+            //        nint.children[1].children=texToElements(parts[i+1])
+            //        nint.children[0].children=texToElements(parts[i+3])
+            //     }
+            //     if(expr.content==='' || expr.content===' '){
+            //        elements=[...elements,  nint]
+            //    }else{
+            //        elements=[...elements, expr,  nint]
+            //    }
+            //     //elements=[...elements,expr, nsum]
+            //     i=i+4
+            //     continue
+            // }
+            // if(parts[i].includes('\\oint')){
+            //     let nint={...elementsPrototypes.lineIntegral.elementPrototype}
+            //      let tmp =parts[i].split('\\oint')
+            //      let expr={...elementsPrototypes.expression.elementPrototype}
+            //     expr.content=tmp[0]
+            //      if(tmp[1]==='^'){
+            //         nint.children[0].children=texToElements(parts[i+1])
+            //         nint.children[1].children=texToElements(parts[i+3])
+            //          //console.log(parts[i+3])
+            //      }else{
+                     
+            //         nint.children[1].children=texToElements(parts[i+1])
+            //         nint.children[0].children=texToElements(parts[i+3])
+            //      }
+            //      if(expr.content==='' || expr.content===' '){
+            //         elements=[...elements,  nint]
+            //     }else{
+            //         elements=[...elements, expr,  nint]
+            //     }
+            //      //elements=[...elements,expr, nsum]
+            //      i=i+4
+            //      continue
+            // }
+            if(parts[i].includes('\\sqrt')){
+                let indexAndExpr=parts[i].split('\\sqrt')
+                console.log('indx&expr: ',indexAndExpr)
+                
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                expr.content=indexAndExpr[0]
+                const index=indexAndExpr[1].replaceAll(']','').replaceAll('[','')
+                
+                let nfrac={...elementsPrototypes.root.elementPrototype}
+                nfrac.children[0].children=cloneDeep(texToElements(index))
+                nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i=i+2
+                continue
+            }
+            // if(parts[i].includes('\\prod')){
+            //     let nsum={...elementsPrototypes.product.elementPrototype}
+            //      let tmp =parts[i].split('\\prod')
+            //      let expr={...elementsPrototypes.expression.elementPrototype}
+            //     expr.content=tmp[0]
+            //      if(tmp[1]==='^'){
+            //          nsum.children[0].children=texToElements(parts[i+1])
+            //          nsum.children[1].children=texToElements(parts[i+3])
+            //          //console.log(parts[i+3])
+            //      }else{
+                     
+            //          nsum.children[1].children=texToElements(parts[i+1])
+            //          nsum.children[0].children=texToElements(parts[i+3])
+            //      }
+            //      if(expr.content==='' || expr.content===' '){
+            //         elements=[...elements,  nsum]
+            //     }else{
+            //         elements=[...elements, expr,  nsum]
+            //     }
+            //      //elements=[...elements,expr, nsum]
+            //      i=i+4
+            //      continue
+            // }
+            if(parts[i].includes('\\lim')){
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                expr.content=parts[i].replace('\\lim', '').replace('_', '')
+                
+                let nfrac={...elementsPrototypes.limes.elementPrototype}
+                nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i=i+2
+                continue
+            }
+            if( parts[i].includes('\\int')
+                ||parts[i].includes('\\oint') 
+                ||parts[i].includes('\\sum') 
+                ||parts[i].includes('\\prod') 
+                ||parts[i].includes('\\bigcup') 
+                || parts[i].includes('\\bigcap')
+                || parts[i].includes('\\bigvee')
+                || parts[i].includes('\\bigwedge')){
+                    console.log('part: ', i, ' - ',parts[i])
+                let nsum
+                let tmp
+                if(parts[i].includes('\\int')){
+                    nsum={...elementsPrototypes.integral.elementPrototype}
+                    tmp =parts[i].split('\\int')
+                }
+                if(parts[i].includes('\\oint')){
+                    nsum={...elementsPrototypes.lineIntegral.elementPrototype}
+                    tmp =parts[i].split('\\oint')
+                }
+                if(parts[i].includes('\\sum')){
+                    nsum={...elementsPrototypes.sum.elementPrototype}
+                    tmp =parts[i].split('\\sum')
+                }
+                if(parts[i].includes('\\prod')){
+                    nsum={...elementsPrototypes.product.elementPrototype}
+                    tmp =parts[i].split('\\prod')
+                }
+                if(parts[i].includes('\\bigcup')){
+                    nsum={...elementsPrototypes.bigUnion.elementPrototype}
+                    tmp =parts[i].split('\\bigcup')
+                }
+                if(parts[i].includes('\\bigcap')){
+                    nsum={...elementsPrototypes.bigIntersection.elementPrototype}
+                    tmp =parts[i].split('\\bigcap')
+                }
+                if(parts[i].includes('\\bigvee')){
+                    nsum={...elementsPrototypes.bigDisjunction.elementPrototype}
+                    tmp =parts[i].split('\\bigvee')
+                }
+                if(parts[i].includes('\\bigwedge')){
+                    nsum={...elementsPrototypes.bigConjunction.elementPrototype}
+                    tmp =parts[i].split('\\bigwedge')
+                }
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                   expr.content=tmp[0]
+                    if(tmp[1]==='^'){
+                        nsum.children[0].children=texToElements(parts[i+1])
+                        nsum.children[1].children=texToElements(parts[i+3])
+                        //console.log(parts[i+3])
+                    }else{
+                        
+                        nsum.children[1].children=texToElements(parts[i+1])
+                        nsum.children[0].children=texToElements(parts[i+3])
+                    }
+                    if(expr.content==='' || expr.content===' '){
+                       elements=[...elements,  nsum]
+                       console.log('yolo')
+                   }else{
+                       elements=[...elements, expr,  nsum]
+                       console.log('yolo2')
+                   }
+                    //elements=[...elements,expr, nsum]
+                    i=i+4
+                    continue
             }
             
             if(parts[i].endsWith('^')){
@@ -212,10 +430,11 @@ export function texToElements(originalString:string):any{
                 }
              }
             
-            
+            if(parts[i]!=='' || parts[i]!==' '){
             let expr={...elementsPrototypes.expression.elementPrototype}
             expr.content=parts[i]
             elements=[...elements,expr]
+            }
             i++
             
             
@@ -223,15 +442,22 @@ export function texToElements(originalString:string):any{
         //i++
             
         }
-        elements=elements.filter(part=>part!=='')
+        elements=elements.filter((ele)=>{if(ele.label==='Expression'){
+            const unikatowe= new Set(ele.content)
+            if(ele.content==='' || (unikatowe.size===1 && unikatowe.has(' '))){
+                return false
+            }
+        } 
+            return true
+        })
         return elements
     }
-        if(originalString===undefined){
+        if(originalString===undefined ){
             return null
         }
         let expr={...elementsPrototypes.expression.elementPrototype}
         expr.content=originalString
-        return expr
+        return [expr]
     }
     
 
