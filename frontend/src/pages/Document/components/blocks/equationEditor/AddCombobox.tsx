@@ -80,7 +80,16 @@ export function AddComboox({
             }}
           >
             <Flex align="center">
-              <Box miw="4rem" fz={iconSize} fw={500} p="0px" m="0px">
+              <Box
+                miw="4rem"
+                fz={iconSize}
+                fw={500}
+                p="0px"
+                m="2px"
+                bg="white"
+                bd="1px solid var(--mantine-color-gray-1)"
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              >
                 {item.icon}
               </Box>
               <Text ml="sm" ta="left">
@@ -104,8 +113,12 @@ export function AddComboox({
         zIndex={2000}
         position="bottom"
         floatingStrategy={floatingStrategy}
-        shadow='md'
-        styles={{ search:{backgroundColor: 'var(--mantine-color-gray-1)'},dropdown:{border: '1px solid var(--mantine-color-cyan-2)'}, groupLabel:{color: 'var(--mantine-color-cyan-7)'}}}
+        shadow="md"
+        styles={{
+          search: { backgroundColor: 'var(--mantine-color-gray-1)' },
+          dropdown: { border: '1px solid var(--mantine-color-cyan-2)' },
+          groupLabel: { color: 'var(--mantine-color-cyan-7)' },
+        }}
       >
         <Combobox.Target withAriaAttributes={false}>
           <Button onClick={() => combobox.toggleDropdown()} variant="transparent">
@@ -113,14 +126,12 @@ export function AddComboox({
           </Button>
         </Combobox.Target>
 
-        <Combobox.Dropdown //bg='var(--mantine-color-gray-1)'
+        <Combobox.Dropdown //bg="var(--mantine-color-gray-1)"
         >
           <Combobox.Search
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
             placeholder={`Search ${placeholder}`}
-            
-           
           />
           <Combobox.Options //style={{ overflowY: 'auto' }}
             mah="50vh"

@@ -7,20 +7,20 @@ import Latex from 'react-latex-next';
 import {
   Box,
   Button,
+  Center,
   Flex,
   Group,
+  HoverCard,
   Menu,
   RenderTreeNodePayload,
   ScrollArea,
   Text,
   Tree,
-  HoverCard,
-  Center
 } from '@mantine/core';
 import { AddComboox } from './addCombobox';
+import { elementsToTex } from './equationConverters';
 import { elementsPrototypes } from './equationsElementsPrototypes';
 import classes from './equationEditor.module.css';
-import { elementsToTex } from './equationConverters';
 
 type elementsTreePropsType = {
   activeTreeElementState: [string, Dispatch<SetStateAction<string>>];
@@ -221,8 +221,6 @@ export default function ElementsTree({
     }
   };
 
-
-
   const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
     // const isExpression = (element) => {
     //   return element.label === 'Expression';
@@ -259,79 +257,78 @@ export default function ElementsTree({
               />
             )}
           </Box>
-          <HoverCard  withArrow position='right' openDelay={600} shadow='xs'>
+          <HoverCard withArrow position="right" openDelay={600} shadow="xs">
             <HoverCard.Target>
-
-           
-          <Box
-            p="0.25rem"
-            pl="0.35rem"
-            miw="11rem"
-            onClick={() => {
-              node.editable
-                ? (setActiveTreeElement(node.value),
-                  node.label === 'Expression'
-                    ? setExpressionInputContent(
-                        getElementByIdx(node.value, elementsContent).content
-                      )
-                    : null)
-                : null;
-            }}
-            onDoubleClick={() => tree.toggleExpanded(node.value)}
-            className={
-              activeTreeElement === node.value
-                ? classes.markedElement
-                : node.editable
-                  ? classes.unmarkedelement
-                  : classes.noneditableElement
-            }
-            w="100%"
-            m="2px"
-          >
-            <Flex>
-              <Text
-                fw={activeTreeElement === node.value ? '500' : ''}
-                display="inline-block"
-                className={classes.oneLine}
+              <Box
+                p="0.25rem"
+                pl="0.35rem"
+                miw="11rem"
+                onClick={() => {
+                  node.editable
+                    ? (setActiveTreeElement(node.value),
+                      node.label === 'Expression'
+                        ? setExpressionInputContent(
+                            getElementByIdx(node.value, elementsContent).content
+                          )
+                        : null)
+                    : null;
+                }}
+                onDoubleClick={() => tree.toggleExpanded(node.value)}
+                className={
+                  activeTreeElement === node.value
+                    ? classes.markedElement
+                    : node.editable
+                      ? classes.unmarkedelement
+                      : classes.noneditableElement
+                }
+                w="100%"
+                m="2px"
               >
-                {node.label}
-              </Text>
-              <Text
-                className={classes.trunckedText}
-                ml="sm"
-                maw="70%"
-                c={activeTreeElement === node.value ? 'var(--mantine-color-gray-1)' : ''}
-              >
-                {` ${content}`}
-              </Text>
-            </Flex>
-          </Box>
-          </HoverCard.Target>
-          {
-            node.editable ? <HoverCard.Dropdown miw='15vw' mih='5vh' bd='1px solid var(--mantine-color-cyan-2)'>
-            <Center w='100%' h='100%'  p='0px' fz='1.2rem'>
-            <Latex>${elementsToTex([node])}$</Latex>
-            </Center>
-            
-          </HoverCard.Dropdown> : <></>
-          }
-          
+                <Flex>
+                  <Text
+                    fw={activeTreeElement === node.value ? '500' : ''}
+                    display="inline-block"
+                    className={classes.oneLine}
+                  >
+                    {node.label}
+                  </Text>
+                  <Text
+                    className={classes.trunckedText}
+                    ml="sm"
+                    maw="70%"
+                    c={activeTreeElement === node.value ? 'var(--mantine-color-gray-1)' : ''}
+                  >
+                    {` ${content}`}
+                  </Text>
+                </Flex>
+              </Box>
+            </HoverCard.Target>
+            {node.editable ? (
+              <HoverCard.Dropdown miw="15vw" mih="5vh" bd="1px solid var(--mantine-color-gray-3)">
+                <Center w="100%" h="100%" p="0px" fz="1.2rem">
+                  <Latex>${elementsToTex([node])}$</Latex>
+                </Center>
+              </HoverCard.Dropdown>
+            ) : (
+              <></>
+            )}
           </HoverCard>
         </Flex>
       </Group>
     );
   };
 
-
-  const treeWithTryCatch=()=>{
-    try{
-      console.log('ft: ',elementsContent)
-      return  <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
-    }catch(e){
-      console.log('treeTryCatch')
-      return <></>
+  const treeWithTryCatch = () => {
+    try {
+      console.log('ft: ', elementsContent);
+      return (
+        <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
+      );
+    } catch (e) {
+      console.log('treeTryCatch');
+      return <></>;
     }
-  }
+  };
 
   return (
     <>
@@ -412,9 +409,8 @@ export default function ElementsTree({
         pb="0px"
         //className={classes.elementsTree}
       >
-         {/* <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />  */}
-        {treeWithTryCatch()
-        }
+        {/* <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />  */}
+        {treeWithTryCatch()}
         {/* <EquationElementsList tree={elementsContent} />
             {/* <MemoTree /> */}
       </ScrollArea>
