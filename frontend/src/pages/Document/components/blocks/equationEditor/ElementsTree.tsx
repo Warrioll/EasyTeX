@@ -14,10 +14,13 @@ import {
   ScrollArea,
   Text,
   Tree,
+  HoverCard,
+  Center
 } from '@mantine/core';
 import { AddComboox } from './addCombobox';
 import { elementsPrototypes } from './equationsElementsPrototypes';
 import classes from './equationEditor.module.css';
+import { elementsToTex } from './equationConverters';
 
 type elementsTreePropsType = {
   activeTreeElementState: [string, Dispatch<SetStateAction<string>>];
@@ -256,6 +259,10 @@ export default function ElementsTree({
               />
             )}
           </Box>
+          <HoverCard  withArrow position='right' openDelay={600} shadow='xs'>
+            <HoverCard.Target>
+
+           
           <Box
             p="0.25rem"
             pl="0.35rem"
@@ -299,6 +306,17 @@ export default function ElementsTree({
               </Text>
             </Flex>
           </Box>
+          </HoverCard.Target>
+          {
+            node.editable ? <HoverCard.Dropdown miw='15vw' mih='5vh' bd='1px solid var(--mantine-color-cyan-2)'>
+            <Center w='100%' h='100%'  p='0px' fz='1.2rem'>
+            <Latex>${elementsToTex([node])}$</Latex>
+            </Center>
+            
+          </HoverCard.Dropdown> : <></>
+          }
+          
+          </HoverCard>
         </Flex>
       </Group>
     );

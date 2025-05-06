@@ -738,6 +738,149 @@ const fraction={
     ],
   }
 
+  const bigLeftCurlyBracket={
+    value: '0',
+    label: 'Big left curly bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigRightCurlyBracket={
+    value: '0',
+    label: 'Big right curly bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigLeftSquareBracket={
+    value: '0',
+    label: 'Big left square bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigRightSquareBracket={
+    value: '0',
+    label: 'Big right square bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigLeftRegularBracket={
+    value: '0',
+    label: 'Big left regular bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigRightRegularBracket={
+    value: '0',
+    label: 'Big right regular bracket',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigRegularBrackets={
+    value: '0',
+    label: 'Big regular brackets',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigCurlyBrackets={
+    value: '0',
+    label: 'Big curly brackets',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
+
+  const bigSquareBrackets={
+    value: '0',
+    label: 'Big square brackets',
+    editable: true,
+    children: [
+      {
+        value: '0.0',
+        label: 'Content',
+        editable: false,
+        children: [
+          {...expression}
+        ],
+      },
+    ],
+  }
 
 
 
@@ -760,9 +903,9 @@ export const elementsPrototypes: Record<string,elementFieldType>={
     bigDisjunction: {label: 'Big disjunction', elementPrototype: bigDisjunction, latexRepresentation: '\\bigvee^a_b'},
     bigConjunction: {label: 'Big conjunction', elementPrototype: bigConjunction, latexRepresentation: '\\bigwedge^a_b'},
     combination: {label: 'Combination', elementPrototype: combination, latexRepresentation: '\\binom{a}{b}'},
-    caseStructureLeftBracket: {label: 'Case structure (left curly bracket)', elementPrototype: caseStructureLeftCurlyBracket, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right.'},
-    caseStructureRightBracket: {label: 'Case structure (right curly bracket)', elementPrototype: caseStructureRightCurlyBracket, latexRepresentation: '\\left.\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
-    caseStructureCurlyBrackets: {label: 'Case structure (curly brackets)', elementPrototype: caseStructureCurlyBrackets, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
+    //caseStructureLeftBracket: {label: 'Case structure (left curly bracket)', elementPrototype: caseStructureLeftCurlyBracket, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right.'},
+   // caseStructureRightBracket: {label: 'Case structure (right curly bracket)', elementPrototype: caseStructureRightCurlyBracket, latexRepresentation: '\\left.\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
+    //caseStructureCurlyBrackets: {label: 'Case structure (curly brackets)', elementPrototype: caseStructureCurlyBrackets, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
     row2ElementsLeft: {label: 'Row (2 elements, left aligned)', elementPrototype: row2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b\\end{array}\\right.'},
     row3ElementsLeft: {label: 'Row (3 elements, left aligned)', elementPrototype: row3ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b&c\\end{array}\\right.'},
     column2ElementsLeft: {label: 'Column (2 elements, left aligned)', elementPrototype: column2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\end{array}\\right.'},
@@ -771,7 +914,16 @@ export const elementsPrototypes: Record<string,elementFieldType>={
     row3ElementsCenter: {label: 'Row (3 elements, center)', elementPrototype: row3ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a&b&c\\end{array}\\right.'},
     column2ElementsCenter: {label: 'Column (2 elements, center)', elementPrototype: column2ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\end{array}\\right.'},
     column3ElementsCenter: {label: 'Column (3 elements, center)', elementPrototype: column3ElementsCenter, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\\\c\\end{array}\\right.'},
-  
+    bigLeftCurlyBracket: {label: 'Big left curly bracket', elementPrototype: bigLeftCurlyBracket, latexRepresentation: '\\left\\{a \\right.'},
+    bigRightCurlyBracket: {label: 'Big right curly bracket', elementPrototype: bigRightCurlyBracket, latexRepresentation: '\\left. a \\right\\}'},
+    bigLeftSquareBracket: {label: 'Big left square bracket', elementPrototype: bigLeftSquareBracket, latexRepresentation: '\\left[ a \\right.'},
+    bigRightSquareBracket: {label: 'Big right square bracket', elementPrototype: bigRightSquareBracket, latexRepresentation: '\\left. a \\right]'},
+    bigLeftRegularBracket: {label: 'Big left regular bracket', elementPrototype: bigLeftRegularBracket, latexRepresentation: '\\left( a \\right.'},
+    bigRightRegularBracket: {label: 'Big right regular bracket', elementPrototype: bigRightRegularBracket, latexRepresentation: '\\left. a \\right)'},
+    bigRegularBrackets: {label: 'Big regular brackets', elementPrototype: bigRegularBrackets, latexRepresentation: '\\left( a \\right)'},
+    bigCurlyBrackets: {label: 'Big curly brackets', elementPrototype: bigCurlyBrackets, latexRepresentation: '\\left\\{ a \\right\\}'},
+    bigSquareBrackets: {label: 'Big square brackets', elementPrototype: bigSquareBrackets, latexRepresentation: '\\left[ a \\right]'},
+    
   }
 
 

@@ -106,6 +106,33 @@ export function elementsToTex(array:any):string{
             case 'Column (3 elements, centered)':
                 formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
                 break;
+            case 'Big left curly bracket':
+                formula+=`\\left\\{${elementsToTex(array[i].children[0].children)} \\right.`   
+                break;
+            case 'Big right curly bracket':
+                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right\\}`   
+                break;
+            case 'Big left square bracket':
+                formula+=`\\left[${elementsToTex(array[i].children[0].children)} \\right.`   
+                break;
+            case 'Big right square bracket':
+                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right]`   
+                break;
+            case 'Big left regular bracket':
+                formula+=`\\left(${elementsToTex(array[i].children[0].children)} \\right.`   
+                break;
+            case 'Big right regular bracket':
+                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right)`   
+                break;
+            case 'Big regular brackets':
+                formula+=`\\left(${elementsToTex(array[i].children[0].children)} \\right)`   
+                break;
+            case 'Big curly brackets':
+                formula+=`\\left\\{${elementsToTex(array[i].children[0].children)} \\right\\}`   
+                break;
+            case 'Big square brackets':
+                formula+=`\\left[${elementsToTex(array[i].children[0].children)} \\right]`   
+                break;
             default:
                 break;
         } 
@@ -379,15 +406,41 @@ export function texToElements(originalString:string):any{
                     }
                     if(expr.content==='' || expr.content===' '){
                        elements=[...elements,  nsum]
-                       console.log('yolo')
+                       //console.log('yolo')
                    }else{
                        elements=[...elements, expr,  nsum]
-                       console.log('yolo2')
+                       //console.log('yolo2')
                    }
                     //elements=[...elements,expr, nsum]
                     i=i+4
                     continue
             }
+            // if(parts[i].includes('\\left.\\begin{array}')){
+            //     let expr={...elementsPrototypes.expression.elementPrototype}
+            //     expr.content=parts[i].split('\\left.\\begin{array}')[0]
+            //     if(parts[i].includes('\\left.\\begin{array}{ll}')){
+            //         let ele=parts[i].replace('\\left.\\begin{array}{ll}', '').replace('\\end{array}\\right.', '').split('&')
+            //         if(ele.length===2){
+            //             let nfrac={...elementsPrototypes.row2ElementsLeft.elementPrototype}
+            //             nfrac.children[0].children=cloneDeep(texToElements(index))
+            //             nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
+            //         }
+            //         if{
+            //             let nfrac={...elementsPrototypes.row3ElementsLeft.elementPrototype}
+            //             nfrac.children[0].children=cloneDeep(texToElements(index))
+            //             nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
+            //         }
+                    
+            //     }
+
+            //     if(expr.content==='' || expr.content===' '){
+            //         elements=[...elements, nfrac]
+            //     }else{
+            //         elements=[...elements, expr, nfrac]
+            //     }
+            //     i=i+2
+            //     continue
+            // }
             
             if(parts[i].endsWith('^')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
