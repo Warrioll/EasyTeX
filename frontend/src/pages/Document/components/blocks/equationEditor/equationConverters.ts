@@ -107,31 +107,31 @@ export function elementsToTex(array:any):string{
                 formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
                 break;
             case 'Big left curly bracket':
-                formula+=`\\left\\lbrace ${elementsToTex(array[i].children[0].children)} \\right.`   
+                formula+=`\\left\\lbrace{${elementsToTex(array[i].children[0].children)}}\\right.`   
                 break;
             case 'Big right curly bracket':
-                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right\\rbrace `   
+                formula+=`\\left.{${elementsToTex(array[i].children[0].children)}}\\right\\rbrace `   
                 break;
             case 'Big left square bracket':
-                formula+=`\\left[${elementsToTex(array[i].children[0].children)} \\right.`   
+                formula+=`\\left[{${elementsToTex(array[i].children[0].children)} }\\right.`   
                 break;
             case 'Big right square bracket':
-                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right]`   
+                formula+=`\\left.{${elementsToTex(array[i].children[0].children)}}\\right]`   
                 break;
             case 'Big left regular bracket':
-                formula+=`\\left(${elementsToTex(array[i].children[0].children)} \\right.`   
+                formula+=`\\left({${elementsToTex(array[i].children[0].children)}}\\right.`   
                 break;
             case 'Big right regular bracket':
-                formula+=`\\left.${elementsToTex(array[i].children[0].children)} \\right)`   
+                formula+=`\\left.{${elementsToTex(array[i].children[0].children)}}\\right)`   
                 break;
             case 'Big regular brackets':
-                formula+=`\\left(${elementsToTex(array[i].children[0].children)} \\right)`   
+                formula+=`\\left({${elementsToTex(array[i].children[0].children)}}\\right)`   
                 break;
             case 'Big curly brackets':
-                formula+=`\\left\\lbrace ${elementsToTex(array[i].children[0].children)} \\right\\rbrace `   
+                formula+=`\\left\\lbrace{${elementsToTex(array[i].children[0].children)}}\\right\\rbrace `   
                 break;
             case 'Big square brackets':
-                formula+=`\\left[${elementsToTex(array[i].children[0].children)} \\right]`   
+                formula+=`\\left[{${elementsToTex(array[i].children[0].children)}}\\right]`   
                 break;
             default:
                 break;
@@ -146,6 +146,7 @@ export function elementsToTex(array:any):string{
 
 export function texToElements(originalString:string):any{
         //originalString=originalString.replaceAll('\r','').replaceAll('\n','').replaceAll('\t','')
+        try{
         let parts=[]
         if( originalString!==undefined &&originalString.includes('{') && originalString.includes('}')){
             let counter=0
@@ -196,6 +197,7 @@ export function texToElements(originalString:string):any{
         let i =0
          
         while(i<parts.length){
+            try{
             // if(parts[i]===undefined){
                 
             //     i++
@@ -205,11 +207,11 @@ export function texToElements(originalString:string):any{
                 let expr={...elementsPrototypes.expression.elementPrototype}
                 let nfrac
                 if(parts[i].includes('\\frac') ){
-                    expr.content=parts[i].replace('\\frac', '')
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\frac', ''))
                     nfrac={...elementsPrototypes.fraction.elementPrototype}
                 }
                 if(parts[i].includes('\\binom') ){
-                    expr.content=parts[i].replace('\\binom', '')
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\binom', ''))
                     nfrac={...elementsPrototypes.combination.elementPrototype}
                 }
                 
@@ -299,7 +301,7 @@ export function texToElements(originalString:string):any{
                 console.log('indx&expr: ',indexAndExpr)
                 
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=indexAndExpr[0]
+                expr.content=texToElementsSpecialCHaractersConvertion(indexAndExpr[0])
                 const index=indexAndExpr[1].replaceAll(']','').replaceAll('[','')
                 
                 let nfrac={...elementsPrototypes.root.elementPrototype}
@@ -338,7 +340,7 @@ export function texToElements(originalString:string):any{
             // }
             if(parts[i].includes('\\lim')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=parts[i].replace('\\lim', '').replace('_', '')
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\lim', '').replace('_', ''))
                 
                 let nfrac={...elementsPrototypes.limes.elementPrototype}
                 nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
@@ -394,7 +396,7 @@ export function texToElements(originalString:string):any{
                     tmp =parts[i].split('\\bigwedge')
                 }
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                   expr.content=tmp[0]
+                   expr.content=texToElementsSpecialCHaractersConvertion(tmp[0])
                     if(tmp[1]==='^'){
                         nsum.children[0].children=texToElements(parts[i+1])
                         nsum.children[1].children=texToElements(parts[i+3])
@@ -417,7 +419,7 @@ export function texToElements(originalString:string):any{
             }
              if(parts[i].includes('\\left.\\begin')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=parts[i].replace('\\left.\\begin', '')[0]
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left.\\begin', '')[0])
                 let nfrac
                 console.log('i+2: ', parts[i+2])
                 if(parts[i+2]==='ll'){
@@ -438,7 +440,7 @@ export function texToElements(originalString:string):any{
                     }else
                 {
                     nfrac={...elementsPrototypes.expression.elementPrototype}
-                    nfrac.content=ele.join('')
+                    nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
                 }}
                 }
                 if(parts[i+2]==='lll'){
@@ -460,7 +462,7 @@ export function texToElements(originalString:string):any{
                     }else
                     {
                         nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=ele.join('')
+                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
                     }}
                 }
                 if(parts[i+2]==='cc'){
@@ -480,7 +482,7 @@ export function texToElements(originalString:string):any{
                     }else
                     {
                         nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=ele.join('')
+                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
                     }}
                 }
                 if(parts[i+2]==='ccc'){
@@ -502,7 +504,7 @@ export function texToElements(originalString:string):any{
                     }else
                     {
                         nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=ele.join('')
+                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
                     }}
                 }
                 if(expr.content==='' || expr.content===' '){
@@ -512,35 +514,123 @@ export function texToElements(originalString:string):any{
                 }
                 parts[i+5]=parts[i+5].replace('\\right.', '')
                 i+=5
-            //     let expr={...elementsPrototypes.expression.elementPrototype}
-            //     expr.content=parts[i].split('\\left.\\begin{array}')[0]
-            //     if(parts[i].includes('\\left.\\begin{array}{ll}')){
-            //         let ele=parts[i].replace('\\left.\\begin{array}{ll}', '').replace('\\end{array}\\right.', '').split('&')
-            //         if(ele.length===2){
-            //             let nfrac={...elementsPrototypes.row2ElementsLeft.elementPrototype}
-            //             nfrac.children[0].children=cloneDeep(texToElements(index))
-            //             nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
-            //         }
-            //         if{
-            //             let nfrac={...elementsPrototypes.row3ElementsLeft.elementPrototype}
-            //             nfrac.children[0].children=cloneDeep(texToElements(index))
-            //             nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
-            //         }
-                    
-            //     }
-
-            //     if(expr.content==='' || expr.content===' '){
-            //         elements=[...elements, nfrac]
-            //     }else{
-            //         elements=[...elements, expr, nfrac]
-            //     }
-            //     i=i+2
-            //     continue
+                continue
              }
-            
+             if(parts[i].endsWith('\\left\\lbrace')){
+                let nfrac
+                let  expr={...elementsPrototypes.expression.elementPrototype}
+                if(parts[i+2].startsWith('\\right.')){
+                    
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left\\lbrace', ''))
+                    nfrac={...elementsPrototypes.bigLeftCurlyBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right.', '')
+                }else{
+                if(parts[i+2].startsWith('\\right\\rbrace')){
+                   
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left\\lbrace', ''))
+                    nfrac={...elementsPrototypes.bigCurlyBrackets.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right\\rbrace', '')
+                }else{
+                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
+                }
+            }
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i+=2
+                continue
+             }
+             if(parts[i].endsWith('\\left(')){
+                let nfrac
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                if(parts[i+2].startsWith('\\right.')){
+                    
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left(', ''))
+                    nfrac={...elementsPrototypes.bigLeftRegularBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right.', '')
+                }else{
+                if(parts[i+2].startsWith('\\right)')){
+                   
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left(', ''))
+                    nfrac={...elementsPrototypes.bigRegularBrackets.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right)', '')
+                }else{
+                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
+                }
+            }
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i+=2
+                continue
+             }
+             if(parts[i].endsWith('\\left[')){
+                let nfrac
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                if(parts[i+2].startsWith('\\right.')){
+                    
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left[', ''))
+                    nfrac={...elementsPrototypes.bigLeftSquareBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right.', '')
+                }else{
+                if(parts[i+2].startsWith('\\right]')){
+                   
+                    expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left[', ''))
+                    nfrac={...elementsPrototypes.bigSquareBrackets.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                    parts[i+2]=parts[i+2].replace('\\right]', '')
+                }else{
+                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
+                }
+            }
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i+=2
+                continue
+             }
+             if(parts[i].endsWith('\\left.')){
+                let nfrac
+                let expr={...elementsPrototypes.expression.elementPrototype}
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left', ''))
+                if(parts[i+2].startsWith('\\right}')){
+                    nfrac={...elementsPrototypes.bigRightCurlyBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                }
+                if(parts[i+2].startsWith('\\right)')){
+                    nfrac={...elementsPrototypes.bigRightRegularBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                }
+                if(parts[i+2].startsWith('\\right]')){
+                    nfrac={...elementsPrototypes.bigRightSquareBracket.elementPrototype}
+                    nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
+                }
+                if(expr.content==='' || expr.content===' '){
+                    elements=[...elements, nfrac]
+                }else{
+                    elements=[...elements, expr, nfrac]
+                }
+                i+=2
+                continue
+
+             }
             if(parts[i].endsWith('^')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=parts[i].replace('^', '')
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('^', ''))
                 if(parts[i+2]==='_'){
                      let indexes={...elementsPrototypes.upperAndLowerIndex.elementPrototype}
                      indexes.children[0].children=texToElements(parts[i+1])
@@ -560,7 +650,7 @@ export function texToElements(originalString:string):any{
              }
             if(parts[i].endsWith('_')){
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=parts[i].replace('_', '')
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('_', ''))
                 if(parts[i+2]==='^'){
                      let indexes={...elementsPrototypes.upperAndLowerIndex.elementPrototype}
                      indexes.children[0].children=texToElements(parts[i+1])
@@ -581,17 +671,24 @@ export function texToElements(originalString:string):any{
             
             if(parts[i]!=='' || parts[i]!==' '){
             let expr={...elementsPrototypes.expression.elementPrototype}
-            expr.content=parts[i]
+            expr.content=texToElementsSpecialCHaractersConvertion(parts[i])
             elements=[...elements,expr]
             }
-            i++
+           
             
             
         //TODO
         //i++
             
+        }catch(e){
+            console.log('texToElements conversion error (in loop): ', e)
+            let expr={...elementsPrototypes.expression.elementPrototype}
+            expr.content=texToElementsSpecialCHaractersConvertion(parts[i])
+            elements=[...elements,expr]
         }
-        elements=elements.filter((ele)=>{if(ele.label==='Expression'){
+        i++
+    }
+        elements=elements.filter((ele)=>{if((ele!==undefined || ele!==null) && ele.label==='Expression'){
             const unikatowe= new Set(ele.content)
             if(ele.content==='' || (unikatowe.size===1 && unikatowe.has(' '))){
                 return false
@@ -605,8 +702,25 @@ export function texToElements(originalString:string):any{
             return null
         }
         let expr={...elementsPrototypes.expression.elementPrototype}
-        expr.content=originalString
+        expr.content=texToElementsSpecialCHaractersConvertion(originalString)
         return [expr]
+    }catch(e){
+        console.log('texToElements conversion error (in loop): ', e)
+        let expr={...elementsPrototypes.expression.elementPrototype}
+        expr.content=texToElementsSpecialCHaractersConvertion(originalString)
+        return [expr]
+
+    }
     }
     
 
+export const texToElementsSpecialCHaractersConvertion=(originalString: string):string=>{
+    let converterString=originalString
+    // converterString=converterString.replaceAll('\\ ', ' ')
+    // for(let i =0; i<specialCharacters.length; i++){
+    //     for(let j=0; j<specialCharacters[i].group.length; j++){
+    //         converterString=converterString.replaceAll(specialCharacters[i].group[j].latexRepresentation, specialCharacters[i].group[j].value)
+    //     }
+    // }
+    return converterString
+}

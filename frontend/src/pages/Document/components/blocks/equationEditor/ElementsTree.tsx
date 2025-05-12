@@ -257,7 +257,7 @@ export default function ElementsTree({
               />
             )}
           </Box>
-          <HoverCard withArrow position="right" openDelay={600} shadow="xs">
+          <HoverCard withArrow position='bottom-start' openDelay={1000} shadow="xs">
             <HoverCard.Target>
               <Box
                 p="0.25rem"
@@ -304,7 +304,7 @@ export default function ElementsTree({
               </Box>
             </HoverCard.Target>
             {node.editable ? (
-              <HoverCard.Dropdown miw="15vw" mih="5vh" bd="1px solid var(--mantine-color-gray-3)">
+              <HoverCard.Dropdown miw="10vw" mih="5vh" bd="1px solid var(--mantine-color-gray-3)">
                 <Center w="100%" h="100%" p="0px" fz="1.2rem">
                   <Latex>${elementsToTex([node])}$</Latex>
                 </Center>

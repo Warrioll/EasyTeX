@@ -212,7 +212,9 @@ export default function VisualEditorTab({
 
   useEffect(() => {
     console.log('texToElements: ', texToElements(latexFormula));
-    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []));
+    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []))
+    //setElementsContent(updateIdx(cloneDeep(texToElements(texToElementsSpecialCHaractersConvertion(latexFormula))), []));
+    ;
   }, []);
 
   return (
