@@ -100,7 +100,11 @@ export function AddComboox({
         ));
 
   return (
-    <>
+    <div
+      onBlur={() => {
+        combobox.closeDropdown();
+      }}
+    >
       <Combobox
         store={combobox}
         width={400}
@@ -144,6 +148,6 @@ export function AddComboox({
           </Combobox.Options>
         </Combobox.Dropdown>
       </Combobox>
-    </>
+    </div>
   );
 }

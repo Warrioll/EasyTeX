@@ -1,6 +1,7 @@
 import 'katex/dist/katex.min.css';
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
 import Latex from 'react-latex-next';
 import {
   Box,
@@ -8,17 +9,17 @@ import {
   Center,
   Flex,
   Modal,
+  RemoveScroll,
   ScrollArea,
   SegmentedControl,
   Text,
   Textarea,
-  RemoveScroll
 } from '@mantine/core';
-
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
-import { elementsToTex } from './equationEditor/equationConverters';
+import { updateIdx } from './equationEditor/elementsTreeHelpers';
+import { elementsToTex, texToElements } from './equationEditor/equationConverters';
 import { elementsPrototypes } from './equationEditor/equationsElementsPrototypes';
 import LatexFormulaTab from './equationEditor/LatexFormulaTab';
 import VisualEditorTab from './equationEditor/VisualEditorTab';
@@ -44,7 +45,7 @@ export default function EquationBlock({
   const equationFormulaState = useState<string>('');
   const [equationFormula, setEquationFormula] = equationFormulaState;
   const elementsContentState = useState<any[]>([
-    { ...elementsPrototypes.expression.elementPrototype },
+    cloneDeep(elementsPrototypes.expression.elementPrototype),
   ]);
   const [eqautionCopies, setEquationCopies] = useState<{
     visualEditor: Array<any>;
@@ -75,12 +76,15 @@ export default function EquationBlock({
   };
 
   useEffect(() => {
-    setEquationFormula(blocksContent[idx].blockContent);
+    setEquationFormula(blocksContent[idx].blockContent as string);
+    elementsContentState[1](
+      cloneDeep(updateIdx(texToElements(blocksContent[idx].blockContent as string), []))
+    );
     // setEquationSaved({
     //   visualEditor: elementsContentState[0],
     //   latexFormula: blocksContent[activeBlock].blockContent,
     // });
-  }, []);
+  }, [blocksContent]);
 
   return (
     <>
@@ -125,8 +129,8 @@ export default function EquationBlock({
         </Center>
       </MarkedBlockFrame>
       <Modal
-      //className={RemoveScroll.classNames.fullWidth}
-      className={RemoveScroll.classNames.zeroRight}
+        //className={RemoveScroll.classNames.fullWidth}
+        className={RemoveScroll.classNames.zeroRight}
         opened={modalOpened}
         onClose={() => {
           setEquationFormula(eqautionCopies.latexFormula);
@@ -138,7 +142,7 @@ export default function EquationBlock({
         yOffset="3.5%"
         size="85vw"
         scrollAreaComponent={ScrollArea.Autosize}
-        style={{overflowY: 'hidden', maxHeight: '20vh'}}
+        style={{ overflowY: 'hidden', maxHeight: '20vh' }}
         title={
           <Flex>
             <Text c="var(--mantine-color-cyan-8)">

@@ -47,12 +47,12 @@ export default function ElementsTree({
     const elementToAdd = cloneDeep(toAdd);
     const ec = insertElement(activeTreeElement, elementsContent, elementToAdd, 0);
     setElementsContent(
-      ec
+      cloneDeep(ec)
       //.map((item) => {
       //   return item;
       // })
     );
-    console.log('up insert: ', ec);
+    //console.log('up insert: ', ec);
   };
 
   const addElementBelow = (toAdd) => {
@@ -186,9 +186,9 @@ export default function ElementsTree({
         ? (moreThanLength = true)
         : (moreThanLength = false);
     }
-    console.log('x1');
+    //console.log('x1');
     if (moreThanLength) {
-      console.log('x2');
+      // console.log('x2');
       if (Array.isArray(element)) {
         const lowerElement = { ...element[idxs[idxs.length - 1] + 1] };
         const upperElement = { ...element[idxs[idxs.length - 1]] };
@@ -257,7 +257,13 @@ export default function ElementsTree({
               />
             )}
           </Box>
-          <HoverCard withArrow position='bottom-start' openDelay={1000} shadow="xs">
+          <HoverCard
+            withArrow
+            position="bottom-start"
+            openDelay={1000}
+            shadow="xs"
+            arrowOffset="5.5rem"
+          >
             <HoverCard.Target>
               <Box
                 p="0.25rem"

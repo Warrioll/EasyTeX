@@ -2,8 +2,8 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**./documentBase/681868bfa695d75e6234cfac.tex
-(documentBase/681868bfa695d75e6234cfac.tex
+**./documentBase/671396c35547c1fc316c1a06.tex
+(documentBase/671396c35547c1fc316c1a06.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -35,74 +35,6 @@ File: size10.clo 2024/06/29 v1.4n Standard LaTeX file (size option)
 Package: ulem 2019/11/18
 \ULdepth=\dimen149
 )
-(C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
-Package: amsmath 2024/11/05 v2.17t AMS math features
-\@mathmargin=\skip52
-
-For additional information on amsmath, use the `?' option.
-(C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
-Package: amstext 2021/08/26 v2.01 AMS text
-
-(C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty
-File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks18
-\ex@=\dimen150
-))
-(C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty
-Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen151
-)
-(C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty
-Package: amsopn 2022/04/08 v2.04 operator names
-)
-\inf@bad=\count272
-LaTeX Info: Redefining \frac on input line 233.
-\uproot@=\count273
-\leftroot@=\count274
-LaTeX Info: Redefining \overline on input line 398.
-LaTeX Info: Redefining \colon on input line 409.
-\classnum@=\count275
-\DOTSCASE@=\count276
-LaTeX Info: Redefining \ldots on input line 495.
-LaTeX Info: Redefining \dots on input line 498.
-LaTeX Info: Redefining \cdots on input line 619.
-\Mathstrutbox@=\box56
-\strutbox@=\box57
-LaTeX Info: Redefining \big on input line 721.
-LaTeX Info: Redefining \Big on input line 722.
-LaTeX Info: Redefining \bigg on input line 723.
-LaTeX Info: Redefining \Bigg on input line 724.
-\big@size=\dimen152
-LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
-\macc@depth=\count277
-LaTeX Info: Redefining \bmod on input line 904.
-LaTeX Info: Redefining \pmod on input line 909.
-LaTeX Info: Redefining \smash on input line 939.
-LaTeX Info: Redefining \relbar on input line 969.
-LaTeX Info: Redefining \Relbar on input line 970.
-\c@MaxMatrixCols=\count278
-\dotsspace@=\muskip17
-\c@parentequation=\count279
-\dspbrk@lvl=\count280
-\tag@help=\toks19
-\row@=\count281
-\column@=\count282
-\maxfields@=\count283
-\andhelp@=\toks20
-\eqnshift@=\dimen153
-\alignsep@=\dimen154
-\tagshift@=\dimen155
-\tagwidth@=\dimen156
-\totwidth@=\dimen157
-\lineht@=\dimen158
-\@envbody=\toks21
-\multlinegap=\skip53
-\multlinetaggap=\skip54
-\mathdisplay@stack=\toks22
-LaTeX Info: Redefining \[ on input line 2953.
-LaTeX Info: Redefining \] on input line 2954.
-)
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
 
@@ -111,7 +43,7 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 )
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks23
+\KV@toks@=\toks18
 )
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
@@ -153,19 +85,19 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count284
+\c@section@level=\count272
 ) (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty
 Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count285
+\etb@tempcnta=\count273
 )
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.st
 y
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen159
-\Hy@linkcounter=\count286
-\Hy@pagecounter=\count287
+\@linkdim=\dimen150
+\Hy@linkcounter=\count274
+\Hy@pagecounter=\count275
  (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2024-11-05 v7.01l Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -174,7 +106,7 @@ Now handling font encoding PD1 ...
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count288
+\Hy@SavedSpaceFactor=\count276
 
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2024-11-05 v7.01l Hyperref: PDF Unicode definition (HO)
@@ -189,14 +121,14 @@ Package hyperref Info: Plain pages OFF on input line 4172.
 Package hyperref Info: Backreferencing OFF on input line 4177.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4424.
-\c@Hy@tempcnt=\count289
+\c@Hy@tempcnt=\count277
 
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
-\Urlmuskip=\muskip18
+\Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4763.
-\XeTeXLinkMargin=\dimen160
+\XeTeXLinkMargin=\dimen151
 
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -206,9 +138,9 @@ sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count290
-\Field@Width=\dimen161
-\Fld@charsize=\dimen162
+\Fld@menulength=\count278
+\Field@Width=\dimen152
+\Fld@charsize=\dimen153
 Package hyperref Info: Hyper figures OFF on input line 6042.
 Package hyperref Info: Link nesting OFF on input line 6047.
 Package hyperref Info: Hyper index ON on input line 6050.
@@ -221,9 +153,9 @@ Package hyperref Info: PDF/A mode OFF on input line 6072.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count291
-\c@Item=\count292
-\c@Hfootnote=\count293
+\Hy@abspage=\count279
+\c@Item=\count280
+\c@Hfootnote=\count281
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
@@ -235,8 +167,8 @@ Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
 kage
 with kernel methods
 )
-\Fld@listcount=\count294
-\c@bookmark@seq@number=\count295
+\Fld@listcount=\count282
+\c@bookmark@seq@number=\count283
 
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfile
 check.sty
@@ -249,16 +181,16 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 85.
 )
-\Hy@SectionHShift=\skip55
+\Hy@SectionHShift=\skip52
 )
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
 ex.def
 File: l3backend-pdftex.def 2025-03-14 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count296
+\l__color_backend_stack_int=\count284
 )
-(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\681868bfa695d75e6234cfac.a
+(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35547c1fc316c1a06.a
 ux)
-\openout1 = `681868bfa695d75e6234cfac.aux'.
+\openout1 = `671396c35547c1fc316c1a06.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 4.
 LaTeX Font Info:    ... okay on input line 4.
@@ -292,63 +224,331 @@ File: pdftex.def 2024/04/13 v1.2c Graphics/color driver for pdftex
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mki
 i
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count297
-\scratchdimen=\dimen163
-\scratchbox=\box58
-\nofMPsegments=\count298
-\nofMParguments=\count299
-\everyMPshowfont=\toks24
-\MPscratchCnt=\count300
-\MPscratchDim=\dimen164
-\MPnumerator=\count301
-\makeMPintoPDFobject=\count302
-\everyMPtoPDFconversion=\toks25
+\scratchcounter=\count285
+\scratchdimen=\dimen154
+\scratchbox=\box56
+\nofMPsegments=\count286
+\nofMParguments=\count287
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count288
+\MPscratchDim=\dimen155
+\MPnumerator=\count289
+\makeMPintoPDFobject=\count290
+\everyMPtoPDFconversion=\toks20
 ))
 (C:\Users\User\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx))
 Package hyperref Info: Link coloring ON on input line 4.
 
-(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\681868bfa695d75e6234cfac.o
+(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35547c1fc316c1a06.o
 ut)
-(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\681868bfa695d75e6234cfac.o
+(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35547c1fc316c1a06.o
 ut)
 \@outlinefile=\write3
-\openout3 = `681868bfa695d75e6234cfac.out'.
+\openout3 = `671396c35547c1fc316c1a06.out'.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 9.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 9.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 9.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 9.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 9.
+
+(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35547c1fc316c1a06.t
+oc)
+\tf@toc=\write4
+\openout4 = `671396c35547c1fc316c1a06.toc'.
 
 
 
 [1
 
 {C:/Users/User/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\681868bfa695d75e6234cfac.a
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+
+ []
+
+
+
+[2]
+
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
+
+ []
+
+
+
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 21--21
+
+ []
+
+
+
+[5]
+
+Package hyperref Warning: Difference (2) between bookmark levels is greater 
+(hyperref)                than one, level fixed on input line 24.
+
+
+
+[6]
+(C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35547c1fc316c1a06.a
 ux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
  ***********
-Package rerunfilecheck Info: File `681868bfa695d75e6234cfac.out' has not change
+Package rerunfilecheck Info: File `671396c35547c1fc316c1a06.out' has not change
 d.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+(rerunfilecheck)             Checksum: 5F266DCD0F776667D6E2B5A51279F5F6;978.
  ) 
 Here is how much of TeX's memory you used:
- 8927 strings out of 469958
- 138308 string characters out of 5470298
- 534789 words of memory out of 5000000
- 35630 multiletter control sequences out of 15000+600000
- 627385 words of font info for 43 fonts, out of 8000000 for 9000
+ 8308 strings out of 469958
+ 130428 string characters out of 5470298
+ 522516 words of memory out of 5000000
+ 35009 multiletter control sequences out of 15000+600000
+ 633217 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,304b,439s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
-mex10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmmi7.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/typ
-e1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/User/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/User/AppData/Local/Progra
-ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on C:\Users\User\Desktop\EasyTeX2\backend\documentBase\681868bfa
-695d75e6234cfac.pdf (1 page, 78273 bytes).
+ 75i,6n,79p,2596b,505s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\User\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1
+000.pk><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmbx10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+amsfonts/cm/cmbx12.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmbxti10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/User/AppData/Local/Programs/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/User/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/User/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/User/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/U
+ser/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:
+/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12
+.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
+m/cmtt10.pfb><C:/Users/User/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmtt12.pfb>
+Output written on C:\Users\User\Desktop\EasyTeX2\backend\documentBase\671396c35
+547c1fc316c1a06.pdf (6 pages, 164546 bytes).
 PDF statistics:
- 71 PDF objects out of 1000 (max. 8388607)
- 23 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 149 PDF objects out of 1000 (max. 8388607)
+ 22 named destinations out of 1000 (max. 500000)
+ 65 words of extra memory for PDF output out of 10000 (max. 10000000)
 

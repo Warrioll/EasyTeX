@@ -101,6 +101,9 @@ export default function VisualEditorTab({
       let idxs = [...preIdxCopy, i];
       if (array[i] !== null) {
         array[i].value = idxs.join('.');
+        if (array[i].label === 'Expression' && array[i].content === undefined) {
+          array[i].content = 'undefined!';
+        }
         array[i].children = updateIdx(array[i].children, idxs);
       }
     }
@@ -212,9 +215,8 @@ export default function VisualEditorTab({
 
   useEffect(() => {
     console.log('texToElements: ', texToElements(latexFormula));
-    setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []))
+    //setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []));
     //setElementsContent(updateIdx(cloneDeep(texToElements(texToElementsSpecialCHaractersConvertion(latexFormula))), []));
-    ;
   }, []);
 
   return (

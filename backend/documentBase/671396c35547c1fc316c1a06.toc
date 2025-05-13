@@ -1,0 +1,8 @@
+\contentsline {section}{\numberline {1}\textnormal {\textbf {to jest Sekcja nr 1}}}{4}{section.1}%
+\contentsline {section}{\numberline {2}\textnormal {New \textbf {Chapter}}}{4}{section.2}%
+\contentsline {section}{\numberline {3}\textnormal {Co ty tutaj robiszzz}}{5}{section.3}%
+\contentsline {section}{\numberline {4}\textnormal {edrgaedgrfs}}{5}{section.4}%
+\contentsline {section}{\numberline {5}\textnormal {\textbf {New Sectionhc yhgcykh}}}{6}{section.5}%
+\contentsline {subsubsection}{\numberline {5.0.1}\textnormal {jlyhcv yolowewo}}{6}{subsubsection.5.0.1}%
+\contentsline {subsection}{\numberline {5.1}\textnormal {uotyf}}{6}{subsection.5.1}%
+\contentsline {section}{\numberline {6}\textnormal {\textbf {New} Section}}{6}{section.6}%

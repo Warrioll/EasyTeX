@@ -9,7 +9,8 @@ export function elementsToTex(array:any):string{
         switch(array[i].label){
             case 'Expression':
                tmp=array[i].content;
-               //console.log('expr', tmp)
+               console.log('expr',array)
+               tmp=tmp.replaceAll(' ', '\\ ')
                 for(let i of specialCharacters){
                     //console.log('value: ', i.group)
                     for(let j of i.group ){
@@ -17,7 +18,7 @@ export function elementsToTex(array:any):string{
                     }
                     
                 }
-                // tmp=tmp.replaceAll('π', '\\pi ')
+                 
                 // tmp=tmp.replaceAll('Π', '\\Pi ')
                 // tmp=tmp.replaceAll('α', '\\alpha ')
                 formula+=tmp
@@ -73,38 +74,38 @@ export function elementsToTex(array:any):string{
             case 'Combination':
                 formula+=`\\binom{${elementsToTex(array[i].children[0].children)}}{${elementsToTex(array[i].children[1].children)}}`   
                 break;
-            case 'Case structure (left curly bracket)':
-                formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right.`   
-                break;
-            case 'Case structure (right curly bracket)':
-                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
-                break;
-            case 'Case structure (curly brackets)':
-                formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
-                break;
+            // case 'Case structure (left curly bracket)':
+            //     formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right.`   
+            //     break;
+            // case 'Case structure (right curly bracket)':
+            //     formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
+            //     break;
+            // case 'Case structure (curly brackets)':
+            //     formula+=`\\left\\{\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}&${elementsToTex(array[i].children[3].children)}\\end{array}\\right\\}`   
+            //     break;
             case 'Row (2 elements, left aligned)':
-                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{ll}{${elementsToTex(array[i].children[0].children)}}&{${elementsToTex(array[i].children[1].children)}}\\end{array}\\right.`   
                 break;
             case 'Row (3 elements, left aligned)':
-                formula+=`\\left.\\begin{array}{lll}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}&${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{lll}{${elementsToTex(array[i].children[0].children)}}&{${elementsToTex(array[i].children[1].children)}}&{${elementsToTex(array[i].children[2].children)}}\\end{array}\\right.`   
                 break;
             case 'Column (2 elements, left aligned)':
-                formula+=`\\left.\\begin{array}{ll}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{ll}{${elementsToTex(array[i].children[0].children)}}\\\\{${elementsToTex(array[i].children[1].children)}}\\end{array}\\right.`   
                 break;
             case 'Column (3 elements, left aligned)':
-                formula+=`\\left.\\begin{array}{lll}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{lll}{${elementsToTex(array[i].children[0].children)}}\\\\{${elementsToTex(array[i].children[1].children)}}\\\\{${elementsToTex(array[i].children[2].children)}}\\end{array}\\right.`   
                 break;
             case 'Row (2 elements, centered)':
-                formula+=`\\left.\\begin{array}{cc}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{cc}{${elementsToTex(array[i].children[0].children)}}&{${elementsToTex(array[i].children[1].children)}}\\end{array}\\right.`   
                 break;
             case 'Row (3 elements, centered)':
-                formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}&${elementsToTex(array[i].children[1].children)}&${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{ccc}{${elementsToTex(array[i].children[0].children)}}&{${elementsToTex(array[i].children[1].children)}}&{${elementsToTex(array[i].children[2].children)}}\\end{array}\\right.`   
                 break;
             case 'Column (2 elements, centered)':
-                formula+=`\\left.\\begin{array}{cc}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{cc}{${elementsToTex(array[i].children[0].children)}}\\\\{${elementsToTex(array[i].children[1].children)}}\\end{array}\\right.`   
                 break;
             case 'Column (3 elements, centered)':
-                formula+=`\\left.\\begin{array}{ccc}${elementsToTex(array[i].children[0].children)}\\\\${elementsToTex(array[i].children[1].children)}\\\\${elementsToTex(array[i].children[2].children)}\\end{array}\\right.`   
+                formula+=`\\left.\\begin{array}{ccc}{${elementsToTex(array[i].children[0].children)}}\\\\{${elementsToTex(array[i].children[1].children)}}\\\\{${elementsToTex(array[i].children[2].children)}}\\end{array}\\right.`   
                 break;
             case 'Big left curly bracket':
                 formula+=`\\left\\lbrace{${elementsToTex(array[i].children[0].children)}}\\right.`   
@@ -195,8 +196,9 @@ export function texToElements(originalString:string):any{
         // }
         let elements=[]
         let i =0
-         
+          console.log('parts:', parts)
         while(i<parts.length){
+           
             try{
             // if(parts[i]===undefined){
                 
@@ -418,102 +420,85 @@ export function texToElements(originalString:string):any{
                     continue
             }
              if(parts[i].includes('\\left.\\begin')){
+                 console.log('actual i:', i)
+                  console.log('part[i]:', parts[i])
                 let expr={...elementsPrototypes.expression.elementPrototype}
-                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left.\\begin', '')[0])
+                //let tmp=parts[i].split()
+                expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left.\\begin', ''))
                 let nfrac
-                console.log('i+2: ', parts[i+2])
+                //console.log('i+2: ', parts[i+2])
                 if(parts[i+2]==='ll'){
-                    let ele=parts[i+3].replace('\\end','').split('&')
-                    console.log('ele.length row: ', ele.length)
-                    if(ele.length===2){
+                   if(parts[i+4]==='&'){
                         
-                        nfrac={...elementsPrototypes.row2ElementsLeft.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
+                        nfrac=cloneDeep(elementsPrototypes.row2ElementsLeft.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
                     }else{
-                    ele=ele[0].split('\\\\')
-                    console.log('ele.length col: ', ele.length)
-                    if(ele.length===2){
-                        nfrac={...elementsPrototypes.column2ElementsLeft.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                    }else
-                {
-                    nfrac={...elementsPrototypes.expression.elementPrototype}
-                    nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
-                }}
+                        nfrac=cloneDeep(elementsPrototypes.column2ElementsLeft.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+            }
                 }
                 if(parts[i+2]==='lll'){
-                    let ele=parts[i+3].replace('\\end','').split('&')
-                    console.log('ele.length row: ', ele.length)
-                    if(ele.length===3){
-                        nfrac={...elementsPrototypes.row3ElementsLeft.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                        nfrac.children[2].children=cloneDeep(texToElements(ele[2]))
+                    if(parts[i+4]==='&' && parts[i+6]==='&'){
+                        
+                        nfrac=cloneDeep(elementsPrototypes.row3ElementsLeft.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
+                        nfrac.children[2].children=cloneDeep(texToElements(parts[i+7]))
                     }else{
-                    ele=ele[0].split('\\\\')
-                    console.log('ele.length col: ', ele.length)
-                    if(ele.length===3){
-                        nfrac={...elementsPrototypes.column3ElementsLeft.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                        nfrac.children[2].children=cloneDeep(texToElements(ele[2]))
-                    }else
-                    {
-                        nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
-                    }}
+                        nfrac=cloneDeep(elementsPrototypes.column3ElementsLeft.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
+                        nfrac.children[2].children=cloneDeep(texToElements(parts[i+7]))
+            }
                 }
                 if(parts[i+2]==='cc'){
-                    let ele=parts[i+3].replace('\\end','').split('&')
-                    console.log('ele.length row: ', ele.length)
-                    if(ele.length===2){
-                        nfrac={...elementsPrototypes.row2ElementsCenter.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
+                      if(parts[i+4]==='&'){
+                        nfrac=cloneDeep(elementsPrototypes.row2ElementsCenter.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
                     }else{
-                    ele=ele[0].split('\\\\')
-                    console.log('ele.length col: ', ele.length)
-                    if(ele.length===2){
-                        nfrac={...elementsPrototypes.column2ElementsCenter.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                    }else
-                    {
-                        nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
-                    }}
+                        nfrac=cloneDeep(elementsPrototypes.column2ElementsCenter.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
+            }
                 }
                 if(parts[i+2]==='ccc'){
-                    let ele=parts[i+3].replace('\\end','').split('&')
-                    console.log('ele.length row: ', ele.length)
-                    if(ele.length===3){
-                        nfrac={...elementsPrototypes.row3ElementsCenter.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                        nfrac.children[2].children=cloneDeep(texToElements(ele[2]))
+                    if(parts[i+4]==='&' && parts[i+6]==='&'){
+                        
+                        nfrac=cloneDeep(elementsPrototypes.row3ElementsCenter.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
+                        nfrac.children[2].children=cloneDeep(texToElements(parts[i+7]))
                     }else{
-                    ele=ele[0].split('\\\\')
-                    console.log('ele.length col: ', ele.length)
-                    if(ele.length===3){
-                        nfrac={...elementsPrototypes.column3ElementsCenter.elementPrototype}
-                        nfrac.children[0].children=cloneDeep(texToElements(ele[0]))
-                        nfrac.children[1].children=cloneDeep(texToElements(ele[1]))
-                        nfrac.children[2].children=cloneDeep(texToElements(ele[2]))
-                    }else
-                    {
-                        nfrac={...elementsPrototypes.expression.elementPrototype}
-                        nfrac.content=texToElementsSpecialCHaractersConvertion(ele.join(''))
-                    }}
+                        nfrac=cloneDeep(elementsPrototypes.column3ElementsCenter.elementPrototype)
+                        nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
+                        nfrac.children[2].children=cloneDeep(texToElements(parts[i+7]))
+            }
                 }
-                if(expr.content==='' || expr.content===' '){
-                    elements=[...elements, nfrac]
+               
+                if(parts[i+2]!=='ll' && parts[i+2]!=='lll' && parts[i+2]!=='cc' && parts[i+2]!=='ccc'){
+                    console.log('not a latex array')
+                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac.content=parts[i]
+                    i++
                 }else{
-                    elements=[...elements, expr, nfrac]
+                    if(parts[i+2]==='cc' || parts[i+2]==='ll'){
+                         parts[i+8]=parts[i+8].replace('\\right.', '')
+                         console.log('right erased 2')
+                         i+=8
+                    }else{
+                         parts[i+10]=parts[i+10].replace('\\right.', '')
+                          i+=10
+                           console.log('right erased 3')
+                    }              
                 }
-                parts[i+5]=parts[i+5].replace('\\right.', '')
-                i+=5
+                if(expr.content==='' || expr.content===' ' || expr.content===undefined ){
+                    elements=[...elements, cloneDeep(nfrac)]
+                }else{
+                    elements=[...elements, expr, cloneDeep(nfrac)]
+                }
                 continue
              }
              if(parts[i].endsWith('\\left\\lbrace')){
@@ -716,11 +701,12 @@ export function texToElements(originalString:string):any{
 
 export const texToElementsSpecialCHaractersConvertion=(originalString: string):string=>{
     let converterString=originalString
-    // converterString=converterString.replaceAll('\\ ', ' ')
-    // for(let i =0; i<specialCharacters.length; i++){
-    //     for(let j=0; j<specialCharacters[i].group.length; j++){
-    //         converterString=converterString.replaceAll(specialCharacters[i].group[j].latexRepresentation, specialCharacters[i].group[j].value)
-    //     }
-    // }
+
+    converterString=converterString.replaceAll('\\ ', ' ')
+    for(let i =0; i<specialCharacters.length; i++){
+        for(let j=0; j<specialCharacters[i].group.length; j++){
+            converterString=converterString.replaceAll(specialCharacters[i].group[j].latexRepresentation, specialCharacters[i].group[j].value)
+        }
+    }
     return converterString
 }
