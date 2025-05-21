@@ -1,6 +1,7 @@
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
 import { Box, Button, Combobox, Flex, ScrollArea, Text, useCombobox } from '@mantine/core';
+import { useClickOutside } from '@mantine/hooks';
 
 type addSpecialCharacterComboboxPropsType = {
   data: any; //{ label: string; icon: ReactNode; value: object | string }[];
@@ -37,6 +38,8 @@ export function AddComboox({
       combobox.focusSearchInput();
     },
   });
+
+  const ref = useClickOutside(() => combobox.closeDropdown());
 
   //   const addSpecialCharacter = (specialCharacter: string) => {
   //     setExpressionInputContent(expressionInputContent.concat(specialCharacter));
@@ -101,9 +104,7 @@ export function AddComboox({
 
   return (
     <div
-      onBlur={() => {
-        combobox.closeDropdown();
-      }}
+      ref={ref}
     >
       <Combobox
         store={combobox}
@@ -123,6 +124,7 @@ export function AddComboox({
           dropdown: { border: '1px solid var(--mantine-color-cyan-2)' },
           groupLabel: { color: 'var(--mantine-color-cyan-7)' },
         }}
+        
       >
         <Combobox.Target withAriaAttributes={false}>
           <Button onClick={() => combobox.toggleDropdown()} variant="transparent">

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { number } from 'prop-types';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
@@ -21,6 +21,7 @@ import { AddComboox } from './addCombobox';
 import { elementsToTex } from './equationConverters';
 import { elementsPrototypes } from './equationsElementsPrototypes';
 import classes from './equationEditor.module.css';
+import { useHover } from '@mantine/hooks';
 
 type elementsTreePropsType = {
   activeTreeElementState: [string, Dispatch<SetStateAction<string>>];
@@ -42,7 +43,7 @@ export default function ElementsTree({
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
   const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [elementsContent, setElementsContent] = elementsContentState;
-
+  const [elementTooltipContent, setElemrntTooltipContent]=useState<string>('')
   const addElementAbove = (toAdd) => {
     const elementToAdd = cloneDeep(toAdd);
     const ec = insertElement(activeTreeElement, elementsContent, elementToAdd, 0);
@@ -225,6 +226,7 @@ export default function ElementsTree({
     // const isExpression = (element) => {
     //   return element.label === 'Expression';
     // };
+    const { hovered, ref } = useHover();
 
     const content = node.editable
       ? node.label === 'Expression'
@@ -246,6 +248,22 @@ export default function ElementsTree({
           return element.label === 'Expression' ? `"${element.content}"` : element.label;
         });
 
+
+        //????
+        // useEffect(()=>{
+        //   if(hovered){
+        //     if(node.editable){
+        //       setElemrntTooltipContent(node.content)
+        //       console.log('hover opened: ',node.content )
+        //     }
+        //   }else{
+        //     setElemrntTooltipContent('')
+        //     console.log('hover closed')
+        //   }
+          
+          
+        // },[hovered])
+
     return (
       <Group gap="xs" {...elementProps}>
         <Flex w="100%">
@@ -266,6 +284,7 @@ export default function ElementsTree({
           >
             <HoverCard.Target>
               <Box
+              ref={ref}
                 p="0.25rem"
                 pl="0.35rem"
                 miw="11rem"

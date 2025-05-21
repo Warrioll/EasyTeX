@@ -58,8 +58,8 @@ export const specialCharacters//:specialCharactersStyle[]
 // Mathematical and logical symbols
 {label: 'Mathematical and logical symbols', group: [
 { value: '*', label: 'Asterisk', latexRepresentation: '\\ast' },
-{ value: '<', label: 'Less than', latexRepresentation: '\\lt' },
-{ value: '>', label: 'Greater than', latexRepresentation: '\\gt' },
+{ value: '<', label: 'Less than', latexRepresentation: '<' },
+{ value: '>', label: 'Greater than', latexRepresentation: '>' },
 { value: '≤', label: 'Less or equal', latexRepresentation: '\\le' },
 { value: '≥', label: 'Greater or equal', latexRepresentation: '\\ge' },
 { value: '≠', label: 'Not equal', latexRepresentation: '\\neq' },

@@ -59,7 +59,7 @@ export default function VisualEditorTab({
   const [latexFormula, setLatexFormula] = equationFormulaState; //useState<string>('yolo');
   const [expressionInputContent, setExpressionInputContent] = useState<string>('');
 
-  const activeTreeElementState = useState<string>('0');
+  const activeTreeElementState = useState<string>('');
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
 
   const getElementByIdx = (idx, array) => {
@@ -143,6 +143,13 @@ export default function VisualEditorTab({
   };
 
   const chooseElementEditor = () => {
+    if(activeTreeElement===''){
+       return (
+      <Text c="var(--mantine-color-gray-6)">
+        Expression element is not selected {`(no element is currently selected)`}
+      </Text>
+    );
+    }
     const element = getElementByIdx(activeTreeElement, elementsContent);
 
     const addSpecialCharacter = (specialCharacter: string) => {

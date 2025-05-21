@@ -436,6 +436,7 @@ export function texToElements(originalString:string):any{
                     }else{
                         nfrac=cloneDeep(elementsPrototypes.column2ElementsLeft.elementPrototype)
                         nfrac.children[0].children=cloneDeep(texToElements(parts[i+3]))
+                        nfrac.children[1].children=cloneDeep(texToElements(parts[i+5]))
             }
                 }
                 if(parts[i+2]==='lll'){
