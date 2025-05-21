@@ -13,6 +13,7 @@ import {
     MdOutlineAdd,
     MdOutlineInsertPageBreak,
     MdOutlineTitle,
+    MdFunctions,
   } from 'react-icons/md';
 
 
@@ -43,7 +44,11 @@ import {
       icon: <LuHeading3 />,
       blockToAdd: { typeOfBlock: 'subsubsection', blockContent: '<p><strong>New subsubsection</strong></p>' }
     },
-  
+    {
+      blockName: 'equation',
+      icon:  <MdFunctions />,
+      blockToAdd: { typeOfBlock: 'equation', blockContent: 'New equation' }
+    },
     {
       blockName: 'Title section',
       icon:  <MdOutlineTitle />,

@@ -1,0 +1,51 @@
+.formulaTabTextarea{
+
+        height: 15vh;
+}
+
+.markedElement{
+         background-color: var(--mantine-color-cyan-4); 
+        color: var(--mantine-color-white);
+        font-weight: 500;
+      
+        /* border-right:solid 2px var(--mantine-color-cyan-3);
+        border-left:solid 2px var(--mantine-color-cyan-3);
+        border-bottom:solid 2px var(--mantine-color-cyan-3); */
+        
+        /* border-bottom-right-radius:var(--mantine-radius-md); ;
+         border-bottom-left-radius: var(--mantine-radius-md);  */
+         border-radius: var(--mantine-radius-md); 
+}
+
+.unmarkedelement{
+        border-radius: var(--mantine-radius-md);
+        background-color: var(--mantine-color-cyan-0);
+        
+       
+
+}
+
+.elementsTree{
+        border-radius: var(--mantine-radius-md);
+
+}
+
+.trunckedText{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--mantine-color-gray-6);
+
+}
+
+.oneLine{
+        white-space: nowrap;
+}
+
+.noneditableElement{
+        border-radius: var(--mantine-radius-md);      
+        background-color: var(--mantine-color-gray-1);
+
+        color: var(--mantine-color-gray-6);
+
+}
