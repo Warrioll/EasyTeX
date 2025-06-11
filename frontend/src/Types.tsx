@@ -8,6 +8,8 @@ export type typeOfBlockType =
   | 'tableOfContents'
   | 'pageBreak'
   | 'equation'
+  | 'table'
+  | 'figure'
   | null
   | undefined;
 

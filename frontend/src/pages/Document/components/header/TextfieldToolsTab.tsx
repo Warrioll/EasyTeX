@@ -32,7 +32,7 @@ type buttonType = {
   tooltip: string;
 };
 
-export default function ModifyTab({
+export default function TextfieldToolsTab({
   editFunctions,
   editor,
   saveElementChanges,

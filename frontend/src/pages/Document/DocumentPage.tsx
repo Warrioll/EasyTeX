@@ -30,6 +30,8 @@ import Header from './components/header/Header';
 import { chceckIfBlockContentEmpty, saveBasicTextInputChanges } from './documentHandlers';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
+import FigureBlock from './components/blocks/FigureBlock';
+import TableBlock from './components/blocks/TableBlock';
 
 import 'katex/dist/katex.min.css';
 
@@ -309,6 +311,44 @@ export default function DocumentPage() {
     }
   };
 
+  const addTable = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'table',
+          blockContent: 'New table',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'table',
+        blockContent: 'New table',
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
+  const addFigure = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'figure',
+          blockContent: 'New figure',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'figure',
+        blockContent: 'New figure',
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
   const reloadPdf = async () => {
     // await setTimeout(() => {
     //   console.log('timeout');
@@ -383,6 +423,8 @@ export default function DocumentPage() {
     addTableOfContents,
     addPageBreak,
     addEquation,
+    addFigure,
+    addTable
     //bold,
   };
 
@@ -520,6 +562,26 @@ export default function DocumentPage() {
             activeBlockState={activeBlockState}
             blocksContentState={blocksContentState}
             activeTextInputState={activeTextInputState}
+          />
+        );
+        case 'table':
+        return (
+          <TableBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
+            editor={editor}
+          />
+        );
+        case 'figure':
+        return (
+          <FigureBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
+            editor={editor}
           />
         );
       default:

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
@@ -68,8 +68,10 @@ import { documentColor, documentMainLabels } from '@/components/other/documentLa
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
 import FontTab from './FontTab';
-import ModifyTab from './ModifyTab';
+import TextfieldToolsTab from './TextfieldToolsTab';
 import ZoomTools from './ZoomTools';
+import { LuTable, LuImage  } from "react-icons/lu";
+
 // import {
 //   IconNotification,
 //   IconCode,
@@ -162,6 +164,14 @@ const Header: React.FC<headerProps> = ({
       <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addEquation}>
         <MdFunctions />
       </Button>
+       <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addTable}
+       >
+        <LuTable />
+      </Button>
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addFigure}
+       >
+        <LuImage />
+      </Button>
       <Button
         variant="format"
         fz="var(--mantine-font-size-lg)"
@@ -194,8 +204,8 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-  const modifyTools = (
-    <ModifyTab
+  const textFieldTools = (
+    <TextfieldToolsTab
       editFunctions={editFunctions}
       editor={editor}
       saveElementChanges={saveElementChanges}
@@ -204,21 +214,46 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
+    const tableTools = (
+   <>TABLE</>
+  );
+
   const viewTools = (
     <>
       <ZoomTools zoomState={workspaceZoom} />
     </>
   );
 
-  const takeActiveBlockType = (): string => {
+  const chooseModifyTabName = (): string => {
     if (activeSection !== 0) {
-      if (sectionsContent[activeSection].typeOfBlock === 'textfield') {
+      switch(sectionsContent[activeSection].typeOfBlock) {
+        case 'textfield':
         return 'Textfield ';
+        case 'table':
+        return 'Table ';
+        default:
+          return ''
       }
-      return '';
+      
     }
     return '';
   };
+
+    const chooseModifyTabTools = (): ReactNode=> {
+    if (activeSection !== 0) {
+      switch(sectionsContent[activeSection].typeOfBlock) {
+        case 'textfield':
+        return textFieldTools;
+        case 'table':
+        return tableTools;
+        default:
+          return ''
+      }
+      
+    }
+    return '';
+  };
+
 
   const tabs = [
     {
@@ -238,8 +273,8 @@ const Header: React.FC<headerProps> = ({
     },
     {
       value: 'modify',
-      label: `${takeActiveBlockType()}`,
-      tools: modifyTools,
+      label: `${chooseModifyTabName()}`,
+      tools: chooseModifyTabTools(),
     },
   ];
 

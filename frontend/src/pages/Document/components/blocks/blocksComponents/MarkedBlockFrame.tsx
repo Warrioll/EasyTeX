@@ -93,6 +93,8 @@ export default function MarkedBlockFrame({
     deleteModalHandlers.close();
   };
 
+
+
   // const frameToolBar = (addBlockFunction: (block: blockType) => void): ReactElement => {
   //   return (
   //     <>
@@ -192,7 +194,7 @@ export default function MarkedBlockFrame({
   //     </>
   //   );
   // };
-
+  console.log('Markedblock sectionsContent: ', sectionsContent)
   return (
     <div
       key={idx}
