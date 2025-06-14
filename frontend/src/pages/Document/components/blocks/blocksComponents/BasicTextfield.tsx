@@ -17,6 +17,12 @@ type BasicTextfieldProps = {
   contentToRead: string;
   sectionsContent: blockType[];
   setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  // saveBasicTextInputChanges: (
+  //   idx: number,
+  //   idxInput: string,
+  //   sectionsContentState: any,
+  //   toSave: string
+  // ) => void;
 };
 
 export default function BasicTexfield({
@@ -38,7 +44,6 @@ export default function BasicTexfield({
     let sectionsContentCopy = sectionsContent;
     switch (sectionsContent[idx].typeOfBlock) {
       case 'titlePage':
-        console.log('titlePageeee');
         if (idxInput.includes('title')) {
           sectionsContentCopy[idx].blockContent.title = toSave;
         }
@@ -49,8 +54,13 @@ export default function BasicTexfield({
           sectionsContentCopy[idx].blockContent.date = toSave;
         }
         break;
+      case 'table':
+        console.log('table on blur save');
+        const cellId = idxInput.split(';');
+        sectionsContentCopy[idx].blockContent[cellId[1] - 1][cellId[2] - 1] = toSave;
+        break;
       default:
-        //console.log('default on blur save');
+        console.log('default on blur save');
         sectionsContentCopy[idx].blockContent = toSave;
         break;
     }
@@ -68,16 +78,27 @@ export default function BasicTexfield({
         //   ?
         console.log('sectionsContent: ', sectionsContent);
         console.log('contentToREad:', contentToRead);
-        await editor?.commands.setContent(contentToRead);
+        if (contentToRead === '&nbsp;' || contentToRead === '<p>&nbsp;</p>') {
+          await editor?.commands.setContent('');
+        } else {
+          await editor?.commands.setContent(contentToRead);
+        }
+
         //: null;
         //console.log('onFocus', block);
       }}
       onBlur={() => {
         const fromTextInput = editor?.getHTML();
         //let content= sectionsContent;
+        // if (chceckIfBlockContentEmpty(fromTextInput)) {
+        //   //onBlurSaveContentMethod(sectionsContent, '<p>...</p>');
+        //   saveBasicTextInputChanges(idx, idxInput, blocksContentState, '<p>...</p>');
+        // } else {
+        //   saveBasicTextInputChanges(idx, idxInput, blocksContentState, fromTextInput);
+        // }
         if (chceckIfBlockContentEmpty(fromTextInput)) {
           //onBlurSaveContentMethod(sectionsContent, '<p>...</p>');
-          saveBasicTextInputChanges(idx, idxInput, blocksContentState, '<p>...</p>');
+          saveBasicTextInputChanges(idx, idxInput, blocksContentState, '<p>&nbsp;</p>');
         } else {
           saveBasicTextInputChanges(idx, idxInput, blocksContentState, fromTextInput);
         }

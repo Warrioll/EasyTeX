@@ -1,13 +1,17 @@
 import express from 'express'
+import multer from 'multer'
 import { getDocuments, getDocumentById, createDocument,  addLine, getPdf, getDocumentContent, updateWholeDocumentContent, // updateLines, updateLine,
 getUserDocuments,
 renameDocument,
 deleteDocument} from './controllers/documentController';
 import { login, verifySessionEndPoint, logout } from './auth/auth';
+import { createFigure, getUserFigureById, getUserFigures } from './controllers/figureController';
 import { getUserById, getAllUsers, getUserByEmail, createUser } from './controllers/userController';
 //import documents from './documentRouter'
 
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 export default (): express.Router =>{
     //documents(router);
@@ -25,6 +29,10 @@ export default (): express.Router =>{
         router.put("/document/documentContent/:id",updateWholeDocumentContent )
         router.put("/document/:id",renameDocument )
         router.delete("/document/:id",deleteDocument )
+
+        router.get('/figure/user/:fileType', getUserFigures)
+        router.get('/figure/user/getFigure/:id', getUserFigureById)
+        router.post('/figure',upload.single('image'), createFigure)
 
         router.get('/user/:id', getUserById)
         router.get('/userByEmail', getUserByEmail)

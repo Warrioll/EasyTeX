@@ -20,7 +20,9 @@ import {
   LuHeading1,
   LuHeading2,
   LuHeading3,
+  LuImage,
   LuRefreshCcw,
+  LuTable,
   //LuTableOfContents,
 } from 'react-icons/lu';
 import {
@@ -68,10 +70,9 @@ import { documentColor, documentMainLabels } from '@/components/other/documentLa
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
 import FontTab from './FontTab';
+import TableToolsTab from './TableToolsTab';
 import TextfieldToolsTab from './TextfieldToolsTab';
 import ZoomTools from './ZoomTools';
-import { LuTable, LuImage  } from "react-icons/lu";
-
 // import {
 //   IconNotification,
 //   IconCode,
@@ -91,6 +92,7 @@ type headerProps = {
   workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
   activeSection: number;
   sectionsContent: blockType[];
+  //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
 };
 
 const Header: React.FC<headerProps> = ({
@@ -101,6 +103,7 @@ const Header: React.FC<headerProps> = ({
   workspaceZoom,
   activeSection,
   sectionsContent,
+  //activeTableCellState,
 }) => {
   //const theme = useMantineTheme();
   //const []
@@ -164,12 +167,10 @@ const Header: React.FC<headerProps> = ({
       <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addEquation}>
         <MdFunctions />
       </Button>
-       <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addTable}
-       >
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addTable}>
         <LuTable />
       </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addFigure}
-       >
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addFigure}>
         <LuImage />
       </Button>
       <Button
@@ -214,9 +215,7 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-    const tableTools = (
-   <>TABLE</>
-  );
+  const tableTools = <TableToolsTab editFunctions={editFunctions} />;
 
   const viewTools = (
     <>
@@ -226,34 +225,31 @@ const Header: React.FC<headerProps> = ({
 
   const chooseModifyTabName = (): string => {
     if (activeSection !== 0) {
-      switch(sectionsContent[activeSection].typeOfBlock) {
+      switch (sectionsContent[activeSection].typeOfBlock) {
         case 'textfield':
-        return 'Textfield ';
+          return 'Textfield ';
         case 'table':
-        return 'Table ';
+          return 'Table ';
         default:
-          return ''
+          return '';
       }
-      
     }
     return '';
   };
 
-    const chooseModifyTabTools = (): ReactNode=> {
+  const chooseModifyTabTools = (): ReactNode => {
     if (activeSection !== 0) {
-      switch(sectionsContent[activeSection].typeOfBlock) {
+      switch (sectionsContent[activeSection].typeOfBlock) {
         case 'textfield':
-        return textFieldTools;
+          return textFieldTools;
         case 'table':
-        return tableTools;
+          return tableTools;
         default:
-          return ''
+          return '';
       }
-      
     }
     return '';
   };
-
 
   const tabs = [
     {

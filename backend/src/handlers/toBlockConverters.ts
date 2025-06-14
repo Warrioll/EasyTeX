@@ -200,3 +200,31 @@ export const equationToBlock =(line: string) : blockType=>{
 
     return {typeOfBlock: 'equation', blockContent: equation}
 }
+
+export const tableToBlock =(line: string) : blockType=>{
+   
+
+    let tableTeX=line.replace('\\begin{table}[h!]', '').replace('\\begin{center}', '').replace('\\begin{tabular}', '').replace('\\end{tabular}', '').replace('\\end{center}', '').replace('\\end{table}', '').replaceAll('\\hline','')
+    tableTeX=basicToBlockFontConverter(tableTeX)
+    let tmp:string[]=tableTeX.split('}')
+    const style=tmp.shift()
+    let tmp2=tmp.join()
+    
+    tmp=tmp2.split('\\\\')
+    tmp.pop()
+    let table: string[][]=tmp.map((element, id)=>{
+        
+        return element.split('&').map((ele, id)=>{
+            const uniqueArr = [...new Set(ele)]
+            const uniqueStr=uniqueArr.join()
+            if(uniqueStr==='' || uniqueStr===' '){
+                return '<p>&nbsp;</p>'
+            }else{
+                 return ele
+            }
+           
+        })
+    })
+
+return {typeOfBlock: 'table', blockContent: table}
+}

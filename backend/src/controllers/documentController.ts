@@ -3,7 +3,7 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex } from '../handlers/toTexConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -12,7 +12,8 @@ import { sectionToBlock,
   getAuthorFromTex, 
   getDateFromTex, 
   getTitleFromTex, 
-  equationToBlock} from '../handlers/toBlockConverters';
+  equationToBlock,
+tableToBlock} from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
 import { blockType, titlePageType } from '../types';
 
@@ -173,6 +174,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
             if(line.includes('\\begin{equation}')) return equationToBlock(line);
+            if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
@@ -429,6 +431,11 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         return subsubsectionToTex(block.blockContent as string);
       case 'equation':
         return equationToTex(block.blockContent as string)
+      case 'table':
+        if(Array.isArray(block.blockContent)){
+          return tableToTex(block.blockContent)
+        }
+          return ''
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }

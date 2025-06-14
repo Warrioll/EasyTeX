@@ -173,7 +173,7 @@ export default function EquationBlock({
           )}
         </Center>
         <Flex justify="center" mb="sm">
-          <Button w="20vw" mr="xl" onClick={saveEquationChange}>
+          <Button w="20rem" mr="xl" onClick={saveEquationChange}>
             {editorTab === 'Visual editor' ? (
               <>Set equation (from visual editor)</>
             ) : (
@@ -183,7 +183,7 @@ export default function EquationBlock({
           <Button
             ml="xl"
             variant="outline"
-            w="20vw"
+            w="20rem"
             onClick={() => {
               setEquationFormula(eqautionCopies.latexFormula);
               //console.log('cancel:', visualEditorCopy);
