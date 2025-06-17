@@ -228,3 +228,17 @@ export const tableToBlock =(line: string) : blockType=>{
 
 return {typeOfBlock: 'table', blockContent: table}
 }
+
+
+
+export const figureToBlock =(line: string) : blockType=>{
+
+    let path= line.replace('\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=15cm, keepaspectratio]{', '')
+    path = path.replace('} \\end{figure}', '').replaceAll(' ', '')
+
+    let pathArray=path.split('/')
+    let fileName=pathArray[pathArray.length-1].split('.')
+    let  figure = fileName[0]
+
+    return {typeOfBlock: 'figure', blockContent: figure}
+}

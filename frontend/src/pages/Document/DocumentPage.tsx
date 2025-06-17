@@ -346,14 +346,14 @@ export default function DocumentPage() {
         ...sectionsContent,
         {
           typeOfBlock: 'figure',
-          blockContent: 'New figure',
+          blockContent: '',
         },
       ]);
     } else {
       let blocks = [...sectionsContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'figure',
-        blockContent: 'New figure',
+        blockContent: '',
       });
       setSectionsContent(blocks);
     }

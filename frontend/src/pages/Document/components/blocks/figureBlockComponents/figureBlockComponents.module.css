@@ -1,0 +1,42 @@
+.cardComponent{
+ transition: all 300ms ease;
+}
+
+.card{
+    background-color: var(--mantine-color-gray-1);
+    border: 1px solid var(--mantine-color-gray-3);
+     border-radius: var(--mantine-radius-md);
+    transition: all 300ms ease;
+}
+
+.choosenCard{
+    background-color: var(--mantine-color-cyan-0);
+    border: 3px solid var(--mantine-color-cyan-3);
+     border-radius: var(--mantine-radius-md);
+    transition: all 300ms ease;
+
+}
+
+.card:hover{
+    border: 1px solid var(--mantine-color-cyan-5);
+    background-color: var(--mantine-color-white);
+
+    .cardTitle{
+    color:var(--mantine-color-cyan-9);
+}
+}
+
+
+.cardTitle{
+     color:var(--mantine-color-gray-7);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 300ms;     
+}
+
+
+
+.classes.imageTransition{
+      transition: all 300ms ease;     
+}

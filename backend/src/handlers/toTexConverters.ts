@@ -1,3 +1,5 @@
+import { figureModel } from "../models/figureModel";
+
 export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
 }
@@ -147,4 +149,9 @@ export const tableToTex =(blockContent: string[][]): string =>{
 
     return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\end{table}`
 }
+
+export const figureToTex =(blockContent:string): string =>{
+    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+blockContent+'} \\end{figure}'
+}
+
 

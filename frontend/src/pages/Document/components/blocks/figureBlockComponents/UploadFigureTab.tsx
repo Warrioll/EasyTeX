@@ -6,7 +6,8 @@ import { Box, Button, Center, Flex, Group, Image, Text } from '@mantine/core';
 import { Dropzone, FileWithPath } from '@mantine/dropzone';
 
 type UploadFigureTabPropsType = {
-  figureState: [FileWithPath[] | null, Dispatch<SetStateAction<FileWithPath[] | null>>];
+  figureState: [string | null, Dispatch<SetStateAction<string | null>>];
+  uploadfigureState: [FileWithPath[] | null, Dispatch<SetStateAction<FileWithPath[] | null>>];
   modalHandlers: readonly [
     boolean,
     {
@@ -17,23 +18,30 @@ type UploadFigureTabPropsType = {
   ];
 };
 
-export default function UploadFigureTab({ figureState, modalHandlers }: UploadFigureTabPropsType) {
-  const [opened, { open, close }] = modalHandlers;
+export default function UploadFigureTab({
+  figureState,
+  uploadfigureState,
+  modalHandlers,
+}: UploadFigureTabPropsType) {
   const [figure, setFigure] = figureState;
+  const [opened, { open, close }] = modalHandlers;
+  const [uploadFigure, setUploadFigure] = uploadfigureState;
   const [figureLabel, setFigureLabel] = useState<ReactNode>(<></>);
 
-  const uploadFigure = async () => {
+  const saveFigure = async () => {
     try {
-      const blob = new Blob([figure[0]], { type: 'image/png' });
+      const blob = new Blob([uploadFigure[0]], { type: 'image/png' });
       const formData = new FormData();
-      formData.append('image', figure[0]);
+      formData.append('image', uploadFigure[0]);
       const response = await axios.post('http://localhost:8100/figure', formData, {
         withCredentials: true,
         headers: {
           // 'Content-Type': 'multipart/form-data',
         },
       });
+
       console.log('Figure uploaded succesfully', response);
+      setFigure(response.data._id);
       close();
     } catch (e) {
       setFigureLabel(<Text c="red">File upload failed</Text>);
@@ -43,10 +51,10 @@ export default function UploadFigureTab({ figureState, modalHandlers }: UploadFi
 
   return (
     <>
-      {figure === null ? (
+      {uploadFigure === null ? (
         <Dropzone
           onDrop={(files) => {
-            setFigure(files);
+            setUploadFigure(files);
             setFigureLabel(<></>);
           }}
           onReject={(files) => {
@@ -129,8 +137,8 @@ export default function UploadFigureTab({ figureState, modalHandlers }: UploadFi
             <Image
               h="65vh"
               key={0}
-              src={URL.createObjectURL(figure[0])}
-              onLoad={() => URL.revokeObjectURL(URL.createObjectURL(figure[0]))}
+              src={URL.createObjectURL(uploadFigure[0])}
+              onLoad={() => URL.revokeObjectURL(URL.createObjectURL(uploadFigure[0]))}
               fit="contain"
             />
           </Box>
@@ -142,9 +150,9 @@ export default function UploadFigureTab({ figureState, modalHandlers }: UploadFi
       <Flex gap="3rem" pt="lg" justify="center">
         <Button
           w="20rem"
-          disabled={figure === null}
+          disabled={uploadFigure === null}
           onClick={() => {
-            uploadFigure();
+            saveFigure();
           }}
         >
           Upload and set image
@@ -153,9 +161,9 @@ export default function UploadFigureTab({ figureState, modalHandlers }: UploadFi
           variant="outline"
           color="red"
           w="20rem"
-          disabled={figure === null}
+          disabled={uploadFigure === null}
           onClick={() => {
-            setFigure(null);
+            setUploadFigure(null);
             setFigureLabel(<></>);
           }}
         >

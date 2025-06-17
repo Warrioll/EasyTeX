@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Editor } from '@tiptap/react';
+import axios from 'axios';
 import { FaRegWindowClose } from 'react-icons/fa';
-import { FaUpload } from 'react-icons/fa6';
+import { FaRegImage, FaUpload } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ import UploadFigureTab from './figureBlockComponents/UploadFigureTab';
 
 import '@mantine/dropzone/styles.css';
 
+import { cloneDeep } from 'lodash';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
 type FigureBlockProps = {
@@ -42,10 +44,38 @@ export default function FigureBlock({
   const [blocksContent, setBlocksContent] = blocksContentState;
   const modalHandlers = useDisclosure(false);
   const [opened, { open, close }] = modalHandlers;
-  const figureState = useState<FileWithPath[] | null>(null);
+  const startFigure =
+    blocksContent[idx].blockContent === '' ? null : blocksContent[idx].blockContent;
+  const figureState = useState<string | null>(startFigure);
+  const uploadfigureState = useState<FileWithPath[] | null>(null);
+  //const libraryFigureState = useState<FileWithPath[] | null>(null);
   const [figure, setFigure] = figureState;
+  const [uploadfigure, setUploadFigure] = uploadfigureState;
   const figureTabState = useState<'Upload' | 'Library'>('Upload');
   const [figureTab, setFigureTab] = figureTabState;
+  const [figureUrl, setFigureUrl] = useState<string>('');
+  const [figureLoaded, setFigureLoaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    const getFigure = async () => {
+      const response = await axios.get(`http://localhost:8100/figure/user/getFigure/${figure}`, {
+        withCredentials: true,
+        responseType: 'blob',
+      });
+      setFigureUrl(URL.createObjectURL(response.data));
+      //console.log(figure);
+      setFigureLoaded(true);
+    };
+    getFigure();
+  }, [figure]);
+
+  useEffect(() => {
+    let blocksContentCopy = cloneDeep(blocksContent);
+    if (!(figure === null || figure === '' || figure === blocksContentCopy[idx].blockContent)) {
+      blocksContentCopy[idx].blockContent = figure;
+      setBlocksContent(blocksContentCopy);
+    }
+  }, [figure]);
 
   return (
     <div>
@@ -58,13 +88,38 @@ export default function FigureBlock({
           setSectionsContent={setBlocksContent}
           activeTextInputState={activeTextInputState}
         >
-          <Flex align="center">
-            {
-              //TODO
-              <Button variant="default" onClick={open}>
-                Upload
-              </Button>
-            }
+          <Center>
+            <Button
+              variant="transparent"
+              h="100%"
+              w="100%"
+              mih="10rem"
+              onClick={() => {
+                open();
+              }}
+              bg={figureLoaded ? '' : 'var(--mantine-color-gray-1)'}
+            >
+              {figure !== null ? (
+                <Image
+                  w="24vh"
+                  h="24vh"
+                  key={0}
+                  src={figure !== null ? figureUrl : ''}
+                  alt=""
+                  //fit={fitImg}
+                  fit="contain"
+                />
+              ) : (
+                <Center h="5rem" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+                  <Center m="xl" fz="3rem" c="dimmed">
+                    <FaRegImage />
+                  </Center>
+                  <Text m="xl" c="dimmed" fw="500">
+                    Click here to set image{' '}
+                  </Text>
+                </Center>
+              )}
+            </Button>
             {/* <BasicTexfield
                     idx={idx}
                     activeBlockState={activeBlockState}
@@ -75,7 +130,7 @@ export default function FigureBlock({
                     sectionsContent={blocksContent}
                     setSectionsContent={setBlocksContent}
                   /> */}
-          </Flex>
+          </Center>
         </MarkedBlockFrame>
       </Flex>
       <Modal
@@ -89,7 +144,7 @@ export default function FigureBlock({
             <Text c="var(--mantine-color-cyan-8)">
               <b>Set image</b>
             </Text>
-            <Flex justify="center" w="77vw">
+            <Flex justify="flex-end" w="42vw">
               <SegmentedControl
                 value={figureTab}
                 onChange={(value) => setFigureTab(value)}
@@ -104,9 +159,13 @@ export default function FigureBlock({
         }
       >
         {figureTab === 'Upload' ? (
-          <UploadFigureTab figureState={figureState} modalHandlers={modalHandlers} />
+          <UploadFigureTab
+            figureState={figureState}
+            uploadfigureState={uploadfigureState}
+            modalHandlers={modalHandlers}
+          />
         ) : (
-          <LibraryFigureTab modalHandlers={modalHandlers} />
+          <LibraryFigureTab figureState={figureState} modalHandlers={modalHandlers} />
         )}
       </Modal>
     </div>

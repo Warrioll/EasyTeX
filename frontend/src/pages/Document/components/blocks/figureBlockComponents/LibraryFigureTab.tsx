@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Button, Center, Flex, ScrollArea, SimpleGrid, Text } from '@mantine/core';
 import FigureCard from './FigureCard';
 
 type LibraryFigureTabPropsType = {
   //figureState: [FileWithPath[] | null, Dispatch<SetStateAction<FileWithPath[] | null>>];
+  figureState: [string | null, Dispatch<SetStateAction<string | null>>];
   modalHandlers: readonly [
     boolean,
     {
@@ -15,8 +16,15 @@ type LibraryFigureTabPropsType = {
   ];
 };
 
-export default function LibraryFigureTab({ modalHandlers }: LibraryFigureTabPropsType) {
+export default function LibraryFigureTab({
+  modalHandlers,
+  figureState,
+}: LibraryFigureTabPropsType) {
+  const [figure, setFigure] = figureState;
   const [figures, setFigures] = useState<any[]>([]);
+  const choosenFigureState = useState<number | null>(null);
+  const [choosenFigure, setChoosenFigure] = choosenFigureState;
+  const [opened, { open, close }] = modalHandlers;
 
   useEffect(() => {
     const getFigures = async () => {
@@ -32,12 +40,16 @@ export default function LibraryFigureTab({ modalHandlers }: LibraryFigureTabProp
   return (
     <>
       <Box h="70vh" p="xl">
-        <ScrollArea>
-          <SimpleGrid cols={6}>
+        <ScrollArea h="100%">
+          <SimpleGrid cols={5}>
             {figures.map((figure, id) => {
               return (
                 <>
-                  <FigureCard figureData={figure} />
+                  <FigureCard
+                    idx={id}
+                    figureData={figure}
+                    choosenFigureState={choosenFigureState}
+                  />
                 </>
               );
             })}
@@ -47,12 +59,14 @@ export default function LibraryFigureTab({ modalHandlers }: LibraryFigureTabProp
       <Flex gap="3rem" pt="lg" justify="center">
         <Button
           w="20rem"
-          //disabled={figure === null}
+          disabled={choosenFigure === null}
           onClick={() => {
             // uploadFigure();
+            setFigure(figures[choosenFigure]._id);
+            close();
           }}
         >
-          Set image
+          Set choosen image
         </Button>
         <Button w="20rem" variant="outline" onClick={close}>
           Cancel
