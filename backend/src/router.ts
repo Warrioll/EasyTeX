@@ -3,7 +3,8 @@ import multer from 'multer'
 import { getDocuments, getDocumentById, createDocument,  addLine, getPdf, getDocumentContent, updateWholeDocumentContent, // updateLines, updateLine,
 getUserDocuments,
 renameDocument,
-deleteDocument} from './controllers/documentController';
+deleteDocument,
+getTexFile} from './controllers/documentController';
 import { login, verifySessionEndPoint, logout } from './auth/auth';
 import { createFigure, getUserFigureById, getUserFigures } from './controllers/figureController';
 import { getUserById, getAllUsers, getUserByEmail, createUser } from './controllers/userController';
@@ -21,6 +22,7 @@ export default (): express.Router =>{
         router.get('/document/user/:userId/:documentClass',getUserDocuments);
         router.get('/document/:id',getDocumentById);
         router.get('/document/getPdf/:id', getPdf)
+        router.get('/document/getTex/:id', getTexFile)
         router.get('/document/getDocumentContent/:id', getDocumentContent)
         router.post('/document',createDocument);
         router.post("/document/line/:id",addLine )

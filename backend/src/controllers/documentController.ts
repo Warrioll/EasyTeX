@@ -121,9 +121,43 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
 
     await compileTex('documentBase', id+'.tex')
     clearCompilationFiles('documentBase', id+'.tex')
+    
     res.setHeader('Content-type', 'application/pdf')
+    //res.setHeader('Content-Disposition', `attachment; filename="${id}.pdf"`);
     await extendSession(req.cookies.auth,res)
     fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
+ 
+  // }else{
+  //   res.status(403).send({msg: 'Not loged in!'});
+  // }
+      //res.status(200).json(documents);
+  }catch(error){
+      console.log("Get ERROR: ", error)
+      res.sendStatus(400);
+  }
+};
+
+export const  getTexFile= async (req: express.Request, res: express.Response)=>{
+ 
+  try{
+    const {id} = req.params;
+    const documentInstantion = await documentModel.findById(id)
+
+
+    //console.log("cookie:", req.cookies.auth)  
+    //console.log("usrId1:", documentInstantion.userId)
+    //console.log("usrId2:", await verifySession(req.cookies.auth))
+    //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
+      //await extendSession(req.cookies.auth,res)
+
+
+    // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
+
+    await compileTex('documentBase', id+'.tex')
+    clearCompilationFiles('documentBase', id+'.tex')
+    res.setHeader('Content-type', 'text/x-tex')
+    await extendSession(req.cookies.auth,res)
+    fileHander.createReadStream('documentBase/'+id+'.tex').pipe(res);
  
   // }else{
   //   res.status(403).send({msg: 'Not loged in!'});

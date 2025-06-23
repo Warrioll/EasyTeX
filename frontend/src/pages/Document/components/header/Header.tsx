@@ -288,6 +288,36 @@ const Header: React.FC<headerProps> = ({
     return false;
   };
 
+  const downloadTex = async () => {
+    const response = await axios.get(`http://localhost:8100/document/getTex/${id}`, {
+      withCredentials: true,
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = documentName.name.concat('.tex');
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = async () => {
+    const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+      withCredentials: true,
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = documentName.name.concat('.pdf');
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     setValue('insert');
   }, [activeSection]);
@@ -391,10 +421,18 @@ const Header: React.FC<headerProps> = ({
             {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
             </Button> */}
-            <Button variant="transparent" leftSection={<RiFileDownloadLine />}>
+            <Button
+              variant="transparent"
+              leftSection={<RiFileDownloadLine />}
+              onClick={downloadTex}
+            >
               .tex
             </Button>
-            <Button variant="transparent" leftSection={<RiFileDownloadFill />}>
+            <Button
+              variant="transparent"
+              leftSection={<RiFileDownloadFill />}
+              onClick={downloadPdf}
+            >
               .pdf
             </Button>
           </Group>
