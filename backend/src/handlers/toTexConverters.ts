@@ -1,3 +1,5 @@
+import { figureModel } from "../models/figureModel";
+
 export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
 }
@@ -7,7 +9,10 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     //z tym coś nie działa
     //textfield= textfield.replaceAll('\\', '\\textbackslash')
 
-    
+    //obsługa znaku non-breaking space w sytuacji gdy ma rolę placeholdera na froncie
+    if(fontToConvert==='&nbsp;' || fontToConvert==='<p>&nbsp;</p>'){
+        return ' '
+    }
 
     //bold
     fontToConvert = fontToConvert.replaceAll('<strong>', '\\textbf{')
@@ -126,3 +131,27 @@ export const titlePageToTex =(blockContent:{title:string, author: string, date: 
 export const equationToTex =(blockContent:string): string =>{
     return '\\begin{equation} '+blockContent+' \\end{equation}'
 }
+
+export const tableToTex =(blockContent: string[][]): string =>{
+    let tableContent:string=''
+
+    for(let row=0; row<blockContent.length; row++){
+        for(let column=0; column<blockContent[row].length; column++){
+            tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent[row][column]))
+            if(!(column===blockContent[row].length-1)){
+                
+                 tableContent=tableContent+'&'
+            }
+        }
+        tableContent=tableContent+' \\\\ \\hline '
+    }
+    const style='|c'.repeat(blockContent[0].length)+'|'
+
+    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\end{table}`
+}
+
+export const figureToTex =(blockContent:string): string =>{
+    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+blockContent+'} \\end{figure}'
+}
+
+

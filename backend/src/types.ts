@@ -9,8 +9,10 @@ export type blockType = {
     | 'tableOfContents'
     | 'pageBreak'
     | 'equation'
+    | 'table'
+    |'figure'
     | null | undefined;
-    blockContent: string | titlePageType |null | undefined; 
+    blockContent: string | titlePageType | string[][] | null | undefined; 
   };
 
   export type titlePageType = {

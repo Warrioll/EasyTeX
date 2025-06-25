@@ -14,15 +14,18 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import Split from '@uiw/react-split';
+import { cloneDeep } from 'lodash';
 import { useParams } from 'react-router-dom';
 //import Split from 'react-split';
 import { Box, Center, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
 import { blockType } from '@/Types';
 import EquationBlock from './components/blocks/EquationBlock';
+import FigureBlock from './components/blocks/FigureBlock';
 import PageBreakBlock from './components/blocks/PageBreakBlock';
 import SectionBlock from './components/blocks/SectionBlock';
 import SubsectionBlock from './components/blocks/SubsectionBlock';
 import SubsubsectionBlock from './components/blocks/SubsubsectionBlock';
+import TableBlock from './components/blocks/TableBlock';
 import TableOfContentsBlock from './components/blocks/TableOfContentsBlock';
 import TextfieldBlock from './components/blocks/TextfieldBlock';
 import TitlePageBlock from './components/blocks/TitlePageBlock';
@@ -72,6 +75,9 @@ export default function DocumentPage() {
   const workspaceZoom = useState<string | null>('1');
   const pdfZoomValue = useState<number>(1);
   const workspaceZoomValue = useState<number>(1);
+
+  const activeTableCellState = useState<[number, number]>([0, 0]); //[row, column]
+  const [activeTableCell, setActiveTableCell] = activeTableCellState;
 
   const { id } = useParams();
 
@@ -309,6 +315,50 @@ export default function DocumentPage() {
     }
   };
 
+  const addTable = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'table',
+          blockContent: [
+            ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+            ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+          ],
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'table',
+        blockContent: [
+          ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+          ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+        ],
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
+  const addFigure = () => {
+    if (activeBlock === 0) {
+      setSectionsContent([
+        ...sectionsContent,
+        {
+          typeOfBlock: 'figure',
+          blockContent: '',
+        },
+      ]);
+    } else {
+      let blocks = [...sectionsContent];
+      blocks.splice(activeBlock + 1, 0, {
+        typeOfBlock: 'figure',
+        blockContent: '',
+      });
+      setSectionsContent(blocks);
+    }
+  };
+
   const reloadPdf = async () => {
     // await setTimeout(() => {
     //   console.log('timeout');
@@ -352,6 +402,9 @@ export default function DocumentPage() {
             return true;
           case 'pageBreak':
             return true;
+          case 'table':
+            //TODO:
+            return true;
           default:
             return !chceckIfBlockContentEmpty(block.blockContent);
         }
@@ -371,6 +424,89 @@ export default function DocumentPage() {
     }
   };
 
+  const addRowAbove = () => {
+    console.log('Row Add');
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+      let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
+      tableCopy.splice(activeTableCell[0] - 1, 0, row);
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+      console.log('Row Added');
+    }
+  };
+
+  const addRowBelow = () => {
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+      let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
+      tableCopy.splice(activeTableCell[0], 0, row);
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+    }
+  };
+
+  const deleteRow = () => {
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+      //let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
+      if (tableCopy.length === 1) {
+        tableCopy = [['<p>&nbsp;</p>']];
+      } else {
+        if (tableCopy.length > activeTableCell[0] - 1) {
+          tableCopy.splice(activeTableCell[0] - 1, 1);
+        }
+      }
+
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+    }
+  };
+
+  const addColumnFromLeft = () => {
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+
+      for (let i = 0; i < tableCopy.length; i++) {
+        tableCopy[i].splice(activeTableCell[1] - 1, 0, '<p>&nbsp;</p>');
+      }
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+    }
+  };
+
+  const addColumnFromRight = () => {
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+      for (let i = 0; i < tableCopy.length; i++) {
+        tableCopy[i].splice(activeTableCell[1], 0, '<p>&nbsp;</p>');
+      }
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+    }
+  };
+
+  const deleteColumn = () => {
+    if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
+      let blockContentCopy = cloneDeep(sectionsContent);
+      let tableCopy = blockContentCopy[activeBlock].blockContent;
+      if (tableCopy[0].length === 1) {
+        tableCopy = [['<p>&nbsp;</p>']];
+      } else {
+        for (let i = 0; i < tableCopy.length; i++) {
+          tableCopy[i].splice(activeTableCell[1] - 1, 1);
+        }
+      }
+      blockContentCopy[activeBlock].blockContent = tableCopy;
+      setSectionsContent(blockContentCopy);
+    }
+  };
+
   const editFunctions = {
     // addSection,
     addTextfield,
@@ -383,6 +519,14 @@ export default function DocumentPage() {
     addTableOfContents,
     addPageBreak,
     addEquation,
+    addFigure,
+    addTable,
+    addRowAbove,
+    addRowBelow,
+    deleteRow,
+    addColumnFromLeft,
+    addColumnFromRight,
+    deleteColumn,
     //bold,
   };
 
@@ -522,6 +666,27 @@ export default function DocumentPage() {
             activeTextInputState={activeTextInputState}
           />
         );
+      case 'table':
+        return (
+          <TableBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
+            activeTableCellState={activeTableCellState}
+            editor={editor}
+          />
+        );
+      case 'figure':
+        return (
+          <FigureBlock
+            idx={idx}
+            activeBlockState={activeBlockState}
+            blocksContentState={blocksContentState}
+            activeTextInputState={activeTextInputState}
+            editor={editor}
+          />
+        );
       default:
         return <></>;
     }
@@ -546,6 +711,7 @@ export default function DocumentPage() {
         workspaceZoom={workspaceZoom}
         activeSection={activeBlock}
         sectionsContent={sectionsContent}
+        //activeTableCellState={activeTableCellState}
       />
 
       <Split

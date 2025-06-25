@@ -3,7 +3,7 @@ import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { loadTexFile } from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex } from '../handlers/toTexConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex, figureToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -12,9 +12,12 @@ import { sectionToBlock,
   getAuthorFromTex, 
   getDateFromTex, 
   getTitleFromTex, 
-  equationToBlock} from '../handlers/toBlockConverters';
+  equationToBlock,
+  figureToBlock,
+tableToBlock} from '../handlers/toBlockConverters';
 import { verifySession, extendSession } from '../auth/auth';
 import { blockType, titlePageType } from '../types';
+import { figureModel } from '../models/figureModel';
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
@@ -118,9 +121,43 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
 
     await compileTex('documentBase', id+'.tex')
     clearCompilationFiles('documentBase', id+'.tex')
+    
     res.setHeader('Content-type', 'application/pdf')
+    //res.setHeader('Content-Disposition', `attachment; filename="${id}.pdf"`);
     await extendSession(req.cookies.auth,res)
     fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
+ 
+  // }else{
+  //   res.status(403).send({msg: 'Not loged in!'});
+  // }
+      //res.status(200).json(documents);
+  }catch(error){
+      console.log("Get ERROR: ", error)
+      res.sendStatus(400);
+  }
+};
+
+export const  getTexFile= async (req: express.Request, res: express.Response)=>{
+ 
+  try{
+    const {id} = req.params;
+    const documentInstantion = await documentModel.findById(id)
+
+
+    //console.log("cookie:", req.cookies.auth)  
+    //console.log("usrId1:", documentInstantion.userId)
+    //console.log("usrId2:", await verifySession(req.cookies.auth))
+    //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
+      //await extendSession(req.cookies.auth,res)
+
+
+    // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
+
+    await compileTex('documentBase', id+'.tex')
+    clearCompilationFiles('documentBase', id+'.tex')
+    res.setHeader('Content-type', 'text/x-tex')
+    await extendSession(req.cookies.auth,res)
+    fileHander.createReadStream('documentBase/'+id+'.tex').pipe(res);
  
   // }else{
   //   res.status(403).send({msg: 'Not loged in!'});
@@ -173,7 +210,9 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
             if(line.includes('\\begin{equation}')) return equationToBlock(line);
+            if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
+            if(line.includes('\\begin{figure}')) return figureToBlock(line);
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
@@ -395,44 +434,68 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
 
 export const updateWholeDocumentContent  = async (req: express.Request, res: express.Response)=>{
 
-//z jakiejś duby wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
+//!!!!!!!!!!!
+//A GDZIE SPRAWDZANIE DOSTEPU I SEJSI??????????????? XDDDDDDD
+//!!!!!
+
+// //z jakiejś duby wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
 
   try{
   const {id} = req.params;
   const blocks = req.body as blockType[]; 
 
+  const userId=await verifySession(req.cookies.auth)
+
   console.log(blocks);
   
+
+
    // let titlePageData = {title: '', author: '', date: ''}
-  let document: (string | undefined)[] = blocks.map((block: blockType, idx: number)=>{
+  let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
     switch(block.typeOfBlock){
-      case 'documentclass':
+      case 'documentclass':{
         return documentclassToTex(block.blockContent as string);
-      case 'titlePage':
+     } case 'titlePage':{
         if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
           // titlePageData=block.blockContent;
           //   return '\\maketitle'
           return titlePageToTex(block.blockContent)
         }
         return ''
-      case 'tableOfContents':
+    }case 'tableOfContents':{
         return '\\tableofcontents'
-      case 'pageBreak':
+       } case 'pageBreak':{
         return '\\newpage'
-      case 'textfield':
+    }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
-      case 'section':
+       } case 'section':{
        return sectionToTex(block.blockContent as string);
-      case 'subsection':
+    }case 'subsection':{
        return subsectionToTex(block.blockContent as string);
-       case 'subsubsection':
+        }  case 'subsubsection':{
         return subsubsectionToTex(block.blockContent as string);
-      case 'equation':
+    }case 'equation':{
         return equationToTex(block.blockContent as string)
+      }case 'table':{
+        if(Array.isArray(block.blockContent)){
+          return tableToTex(block.blockContent)
+        }
+          return ''}
+      case 'figure':{
+        const figure= await figureModel.findById(block.blockContent)
+        if(figure!==null && figure.userId===userId){
+          const path=['..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
+           return figureToTex(path)
+        }else{
+          // tu zwaracać texa z pustkym linkiem jeśli kompilacji takie coś nie będzie wywalało
+          return ''
+        }
+       
+      }
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
-  })
+  }))
 
  
     // document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
@@ -441,8 +504,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
     // );
 
       document.splice(1,0,'\\usepackage{ulem}'
-        +'\\usepackage{amsmath}'
+        +'\n\\usepackage{amsmath}'
         +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'
+        +'\n\\usepackage{graphicx} '
         +'\n\\begin{document}'
       );
      document.push('\\end{document}')

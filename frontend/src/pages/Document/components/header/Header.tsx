@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
@@ -20,7 +20,9 @@ import {
   LuHeading1,
   LuHeading2,
   LuHeading3,
+  LuImage,
   LuRefreshCcw,
+  LuTable,
   //LuTableOfContents,
 } from 'react-icons/lu';
 import {
@@ -68,7 +70,8 @@ import { documentColor, documentMainLabels } from '@/components/other/documentLa
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
 import FontTab from './FontTab';
-import ModifyTab from './ModifyTab';
+import TableToolsTab from './TableToolsTab';
+import TextfieldToolsTab from './TextfieldToolsTab';
 import ZoomTools from './ZoomTools';
 // import {
 //   IconNotification,
@@ -89,6 +92,7 @@ type headerProps = {
   workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
   activeSection: number;
   sectionsContent: blockType[];
+  //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
 };
 
 const Header: React.FC<headerProps> = ({
@@ -99,6 +103,7 @@ const Header: React.FC<headerProps> = ({
   workspaceZoom,
   activeSection,
   sectionsContent,
+  //activeTableCellState,
 }) => {
   //const theme = useMantineTheme();
   //const []
@@ -162,6 +167,12 @@ const Header: React.FC<headerProps> = ({
       <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addEquation}>
         <MdFunctions />
       </Button>
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addTable}>
+        <LuTable />
+      </Button>
+      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addFigure}>
+        <LuImage />
+      </Button>
       <Button
         variant="format"
         fz="var(--mantine-font-size-lg)"
@@ -194,8 +205,8 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-  const modifyTools = (
-    <ModifyTab
+  const textFieldTools = (
+    <TextfieldToolsTab
       editFunctions={editFunctions}
       editor={editor}
       saveElementChanges={saveElementChanges}
@@ -204,18 +215,38 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
+  const tableTools = <TableToolsTab editFunctions={editFunctions} />;
+
   const viewTools = (
     <>
       <ZoomTools zoomState={workspaceZoom} />
     </>
   );
 
-  const takeActiveBlockType = (): string => {
+  const chooseModifyTabName = (): string => {
     if (activeSection !== 0) {
-      if (sectionsContent[activeSection].typeOfBlock === 'textfield') {
-        return 'Textfield ';
+      switch (sectionsContent[activeSection].typeOfBlock) {
+        case 'textfield':
+          return 'Textfield ';
+        case 'table':
+          return 'Table ';
+        default:
+          return '';
       }
-      return '';
+    }
+    return '';
+  };
+
+  const chooseModifyTabTools = (): ReactNode => {
+    if (activeSection !== 0) {
+      switch (sectionsContent[activeSection].typeOfBlock) {
+        case 'textfield':
+          return textFieldTools;
+        case 'table':
+          return tableTools;
+        default:
+          return '';
+      }
     }
     return '';
   };
@@ -238,8 +269,8 @@ const Header: React.FC<headerProps> = ({
     },
     {
       value: 'modify',
-      label: `${takeActiveBlockType()}`,
-      tools: modifyTools,
+      label: `${chooseModifyTabName()}`,
+      tools: chooseModifyTabTools(),
     },
   ];
 
@@ -255,6 +286,36 @@ const Header: React.FC<headerProps> = ({
       return true;
     }
     return false;
+  };
+
+  const downloadTex = async () => {
+    const response = await axios.get(`http://localhost:8100/document/getTex/${id}`, {
+      withCredentials: true,
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = documentName.name.concat('.tex');
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const downloadPdf = async () => {
+    const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+      withCredentials: true,
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = documentName.name.concat('.pdf');
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   useEffect(() => {
@@ -360,10 +421,18 @@ const Header: React.FC<headerProps> = ({
             {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
             </Button> */}
-            <Button variant="transparent" leftSection={<RiFileDownloadLine />}>
+            <Button
+              variant="transparent"
+              leftSection={<RiFileDownloadLine />}
+              onClick={downloadTex}
+            >
               .tex
             </Button>
-            <Button variant="transparent" leftSection={<RiFileDownloadFill />}>
+            <Button
+              variant="transparent"
+              leftSection={<RiFileDownloadFill />}
+              onClick={downloadPdf}
+            >
               .pdf
             </Button>
           </Group>
