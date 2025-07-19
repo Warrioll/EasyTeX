@@ -9,6 +9,7 @@ import {
   Button,
   Flex,
   Group,
+  Link,
   Modal,
   SimpleGrid,
   Text,
@@ -44,14 +45,23 @@ export default function MainLayout({ content }: LayoutProps) {
           }
 
           <Group justify="space-between" style={{ flex: 1 }}>
-            <Flex ml="sm" justify="center" align="center">
-              <Logo width="1.6rem" />
-              <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fz="lg" fw="700" ml="sm">
-                Easy
-              </Text>
-              <Text mt="0.2rem" fz="lg" fw="700" c="var(--mantine-color-cyan-9)">
-                TeX
-              </Text>
+            <Flex ml="sm" justify="center" align="center" pl="0px">
+              <Button
+                p="0px"
+                m="0px"
+                variant="transparent"
+                onClick={() => {
+                  window.location.href = '/dashboard';
+                }}
+              >
+                <Logo width="1.6rem" />
+                <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fz="lg" fw="700" ml="sm">
+                  Easy
+                </Text>
+                <Text mt="0.2rem" fz="lg" fw="700" c="var(--mantine-color-cyan-9)">
+                  TeX
+                </Text>
+              </Button>
             </Flex>
             {
               //<MantineLogo size={30} />
@@ -63,17 +73,11 @@ export default function MainLayout({ content }: LayoutProps) {
                 variant="transparent"
                 leftSection={<RxAvatar />}
                 className={classes.control}
+                onClick={() => {
+                  window.location.href = '/profile';
+                }}
               >
-                Profile
-              </Button>
-              <Button
-                pt="0px"
-                pb="0px"
-                variant="transparent"
-                leftSection={<IoSettingsOutline />}
-                className={classes.control}
-              >
-                Settings
+                Account
               </Button>
               <Button
                 pt="0px"

@@ -5,9 +5,10 @@ getUserDocuments,
 renameDocument,
 deleteDocument,
 getTexFile} from './controllers/documentController';
-import { login, verifySessionEndPoint, logout } from './auth/auth';
-import { createFigure, getUserFigureById, getUserFigures } from './controllers/figureController';
-import { getUserById, getAllUsers, getUserByEmail, createUser } from './controllers/userController';
+import { login, verifySessionEndPoint, logout, verifyPassword } from './auth/auth';
+import { createFigure, getUserFigureById,getUserFigureFileById, getUserFigures, renameFigure, deleteFigure } from './controllers/figureController';
+import { getAllUsers, getUserByEmail, createUser, getUserData, editUserDetails, changePasswordDetails// getUserById,
+ } from './controllers/userController';
 //import documents from './documentRouter'
 
 const router = express.Router();
@@ -33,17 +34,24 @@ export default (): express.Router =>{
         router.delete("/document/:id",deleteDocument )
 
         router.get('/figure/user/:fileType', getUserFigures)
+        router.get('/figure/user/getFigureFile/:id', getUserFigureFileById)
         router.get('/figure/user/getFigure/:id', getUserFigureById)
         router.post('/figure',upload.single('image'), createFigure)
+        router.put('/figure/user/renameFigure/:id', renameFigure)
+        router.delete('/figure/user/deleteFigure/:id', deleteFigure)
 
-        router.get('/user/:id', getUserById)
+        //router.get('/user/:id', getUserById)
+        router.get('/user/', getUserData)
         router.get('/userByEmail', getUserByEmail)
-        router.get('/user', getAllUsers)
+        //router.get('/user', getAllUsers)
         router.post('/user/createNewAccount', createUser)
+        router.put('/user/editUserDetails',editUserDetails)
+        router.put('/user/changePassword', changePasswordDetails)
 
         router.post('/auth/login',login);
         router.get('/auth/verifySession',verifySessionEndPoint);
         router.delete('/auth/logout',logout);
+        router.put('/auth/verifyPassword',verifyPassword);
     }catch(error){
         console.log(error);
     }

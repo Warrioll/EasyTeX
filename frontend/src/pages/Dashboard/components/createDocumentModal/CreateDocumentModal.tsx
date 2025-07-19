@@ -15,7 +15,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
 
@@ -143,7 +143,7 @@ export default function CreateDocumentModal({
                 fullWidth
                 size="sm"
                 radius="md"
-                data={['Article', 'Report', 'Book', 'Letter', 'Presentation', 'Slides']}
+                data={['Article', 'Report', 'Book', 'Letter', 'Presentation']} //, 'Slides']}
                 color={segmentedControlColor}
               />
             </Box>

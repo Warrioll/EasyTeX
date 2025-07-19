@@ -1,15 +1,46 @@
 import express from 'express'
 import { userModel } from '../models/userModel';
+import { verifySession } from '../auth/auth';
+import { figureModel } from '../models/figureModel';
+import { documentModel } from '../models/documentModel';
+import { userNameRegex, emailRegex, passwordRegex } from '../nameRegexes';
 
-export const getUserById = async (req: express.Request, res: express.Response)=>{
+
+// export const getUserById = async (req: express.Request, res: express.Response)=>{
+
+//     try{
+//       const {id} = req.params;
+//       const user = await userModel.findById(id);
+//       res.status(200).json(user);
+//   }catch(error){
+//       console.log("Get ERROR: ", error)
+//       res.sendStatus(400);
+//   }
+// }
+
+
+export const getUserData = async (req: express.Request, res: express.Response)=>{
 
     try{
-      const {id} = req.params;
-      const user = await userModel.findById(id);
-      res.status(200).json(user);
+      //const {id} = req.params;
+      const userId = await verifySession(req.cookies.auth);
+      if( userId!==null){
+      const user = await userModel.findById(userId);
+      const userDocuments = await documentModel.find({userId: userId})
+      const userFigures = await figureModel.find({userId: userId})
+      const data={
+        user: user,
+        documents: userDocuments.length,
+        figures: userFigures.length
+      }
+      res.status(200).json(data);
+      }else{
+        res.sendStatus(403);
+      }
+     
   }catch(error){
       console.log("Get ERROR: ", error)
-      res.sendStatus(400);
+      res.sendStatus(500);
   }
 }
 
@@ -21,7 +52,7 @@ export const getUserByEmail = async (req: express.Request, res: express.Response
       res.status(200).json(user);
   }catch(error){
       console.log("Get ERROR: ", error)
-      res.sendStatus(400);
+      res.sendStatus(500);
   }
 }
 
@@ -31,9 +62,86 @@ export const  getAllUsers= async (req: express.Request, res: express.Response)=>
       res.status(200).json(users);
   }catch(error){
       console.log("Get ERROR: ", error)
-      res.sendStatus(400);
+      res.sendStatus(500);
   }
 };
+
+export const editUserDetails = async (req: express.Request, res: express.Response)=>{
+  //console.log('editUserDetails')
+  try{
+      if(req.cookies.auth===null || req.cookies.auth===undefined){
+         res.sendStatus(401);
+      }
+
+      const userId = await verifySession(req.cookies.auth);
+      if( userId!==null){
+      const user = await userModel.findById(userId);
+      //console.log(user)
+        if (userNameRegex.test(req.body.userName) && emailRegex.test(req.body.email)){
+          //console.log(userId)
+             const updatedUser = await userModel.findByIdAndUpdate(userId, {userName: req.body.userName, email: req.body.email})
+              res.status(200).json(updatedUser);
+        }else{
+          
+          res.sendStatus(400);
+        }
+
+      }else{
+        res.sendStatus(403);
+      }
+  }catch(e){
+ res.sendStatus(500);
+  }
+}
+
+export const changePasswordDetails = async (req: express.Request, res: express.Response)=>{
+  try{
+      if(req.cookies.auth===null || req.cookies.auth===undefined){
+         res.sendStatus(401);
+      }
+
+      const userId = await verifySession(req.cookies.auth);
+      //const user = await userModel.findById(userId);
+       
+      if( userId!==null){
+      const user = await userModel.findById(userId);
+        if (passwordRegex.test(req.body.password)){
+             const updatedUser = await userModel.findByIdAndUpdate(userId, {password: req.body.password})
+            
+              res.status(200).json(updatedUser);
+        }else{
+          res.sendStatus(400);
+        }
+
+      }else{
+        res.sendStatus(403);
+      }
+  }catch(e){
+ res.sendStatus(500);
+  }
+}
+
+export const deleteAccount = async (req: express.Request, res: express.Response)=>{
+  try{
+     if(req.cookies.auth===null || req.cookies.auth===undefined){
+         res.sendStatus(401);
+      }
+
+      const userId = await verifySession(req.cookies.auth);
+       const user = await userModel.findById(userId);
+        if( userId!==null && user.password===req.body.password){
+         
+      
+            await userModel.findByIdAndDelete(userId);
+            // TODO Delete sessions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s
+          
+        }else{
+        res.sendStatus(403);
+      }
+  }catch(e){
+     res.sendStatus(500);
+  }
+}
 
 
 export const createUser =async (req: express.Request, res: express.Response)=>{
@@ -45,9 +153,9 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
     const userNameLenghtRegex=/.{3,30}/g
     const passwordLenghtRegex=/.{8,64}/g
     if(emailLenghtRegex.test(data.email) && userNameLenghtRegex.test(data.userName) &&passwordLenghtRegex.test(data.password)){
-      const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})$/g
-      const userNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$%^&*?\-]+(?<![_.])$/g
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+      // const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})$/g
+      // const userNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$%^&*?\-]+(?<![_.])$/g
+      // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
       if(emailRegex.test(data.email) && userNameRegex.test(data.userName) && passwordRegex.test(data.password)){
   
         const checkEmail = await userModel.findOne({email: data.email})

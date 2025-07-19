@@ -160,3 +160,23 @@ export const logout = async (req: express.Request, res: express.Response)=>{
         console.log("logout error: ", error)
     }
 }
+
+export const verifyPassword = async (req: express.Request, res: express.Response)=>{  
+
+    try{
+      if(req.cookies.auth===null || req.cookies.auth===undefined){
+         res.sendStatus(401);
+      }
+      const userId = await verifySession(req.cookies.auth);
+      const user = await userModel.findById(userId);
+      
+      if(userId!==null && userId!==undefined && user.password===req.body.password){
+        res.sendStatus(200)
+      }else{
+         res.sendStatus(403)
+      }
+    }catch(error){
+        console.log("Verify password error: ", error)
+        res.sendStatus(500)
+    }
+}

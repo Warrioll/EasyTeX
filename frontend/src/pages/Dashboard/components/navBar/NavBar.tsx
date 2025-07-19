@@ -31,7 +31,7 @@ const data = [
   { documentClass: 'book', label: 'Books', icon: RiBook2Fill },
   { documentClass: 'letter', label: 'Letters', icon: MdEmail },
   { documentClass: 'beamer', label: 'Presentaions', icon: PiPresentationChartFill },
-  { documentClass: 'slides', label: 'Slides', icon: RiSlideshow2Fill },
+  //{ documentClass: 'slides', label: 'Slides', icon: RiSlideshow2Fill },
 ];
 
 type navBarPropsType = {
@@ -94,14 +94,14 @@ export default function NavBar({ createDocumentModal, activeTab }: navBarPropsTy
         </div>
 
         <div className={classes.footer}>
-          <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+          <a href="/assetsLibrary" className={classes.link}>
             {/* <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} /> */}
-            <span>My assets</span>
+            <span>Assets library</span>
           </a>
 
           {/* <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}> */}
-            {/* <IconLogout className={classes.linkIcon} stroke={1.5} /> */}
-            {/* <span>Upload TeX file</span> */}
+          {/* <IconLogout className={classes.linkIcon} stroke={1.5} /> */}
+          {/* <span>Upload TeX file</span> */}
           {/* </a> */}
         </div>
       </nav>

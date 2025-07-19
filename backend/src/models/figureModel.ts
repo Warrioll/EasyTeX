@@ -8,9 +8,9 @@ const figureSchema= new mongoose.Schema({
     fileType: {type: String, enum: ['jpg', 'png', 'jpeg'] , required: true},
     //path:{type: String, required: true},
     
-    //zmienic na true wymaganie
+
     creationDate: {type: Date, required:true},
-    //lastUpdate: {type: Date, require: true}
+    lastUpdate: {type: Date, require: true}
 
 })
 

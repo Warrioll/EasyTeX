@@ -13,6 +13,7 @@ import {
   Modal,
   SegmentedControl,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
@@ -58,13 +59,21 @@ export default function FigureBlock({
 
   useEffect(() => {
     const getFigure = async () => {
-      const response = await axios.get(`http://localhost:8100/figure/user/getFigure/${figure}`, {
-        withCredentials: true,
-        responseType: 'blob',
-      });
-      setFigureUrl(URL.createObjectURL(response.data));
-      //console.log(figure);
-      setFigureLoaded(true);
+      try {
+        const response = await axios.get(
+          `http://localhost:8100/figure/user/getFigureFile/${figure}`,
+          {
+            withCredentials: true,
+            responseType: 'blob',
+          }
+        );
+        setFigureUrl(URL.createObjectURL(response.data));
+        //console.log(figure);
+        setFigureLoaded(true);
+      } catch (e) {
+        console.log('block figure getFigure error: ', e);
+        se;
+      }
     };
     getFigure();
   }, [figure]);
@@ -98,17 +107,22 @@ export default function FigureBlock({
                 open();
               }}
               bg={figureLoaded ? '' : 'var(--mantine-color-gray-1)'}
+              c={figureLoaded ? '' : 'var(--mantine-color-error)'}
             >
               {figure !== null ? (
-                <Image
-                  w="24vh"
-                  h="24vh"
-                  key={0}
-                  src={figure !== null ? figureUrl : ''}
-                  alt=""
-                  //fit={fitImg}
-                  fit="contain"
-                />
+                figureLoaded ? (
+                  <Image
+                    w="24vh"
+                    h="24vh"
+                    key={0}
+                    src={figure !== null ? figureUrl : ''}
+                    alt=""
+                    //fit={fitImg}
+                    fit="contain"
+                  />
+                ) : (
+                  <>This asset might have been deleted!</>
+                )
               ) : (
                 <Center h="5rem" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
                   <Center m="xl" fz="3rem" c="dimmed">

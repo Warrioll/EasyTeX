@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Button, Center, Flex, ScrollArea, SimpleGrid, Text } from '@mantine/core';
+import FiguresLibrary from '@/components/FiguresLibrary/FiguresLibrary';
 import FigureCard from './FigureCard';
 
 type LibraryFigureTabPropsType = {
@@ -39,7 +40,12 @@ export default function LibraryFigureTab({
 
   return (
     <>
-      <Box h="70vh" p="xl">
+      <FiguresLibrary
+        height="70vh"
+        //figureState={figureState}
+        choosenFigureState={choosenFigureState}
+      />
+      {/* <Box h="70vh" p="xl">
         <ScrollArea h="100%">
           <SimpleGrid cols={5}>
             {figures.map((figure, id) => {
@@ -55,14 +61,19 @@ export default function LibraryFigureTab({
             })}
           </SimpleGrid>
         </ScrollArea>
-      </Box>
+      </Box> */}
       <Flex gap="3rem" pt="lg" justify="center">
         <Button
           w="20rem"
           disabled={choosenFigure === null}
           onClick={() => {
             // uploadFigure();
-            setFigure(figures[choosenFigure]._id);
+            console.log(figures);
+            //setFigure(figures[choosenFigure]._id);
+            if (choosenFigure !== null) {
+              setFigure(choosenFigure as unknown as string);
+            }
+
             close();
           }}
         >

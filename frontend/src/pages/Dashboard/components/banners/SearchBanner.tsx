@@ -155,9 +155,9 @@ export default function SearchBanner({
                     <Combobox.Option value="beamer" key="beamer">
                       Presentation
                     </Combobox.Option>
-                    <Combobox.Option value="slides" key="slides">
+                    {/* <Combobox.Option value="slides" key="slides">
                       Slides
-                    </Combobox.Option>
+                    </Combobox.Option> */}
                   </Combobox.Options>
                 </Combobox.Dropdown>
               </Combobox>

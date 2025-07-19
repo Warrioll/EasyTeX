@@ -3,6 +3,7 @@ import {figureModel} from '../models/figureModel';
 import { verifySession, extendSession } from '../auth/auth';
 import fileHandler from 'fs'
 import path from 'path';
+import { deleteFigureFile } from '../handlers/commandHandlers';
 
 
 
@@ -46,8 +47,26 @@ export const getUserFigures= async (req: express.Request, res: express.Response)
 
 }
 
-
 export const getUserFigureById= async (req: express.Request, res: express.Response)=>{
+try{
+  const {id} = req.params;
+  const userId=await verifySession(req.cookies.auth)
+  const figure = await figureModel.findById(id);
+  
+if(req.cookies.auth && userId===figure.userId  ){
+  res.status(200).json(figure)
+
+}else{
+   res.sendStatus(401)
+}
+}catch(e){
+  console.log('getUserFigureById error: ', e)
+   res.sendStatus(500)
+}
+}
+
+
+export const getUserFigureFileById= async (req: express.Request, res: express.Response)=>{
 try{
   const {id} = req.params;
   const userId=await verifySession(req.cookies.auth)
@@ -60,7 +79,7 @@ if(req.cookies.auth && userId===figure.userId  ){
    res.sendStatus(401)
 }
 }catch(e){
-  console.log('getUserFigureById error: ', e)
+  console.log('getUserFigureFileById error: ', e)
    res.sendStatus(500)
 }
 }
@@ -86,7 +105,7 @@ try{
                    fileType: extension,
                    path: 'figureBase',
                     creationDate: new Date(Date.now()),
-                   //lastUpdate: new Date(Date.now()),
+                   lastUpdate: new Date(Date.now()),
         }
 
         const figure= new figureModel(figureData);
@@ -108,4 +127,54 @@ try{
         console.log("Post ERROR: ", error) 
         res.sendStatus(500);
     }
+}
+
+export const renameFigure  = async (req: express.Request, res: express.Response)=>{
+  try{
+    const {id}=req.params
+    const userId = await verifySession(req.cookies.auth)
+    const figureNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
+   
+    const figure = await figureModel.findById(id)
+   // console.log('userId',id)
+    if(req.cookies.auth && userId && userId===figure.userId){
+      
+
+      if(figureNameRegex.test(req.body.name)){
+      const updatedDocument = await figureModel.findByIdAndUpdate(id, {name: req.body.name, lastUpdate: new Date(Date.now())})
+      await extendSession(req.cookies.auth,res)
+      res.sendStatus(200)
+      }else{
+        res.sendStatus(403)
+      }
+    
+    }else{
+      res.sendStatus(401)
+    }
+  }catch(error){
+    console.log('rename figureerror: ', error)
+  }
+}
+
+export const deleteFigure  = async (req: express.Request, res: express.Response)=>{
+  try{
+    const {id}=req.params
+    const userId = await verifySession(req.cookies.auth)
+   
+    const figure = await figureModel.findById(id)
+   // console.log('userId',id)
+    if(req.cookies.auth && userId && userId===figure.userId){
+      
+
+      await deleteFigureFile(figure.path,id, figure.fileType) 
+      const updatedDocument = await figureModel.findByIdAndDelete(id)
+      await extendSession(req.cookies.auth,res)
+      res.sendStatus(200)
+    
+    }else{
+      res.sendStatus(401)
+    }
+  }catch(error){
+    console.log('rename document error: ', error)
+  }
 }

@@ -27,7 +27,9 @@ import {
 import { transitions } from '@mantine/core/lib/components/Transition/transitions';
 import { hasLength, isEmail, matches, matchesField, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
+import PasswarodRequirements from '@/components/ErrorInfos/PasswordRequirements';
+import UsernameEmailRequirements from '@/components/ErrorInfos/UsernameRequirements';
 import styles from './registerPage.module.css';
 
 export default function RegisterPage() {
@@ -195,28 +197,8 @@ export default function RegisterPage() {
             errorDialogOpened={errorDialogOpened}
             content={
               <>
-                <Box mb="sm">
-                  <b>Username</b> must:
-                  <li> be 3-30 characters long</li>
-                  <li>
-                    not contain any other special{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&*?-</span>
-                  </li>
-                  <li>
-                    not start or end with ._ special{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>characters</span>
-                  </li>
-                </Box>
-                <Box mb="sm">
-                  <b>Password</b> must:
-                  <li>be 8-64 characters long</li>
-                  <li>contain min. one letter</li>
-                  <li>contain min. one number</li>
-                  <li>
-                    contain min. one of @$!%*#?&{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>special character</span>
-                  </li>
-                </Box>
+                <UsernameEmailRequirements />
+                <PasswarodRequirements />
               </>
             }
           />

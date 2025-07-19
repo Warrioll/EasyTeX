@@ -39,3 +39,7 @@ export const deleteDocumentFiles = async (path:string, fileId: string) : Promise
   await execute(`rm ${[path, fileId.concat('.pdf')].join("/")}`) 
   await execute(`rm ${[path, fileId.concat('.tex')].join("/")}`)
 }
+
+export const deleteFigureFile = async (path:string, fileId: string, fileType: string) : Promise<void>=>{
+  await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
+}
