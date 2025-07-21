@@ -3,7 +3,7 @@ import {figureModel} from '../models/figureModel';
 import { verifySession, extendSession } from '../auth/auth';
 import fileHandler from 'fs'
 import path from 'path';
-import { deleteFigureFile } from '../handlers/commandHandlers';
+import { saveFileWithContent, deleteFile  } from '../handlers/fileHandlers';
 
 
 
@@ -99,18 +99,20 @@ try{
           const extension=originalFileNameSplitted[originalFileNameSplitted.length-1].toLowerCase()
           originalFileNameSplitted.splice(originalFileNameSplitted.length-1,1)
 
+          const path:string = ['figureBase', userId].join('/')
 
         const figureData= {name: originalFileNameSplitted.join('.'), 
                     userId: userId,
                    fileType: extension,
-                   path: 'figureBase',
+                   path: path,
                     creationDate: new Date(Date.now()),
                    lastUpdate: new Date(Date.now()),
         }
 
         const figure= new figureModel(figureData);
         const savedFigure = await figure.save();
-        fileHandler.writeFileSync('./figureBase/'+savedFigure._id+'.'+extension, req.file.buffer)
+        await saveFileWithContent(path, savedFigure._id as unknown as string, extension, req.file.buffer)
+        //fileHandler.writeFileSync([path, [savedFigure._id, extension].join('.')].join('/'), req.file.buffer)
 
 
         await extendSession(req.cookies.auth,res)
@@ -166,7 +168,7 @@ export const deleteFigure  = async (req: express.Request, res: express.Response)
     if(req.cookies.auth && userId && userId===figure.userId){
       
 
-      await deleteFigureFile(figure.path,id, figure.fileType) 
+      await deleteFile(figure.path,id, figure.fileType) 
       const updatedDocument = await figureModel.findByIdAndDelete(id)
       await extendSession(req.cookies.auth,res)
       res.sendStatus(200)

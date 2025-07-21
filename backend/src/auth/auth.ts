@@ -153,12 +153,17 @@ export const extendSession = async (sessionId: string, res: express.Response) =>
 export const logout = async (req: express.Request, res: express.Response)=>{  
 
     try{
-        const deletedSession = await sessionModel.findByIdAndDelete(req.cookies.auth)
+        //const deletedSession = await sessionModel.findByIdAndDelete(req.cookies.auth)
+        await deleteSession(req.cookies.auth)
         res.clearCookie('auth');
         res.sendStatus(200)
     }catch(error){
         console.log("logout error: ", error)
     }
+}
+
+export const deleteSession = async (sessionId: string):Promise<void>=>{ 
+    const deletedSession = await sessionModel.findByIdAndDelete(sessionId)
 }
 
 export const verifyPassword = async (req: express.Request, res: express.Response)=>{  

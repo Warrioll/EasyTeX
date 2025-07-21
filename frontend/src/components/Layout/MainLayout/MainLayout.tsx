@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IoLogInOutline, IoSettingsOutline } from 'react-icons/io5';
 import { MdOutlineLogin } from 'react-icons/md';
 import { RxAvatar } from 'react-icons/rx';
@@ -17,18 +17,25 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { logout } from '@/ApiHandlers/AuthHandler';
+import { checkIfLoggedIn, logout } from '@/ApiHandlers/AuthHandler';
 import Logo from '@/svg/Logo';
 //import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './MainLayout.module.css';
 
-interface LayoutProps {
+type LayoutPropsType = {
   content: React.ReactNode;
-}
+};
 
-export default function MainLayout({ content }: LayoutProps) {
+export default function MainLayout({ content }: LayoutPropsType) {
   const [burgerOpened, burgerHandlers] = useDisclosure();
   const [logoutModalOpened, logoutModalHandlers] = useDisclosure(false);
+
+  useEffect(() => {
+    const checkLogged = async () => {
+      const userId = await checkIfLoggedIn();
+    };
+    checkLogged();
+  }, []);
 
   return (
     <AppShell

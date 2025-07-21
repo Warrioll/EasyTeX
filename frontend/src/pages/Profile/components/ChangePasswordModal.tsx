@@ -77,8 +77,9 @@ export default function ChangePasswordModal({
     return response.status;
   };
 
-  const handlePasswordVerification = async () => {
+  const handlePasswordVerification = async (e) => {
     try {
+      e.preventDefault();
       setDisableVerifyPasswdButton(true);
       setCurrentPasswordError('');
       const status = await verifyPassword();
@@ -113,8 +114,9 @@ export default function ChangePasswordModal({
     //console.log(response);
   };
 
-  const handlePasswordChange = async () => {
+  const handlePasswordChange = async (e) => {
     try {
+      e.preventDefault();
       setDisableVerifyPasswdButton(true);
       errorDialogHandlers.close();
       setNewPasswordError({ password: '', repeatedPassword: '' });
@@ -127,19 +129,18 @@ export default function ChangePasswordModal({
         }
       } else {
         setNewPasswordError({
-          ...newPasswordError,
+          password: '',
           repeatedPassword: 'Passwords are not the same',
         });
-        errorDialogHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
     } catch (error) {
       console.log(error.status);
       if (error.status === 400) {
-        setNewPasswordError({ ...newPasswordError, password: 'Invalid password format' });
+        setNewPasswordError({ repeatedPassword: '', password: 'Invalid password format' });
         errorDialogHandlers.open();
       } else {
-        setNewPasswordError({ ...newPasswordError, password: 'Something went wrong' });
+        setNewPasswordError({ repeatedPassword: '', password: 'Something went wrong' });
       }
       setDisableVerifyPasswdButton(false);
       console.log('verify password error: ', error);
@@ -159,6 +160,7 @@ export default function ChangePasswordModal({
             <b> Change password</b>
           </Text>
         }
+        centered
       >
         {modalContent === 0 ? (
           <Box h="20rem">
@@ -179,6 +181,7 @@ export default function ChangePasswordModal({
                     }
                     value={currentPassword}
                     onChange={(event) => {
+                      setCurrentPasswordError('');
                       setCurrentPassword(event.currentTarget.value);
                     }}
                   />

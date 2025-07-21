@@ -54,7 +54,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 // };
 
 export default function DocumentPage() {
-  const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
+  //const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
 
   // const [sectionsContent, setSectionsContent] = useState<chapterType[]>([]);
   const blocksContentState = useState<blockType[]>([]);
@@ -369,7 +369,8 @@ export default function DocumentPage() {
     //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
     //console.log()
     await setPdfLoaded(false);
-    const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+    const pdfLink = `http://localhost:8100/document/getPdf/${id}`;
+    const response = await axios.get(pdfLink, {
       withCredentials: true,
       responseType: 'blob',
       headers: {
@@ -377,9 +378,10 @@ export default function DocumentPage() {
       },
     });
 
-    setPdf(URL.createObjectURL(await response.data));
+    const pdfObjectURL = URL.createObjectURL(await response.data);
+    setPdf(pdfObjectURL);
 
-    const document = await pdfjs.getDocument(pdfLink).promise;
+    const document = await pdfjs.getDocument(pdfObjectURL).promise;
     setPagesNumber(document.numPages);
     console.log('pages:', pagesNumber);
     await setPdfLoaded(true);

@@ -2,7 +2,7 @@ import express from 'express'
 import * as fileHander from "fs";
 import { documentModel } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
-import { loadTexFile } from '../handlers/fileHandlers';
+import { deleteFile, loadTexFile,  saveFileWithContent} from '../handlers/fileHandlers';
 import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex, figureToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
@@ -58,10 +58,17 @@ export const  getDocuments= async (req: express.Request, res: express.Response)=
 export const getUserDocuments = async (req: express.Request, res: express.Response)=>{
 
   try{
-    const {userId, documentClass} = req.params;
+     if(req.cookies.auth===null || req.cookies.auth===undefined){
+             res.sendStatus(401);
+     }else{
+
+     
+      
+    const userId = await verifySession(req.cookies.auth);
+    const { documentClass} = req.params;
    
 
-    if(req.cookies.auth && await verifySession(req.cookies.auth)===userId ){
+    if(req.cookies.auth && userId!==null ){
       await extendSession(req.cookies.auth,res)
       let  userDocuments;
       switch (documentClass){
@@ -94,8 +101,9 @@ export const getUserDocuments = async (req: express.Request, res: express.Respon
 
       res.status(200).json(userDocuments)
     }else{
-      res.sendStatus(401)
+      res.sendStatus(403)
     }
+  }
   }catch(error){
     console.log("getUserDocuments error: ", error)
     res.sendStatus(500)
@@ -106,30 +114,29 @@ export const getUserDocuments = async (req: express.Request, res: express.Respon
 export const  getPdf= async (req: express.Request, res: express.Response)=>{
  
   try{
+     if(req.cookies.auth===null || req.cookies.auth===undefined){
+             res.sendStatus(401);
+    }
+    
+    const userId = await verifySession(req.cookies.auth);
     const {id} = req.params;
     const documentInstantion = await documentModel.findById(id)
 
 
-    //console.log("cookie:", req.cookies.auth)  
-    //console.log("usrId1:", documentInstantion.userId)
-    //console.log("usrId2:", await verifySession(req.cookies.auth))
-    //if(req.cookies.auth && await verifySession(req.cookies.auth)===documentInstantion.userId ){
-      //await extendSession(req.cookies.auth,res)
-
-
+    if(userId===documentInstantion.userId ){
     // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
 
-    await compileTex('documentBase', id+'.tex')
-    clearCompilationFiles('documentBase', id+'.tex')
+    await compileTex(documentInstantion.path, id+'.tex')
+    clearCompilationFiles(documentInstantion.path, id+'.tex')
     
     res.setHeader('Content-type', 'application/pdf')
     //res.setHeader('Content-Disposition', `attachment; filename="${id}.pdf"`);
     await extendSession(req.cookies.auth,res)
-    fileHander.createReadStream('documentBase/'+id+'.pdf').pipe(res);
- 
-  // }else{
-  //   res.status(403).send({msg: 'Not loged in!'});
-  // }
+    await fileHander.createReadStream([documentInstantion.path, [id, 'pdf'].join('.')].join('/')).pipe(res);
+    //res.sendStatus(200);
+   }else{
+     res.status(403)
+   }
       //res.status(200).json(documents);
   }catch(error){
       console.log("Get ERROR: ", error)
@@ -153,11 +160,11 @@ export const  getTexFile= async (req: express.Request, res: express.Response)=>{
 
     // res.setHeader("Content-Disposition", 'inline; filename="document.pdf"');
 
-    await compileTex('documentBase', id+'.tex')
-    clearCompilationFiles('documentBase', id+'.tex')
+    await compileTex(documentInstantion.path, id+'.tex')
+    clearCompilationFiles(documentInstantion.path, id+'.tex')
     res.setHeader('Content-type', 'text/x-tex')
     await extendSession(req.cookies.auth,res)
-    fileHander.createReadStream('documentBase/'+id+'.tex').pipe(res);
+    fileHander.createReadStream([documentInstantion.path, [id, 'tex'].join('.')].join('/')).pipe(res);
  
   // }else{
   //   res.status(403).send({msg: 'Not loged in!'});
@@ -185,7 +192,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
         if(logedUser===documentInstantion.userId ){
           //await extendSession(req.cookies.auth,res)
 
-          let document: (string | undefined)[] = await loadTexFile(id);
+          let document: (string | undefined)[] = await loadTexFile(documentInstantion.path, id);
           //console.log(document)
 
           let titlePageData = {
@@ -251,9 +258,12 @@ export const createDocument = async (req: express.Request, res: express.Response
         await extendSession(req.cookies.auth,res)
 
         if(documentNameRegex.test(req.body.name)){
+        const path: string = ['documentBase', userId].join('/')
+
         const documentData= {name: req.body.name, 
                     userId: userId,
                     documentClass:  req.body.documentClass,
+                    path: path,
                     creationDate: new Date(Date.now()),
                    lastUpdate: new Date(Date.now()),
         }
@@ -266,8 +276,9 @@ export const createDocument = async (req: express.Request, res: express.Response
         const content: (string |undefined)[] = [`\\documentclass{${savedDocument.documentClass}}`, , 
           "\\begin{document}",'New document', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
-        const path: string = "documentBase" 
-        fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
+        
+        await saveFileWithContent(savedDocument.path, savedDocument.id, 'tex', content.join("\n"))
+        //fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
 
         //compileTex(path, fileName);
         //clearCompilationFiles(path, fileName);
@@ -322,7 +333,7 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
     
-    let document: (string | undefined)[] = await loadTexFile(id);
+    let document: (string | undefined)[] = await loadTexFile('documentBase/',id);
     document.splice(idx,0, line);
     //console.log(content);
 
@@ -336,102 +347,6 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
 }
 
 
-
-
-
-// export const updateLine = async (req: express.Request, res: express.Response)=>{
-//   // try{
-//   //   const {id} = req.params;
-//   //   const {lineNr, line} = req.body;
-//   //   let content: (string | undefined)[] = await loadTexFile(id);
-//   //   content.splice(lineNr-1,1, line);
-//   //   console.log(content);
-
-//   //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
-
-//   //   res.sendStatus(200);
-//   // }catch(error){
-//   //   console.log(error);
-//   //   res.sendStatus(500);
-//   // }
-
-//   try{
-//     const {id} = req.params;
-//     const {idx, block} = req.body as {idx: number, block: blockType};
-
-//     let line;
-//     switch(block.typeOfBlock){
-//       case 'textfield':
-//        line = textfieldToTex(block.blockContent as string);
-//        break;
-//       default:
-//         console.log("This type of block don't exists! ", block.typeOfBlock)
-//     }
-
-//     let document: (string | undefined)[] = await loadTexFile(id);
-//     document.splice(idx,1, line);
-//     //console.log(content);
-
-//     fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
-
-//     res.sendStatus(200);
-//   }catch(error){
-//     console.log(error);
-//     res.sendStatus(500);
-//   }
-
-// }
-
-// export const updateLines = async (req: express.Request, res: express.Response)=>{
-//   type chapterType = {
-//     head: string | null | undefined,
-//     body: string | null | undefined
-//   }
-
-//   const parseToTex = (chapter: chapterType)=>{
-//       const title = `\\section{${chapter.head}}`
-//       //console.log("Przed", chapter.body );
-//       let content = chapter.body.split('</p>');
-//       //console.log("Po split", content);
-//       content = content.map(line=> line.replace('<p>', ''));
-//       //console.log("Po map", content);
-//       const endContent = content.join(" ");
-//       //console.log("Po join", endContent);
-
-//       /*
-//       W taki sam sposób jak <p> z boldami i resztą:
-//         1. wyszukanie i podzielenie na elementy tablicy po znaku </b>
-//         2. podzelenie elemenmtów na kolejene tablie tak zamo jak w 1. tylko względem <b>
-//         3. powinna powstać tablica zabierajace podtablice o 2 elementach gdzioe ten drugi element ma być boldem - usunąć z niego znaczniki i opatrzyć w skłądnie Tex
-//         4. złączayć wszytko w jeden string do zmiennej content (falt i join chyba trzeba bedzie)
-//       */
-
-//       return [title, endContent];
-//   }
-
-//   try{
-//     const {id} = req.params;
-//     const {sections} = req.body;
-//     console.log("section", sections);
-//     const toTex = sections.map(parseToTex).flat();
-//     console.log("toTex", toTex);
-//     let content: (string | undefined)[] = await loadTexFile(id);
-//     content.splice(4,0, toTex);
-//     content=content.flat();
-//     console.log("content", content);
-
-//     fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
-
-//     await compileTex('documentBase', id+'.tex')
-//     //clearCompilationFiles('documentBase', id+'.tex')
-
-//     res.sendStatus(200);
-//   }catch(error){
-//     console.log(error);
-//     res.sendStatus(500);
-//   }
-// }
-
 export const updateWholeDocumentContent  = async (req: express.Request, res: express.Response)=>{
 
 //!!!!!!!!!!!
@@ -441,40 +356,41 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 // //z jakiejś duby wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
 
   try{
-  const {id} = req.params;
-  const blocks = req.body as blockType[]; 
-
-  const userId=await verifySession(req.cookies.auth)
-
-  console.log(blocks);
-  
-
+    if(req.cookies.auth===null || req.cookies.auth===undefined){
+      res.sendStatus(401);
+    }
+    const {id} = req.params;
+    const userId = await verifySession(req.cookies.auth);
+    const documentInstantion = await documentModel.findById(id);
+    if( userId!==null && documentInstantion.userId===userId){
+      const blocks = req.body as blockType[]; 
+      console.log(blocks);
 
    // let titlePageData = {title: '', author: '', date: ''}
-  let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
-    switch(block.typeOfBlock){
-      case 'documentclass':{
-        return documentclassToTex(block.blockContent as string);
-     } case 'titlePage':{
+      let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
+      switch(block.typeOfBlock){
+        case 'documentclass':{
+          return documentclassToTex(block.blockContent as string);
+      } case 'titlePage':{
         if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
           // titlePageData=block.blockContent;
           //   return '\\maketitle'
           return titlePageToTex(block.blockContent)
         }
         return ''
-    }case 'tableOfContents':{
+      }case 'tableOfContents':{
         return '\\tableofcontents'
        } case 'pageBreak':{
         return '\\newpage'
-    }case 'textfield':{
+      }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
        } case 'section':{
        return sectionToTex(block.blockContent as string);
-    }case 'subsection':{
+      }case 'subsection':{
        return subsectionToTex(block.blockContent as string);
         }  case 'subsubsection':{
         return subsubsectionToTex(block.blockContent as string);
-    }case 'equation':{
+      }case 'equation':{
         return equationToTex(block.blockContent as string)
       }case 'table':{
         if(Array.isArray(block.blockContent)){
@@ -484,7 +400,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       case 'figure':{
         const figure= await figureModel.findById(block.blockContent)
         if(figure!==null && figure.userId===userId){
-          const path=['..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
+          const path=['..', '..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
            return figureToTex(path)
         }else{
           // tu zwaracać texa z pustkym linkiem jeśli kompilacji takie coś nie będzie wywalało
@@ -511,7 +427,8 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       );
      document.push('\\end{document}')
     console.log(document);
-    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
+    await saveFileWithContent(documentInstantion.path, id, 'tex',document.join("\n"))
+    //fileHander.writeFileSync(documentInstantion.path+`/${id}.tex`, document.join("\n"));
 
     const updatedDocument = await documentModel.findByIdAndUpdate(id, {lastUpdate: new Date(Date.now())})
 
@@ -521,6 +438,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
     await extendSession(req.cookies.auth,res )
     res.sendStatus(200);
+    }else{
+        res.sendStatus(403);
+      }
   }catch(error){
     console.log(error);
     res.sendStatus(500);
@@ -560,12 +480,14 @@ export const deleteDocument  = async (req: express.Request, res: express.Respons
     const {id}=req.params
     const userId = await verifySession(req.cookies.auth)
    
-    const document = await documentModel.findById(id)
+    const documentInstantion = await documentModel.findById(id)
    // console.log('userId',id)
-    if(req.cookies.auth && userId && userId===document.userId){
+    if(req.cookies.auth && userId && userId===documentInstantion.userId){
       await extendSession(req.cookies.auth,res)
 
-      await deleteDocumentFiles('documentBase',id)
+      //await deleteDocumentFiles(documentInstantion.path,id)
+      await deleteFile(documentInstantion.path, documentInstantion._id as unknown as string, 'pdf')
+      await deleteFile(documentInstantion.path, documentInstantion._id as unknown as string, 'tex')
       const updatedDocument = await documentModel.findByIdAndDelete(id)
 
       res.sendStatus(200)

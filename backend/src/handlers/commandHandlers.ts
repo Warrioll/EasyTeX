@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { spawn } from 'child_process';
+import * as fileHander from "fs";
 
 const execPromisify = promisify(exec)
 
@@ -10,10 +11,6 @@ const execute = async (command: string):Promise<void> =>{
 
     
     const {stdout, stderr} = await execPromisify(command);
-
-    if (stderr) {
-      console.log(`Error executing command: ${stderr}`);
-    }
     if (stderr) {
       console.log(`stderr: ${stderr}`);
     }
@@ -40,6 +37,27 @@ export const deleteDocumentFiles = async (path:string, fileId: string) : Promise
   await execute(`rm ${[path, fileId.concat('.tex')].join("/")}`)
 }
 
-export const deleteFigureFile = async (path:string, fileId: string, fileType: string) : Promise<void>=>{
-  await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
-}
+// export const deleteFigureFile = async (path:string, fileName: string, fileType: string) : Promise<void>=>{
+//   //await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
+//   await fileHander.rm([path, [fileName, fileType].join('.')].join("/"),{  force: true }, (error)=>{
+//     if(error){
+//       console.log('delete file  error: ', error);
+//     }})
+// }
+
+// export const deleteDirectory = async (path:string) : Promise<void>=>{
+//   //await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
+//   await fileHander.rm(path,{ recursive:true, force: true }, (error)=>{
+//     if(error){
+//       console.log('delete directory error: ', error);
+//     }})
+// }
+
+// export const createDirectory = async (path:string) : Promise<void>=>{
+//   await fileHander.mkdir(path, {recursive: true}, (error)=>{
+//     if(error){
+//       console.log('Create directory error: ', error);
+//     }
+//   })
+// }
+

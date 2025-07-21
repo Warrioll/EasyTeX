@@ -37,8 +37,9 @@ export default function DeleteModal({
   const [deleteErrorInfo, setDeleteErrorInfo] = useState<string | null>(null);
   const [disableDeleteButton, setDisableDeleteButton] = useState<boolean>(false);
 
-  const deleteThing = async () => {
+  const deleteThing = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       setDisableDeleteButton(true);
 
       setDeleteErrorInfo(null);
@@ -102,17 +103,19 @@ export default function DeleteModal({
           )}
         </Box>
         <SimpleGrid cols={2} spacing="xl" mt="md">
-          <Button
-            leftSection={!disableDeleteButton && <FaRegTrashAlt />}
-            color="red"
-            onClick={deleteThing}
-            disabled={disableDeleteButton}
-          >
-            {disableDeleteButton ? <Loader color="red" size={20} /> : <> Delete</>}
-          </Button>
-          <Button color="cyan" variant="outline" onClick={deleteModalHandlers[1].close}>
-            Cancel
-          </Button>
+          <form>
+            <Button
+              leftSection={!disableDeleteButton && <FaRegTrashAlt />}
+              color="red"
+              onClick={deleteThing}
+              disabled={disableDeleteButton}
+            >
+              {disableDeleteButton ? <Loader color="red" size={20} /> : <> Delete</>}
+            </Button>
+            <Button color="cyan" variant="outline" onClick={deleteModalHandlers[1].close}>
+              Cancel
+            </Button>
+          </form>
         </SimpleGrid>
       </SimpleGrid>
     </Modal>

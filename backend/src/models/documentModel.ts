@@ -5,7 +5,7 @@ const documentSchema= new mongoose.Schema({
     userId: {type: String, required: true},
     //fileName: {type: String, required: true},
     documentClass: {type: String, required: true},
-    //path:{type: String, required: true},
+    path:{type: String, required: true},
     
     //zmienic na true wymaganie
     creationDate: {type: Date, required:true},

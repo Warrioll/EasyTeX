@@ -38,17 +38,18 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const checkLogged = async () => {
-      const userId = await checkIfLoggedIn();
       //console.log(userId);
       try {
         if (activeTab[0] !== 'search') {
           const response = await axios.get(
-            `http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
+            //`http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
+            `http://localhost:8100/document/user/${activeTab[0]}`,
             {
               withCredentials: true,
             }
           );
           //console.log('data ', response.data);
+          console.log('other resp:', response.data);
           if (response.data === null || response.data === undefined) {
             setDocumentData(null);
           } else {
@@ -56,12 +57,13 @@ export default function DashboardPage() {
           }
         } else {
           const response = await axios.get(
-            `http://localhost:8100/document/user/${userId}/${searchType[0]}`,
+            //`http://localhost:8100/document/user/${userId}/${searchType[0]}`,
+            `http://localhost:8100/document/user/${searchType[0]}`,
             {
               withCredentials: true,
             }
           );
-
+          console.log('search resp:', response.data);
           if (response.data === null || response.data === undefined) {
             setDocumentData(null);
           } else {

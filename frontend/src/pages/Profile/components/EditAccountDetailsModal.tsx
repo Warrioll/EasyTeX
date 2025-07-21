@@ -49,10 +49,21 @@ export default function EditAccountDetailsModal({
     console.log(response);
   };
 
-  const saveChanges = async () => {
+  const closeModal = () => {
+    modalHandlers[1].close();
+    setEmailErrorInfo(null);
+    setUsernameErrorInfo(null);
+    errorDialogHandlers.close();
+  };
+
+  const saveChanges = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       setDisableRenameButton(true);
+      setEmailErrorInfo(null);
+      setUsernameErrorInfo(null);
       setIsSthWrong(false);
+      errorDialogHandlers.close();
       await editAccountDetails();
       //setUsernameErrorInfo(null);
       //setEmailErrorInfo(null);
@@ -62,12 +73,19 @@ export default function EditAccountDetailsModal({
       location.reload();
     } catch (e) {
       console.log(`Edit account details error:`, e);
-      if (e.status === 400) {
+      if (e.status !== 400) {
         //setRenameErrorInfo('Invalid username or email');
-        errorDialogHandlers.open();
-      } else {
+        //   errorDialogHandlers.open();
+        // } else {
         //setRenameErrorInfo('Something went wrong');
         setIsSthWrong(true);
+      }
+      if (!emailRegex.test(email as string)) {
+        setEmailErrorInfo('Invalid email');
+      }
+      if (e.status === 400 && !usernameRegex.test(username as string)) {
+        errorDialogHandlers.open();
+        setUsernameErrorInfo('Invalid username');
       }
 
       setDisableRenameButton(false);
@@ -77,15 +95,16 @@ export default function EditAccountDetailsModal({
   useEffect(() => {
     setEmail(userData?.user.email);
     setUsername(userData?.user.userName);
-  }, [userData]);
+  }, [userData, modalHandlers[0]]);
 
   return (
     <>
       <Modal
         opened={modalHandlers[0]}
-        onClose={modalHandlers[1].close}
+        onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
-        yOffset="3.5%"
+        centered
+        //yOffset="13%"
         size="50vw"
         title={
           <Text c="var(--mantine-color-cyan-8)">
@@ -93,62 +112,56 @@ export default function EditAccountDetailsModal({
           </Text>
         }
       >
-        <TextInput
-          h="5rem"
-          label="Username"
-          placeholder="Username"
-          value={username}
-          error={usernameErrorInfo}
-          onChange={(event) => {
-            setUsername(event.currentTarget.value);
-            if (usernameRegex.test(event.currentTarget.value)) {
+        <form>
+          <TextInput
+            h="5rem"
+            label="Username"
+            placeholder="Username"
+            value={username}
+            error={usernameErrorInfo}
+            onChange={(event) => {
               setUsernameErrorInfo(null);
-            } else {
-              setUsernameErrorInfo('Invalid username');
-            }
-          }}
-          variant="filled"
-          m="lg"
-        />
-        <TextInput
-          h="5rem"
-          variant="filled"
-          label="Email"
-          placeholder="Email"
-          value={email}
-          error={emailErrorInfo}
-          onChange={(event) => {
-            setEmail(event.currentTarget.value);
-            if (emailRegex.test(event.currentTarget.value)) {
+              setUsername(event.currentTarget.value);
+            }}
+            variant="filled"
+            m="lg"
+          />
+          <TextInput
+            h="5rem"
+            variant="filled"
+            label="Email"
+            placeholder="Email"
+            value={email}
+            error={emailErrorInfo}
+            onChange={(event) => {
               setEmailErrorInfo(null);
-            } else {
-              setEmailErrorInfo('Invalid email');
-            }
-          }}
-          m="lg"
-        />
-        <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-          {isSthWrong ? (
-            <Flex justify="center" align="center">
-              <Text ta="center" size="md" c="var(--mantine-color-error)">
-                <RiErrorWarningFill />
-              </Text>
-              <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                Something went wrong
-              </Text>
-            </Flex>
-          ) : (
-            <></>
-          )}
-        </Box>
-        <Flex justify="center" m="lg" mt="xl" gap="xl">
-          <Button w="15vw" onClick={saveChanges} disabled={disableRenameButton}>
-            {disableRenameButton ? <Loader size={20} /> : <> Save changes</>}
-          </Button>
-          <Button w="15vw" variant="outline" onClick={modalHandlers[1].close}>
-            Cancel
-          </Button>
-        </Flex>
+              setEmail(event.currentTarget.value);
+            }}
+            m="lg"
+          />
+          <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
+            {isSthWrong ? (
+              <Flex justify="center" align="center">
+                <Text ta="center" size="md" c="var(--mantine-color-error)">
+                  <RiErrorWarningFill />
+                </Text>
+                <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
+                  Something went wrong
+                </Text>
+              </Flex>
+            ) : (
+              <></>
+            )}
+          </Box>
+          <Flex justify="center" m="lg" mt="xl" gap="xl">
+            <Button w="15vw" type="submit" onClick={saveChanges} disabled={disableRenameButton}>
+              {disableRenameButton ? <Loader size={20} /> : <> Save changes</>}
+            </Button>
+            <Button w="15vw" variant="outline" onClick={closeModal}>
+              Cancel
+            </Button>
+          </Flex>
+        </form>
       </Modal>
       <InfoErrorDialog
         title="Edit account details"

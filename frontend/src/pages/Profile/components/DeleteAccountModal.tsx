@@ -61,8 +61,9 @@ export default function DeleteAccountModal({
     return response.status;
   };
 
-  const handlePasswordVerification = async () => {
+  const handlePasswordVerification = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       setDisableVerifyPasswdButton(true);
       setCurrentPasswordError('');
       const status = await verifyPassword();
@@ -87,25 +88,21 @@ export default function DeleteAccountModal({
   };
 
   const deleteAccount = async (): Promise<number> => {
-    const response = await axios.put(
-      `http://localhost:8100/user/changePassword`,
-      { password: newPassword.password },
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.delete(`http://localhost:8100/user/deleteAccount`, {
+      withCredentials: true,
+    });
     return response.status;
     //console.log(response);
   };
 
-  const handlePasswordChange = async () => {
+  const handleDeleteAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       setDisableVerifyPasswdButton(true);
       if (deletionPhrase === 'delete my account') {
         const status = await deleteAccount();
         if (status === 200) {
-          //TODOvprzenieś na odpowienią stronę
-          //setModalContent(2);
+          window.location.href = '/login';
         } else {
           throw new Error('Status not 200!');
         }
@@ -136,6 +133,7 @@ export default function DeleteAccountModal({
             <b> Delete account</b>
           </Text>
         }
+        centered
       >
         {modalContent === 0 ? (
           <Box h="22rem">
@@ -156,6 +154,7 @@ export default function DeleteAccountModal({
                     }
                     value={currentPassword}
                     onChange={(event) => {
+                      setCurrentPasswordError('');
                       setCurrentPassword(event.currentTarget.value);
                     }}
                   />
@@ -199,69 +198,68 @@ export default function DeleteAccountModal({
         ) : (
           <>
             <Box h="22rem">
-              <form>
-                <Box h="15rem" m="xl" mb="xs">
-                  <Stack justify="center" align="center" h="100%" ta="center" m="md" gap="xs">
-                    <Title order={3}>Are you sure you want to delete your account?</Title>
-                    <Text c="var(--mantine-color-gray-6)">
-                      All data and files connected with this account will be deleted.
+              <Box h="15rem" m="xl" mb="xs">
+                <Stack justify="center" align="center" h="100%" ta="center" m="md" gap="xs">
+                  <Title order={3}>Are you sure you want to delete your account?</Title>
+                  <Text c="var(--mantine-color-gray-6)">
+                    All data and files connected with this account will be deleted.
+                  </Text>
+                  <Text c="var(--mantine-color-error)" w="800">
+                    <b>This action is irreversable!</b>
+                  </Text>
+                  <Text c="var(--mantine-color-gray-6)" mt="xl" mb="md">
+                    To proceed type in below "delete my account" and click "Yes, delete my account"
+                    button.
+                  </Text>
+                  <TextInput
+                    placeholder="Enter phrase to proceed"
+                    variant="filled"
+                    w="100%"
+                    error={
+                      currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
+                    }
+                    value={deletionPhrase}
+                    onChange={(event) => {
+                      setCurrentPasswordError('');
+                      setDeletionPhrase(event.currentTarget.value);
+                    }}
+                  />
+                </Stack>
+              </Box>
+              <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
+                {currentPasswordError === 'Something went wrong' ? (
+                  <Flex justify="center" align="center">
+                    <Text ta="center" size="md" c="var(--mantine-color-error)">
+                      <RiErrorWarningFill />
                     </Text>
-                    <Text c="var(--mantine-color-error)" w="800">
-                      <b>This action is irreversable!</b>
+                    <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
+                      Something went wrong
                     </Text>
-                    <Text c="var(--mantine-color-gray-6)" mt="xl" mb="md">
-                      To proceed type in below "delete my account" and click "Yes, delete my
-                      account" button.
-                    </Text>
-                    <TextInput
-                      placeholder="Enter phrase to proceed"
-                      variant="filled"
-                      w="100%"
-                      error={
-                        currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                      }
-                      value={deletionPhrase}
-                      onChange={(event) => {
-                        setDeletionPhrase(event.currentTarget.value);
-                      }}
-                    />
-                  </Stack>
-                </Box>
-                <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-                  {currentPasswordError === 'Something went wrong' ? (
-                    <Flex justify="center" align="center">
-                      <Text ta="center" size="md" c="var(--mantine-color-error)">
-                        <RiErrorWarningFill />
-                      </Text>
-                      <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                        Something went wrong
-                      </Text>
-                    </Flex>
-                  ) : (
-                    <></>
-                  )}
-                </Box>
-                <Flex justify="center" m="lg" mt="xl" gap="xl">
-                  <Button
-                    w="15vw"
-                    onClick={handlePasswordChange}
-                    disabled={disableVerifyPasswdButton}
-                    type="submit"
-                    color="var(--mantine-color-error)"
-                    leftSection={!disableVerifyPasswdButton && <FaRegTrashAlt />}
-                  >
-                    {disableVerifyPasswdButton ? <Loader size={20} /> : <>Yes, delete my account</>}
-                  </Button>
-                  <Button
-                    w="15vw"
-                    variant="outline"
-                    color="var(--mantine-color-error)"
-                    onClick={closeModal}
-                  >
-                    Cancel
-                  </Button>
-                </Flex>
-              </form>
+                  </Flex>
+                ) : (
+                  <></>
+                )}
+              </Box>
+              <Flex justify="center" m="lg" mt="xl" gap="xl">
+                <Button
+                  w="15vw"
+                  onClick={handleDeleteAccount}
+                  disabled={disableVerifyPasswdButton}
+                  //type="submit"
+                  color="var(--mantine-color-error)"
+                  leftSection={!disableVerifyPasswdButton && <FaRegTrashAlt />}
+                >
+                  {disableVerifyPasswdButton ? <Loader size={20} /> : <>Yes, delete my account</>}
+                </Button>
+                <Button
+                  w="15vw"
+                  variant="outline"
+                  color="var(--mantine-color-error)"
+                  onClick={closeModal}
+                >
+                  Cancel
+                </Button>
+              </Flex>
             </Box>
           </>
         )}

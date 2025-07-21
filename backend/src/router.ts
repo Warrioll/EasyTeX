@@ -7,7 +7,7 @@ deleteDocument,
 getTexFile} from './controllers/documentController';
 import { login, verifySessionEndPoint, logout, verifyPassword } from './auth/auth';
 import { createFigure, getUserFigureById,getUserFigureFileById, getUserFigures, renameFigure, deleteFigure } from './controllers/figureController';
-import { getAllUsers, getUserByEmail, createUser, getUserData, editUserDetails, changePasswordDetails// getUserById,
+import { getAllUsers, getUserByEmail, createUser, getUserData, editUserDetails, changePasswordDetails, deleteAccount// getUserById,
  } from './controllers/userController';
 //import documents from './documentRouter'
 
@@ -20,7 +20,7 @@ export default (): express.Router =>{
 
     try{
         router.get('/document',getDocuments);
-        router.get('/document/user/:userId/:documentClass',getUserDocuments);
+        router.get('/document/user/:documentClass',getUserDocuments);
         router.get('/document/:id',getDocumentById);
         router.get('/document/getPdf/:id', getPdf)
         router.get('/document/getTex/:id', getTexFile)
@@ -47,6 +47,7 @@ export default (): express.Router =>{
         router.post('/user/createNewAccount', createUser)
         router.put('/user/editUserDetails',editUserDetails)
         router.put('/user/changePassword', changePasswordDetails)
+        router.delete('/user/deleteAccount', deleteAccount)
 
         router.post('/auth/login',login);
         router.get('/auth/verifySession',verifySessionEndPoint);
