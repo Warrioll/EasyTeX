@@ -15,6 +15,8 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 
 type deleteAccountModalPropsType = {
   userData: any;
@@ -32,9 +34,12 @@ export default function DeleteAccountModal({
   userData,
   modalHandlers,
 }: deleteAccountModalPropsType) {
+  const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   const [disableVerifyPasswdButton, setDisableVerifyPasswdButton] = useState<boolean>(false);
   const [currentPassword, setCurrentPassword] = useState<string>('');
-  const [currentPasswordError, setCurrentPasswordError] = useState<string>('');
+  //const [currentPasswordError, setCurrentPasswordError] = useState<string>('');
   //const [isPasswordVerfied, setIsPasswordVerfied] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<0 | 1>(0);
   const [deletionPhrase, setDeletionPhrase] = useState<string>('');
@@ -44,9 +49,9 @@ export default function DeleteAccountModal({
     setModalContent(0);
     //setIsPasswordVerfied(false);
     setCurrentPassword('');
-    setCurrentPasswordError('');
+    //setCurrentPasswordError('');
     setDeletionPhrase('');
-    setCurrentPasswordError('');
+    //setCurrentPasswordError('');
   };
 
   const verifyPassword = async (): Promise<number> => {
@@ -65,11 +70,13 @@ export default function DeleteAccountModal({
     try {
       e.preventDefault();
       setDisableVerifyPasswdButton(true);
-      setCurrentPasswordError('');
+      //setCurrentPasswordError('');
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       const status = await verifyPassword();
       if (status === 200) {
         setModalContent(1);
-        setCurrentPasswordError('');
+        //setCurrentPasswordError('');
       } else {
         throw new Error('Status not 200!');
       }
@@ -78,9 +85,13 @@ export default function DeleteAccountModal({
     } catch (error) {
       console.log(error.status);
       if (error.status === 403) {
-        setCurrentPasswordError('Invalid password!');
+        //setCurrentPasswordError('Invalid password!');
+        setErrorMessage('Invalid password!');
+        await errorMessageHandlers.open();
       } else {
-        setCurrentPasswordError('Something went wrong');
+        //setCurrentPasswordError('Something went wrong');
+        setErrorMessage('Something went wrong!');
+        await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
       console.log('verify password error: ', error);
@@ -99,6 +110,8 @@ export default function DeleteAccountModal({
     try {
       e.preventDefault();
       setDisableVerifyPasswdButton(true);
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       if (deletionPhrase === 'delete my account') {
         const status = await deleteAccount();
         if (status === 200) {
@@ -107,14 +120,17 @@ export default function DeleteAccountModal({
           throw new Error('Status not 200!');
         }
       } else {
-        setCurrentPasswordError('The phrase does not match!');
+        setErrorMessage('The phrase does not match!');
+        await errorMessageHandlers.open();
+        //setCurrentPasswordError('The phrase does not match!');
       }
 
       setDisableVerifyPasswdButton(false);
     } catch (error) {
       console.log(error.status);
-      setCurrentPasswordError('Something went wrong');
-
+      //setCurrentPasswordError('Something went wrong');
+      setErrorMessage('Something went wrong!');
+      await errorMessageHandlers.open();
       setDisableVerifyPasswdButton(false);
       console.log('verify password error: ', error);
     }
@@ -149,31 +165,15 @@ export default function DeleteAccountModal({
                     variant="filled"
                     label="Password"
                     placeholder="Password"
-                    error={
-                      currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                    }
                     value={currentPassword}
                     onChange={(event) => {
-                      setCurrentPasswordError('');
+                      //setCurrentPasswordError('');
                       setCurrentPassword(event.currentTarget.value);
                     }}
                   />
                 </Stack>
               </Center>
-              <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-                {currentPasswordError === 'Something went wrong' ? (
-                  <Flex justify="center" align="center">
-                    <Text ta="center" size="md" c="var(--mantine-color-error)">
-                      <RiErrorWarningFill />
-                    </Text>
-                    <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                      Something went wrong
-                    </Text>
-                  </Flex>
-                ) : (
-                  <></>
-                )}
-              </Box>
+              <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
                   type="submit"
@@ -215,31 +215,18 @@ export default function DeleteAccountModal({
                     placeholder="Enter phrase to proceed"
                     variant="filled"
                     w="100%"
-                    error={
-                      currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                    }
+                    // error={
+                    //   currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
+                    // }
                     value={deletionPhrase}
                     onChange={(event) => {
-                      setCurrentPasswordError('');
+                      //setCurrentPasswordError('');
                       setDeletionPhrase(event.currentTarget.value);
                     }}
                   />
                 </Stack>
               </Box>
-              <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-                {currentPasswordError === 'Something went wrong' ? (
-                  <Flex justify="center" align="center">
-                    <Text ta="center" size="md" c="var(--mantine-color-error)">
-                      <RiErrorWarningFill />
-                    </Text>
-                    <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                      Something went wrong
-                    </Text>
-                  </Flex>
-                ) : (
-                  <></>
-                )}
-              </Box>
+              <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
                   w="15vw"

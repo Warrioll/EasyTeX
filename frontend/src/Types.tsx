@@ -10,6 +10,7 @@ export type typeOfBlockType =
   | 'equation'
   | 'table'
   | 'figure'
+  | 'bibliography'
   | null
   | undefined;
 

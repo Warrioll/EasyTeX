@@ -60,39 +60,19 @@ export const login = async (req: express.Request, res: express.Response)=>{
 
 export const verifySessionEndPoint = async (req: express.Request, res: express.Response)=>{        
     try{
-        //const {sessionId} = req.params;
-       // console.log("sesionId: ", sessionId)
-    //     const session = await sessionModel.findById(sessionId)
-    //   //  console.log("session: ", session) 
-    //     if(session===null){
-    //         res.sendStatus(404) 
-    //     }else{
-    //         const user = await userModel.findById(session.userId)
-    //         if(user===null){
-    //             res.sendStatus(404)
-    //         }else{
-    //            // console.log("userId: ", session.userId) 
-    //             res.status(200).json({userId: session.userId})
-    //         }
-           
-    //     }
-        
-       const userId:string = await verifySession(req.cookies.auth);
-       if(userId===null || userId=== undefined)
-       {
-        res.sendStatus(401)
-       }else{
+        const userId:string = await verifySession(req.cookies.auth, res);
         res.status(200).json({userId: userId})
-       }
 
     }catch(error){
         console.log("verifySession error: ", error)
-        res.sendStatus(400);
+        if(!res.headersSent){
+            res.sendStatus(500);
+        }
     }
 }
 
 //jeśli weryfikacja przebiegła pomyślnie zwraca id użytkownika, jeśli nie to zwraca null
-export const verifySession = async (sessionId:string): Promise<string>=>{
+export const verifySessionPlain = async (sessionId:string): Promise<string>=>{
     try{
        // console.log("sesionId: ", sessionId)
         if(sessionId===null || sessionId===undefined)
@@ -117,6 +97,57 @@ export const verifySession = async (sessionId:string): Promise<string>=>{
     }catch(error){
         console.log("verifySession error: ", error)
        return null
+    }
+}
+
+export const verifySession = async (sessionId:string, res: express.Response): Promise<string | null>=>{
+    try{
+        if(sessionId===null || sessionId===undefined){
+            res.sendStatus(401)
+        }else{
+            const session = await sessionModel.findById(sessionId)
+            if(session===null || session===undefined){
+                res.sendStatus(401)
+            }else{
+                const user = await userModel.findById(session.userId)
+                if(user===null || user===undefined){
+                    res.sendStatus(401)
+                }else{
+                    return session.userId
+                }
+            }
+        }
+        return null        
+    }catch(error){
+        res.sendStatus(401)
+        return null
+    }
+}
+
+export const verifySessionWithCallback = async (sessionId:string, res: express.Response, callback: (userId:string)=>Promise<void>): Promise<void>=>{
+    try{
+        if(sessionId===null || sessionId===undefined){
+            res.sendStatus(401)
+        }else{
+            const session = await sessionModel.findById(sessionId)
+            if(session===null || session===undefined){
+                res.sendStatus(401)
+            }else{
+                const user = await userModel.findById(session.userId)
+                if(user===null || user===undefined){
+                    res.sendStatus(401)
+                }else{
+                    await callback(session.userId)
+                }
+            }
+        }
+     
+    }catch(error){
+        console.log('Session verification error: ', error)
+        if(!res.headersSent){
+            res.sendStatus(500)
+        }
+
     }
 }
 
@@ -172,7 +203,7 @@ export const verifyPassword = async (req: express.Request, res: express.Response
       if(req.cookies.auth===null || req.cookies.auth===undefined){
          res.sendStatus(401);
       }
-      const userId = await verifySession(req.cookies.auth);
+      const userId = await verifySession(req.cookies.auth, res);
       const user = await userModel.findById(userId);
       
       if(userId!==null && userId!==undefined && user.password===req.body.password){

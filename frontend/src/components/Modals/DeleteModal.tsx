@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Flex,
+  FocusTrap,
   Group,
   Loader,
   LoadingOverlay,
@@ -13,6 +14,7 @@ import {
   Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '../ErrorInfos/ErrorMessage';
 
 type deleteModalPropsType = {
   deleteModalHandlers: readonly [
@@ -34,32 +36,50 @@ export default function DeleteModal({
   children,
   deleteFunction,
 }: deleteModalPropsType) {
-  const [deleteErrorInfo, setDeleteErrorInfo] = useState<string | null>(null);
+  //const [deleteErrorInfo, setDeleteErrorInfo] = useState<string | null>(null);
   const [disableDeleteButton, setDisableDeleteButton] = useState<boolean>(false);
+  const [active, { toggle }] = useDisclosure(false);
 
-  const deleteThing = async (e: React.FormEvent<HTMLFormElement>) => {
+  const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const closeModal = () => {
+    deleteModalHandlers[1].close();
+    errorMessageHandlers.close();
+    setErrorMessage('');
+  };
+
+  const deleteThing = async () => {
     try {
-      e.preventDefault();
       setDisableDeleteButton(true);
 
-      setDeleteErrorInfo(null);
+      //setDeleteErrorInfo(null);
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       await deleteFunction();
       deleteModalHandlers[1].close();
       setDisableDeleteButton(false);
     } catch (e) {
       console.log(`Delete ${thingToDelete} error:`, e);
-      setDeleteErrorInfo('Something went wrong');
+      setErrorMessage('Something went wrong!');
+      await errorMessageHandlers.open();
 
       setDisableDeleteButton(false);
     }
   };
 
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('deleteButton').click();
+    }
+  });
+
   return (
     <Modal
       opened={deleteModalHandlers[0]}
-      onClose={deleteModalHandlers[1].close}
+      onClose={closeModal}
       transitionProps={{ transition: 'fade-up' }}
-      yOffset="12%"
+      centered
       size="lg"
       title={
         <Text c="var(--mantine-color-cyan-8)">
@@ -88,35 +108,24 @@ export default function DeleteModal({
             {children}
           </SimpleGrid>
         </Group>
-        <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-          {deleteErrorInfo === null ? (
-            <></>
-          ) : (
-            <Flex justify="center" align="center">
-              <Text ta="center" size="md" c="var(--mantine-color-error)">
-                <RiErrorWarningFill />
-              </Text>
-              <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                {deleteErrorInfo}
-              </Text>
-            </Flex>
-          )}
-        </Box>
-        <SimpleGrid cols={2} spacing="xl" mt="md">
-          <form>
+        <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
+        <FocusTrap active={active}>
+          <SimpleGrid cols={2} spacing="xl" mt="md">
             <Button
               leftSection={!disableDeleteButton && <FaRegTrashAlt />}
               color="red"
+              type="submit"
               onClick={deleteThing}
               disabled={disableDeleteButton}
+              id="deleteButton"
             >
               {disableDeleteButton ? <Loader color="red" size={20} /> : <> Delete</>}
             </Button>
-            <Button color="cyan" variant="outline" onClick={deleteModalHandlers[1].close}>
+            <Button color="cyan" variant="outline" onClick={closeModal}>
               Cancel
             </Button>
-          </form>
-        </SimpleGrid>
+          </SimpleGrid>
+        </FocusTrap>
       </SimpleGrid>
     </Modal>
   );

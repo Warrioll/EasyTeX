@@ -15,6 +15,7 @@ import {
   Dialog,
   Flex,
   Group,
+  Loader,
   Paper,
   PasswordInput,
   Stack,
@@ -26,10 +27,12 @@ import {
 import { isEmail, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn, checkIfNotLoggedIn } from '@/ApiHandlers/AuthHandler';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import styles from './loginPage.module.css';
 
 export default function LoginPage() {
   const [opened, { toggle, open, close }] = useDisclosure(false);
+  const [disableLogInButton, setDisableLogInButton] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState('Invalid password or email!');
   const navigate = useNavigate();
   const form = useForm({
@@ -46,10 +49,14 @@ export default function LoginPage() {
   const login = async (loginData) => {
     console.log('login Data: ', loginData);
     try {
+      close();
+      setDisableLogInButton(true);
       //console.log('data to - log in:', loginData.email);
+
       const response = await axios.post('http://localhost:8100/auth/login', loginData, {
         withCredentials: true,
       });
+      setDisableLogInButton(false);
       navigate('/dashboard');
     } catch (e) {
       if (e.status === 404 || e.status === 403) {
@@ -62,9 +69,9 @@ export default function LoginPage() {
 
       //close()
       //open();
-      setTimeout(() => {
-        open();
-      }, 150);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      open();
+      setDisableLogInButton(false);
     }
   };
 
@@ -122,30 +129,16 @@ export default function LoginPage() {
                     {...form.getInputProps('password')}
                   />
                 </Box>
-                <Box h={30}>
-                  <Transition
-                    mounted={opened}
-                    transition="fade-up"
-                    duration={200}
-                    timingFunction="ease"
-                    keepMounted
-                  >
-                    {(styles) => (
-                      <Flex justify="center" align="center" style={styles}>
-                        {' '}
-                        <Text ta="center" size="md" c="var(--mantine-color-error)">
-                          <RiErrorWarningFill />
-                        </Text>
-                        <Text ta="center" ml={5} mb={3} size="sm" c="var(--mantine-color-error)">
-                          {' '}
-                          {errorMsg}
-                        </Text>
-                      </Flex>
-                    )}
-                  </Transition>
-                </Box>
-                <Button type="submit" fullWidth mt="xl" onClick={close}>
-                  Sign in
+
+                <ErrorMessage errorMessage={errorMsg} errorMessageOpened={opened} />
+                <Button
+                  type="submit"
+                  fullWidth
+                  mt="xl"
+                  onClick={close}
+                  disabled={disableLogInButton}
+                >
+                  {disableLogInButton ? <Loader size={20} /> : <> Sign in</>}
                 </Button>
               </form>
             </Paper>

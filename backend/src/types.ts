@@ -18,3 +18,4 @@ export type blockType = {
   export type titlePageType = {
     title: string, author: string, date: string
   }
+

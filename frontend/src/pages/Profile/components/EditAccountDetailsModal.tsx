@@ -3,6 +3,7 @@ import axios from 'axios';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { Box, Button, Flex, Loader, Modal, Text, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import UsernameEmailRequirements from '@/components/ErrorInfos/UsernameRequirements';
 
@@ -27,13 +28,14 @@ export default function EditAccountDetailsModal({
   modalHandlers,
 }: editAccountDetailsModalPropsType) {
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
+  const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [usernameErrorInfo, setUsernameErrorInfo] = useState<string | null>(null);
   const [emailErrorInfo, setEmailErrorInfo] = useState<string | null>(null);
   const [disableRenameButton, setDisableRenameButton] = useState<boolean>(false);
   const [username, setUsername] = useState<string | undefined>('');
   const [email, setEmail] = useState<string | undefined>('');
-  const [isSthWrong, setIsSthWrong] = useState<boolean>(false);
 
   const usernameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$%^&*?\-]{3,30}(?<![_.])$/;
   const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/;
@@ -54,16 +56,21 @@ export default function EditAccountDetailsModal({
     setEmailErrorInfo(null);
     setUsernameErrorInfo(null);
     errorDialogHandlers.close();
+    errorMessageHandlers.close();
   };
 
   const saveChanges = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
+
+      //setErrorMessage('');
       setDisableRenameButton(true);
       setEmailErrorInfo(null);
       setUsernameErrorInfo(null);
-      setIsSthWrong(false);
+
       errorDialogHandlers.close();
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       await editAccountDetails();
       //setUsernameErrorInfo(null);
       //setEmailErrorInfo(null);
@@ -73,22 +80,21 @@ export default function EditAccountDetailsModal({
       location.reload();
     } catch (e) {
       console.log(`Edit account details error:`, e);
-      if (e.status !== 400) {
-        //setRenameErrorInfo('Invalid username or email');
-        //   errorDialogHandlers.open();
-        // } else {
-        //setRenameErrorInfo('Something went wrong');
-        setIsSthWrong(true);
-      }
-      if (!emailRegex.test(email as string)) {
-        setEmailErrorInfo('Invalid email');
-      }
-      if (e.status === 400 && !usernameRegex.test(username as string)) {
-        errorDialogHandlers.open();
-        setUsernameErrorInfo('Invalid username');
+      if (e.status === 400) {
+        setErrorMessage('Invalid account data!');
+        if (!emailRegex.test(email as string)) {
+          setEmailErrorInfo('Invalid email');
+        }
+        if (!usernameRegex.test(username as string)) {
+          errorDialogHandlers.open();
+          setUsernameErrorInfo('Invalid username');
+        }
+      } else {
+        setErrorMessage('Something went wrong!');
       }
 
       setDisableRenameButton(false);
+      errorMessageHandlers.open();
     }
   };
 
@@ -139,20 +145,8 @@ export default function EditAccountDetailsModal({
             }}
             m="lg"
           />
-          <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-            {isSthWrong ? (
-              <Flex justify="center" align="center">
-                <Text ta="center" size="md" c="var(--mantine-color-error)">
-                  <RiErrorWarningFill />
-                </Text>
-                <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                  Something went wrong
-                </Text>
-              </Flex>
-            ) : (
-              <></>
-            )}
-          </Box>
+
+          <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
           <Flex justify="center" m="lg" mt="xl" gap="xl">
             <Button w="15vw" type="submit" onClick={saveChanges} disabled={disableRenameButton}>
               {disableRenameButton ? <Loader size={20} /> : <> Save changes</>}

@@ -4,9 +4,18 @@ import { BiSolidCategory, BiSolidReport } from 'react-icons/bi';
 import { MdEmail } from 'react-icons/md';
 import { PiPresentationChartFill } from 'react-icons/pi';
 import { RiArticleFill, RiBook2Fill, RiSlideshow2Fill } from 'react-icons/ri';
+import {
+  TbFileSearch,
+  TbFilesOff,
+  TbMoodSad,
+  TbMoodSad2,
+  TbMoodSadDizzy,
+  TbMoodSadSquint,
+} from 'react-icons/tb';
 import { Box, Button, Container, Flex, ScrollArea, SimpleGrid, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
+import ErrorBanner from '@/components/ErrorInfos/ErrorBanner';
 import {
   documentColor,
   DocumentIcon,
@@ -208,50 +217,39 @@ export default function DashboardPage() {
                     ))}
                   </SimpleGrid>
                 ) : (
-                  <Flex
-                    direction="column"
-                    gap="xl"
-                    m="xl"
-                    w="100%"
-                    h="50vh"
-                    justify="center"
-                    align="center"
-                  >
-                    <Title c="var(--mantine-color-gray-6)">
-                      {activeTab[0] === 'search'
-                        ? 'No results found.'
-                        : `You have no ${toTabLabelConverter()}.`}
-                    </Title>
-                    <Button
-                      variant="light"
-                      color="var(--mantine-color-gray-6)"
-                      onClick={createDocumentModal.modalHandlers.open}
-                    >
-                      Click here to create new document
-                    </Button>
-                  </Flex>
+                  <Box h="60vh">
+                    <ErrorBanner
+                      title={
+                        activeTab[0] === 'search'
+                          ? 'No results found.'
+                          : `You have no ${toTabLabelConverter()}.`
+                      }
+                      Icon={() => (
+                        <Box mb="-1.5rem">
+                          <TbFilesOff />
+                        </Box>
+                      )}
+                      description=""
+                      buttonLabel="Click here to create new document"
+                      buttonFunction={createDocumentModal.modalHandlers.open}
+                    />
+                  </Box>
                 )
               ) : (
-                <Flex
-                  direction="column"
-                  gap="xl"
-                  m="xl"
-                  w="100%"
-                  h="50vh"
-                  justify="center"
-                  align="center"
-                >
-                  <Title c="var(--mantine-color-gray-6)">Sorry, something went wrong.</Title>
-                  <Button
-                    variant="light"
-                    color="var(--mantine-color-gray-6)"
-                    onClick={() => {
+                <Box h="60vh">
+                  <ErrorBanner
+                    title="Sorry, something went wrong."
+                    buttonLabel="Click here to refresh"
+                    Icon={() => (
+                      <Box mb="-1.5rem">
+                        <TbMoodSadSquint />
+                      </Box>
+                    )}
+                    buttonFunction={() => {
                       updateReleaser[1](updateReleaser[0] + 1);
                     }}
-                  >
-                    Click here to refresh
-                  </Button>
-                </Flex>
+                  />
+                </Box>
               )}
             </Flex>
           </Container>

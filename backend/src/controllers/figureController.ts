@@ -10,7 +10,7 @@ import { saveFileWithContent, deleteFile  } from '../handlers/fileHandlers';
 export const getUserFigures= async (req: express.Request, res: express.Response)=>{
  try{
      const { fileType} = req.params;
-    const userId=await verifySession(req.cookies.auth)
+    const userId=await verifySession(req.cookies.auth, res)
  
      if(req.cookies.auth && userId ){
        
@@ -50,17 +50,17 @@ export const getUserFigures= async (req: express.Request, res: express.Response)
 export const getUserFigureById= async (req: express.Request, res: express.Response)=>{
 try{
   const {id} = req.params;
-  const userId=await verifySession(req.cookies.auth)
+  const userId=await verifySession(req.cookies.auth, res)
   const figure = await figureModel.findById(id);
   
 if(req.cookies.auth && userId===figure.userId  ){
   res.status(200).json(figure)
 
-}else{
+}else{ 
    res.sendStatus(401)
 }
 }catch(e){
-  console.log('getUserFigureById error: ', e)
+  console.log('getUserFigureById error: ', e) 
    res.sendStatus(500)
 }
 }
@@ -69,7 +69,7 @@ if(req.cookies.auth && userId===figure.userId  ){
 export const getUserFigureFileById= async (req: express.Request, res: express.Response)=>{
 try{
   const {id} = req.params;
-  const userId=await verifySession(req.cookies.auth)
+  const userId=await verifySession(req.cookies.auth,res)
   const figure = await figureModel.findById(id);
   
 if(req.cookies.auth && userId===figure.userId  ){
@@ -86,7 +86,7 @@ if(req.cookies.auth && userId===figure.userId  ){
 
 export const createFigure  = async (req: express.Request, res: express.Response)=>{
 try{
-      const userId = await verifySession(req.cookies.auth)
+      const userId = await verifySession(req.cookies.auth, res)
     
   console.log('cookie auth:', req.cookies.auth)
   console.log('userId: ', userId)
@@ -134,7 +134,7 @@ try{
 export const renameFigure  = async (req: express.Request, res: express.Response)=>{
   try{
     const {id}=req.params
-    const userId = await verifySession(req.cookies.auth)
+    const userId = await verifySession(req.cookies.auth, res)
     const figureNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g
    
     const figure = await figureModel.findById(id)
@@ -161,7 +161,7 @@ export const renameFigure  = async (req: express.Request, res: express.Response)
 export const deleteFigure  = async (req: express.Request, res: express.Response)=>{
   try{
     const {id}=req.params
-    const userId = await verifySession(req.cookies.auth)
+    const userId = await verifySession(req.cookies.auth,res)
    
     const figure = await figureModel.findById(id)
    // console.log('userId',id)

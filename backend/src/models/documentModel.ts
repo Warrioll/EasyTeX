@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { InferSchemaType, HydratedDocument } from "mongoose";
+
 
 const documentSchema= new mongoose.Schema({
     name: {type: String, required: true},
@@ -14,6 +16,7 @@ const documentSchema= new mongoose.Schema({
 })
 
 export const documentModel = mongoose.model('Document', documentSchema, 'Document');
+export type documentType = HydratedDocument<InferSchemaType<typeof documentSchema>>
 
 //export const getDocuments = () => documentModel.find();
 //export const createDocument = (values: Record<string, any>) => new documentModel(values).save().then((document)=>document.toObject());

@@ -5,11 +5,12 @@ import { LuHeading1, LuHeading2 } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { TbForbid2 } from 'react-icons/tb';
-import { Badge, Button, Flex, Menu, Stack,Box } from '@mantine/core';
+import { Badge, Box, Button, Flex, Menu, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+//import { blocksList } from '../oldBlocksList';
+import { blocksList } from '@/pages/Document/blocksList';
 import { blockType } from '@/Types';
 import classes from '../blocks.module.css';
-import { blocksList } from '../blocksList';
 
 type ButtonsOfMarkedBlockPropsType = {
   idx: number;
@@ -18,10 +19,8 @@ type ButtonsOfMarkedBlockPropsType = {
   blockContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
   typeOfAddBlockFunction: 'above' | 'below';
   activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  deleteModalHandlers: any
+  deleteModalHandlers: any;
 };
-
-
 
 export default function ButtonsOfMarkedBlock({
   idx,
@@ -30,12 +29,12 @@ export default function ButtonsOfMarkedBlock({
   blockContentState,
   typeOfAddBlockFunction,
   activeTextInputState,
-  deleteModalHandlers
+  deleteModalHandlers,
 }: ButtonsOfMarkedBlockPropsType) {
   //const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const [activeBlock, setActiveBlock] = activeBlockState;
   const [sectionsContent, setSectionsContent] = blockContentState;
-  const [activeTextInput, setActiveTextInput]= activeTextInputState;
+  const [activeTextInput, setActiveTextInput] = activeTextInputState;
 
   const moveBlockUp = () => {
     let blocks = [...sectionsContent];
@@ -43,7 +42,7 @@ export default function ButtonsOfMarkedBlock({
     blocks.splice(activeBlock - 1, 0, block);
     setSectionsContent(blocks);
     setActiveBlock(activeBlock - 1);
-    setActiveTextInput('')
+    setActiveTextInput('');
   };
   const moveBlockDown = () => {
     let blocks = [...sectionsContent];
@@ -51,7 +50,7 @@ export default function ButtonsOfMarkedBlock({
     blocks.splice(activeBlock + 1, 0, block);
     setSectionsContent(blocks);
     setActiveBlock(activeBlock + 1);
-    setActiveTextInput('')
+    setActiveTextInput('');
   };
 
   const addBlockBelow = (block: blockType) => {
@@ -86,16 +85,16 @@ export default function ButtonsOfMarkedBlock({
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                {blocksList.map((block)=>{
+                {blocksList.map((block) => {
                   return (
                     <Menu.Item
-                    onClick={() => addBlockFunction(block.blockToAdd)}
-                    leftSection={block.icon}
-                  >
-                   {block.blockName}
-                  </Menu.Item>
-                  )
-                })}  
+                      onClick={() => addBlockFunction(block.blockToAdd)}
+                      leftSection={<block.Icon />}
+                    >
+                      {block.blockName}
+                    </Menu.Item>
+                  );
+                })}
                 {/* <Menu.Item
                   onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
                   leftSection={<LuHeading1 />}
@@ -165,7 +164,7 @@ export default function ButtonsOfMarkedBlock({
           </Flex>
         </Flex>
       ) : (
-        <Box h='42px'/>
+        <Box h="42px" />
       )}
     </>
   );

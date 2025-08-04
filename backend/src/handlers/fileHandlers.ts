@@ -54,3 +54,9 @@ export const createDirectory = async (path:string) : Promise<void>=>{
     }
   })
 }
+
+
+export const doesTexFileExist = (path:string, fileName: string,): boolean=>{
+  return fileHander.existsSync([path, [fileName, 'tex'].join('.')].join('/'))
+
+}

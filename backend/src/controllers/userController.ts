@@ -24,7 +24,7 @@ export const getUserData = async (req: express.Request, res: express.Response)=>
 
     try{
       //const {id} = req.params;
-      const userId = await verifySession(req.cookies.auth);
+      const userId = await verifySession(req.cookies.auth, res);
       if( userId!==null){
       const user = await userModel.findById(userId);
       const userDocuments = await documentModel.find({userId: userId})
@@ -74,7 +74,7 @@ export const editUserDetails = async (req: express.Request, res: express.Respons
          res.sendStatus(401);
       }
 
-      const userId = await verifySession(req.cookies.auth);
+      const userId = await verifySession(req.cookies.auth,res);
       if( userId!==null){
       const user = await userModel.findById(userId);
       //console.log(user)
@@ -101,7 +101,7 @@ export const changePasswordDetails = async (req: express.Request, res: express.R
          res.sendStatus(401);
       }
 
-      const userId = await verifySession(req.cookies.auth);
+      const userId = await verifySession(req.cookies.auth,res);
       //const user = await userModel.findById(userId);
        
       if( userId!==null){
@@ -130,7 +130,7 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
          res.sendStatus(401);
       }
 
-      const userId = await verifySession(req.cookies.auth);
+      const userId = await verifySession(req.cookies.auth,res);
        const user = await userModel.findById(userId);
         if( userId!==null && userId!==undefined && user!==null && user!==undefined){
          

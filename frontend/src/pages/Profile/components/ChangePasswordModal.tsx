@@ -15,6 +15,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import PasswarodRequirements from '@/components/ErrorInfos/PasswordRequirements';
 
@@ -35,6 +36,8 @@ export default function ChangePasswordModal({
   modalHandlers,
 }: changePasswordModalPropsType) {
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
+  const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [disableVerifyPasswdButton, setDisableVerifyPasswdButton] = useState<boolean>(false);
   const [currentPassword, setCurrentPassword] = useState<string>('');
@@ -62,6 +65,7 @@ export default function ChangePasswordModal({
     setNewPasswordError({ password: '', repeatedPassword: '' });
     setCurrentPasswordError('');
     errorDialogHandlers.close();
+    errorMessageHandlers.close();
     modalHandlers[1].close();
   };
 
@@ -77,11 +81,13 @@ export default function ChangePasswordModal({
     return response.status;
   };
 
-  const handlePasswordVerification = async (e) => {
+  const handlePasswordVerification = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       setDisableVerifyPasswdButton(true);
       setCurrentPasswordError('');
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       const status = await verifyPassword();
       if (status === 200) {
         setModalContent(1);
@@ -94,8 +100,12 @@ export default function ChangePasswordModal({
       console.log(error.status);
       if (error.status === 403) {
         setCurrentPasswordError('Invalid password!');
+        setErrorMessage('Invalid password!');
+        await errorMessageHandlers.open();
       } else {
+        setErrorMessage('Something went wrong!');
         setCurrentPasswordError('Something went wrong');
+        await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
       console.log('verify password error: ', error);
@@ -119,6 +129,8 @@ export default function ChangePasswordModal({
       e.preventDefault();
       setDisableVerifyPasswdButton(true);
       errorDialogHandlers.close();
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       setNewPasswordError({ password: '', repeatedPassword: '' });
       if (newPassword.password === newPassword.repeatedPassword) {
         const status = await changePassword();
@@ -132,6 +144,8 @@ export default function ChangePasswordModal({
           password: '',
           repeatedPassword: 'Passwords are not the same',
         });
+        errorMessageHandlers.open();
+        setErrorMessage('Invalid data for changing password!');
       }
       setDisableVerifyPasswdButton(false);
     } catch (error) {
@@ -139,8 +153,12 @@ export default function ChangePasswordModal({
       if (error.status === 400) {
         setNewPasswordError({ repeatedPassword: '', password: 'Invalid password format' });
         errorDialogHandlers.open();
+        setErrorMessage('Invalid data for changing password!');
+        await errorMessageHandlers.open();
       } else {
         setNewPasswordError({ repeatedPassword: '', password: 'Something went wrong' });
+        setErrorMessage('Something went wrong!');
+        await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
       console.log('verify password error: ', error);
@@ -176,9 +194,9 @@ export default function ChangePasswordModal({
                     variant="filled"
                     label="Current password"
                     placeholder="Password"
-                    error={
-                      currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                    }
+                    // error={
+                    //   currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
+                    // }
                     value={currentPassword}
                     onChange={(event) => {
                       setCurrentPasswordError('');
@@ -187,20 +205,7 @@ export default function ChangePasswordModal({
                   />
                 </Stack>
               </Center>
-              <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-                {currentPasswordError === 'Something went wrong' ? (
-                  <Flex justify="center" align="center">
-                    <Text ta="center" size="md" c="var(--mantine-color-error)">
-                      <RiErrorWarningFill />
-                    </Text>
-                    <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                      Something went wrong
-                    </Text>
-                  </Flex>
-                ) : (
-                  <></>
-                )}
-              </Box>
+              <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
                   type="submit"
@@ -261,20 +266,7 @@ export default function ChangePasswordModal({
                   }}
                 />
               </Box>
-              <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-                {newPasswordError.password === 'Something went wrong' ? (
-                  <Flex justify="center" align="center">
-                    <Text ta="center" size="md" c="var(--mantine-color-error)">
-                      <RiErrorWarningFill />
-                    </Text>
-                    <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                      Something went wrong
-                    </Text>
-                  </Flex>
-                ) : (
-                  <></>
-                )}
-              </Box>
+              <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
                   w="15vw"

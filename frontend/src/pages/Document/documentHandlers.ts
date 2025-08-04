@@ -86,3 +86,14 @@ export const chceckIfBlockContentEmpty = (content:string):boolean=>{
     }
     setSectionsContent(sectionsContentCopy);
   };
+
+
+  // export const addBlock = (block: blockType, distanceFromMarkedBlock:number) => {
+  //   let blocks = [...sectionsContent];
+  //   blocks.splice(activeBlock + distanceFromMarkedBlock, 0, block);
+  //   setSectionsContent(blocks);
+  //   if(distanceFromMarkedBlock!==0){
+  //     setActiveBlock(activeBlock + distanceFromMarkedBlock);
+  //   }
+    
+  // };

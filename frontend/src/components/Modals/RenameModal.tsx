@@ -14,6 +14,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '../ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '../ErrorInfos/InfoErrorDialog';
 
 type renameModalPropsType = {
@@ -37,48 +38,59 @@ export default function RenameModal({
 
   renameState,
 }: renameModalPropsType) {
-  const [renameErrorInfo, setRenameErrorInfo] = useState<string | null>(null);
+  //const [renameErrorInfo, setRenameErrorInfo] = useState<string | null>(null);
   const [disableRenameButton, setDisableRenameButton] = useState<boolean>(false);
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [documentName, setDocumentName] = renameState;
 
+  const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   //const nameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
+  const closeModal = () => {
+    renameModalHandlers[1].close();
+    errorDialogHandlers.close();
+    errorMessageHandlers.close();
+    setErrorMessage('');
+  };
 
   const renameThing = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       setDisableRenameButton(true);
-
+      errorDialogHandlers.close();
+      await errorMessageHandlers.close();
+      await new Promise((resolve) => setTimeout(resolve, 200));
       await renameFunction();
-      setRenameErrorInfo(null);
+      //setRenameErrorInfo(null);
       renameModalHandlers[1].close();
       errorDialogHandlers.close();
       setDisableRenameButton(false);
     } catch (e) {
       console.log(`Rename ${thingToRename} error:`, e);
       if (e.status === 403) {
-        setRenameErrorInfo('Invalid name');
+        setErrorMessage('Invalid name format!');
+        errorMessageHandlers.open();
         errorDialogHandlers.open();
       } else {
-        setRenameErrorInfo('Something went wrong');
+        //setRenameErrorInfo('Something went wrong');
+        setErrorMessage('Something went wrong!');
+        errorMessageHandlers.open();
       }
 
       setDisableRenameButton(false);
     }
   };
 
-  useEffect(() => {
-    setRenameErrorInfo(null);
-  }, [renameModalHandlers[0]]);
+  // useEffect(() => {
+  //   setRenameErrorInfo(null);
+  // }, [renameModalHandlers[0]]);
 
   return (
     <>
       <Modal
         opened={renameModalHandlers[0]}
-        onClose={() => {
-          renameModalHandlers[1].close();
-          errorDialogHandlers.close();
-        }}
+        onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
         size="lg"
         //yOffset="15%"
@@ -99,10 +111,9 @@ export default function RenameModal({
                 variant="filled"
                 required
                 value={documentName}
-                error={renameErrorInfo === 'Invalid name' ? renameErrorInfo : null}
                 onChange={(event) => {
                   setDocumentName(event.currentTarget.value);
-                  setRenameErrorInfo(null);
+                  //setRenameErrorInfo(null);
                   // if (nameRegex.test(event.currentTarget.value)) {
                   //   setRenameErrorInfo(null);
                   // } else {
@@ -113,31 +124,12 @@ export default function RenameModal({
                 // {...form.getInputProps('email')}
               />
             </Box>
-            <Box h="1rem" p="0px" m="0px" c="var(--mantine-color-error)">
-              {renameErrorInfo === null || renameErrorInfo === 'Invalid name' ? (
-                <></>
-              ) : (
-                <Flex justify="center" align="center">
-                  <Text ta="center" size="md" c="var(--mantine-color-error)">
-                    <RiErrorWarningFill />
-                  </Text>
-                  <Text ta="center" ml={5} mb={4} size="sm" c="var(--mantine-color-error)">
-                    {renameErrorInfo}
-                  </Text>
-                </Flex>
-              )}
-            </Box>
+            <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
             <SimpleGrid cols={2} spacing="xl" mt="md">
               <Button onClick={renameThing} type="submit" disabled={disableRenameButton}>
                 {disableRenameButton ? <Loader size={20} /> : <> Rename</>}
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  renameModalHandlers[1].close();
-                  errorDialogHandlers.close();
-                }}
-              >
+              <Button variant="outline" onClick={closeModal}>
                 Cancel
               </Button>
             </SimpleGrid>

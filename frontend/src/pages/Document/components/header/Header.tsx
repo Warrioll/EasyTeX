@@ -30,6 +30,7 @@ import {
   MdFunctions,
   MdOutlineAdd,
   MdOutlineInsertPageBreak,
+  MdOutlineLibraryBooks,
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
