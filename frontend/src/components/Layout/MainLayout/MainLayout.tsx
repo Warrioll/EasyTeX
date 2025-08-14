@@ -34,7 +34,7 @@ export default function MainLayout({ content }: LayoutPropsType) {
     const checkLogged = async () => {
       const userId = await checkIfLoggedIn();
     };
-    // checkLogged();
+    checkLogged();
   }, []);
 
   return (

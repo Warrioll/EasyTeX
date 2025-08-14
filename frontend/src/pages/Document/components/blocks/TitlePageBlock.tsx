@@ -19,30 +19,38 @@ import {
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/basicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  sectionsContent: blockType[];
-  setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  editor: Editor;
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //sectionsContent: blockType[];
+  //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  //editor: Editor;
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function TitlePageBlock({
   idx,
-  activeBlockState,
-  sectionsContent,
-  setSectionsContent,
-  editor,
-  activeTextInputState,
+  //activeBlockState,
+  //sectionsContent,
+  //setSectionsContent,
+  //editor,
+  //activeTextInputState,
 }: SectionBlockProps) {
-  const [activeTextfield, setActiveTextfield] = useState<string>('');
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  //const { activeTextfield, setActiveTextfield } = useActiveTextInputContext();
+  //const [activeTextfield, setActiveTextfield] = useState<string>('');
   const [focusTrap, { toggle }] = useDisclosure(false);
-  const [activeBlock, setActiveBlock] = activeBlockState;
+
+  // const [activeBlock, setActiveBlock] = activeBlockState;
 
   // const updateSectionContent = (event) => {
   //   console.log('section event', event);
@@ -85,11 +93,11 @@ export default function TitlePageBlock({
       <Flex>
         <MarkedBlockFrame
           idx={idx}
-          activeBlockState={activeBlockState}
+          //activeBlockState={activeBlockState}
           blockName="Title, author, date"
-          sectionsContent={sectionsContent}
-          setSectionsContent={setSectionsContent}
-          activeTextInputState={activeTextInputState}
+          //sectionsContent={sectionsContent}
+          //setSectionsContent={setSectionsContent}
+          //activeTextInputState={activeTextInputState}
         >
           <Stack
             justify="center"
@@ -105,39 +113,39 @@ export default function TitlePageBlock({
 
             <BasicTexfield
               idx={idx}
-              activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.title as string}
-              editor={editor}
-              activeTextInputState={activeTextInputState}
+              //activeBlockState={activeBlockState}
+              contentToRead={blocksContent[idx].blockContent.title as string}
+              //editor={editor}
+              //activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('title')}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
+              //sectionsContent={sectionsContent}
+              //setSectionsContent={setSectionsContent}
             />
             <Text fw={500} size="sm">
               Author
             </Text>
             <BasicTexfield
               idx={idx}
-              activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.author as string}
-              editor={editor}
-              activeTextInputState={activeTextInputState}
+              //activeBlockState={activeBlockState}
+              contentToRead={blocksContent[idx].blockContent.author as string}
+              //editor={editor}
+              //activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('author')}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
+              //sectionsContent={sectionsContent}
+              //setSectionsContent={setSectionsContent}
             />
             <Text fw={500} size="sm">
               Date
             </Text>
             <BasicTexfield
               idx={idx}
-              activeBlockState={activeBlockState}
-              contentToRead={sectionsContent[idx].blockContent.date as string}
-              editor={editor}
-              activeTextInputState={activeTextInputState}
+              //activeBlockState={activeBlockState}
+              contentToRead={blocksContent[idx].blockContent.date as string}
+              //editor={editor}
+              //activeTextInputState={activeTextInputState}
               idxInput={idx.toString().concat('date')}
-              sectionsContent={sectionsContent}
-              setSectionsContent={setSectionsContent}
+              //sectionsContent={sectionsContent}
+              //setSectionsContent={setSectionsContent}
             />
           </Stack>
         </MarkedBlockFrame>

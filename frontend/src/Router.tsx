@@ -3,6 +3,11 @@ import GuestLayout from './components/Layout/GuestLayout/GuestLayout';
 import MainLayout from './components/Layout/MainLayout/MainLayout';
 import MyAssetsPage from './pages/Assets/MyAssetsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
+import {
+  ActiveBlockProvider,
+  ActiveTableCellProvider,
+  BlocksContentProvider,
+} from './pages/Document/DocumentContextProviders';
 import DocumentPage from './pages/Document/DocumentPage';
 import { HomePage } from './pages/Home.page';
 import LoginPage from './pages/Login/LoginPage';
@@ -16,7 +21,15 @@ const router = createBrowserRouter([
   },
   {
     path: '/document/:id',
-    element: <DocumentPage />,
+    element: (
+      <BlocksContentProvider>
+        <ActiveBlockProvider>
+          <ActiveTableCellProvider>
+            <DocumentPage />
+          </ActiveTableCellProvider>
+        </ActiveBlockProvider>
+      </BlocksContentProvider>
+    ),
   },
   {
     path: '/dashboard',

@@ -8,6 +8,18 @@
 
 }
 
+.unmarkedFrame{
+    margin-left: 3px;
+    margin-right: 3px;
+    
+}
+
+.unmarkedFramePaper{
+    margin-left: -3px;
+    margin-right: -3px;
+    
+}
+
 .blockFrameStyle{
     /* background-color: var(--mantine-color-cyan-0); */
     border-left: 3px solid var(--mantine-color-cyan-3);

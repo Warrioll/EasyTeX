@@ -166,6 +166,8 @@ export const verifySessionWithCallback = async (sessionId:string, res: express.R
 
 export const extendSession = async (sessionId: string, res: express.Response) =>{
 
+    //TODO usuwanie straych sesji i extend tylko jesli minal jakis sensowny czas wiec moze jakies dodatkowe pola createdAt updatedAt
+
     try{
        
         const userId = (await sessionModel.findById(sessionId)).userId;

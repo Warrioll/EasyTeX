@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import { cloneDeep } from 'lodash';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
 import { IoMdMore } from 'react-icons/io';
 import { LuHeading1, LuHeading2 } from 'react-icons/lu';
@@ -8,62 +9,73 @@ import { TbForbid2 } from 'react-icons/tb';
 import { Badge, Box, Button, Flex, Menu, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 //import { blocksList } from '../oldBlocksList';
-import { blocksList } from '@/pages/Document/blocksList';
+import { useBlocksList } from '@/pages/Document/blocksList';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+} from '../../../DocumentContextProviders';
 import classes from '../blocks.module.css';
 
 type ButtonsOfMarkedBlockPropsType = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
   blockName: string;
-  blockContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
+  //blockContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
   typeOfAddBlockFunction: 'above' | 'below';
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
   deleteModalHandlers: any;
 };
 
 export default function ButtonsOfMarkedBlock({
   idx,
-  activeBlockState,
+  //activeBlockState,
   blockName,
-  blockContentState,
+  //blockContentState,
   typeOfAddBlockFunction,
-  activeTextInputState,
+  //activeTextInputState,
   deleteModalHandlers,
 }: ButtonsOfMarkedBlockPropsType) {
   //const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  const [activeBlock, setActiveBlock] = activeBlockState;
-  const [sectionsContent, setSectionsContent] = blockContentState;
-  const [activeTextInput, setActiveTextInput] = activeTextInputState;
+  //const [activeBlock, setActiveBlock] = activeBlockState;
+  //const [sectionsContent, setSectionsContent] = blockContentState;
+  //const [activeTextInput, setActiveTextInput] = activeTextInputState;
+
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+
+  const blocksList = useBlocksList();
 
   const moveBlockUp = () => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     const [block] = blocks.splice(activeBlock, 1);
     blocks.splice(activeBlock - 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock - 1);
-    setActiveTextInput('');
+    setActiveTextfield('');
   };
   const moveBlockDown = () => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     const [block] = blocks.splice(activeBlock, 1);
     blocks.splice(activeBlock + 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock + 1);
-    setActiveTextInput('');
+    setActiveTextfield('');
   };
 
   const addBlockBelow = (block: blockType) => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock + 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock + 1);
   };
 
   const addBlockAbove = (block: blockType) => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
   };
 
   const addBlockFunction = typeOfAddBlockFunction === 'above' ? addBlockAbove : addBlockBelow;
@@ -89,7 +101,7 @@ export default function ButtonsOfMarkedBlock({
                   return (
                     <Menu.Item
                       onClick={() => addBlockFunction(block.blockToAdd)}
-                      leftSection={<block.Icon />}
+                      leftSection={block.Icon ? <block.Icon /> : null}
                     >
                       {block.blockName}
                     </Menu.Item>
@@ -126,14 +138,14 @@ export default function ButtonsOfMarkedBlock({
                 <Menu.Dropdown>
                   <Menu.Item
                     leftSection={<FaArrowUp />}
-                    disabled={activeBlock === 1 ? true : false}
+                    disabled={activeBlock === 1}
                     onClick={moveBlockUp}
                   >
                     Move up
                   </Menu.Item>
                   <Menu.Item
                     leftSection={<FaArrowDown />}
-                    disabled={activeBlock === sectionsContent.length - 1 ? true : false}
+                    disabled={activeBlock === blocksContent.length - 1}
                     onClick={moveBlockDown}
                   >
                     Move down

@@ -3,7 +3,7 @@ import * as fileHander from "fs";
 import { documentModel, documentType } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { deleteFile, doesTexFileExist, loadTexFile,  saveFileWithContent} from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex, figureToTex } from '../handlers/toTexConverters';
+import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex, figureToTex, referencesToTex } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -12,11 +12,12 @@ import { sectionToBlock,
   getAuthorFromTex, 
   getDateFromTex, 
   getTitleFromTex, 
-  equationToBlock,
+  equationToBlock, 
   figureToBlock,
+  referencesToBlock,
 tableToBlock} from '../handlers/toBlockConverters';
 import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
-import { blockType, titlePageType } from '../types';
+import { blockAbleToRef, blockType, referencesElementType} from '../types';
 import { figureModel } from '../models/figureModel';
 import { Document, InferSchemaType } from 'mongoose';
 import { documentNameRegex } from '../nameRegexes';
@@ -276,6 +277,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
             if(line.includes('\\begin{figure}')) return figureToBlock(line);
+            if(line.includes('\\begin{thebibliography}')) return referencesToBlock(line);
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
@@ -384,11 +386,11 @@ export const addLine = async (req: express.Request, res: express.Response)=>{
        line = sectionToTex(block.blockContent as string);
        break;
        case 'subsection':
-        line = subsectionToTex(block.blockContent as string);
-        break;
-      default:
+        line = subsectionToTex(block.blockContent as string); 
+        break; 
+      default: 
         console.log("This type of block don't exists! ", block.typeOfBlock)
-    }
+    } 
     
     let document: (string | undefined)[] = await loadTexFile('documentBase/',id);
     document.splice(idx,0, line);
@@ -436,17 +438,17 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         return '\\newpage'
       }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
-       } case 'section':{
+       } case 'section':{ 
        return sectionToTex(block.blockContent as string);
       }case 'subsection':{
        return subsectionToTex(block.blockContent as string);
         }  case 'subsubsection':{
         return subsubsectionToTex(block.blockContent as string);
       }case 'equation':{
-        return equationToTex(block.blockContent as string)
+        return equationToTex(block.blockContent)
       }case 'table':{
         if(Array.isArray(block.blockContent)){
-          return tableToTex(block.blockContent)
+          return tableToTex(block.blockContent as string [][])
         }
           return ''}
       case 'figure':{
@@ -458,8 +460,10 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
           // TODO tu zwaracać texa z pustkym linkiem jeśli kompilacji takie coś nie będzie wywalało
           return ''
         }
-       
+        
       }
+      case 'references':
+        return referencesToTex(block.blockContent as referencesElementType[])
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }
@@ -468,8 +472,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
  
     // document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
     //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
-    //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}`
-    // );
+    //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}` 
+    // ); 
+    console.log('Przed paczkami doc: ', document)
 
       document.splice(1,0,'\\usepackage{ulem}'
         +'\n\\usepackage{amsmath}'
@@ -478,7 +483,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         +'\n\\begin{document}'
       );
      document.push('\\end{document}')
-    console.log(document);
+   // console.log(document);
     await saveFileWithContent(documentInstantion.path, documentInstantion._id as unknown as string, 'tex',document.join("\n"))
     //fileHander.writeFileSync(documentInstantion.path+`/${id}.tex`, document.join("\n"));
 

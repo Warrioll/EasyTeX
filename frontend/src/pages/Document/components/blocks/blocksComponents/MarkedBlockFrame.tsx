@@ -1,5 +1,6 @@
 import React, { Children, Dispatch, ReactElement, SetStateAction } from 'react';
 import parse from 'html-react-parser';
+import { cloneDeep } from 'lodash';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { IoMdMore } from 'react-icons/io';
@@ -27,20 +28,21 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import { useActiveBlockContext, useBlocksContentContext } from '../../../DocumentContextProviders';
 import ButtonsOfMarkedBlock from './ButtonsOfMarkedBlock';
 import DeleteBlockModal from './DeleteBlockModal';
 import classes from '../blocks.module.css';
 
 type MarkedBlockFrameProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
   //activeSection: number;
   //setActiveSecion: Dispatch<SetStateAction<number>>;
   blockName: string;
   children: React.ReactNode;
-  sectionsContent: blockType[];
-  setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  //sectionsContent: blockType[];
+  //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function MarkedBlockFrame({
@@ -48,48 +50,51 @@ export default function MarkedBlockFrame({
   idx,
   //activeSection,
   //setActiveSecion,
-  activeBlockState,
+  //activeBlockState,
   blockName,
-  sectionsContent,
-  setSectionsContent,
-  activeTextInputState,
+  //sectionsContent,
+  //setSectionsContent,
+  //activeTextInputState,
 }: MarkedBlockFrameProps) {
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  const [activeBlock, setActiveBlock] = activeBlockState;
+  //const [activeBlock, setActiveBlock] = activeBlockState;
 
   //editor trzeba wyczyszczać czy coś przy dodawaniu textfiesd
   const addBlockBelow = (block: blockType) => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock + 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock + 1);
   };
 
   const addBlockAbove = (block: blockType) => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
   };
 
   const moveBlockUp = () => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     const [block] = blocks.splice(activeBlock, 1);
     blocks.splice(activeBlock - 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock - 1);
   };
   const moveBlockDown = () => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     const [block] = blocks.splice(activeBlock, 1);
     blocks.splice(activeBlock + 1, 0, block);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     setActiveBlock(activeBlock + 1);
   };
 
   const deleteBlock = () => {
-    let blocks = [...sectionsContent];
+    let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock, 1);
-    setSectionsContent(blocks);
+    setBlocksContent(blocks);
     deleteModalHandlers.close();
   };
 
@@ -210,31 +215,28 @@ export default function MarkedBlockFrame({
           pl="lg"
           pr="lg"
           w="40vw"
-          className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
+          className={
+            idx === Math.floor(activeBlock) ? classes.blockFrameStyle : classes.unmarkedFramePaper
+          }
         >
           <ButtonsOfMarkedBlock
             idx={idx}
-            activeBlockState={activeBlockState}
             blockName={blockName}
-            blockContentState={[sectionsContent, setSectionsContent]}
             typeOfAddBlockFunction="above"
-            activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
           />
           <Box
-            className={idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : ''}
-            w="100%"
+            className={
+              idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : classes.unmarkedFrame
+            }
             p="0px"
           >
             {children}
           </Box>
           <ButtonsOfMarkedBlock
             idx={idx}
-            activeBlockState={activeBlockState}
             blockName={blockName}
-            blockContentState={[sectionsContent, setSectionsContent]}
             typeOfAddBlockFunction="below"
-            activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
           />
         </Paper>
@@ -243,8 +245,6 @@ export default function MarkedBlockFrame({
       <DeleteBlockModal
         deleteModalHandlers={deleteModalHandlers}
         deleteModalOpened={deleteModalOpened}
-        blockContentState={[sectionsContent, setSectionsContent]}
-        activeBlock={activeBlock}
       />
     </div>
   );

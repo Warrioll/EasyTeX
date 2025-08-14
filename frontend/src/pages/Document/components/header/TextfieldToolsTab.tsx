@@ -16,13 +16,18 @@ import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { Box, Button, Flex, Tooltip } from '@mantine/core';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 
 type headerProps = {
-  editFunctions: Record<string, (...args: any[]) => any>;
-  editor: Editor;
-  saveElementChanges: () => void;
-  activeSection: number;
-  sectionsContent: blockType[];
+  //editFunctions: Record<string, (...args: any[]) => any>;
+  //editor: Editor;
+  //saveElementChanges: () => void;
+  // activeSection: number;
+  //sectionsContent: blockType[];
 };
 
 type buttonType = {
@@ -32,18 +37,31 @@ type buttonType = {
   tooltip: string;
 };
 
-export default function TextfieldToolsTab({
-  editFunctions,
-  editor,
-  saveElementChanges,
-  activeSection,
-  sectionsContent,
-}: headerProps) {
+export default function TextfieldToolsTab(
+  {
+    //editFunctions,
+    //editor,
+    //saveElementChanges,
+    //activeSection,
+    // sectionsContent,
+  }: headerProps
+) {
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  const { editor } = useEditorContext();
+
   const codeAndLink: buttonType[] = [
     {
       //trzeba popatrzeć czemu nie działa https://tiptap.dev/docs/editor/extensions/marks/link
       content: <FaLink />,
       clickFunction: () => editor?.commands.toggleLink(),
+      fontSize: 'var(--mantine-font-size-md)',
+      tooltip: 'Link',
+    },
+    {
+      content: <>ref</>,
+      clickFunction: () =>
+        editor?.commands.insertContent(`<span data-type="mention" data-id="[${activeBlock}]"/>`),
       fontSize: 'var(--mantine-font-size-md)',
       tooltip: 'Link',
     },
@@ -98,7 +116,7 @@ export default function TextfieldToolsTab({
               fz={formatButton.fontSize}
               onClick={() => {
                 formatButton.clickFunction();
-                saveElementChanges();
+                //saveElementChanges();
               }}
             >
               {formatButton.content}
@@ -124,7 +142,7 @@ export default function TextfieldToolsTab({
               fz={formatButton.fontSize}
               onClick={() => {
                 formatButton.clickFunction();
-                saveElementChanges();
+                //saveElementChanges();
               }}
             >
               {formatButton.content}
@@ -149,7 +167,7 @@ export default function TextfieldToolsTab({
             fz={formatButton.fontSize}
             onClick={() => {
               formatButton.clickFunction();
-              saveElementChanges();
+              //saveElementChanges();
             }}
           >
             {formatButton.content}
@@ -160,8 +178,8 @@ export default function TextfieldToolsTab({
   );
 
   const chooseContent = () => {
-    console.log('active', activeSection);
-    switch (sectionsContent[activeSection].typeOfBlock) {
+    console.log('active', activeBlock);
+    switch (blocksContent[activeBlock].typeOfBlock) {
       case 'textfield':
         return textfiledTools;
       default:
@@ -172,7 +190,7 @@ export default function TextfieldToolsTab({
   return (
     <Flex>
       <Tooltip.Group openDelay={100} closeDelay={300}>
-        {activeSection === 0 ? 'No block is selected' : chooseContent()}
+        {activeBlock === 0 ? 'No block is selected' : chooseContent()}
       </Tooltip.Group>
     </Flex>
   );

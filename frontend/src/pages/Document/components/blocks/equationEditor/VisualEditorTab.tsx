@@ -26,8 +26,8 @@ import {
   TreeNodeData,
   useCombobox,
 } from '@mantine/core';
-import { AddComboox } from './addCombobox';
-import { AddSpecialCharacterComboox } from './AddSpecialCharacterCombobox';
+import { AddComboox } from '../../../../../components/other/AddCombobox';
+//import { AddSpecialCharacterComboox } from './AddSpecialCharacterCombobox';
 import ElementsTree from './ElementsTree';
 import { elementsToTex, texToElements } from './equationConverters';
 import { elementsPrototypes } from './equationsElementsPrototypes';
@@ -44,19 +44,19 @@ type elementType = {
 };
 
 type VisualEditorTabTabPropsType = {
-  equationFormulaState: [string, Dispatch<SetStateAction<string>>];
+  //  equationFormulaState: [string, Dispatch<SetStateAction<string>>];
   elementsContentState: [Array<any>, Dispatch<SetStateAction<Array<any>>>];
 };
 
 export default function VisualEditorTab({
-  equationFormulaState,
+  //equationFormulaState,
   elementsContentState,
 }: VisualEditorTabTabPropsType) {
   // const elementsContentState = useState<any[]>([
   //   { ...elementsPrototypes.expression.elementPrototype },
   // ]);
   const [elementsContent, setElementsContent] = elementsContentState;
-  const [latexFormula, setLatexFormula] = equationFormulaState; //useState<string>('yolo');
+  //const [latexFormula, setLatexFormula] = equationFormulaState; //useState<string>('yolo');
   const [expressionInputContent, setExpressionInputContent] = useState<string>('');
 
   const activeTreeElementState = useState<string>('');
@@ -143,12 +143,12 @@ export default function VisualEditorTab({
   };
 
   const chooseElementEditor = () => {
-    if(activeTreeElement===''){
-       return (
-      <Text c="var(--mantine-color-gray-6)">
-        Expression element is not selected {`(no element is currently selected)`}
-      </Text>
-    );
+    if (activeTreeElement === '') {
+      return (
+        <Text c="var(--mantine-color-gray-6)">
+          Expression element is not selected {`(no element is currently selected)`}
+        </Text>
+      );
     }
     const element = getElementByIdx(activeTreeElement, elementsContent);
 
@@ -158,9 +158,24 @@ export default function VisualEditorTab({
       insertElement(element.value, elementsContent, element, 1);
       //insertElement(expressionInputContent.concat(specialCharacter));
     };
-    console.log('ceE1');
+
     if (element.label === 'Expression') {
-      console.log('ceE2');
+      const specialCharacersForCombobox = specialCharacters.map((group) => {
+        return {
+          label: group.label,
+          group: group.group.map((item) => {
+            return {
+              label: item.label,
+              Icon: () => (
+                <>
+                  {item.latexRepresentation ? <Latex>$${item.latexRepresentation}$$</Latex> : null}
+                </>
+              ),
+              value: item.value,
+            };
+          }),
+        };
+      });
       return (
         <Flex w="100%" align="center">
           <Textarea
@@ -181,18 +196,7 @@ export default function VisualEditorTab({
                 <TbOmega />
               </Text>
             }
-            data={specialCharacters.map((group) => {
-              return {
-                label: group.label,
-                group: group.group.map((item) => {
-                  return {
-                    label: item.label,
-                    icon: <Latex>$${item.latexRepresentation}$$</Latex>,
-                    value: item.value,
-                  };
-                }),
-              };
-            })}
+            data={specialCharacersForCombobox}
             iconSize="0.8rem"
             floatingStrategy="fixed"
             withGroups
@@ -207,7 +211,7 @@ export default function VisualEditorTab({
         </Flex>
       );
     }
-    console.log('ceE3');
+
     return (
       <Text c="var(--mantine-color-gray-6)">
         Expression element is not selected {`(currently selected: ${element.label})`}
@@ -221,7 +225,7 @@ export default function VisualEditorTab({
   // }, [elementsContent, expressionInputContent]);
 
   useEffect(() => {
-    console.log('texToElements: ', texToElements(latexFormula));
+    //console.log('texToElements: ', texToElements(latexFormula));
     //setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []));
     //setElementsContent(updateIdx(cloneDeep(texToElements(texToElementsSpecialCHaractersConvertion(latexFormula))), []));
   }, []);

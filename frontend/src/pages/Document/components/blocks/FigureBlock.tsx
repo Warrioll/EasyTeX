@@ -17,6 +17,12 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/basicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import LibraryFigureTab from './figureBlockComponents/LibraryFigureTab';
@@ -29,20 +35,20 @@ import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine
 
 type FigureBlockProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  editor: Editor;
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  // activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  // blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
+  //editor: Editor;
 };
 
 export default function FigureBlock({
   idx,
-  activeBlockState,
-  blocksContentState,
-  editor,
-  activeTextInputState,
+  //activeBlockState,
+  //blocksContentState,
+  //editor,
+  //activeTextInputState,
 }: FigureBlockProps) {
-  const [blocksContent, setBlocksContent] = blocksContentState;
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const modalHandlers = useDisclosure(false);
   const [opened, { open, close }] = modalHandlers;
   const startFigure =
@@ -51,7 +57,7 @@ export default function FigureBlock({
   const uploadfigureState = useState<FileWithPath[] | null>(null);
   //const libraryFigureState = useState<FileWithPath[] | null>(null);
   const [figure, setFigure] = figureState;
-  const [uploadfigure, setUploadFigure] = uploadfigureState;
+  //const [uploadfigure, setUploadFigure] = uploadfigureState;
   const figureTabState = useState<'Upload' | 'Library'>('Upload');
   const [figureTab, setFigureTab] = figureTabState;
   const [figureUrl, setFigureUrl] = useState<string>('');
@@ -72,7 +78,7 @@ export default function FigureBlock({
         setFigureLoaded(true);
       } catch (e) {
         console.log('block figure getFigure error: ', e);
-        se;
+        //se;
       }
     };
     getFigure();
@@ -91,11 +97,11 @@ export default function FigureBlock({
       <Flex>
         <MarkedBlockFrame
           idx={idx}
-          activeBlockState={activeBlockState}
+          //activeBlockState={activeBlockState}
           blockName="Image"
-          sectionsContent={blocksContent}
-          setSectionsContent={setBlocksContent}
-          activeTextInputState={activeTextInputState}
+          //sectionsContent={blocksContent}
+          //setSectionsContent={setBlocksContent}
+          //activeTextInputState={activeTextInputState}
         >
           <Center>
             <Button

@@ -16,96 +16,196 @@ import {
   MdOutlineLibraryBooks,
   MdOutlineTitle,
 } from 'react-icons/md';
-import { blockType, documentClassType } from '@/Types';
+import { blockAbleToRef, blockType, documentClassType, groupedListType } from '@/Types';
+import { useAddBlock } from './documentHandlers';
 
-type blockListType = {
-  blockName: string;
-  Icon: React.FC;
-  blockToAdd: blockType;
-  documentClasses: documentClassType[];
+// type blockListType = {
+//   blockName: string;
+//   Icon: React.FC;
+//   blockToAdd: blockType;
+//   documentClasses: documentClassType[];
+// };
+
+let equationCounter = 0;
+let figureCounter = 0;
+let imageCounter = 0;
+
+const texfiledValue: blockType = { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' };
+const sectionValue: blockType = {
+  typeOfBlock: 'section',
+  blockContent: '<p><strong>New section</strong></p>',
 };
+const subsectionValue: blockType = {
+  typeOfBlock: 'subsection',
+  blockContent: '<p><strong>New subsection</strong></p>',
+};
+const subsubsectionValue: blockType = {
+  typeOfBlock: 'subsubsection',
+  blockContent: '<p><strong>New subsubsection</strong></p>',
+};
+const equationValue: blockType = {
+  typeOfBlock: 'equation',
+  blockContent: {
+    id: 'eq'.concat(equationCounter.toString()),
+    label: 'New equation',
+    content: 'New equation',
+  },
+};
+const tableValue: blockType = {
+  typeOfBlock: 'table',
+  blockContent: [
+    ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+    ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+  ],
+};
+const figureValue: blockType = { typeOfBlock: 'figure', blockContent: '' };
+const titleSectionValue: blockType = {
+  typeOfBlock: 'titlePage',
+  blockContent: { title: 'Title', author: 'Author', date: 'Date' },
+};
+const referencesValue: blockType = { typeOfBlock: 'references', blockContent: [] };
+const tableOfContentsValue: blockType = { typeOfBlock: 'tableOfContents', blockContent: '' };
+const pageBreakValue: blockType = { typeOfBlock: 'pageBreak', blockContent: '' };
 
-export const blocksList: blockListType[] = [
-  {
-    blockName: 'Textfield',
-    Icon: () => <BiFont />,
-    blockToAdd: { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Section',
-    Icon: () => <LuHeading1 />,
-    blockToAdd: { typeOfBlock: 'section', blockContent: '<p><strong>New section</strong></p>' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Subsection',
-    Icon: () => <LuHeading2 />,
-    blockToAdd: {
-      typeOfBlock: 'subsection',
-      blockContent: '<p><strong>New subsection</strong></p>',
-    },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Subsubsection',
-    Icon: () => <LuHeading3 />,
-    blockToAdd: {
-      typeOfBlock: 'subsubsection',
-      blockContent: '<p><strong>New subsubsection</strong></p>',
-    },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Title section',
-    Icon: () => <MdOutlineTitle />,
-    blockToAdd: {
-      typeOfBlock: 'titlePage',
-      blockContent: { title: 'Title', author: 'Author', date: 'Date' },
-    },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Equation',
-    Icon: () => <MdFunctions />,
-    blockToAdd: { typeOfBlock: 'equation', blockContent: 'New equation' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Table',
-    Icon: () => <LuTable />,
-    blockToAdd: {
-      typeOfBlock: 'equation',
-      blockContent: [
-        ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
-        ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+export const useBlocksList = (): groupedListType => {
+  const { addBlock } = useAddBlock();
+  const blocksList: groupedListType = [
+    {
+      label: 'Text',
+      group: [
+        {
+          label: 'Textfield',
+          function: () => {
+            addBlock(texfiledValue, 1);
+          },
+          Icon: () => <BiFont />,
+          value: texfiledValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
       ],
     },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Image',
-    Icon: () => <LuImage />,
-    blockToAdd: { typeOfBlock: 'equation', blockContent: '' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
 
-  {
-    blockName: 'Table of contents',
-    Icon: () => <MdFormatListNumberedRtl />,
-    blockToAdd: { typeOfBlock: 'tableOfContents', blockContent: '' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Bibliography',
-    Icon: () => <MdOutlineLibraryBooks />,
-    blockToAdd: { typeOfBlock: 'bibliography', blockContent: '' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-  {
-    blockName: 'Page break',
-    Icon: () => <MdOutlineInsertPageBreak />,
-    blockToAdd: { typeOfBlock: 'pageBreak', blockContent: '' },
-    documentClasses: ['article', 'beamer', 'book', 'letter', 'report'],
-  },
-];
+    {
+      label: 'Sections',
+      group: [
+        {
+          label: 'Section',
+          Icon: () => <LuHeading1 />,
+          function: () => {
+            addBlock(sectionValue, 1);
+          },
+          value: sectionValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'Subsection',
+          Icon: () => <LuHeading2 />,
+          function: () => {
+            addBlock(subsectionValue, 1);
+          },
+          value: subsectionValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'Subsubsection',
+          Icon: () => <LuHeading3 />,
+          function: () => {
+            addBlock(subsubsectionValue, 1);
+          },
+          value: subsubsectionValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+      ],
+    },
+
+    {
+      label: 'Contents',
+      group: [
+        {
+          label: 'Equation',
+          Icon: () => <MdFunctions />,
+          function: () => {
+            equationCounter++;
+            (equationValue.blockContent as blockAbleToRef).id = `eq${equationCounter}`;
+            addBlock(equationValue, 1);
+          },
+          value: equationValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'Table',
+          Icon: () => <LuTable />,
+          function: () => {
+            addBlock(tableValue, 1);
+          },
+          value: tableValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'Image',
+          Icon: () => <LuImage />,
+          function: () => {
+            addBlock(figureValue, 1);
+          },
+          value: figureValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+      ],
+    },
+
+    {
+      label: 'Structure',
+      group: [
+        {
+          label: 'Title section',
+          Icon: () => <MdOutlineTitle />,
+          function: () => {
+            addBlock(titleSectionValue, 1);
+          },
+          value: {
+            typeOfBlock: 'titlePage',
+            blockContent: titleSectionValue,
+          },
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'References',
+          Icon: () => <MdOutlineLibraryBooks />,
+          function: () => {
+            addBlock(referencesValue, 1);
+          },
+          value: referencesValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+        {
+          label: 'Table of contents',
+          Icon: () => <MdFormatListNumberedRtl />,
+          function: () => {
+            addBlock(tableOfContentsValue, 1);
+          },
+          value: tableOfContentsValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+      ],
+    },
+
+    {
+      label: 'Other',
+      group: [
+        {
+          label: 'Page break',
+          Icon: () => <MdOutlineInsertPageBreak />,
+          function: () => {
+            addBlock(pageBreakValue, 1);
+          },
+          value: pageBreakValue,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+        },
+      ],
+    },
+  ];
+
+  return blocksList;
+};
+
+//export const blocksList = useBlocksList();
