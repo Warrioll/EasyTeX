@@ -14,25 +14,26 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import { useActiveBlockContext } from '../../DocumentContextProviders';
 import ButtonsOfMarkedBlock from './blocksComponents/ButtonsOfMarkedBlock';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type PageBreakBlockPropsType = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
 export default function PageBreakBlock({
   idx,
-  activeBlockState,
-  blocksContentState,
-  activeTextInputState
+  //activeBlockState,
+  //blocksContentState,
+  //activeTextInputState
 }: PageBreakBlockPropsType) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  const [activeBlock, setActiveBlock] = activeBlockState;
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
   return (
     <div
@@ -52,14 +53,14 @@ export default function PageBreakBlock({
         justify="center"
         className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
       >
-        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h='50px'>
+        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h="50px">
           <ButtonsOfMarkedBlock
             idx={idx}
-            activeBlockState={activeBlockState}
+            //activeBlockState={activeBlockState}
             blockName="Page break"
-            blockContentState={blocksContentState}
+            //blockContentState={blocksContentState}
             typeOfAddBlockFunction="above"
-            activeTextInputState={activeTextInputState}
+            //activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
           />
         </Paper>
@@ -68,16 +69,15 @@ export default function PageBreakBlock({
             Page Break
           </Text>
         </Flex>
-        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)"  h='50px'>
+        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h="50px">
           <ButtonsOfMarkedBlock
             idx={idx}
-            activeBlockState={activeBlockState}
+            //activeBlockState={activeBlockState}
             blockName="Page break"
-            blockContentState={blocksContentState}
+            //blockContentState={blocksContentState}
             typeOfAddBlockFunction="below"
-            activeTextInputState={activeTextInputState}
+            //activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
-            
           />
         </Paper>
       </Stack>

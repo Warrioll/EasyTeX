@@ -1,4 +1,5 @@
 import { figureModel } from "../models/figureModel";
+import { blockAbleToRef, blockContentType, referencesElementType, titleSectionType } from "../types";
 
 export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
@@ -34,6 +35,37 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     //strikethorugh - używa paczki ulem
     fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
     fontToConvert = fontToConvert.replaceAll('</s>', '}')
+
+    fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
+    fontToConvert = fontToConvert.replaceAll('</s>', '}')
+
+    const splitted = fontToConvert.split('<span class="mention" data-type="mention" data-id="')
+    console.log('splitted: ', splitted)
+    const splitted2=splitted.map((item, id)=>{
+        if (id>0){
+        return item.split('">')
+        } 
+        return item
+        })
+    console.log('splitted2: ', splitted2)
+    const converted = splitted2.map((item, id)=>{
+        if(Array.isArray(item) && item.length>1){
+            console.log('item', item)
+            let tmpItem=[...item]
+            const itemId=tmpItem[0]
+            tmpItem.splice(0,1)
+
+            if(itemId.includes('eq') || itemId.includes('tab') || itemId.includes('img')){
+                return `\\ref{${itemId}}${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
+            }
+            return `\\cite{${itemId}} ${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
+        }
+        return item
+    })
+     console.log('converted: ', converted)
+    fontToConvert=converted.join('');
+
+    //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
 
 return fontToConvert
 }
@@ -116,7 +148,7 @@ export const subsubsectionToTex =(blockContent:string): string =>{
     return('\\subsubsection{\\textnormal{'+blockContent+'}}');
 }
 
-export const titlePageToTex =(blockContent:{title:string, author: string, date: string}): string =>{
+export const titlePageToTex =(blockContent: titleSectionType): string =>{
     const title = erasePTags(basicToTexFontConverter( blockContent.title))
     const author = erasePTags(basicToTexFontConverter( blockContent.author))
     const date = erasePTags(basicToTexFontConverter( blockContent.date))
@@ -128,30 +160,40 @@ export const titlePageToTex =(blockContent:{title:string, author: string, date: 
           + '\n\\maketitle'
 }
 
-export const equationToTex =(blockContent:string): string =>{
-    return '\\begin{equation} '+blockContent+' \\end{equation}'
+export const equationToTex =(blockContent: blockContentType): string =>{
+    console.log('equation: ', blockContent)
+
+    return `\\begin{equation} ${(blockContent as blockAbleToRef).content} \\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
 }
 
-export const tableToTex =(blockContent: string[][]): string =>{
+export const tableToTex =(blockContent: blockAbleToRef): string =>{
     let tableContent:string=''
 
-    for(let row=0; row<blockContent.length; row++){
-        for(let column=0; column<blockContent[row].length; column++){
-            tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent[row][column]))
-            if(!(column===blockContent[row].length-1)){
+    for(let row=0; row<blockContent.content.length; row++){
+        for(let column=0; column<blockContent.content[row].length; column++){
+            tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent.content[row][column]))
+            if(!(column===blockContent.content[row].length-1)){
                 
                  tableContent=tableContent+'&'
             }
         }
         tableContent=tableContent+' \\\\ \\hline '
     }
-    const style='|c'.repeat(blockContent[0].length)+'|'
-
-    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\end{table}`
+    const style='|c'.repeat(blockContent.content[0].length)+'|'
+ 
+    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
 }
 
-export const figureToTex =(blockContent:string): string =>{
-    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+blockContent+'} \\end{figure}'
+export const figureToTex =(blockContent:blockAbleToRef, path:string): string =>{
+    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
 }
 
+
+export const referencesToTex =(blockContent:referencesElementType[]): string =>{
+let list:string =''
+    blockContent.map((item, idx)=>{
+        list=list.concat(`\\bibitem{${item.id}} ${erasePTags(basicToTexFontConverter(item.label))}`)    })
+       
+return `\\begin{thebibliography}{${blockContent.length}}`+list+'\\end{thebibliography}'
+}
 

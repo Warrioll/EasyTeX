@@ -5,35 +5,43 @@ import { Badge, Button, Flex, FocusTrap, Group, Input, Menu, Text } from '@manti
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/basicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
   //activeSection: number;
   //setActiveSecion: Dispatch<SetStateAction<number>>;
-  sectionsContent: blockType[];
-  setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  editor: Editor;
-  
+  //sectionsContent: blockType[];
+  //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
+  //editor: Editor;
 };
 
 export default function SectionBlock({
   idx,
-  activeBlockState,
-  activeTextInputState,
+  //activeBlockState,
+  //activeTextInputState,
   //activeSection,
   //setActiveSecion,
-  sectionsContent,
-  setSectionsContent,
-  editor,
+  //sectionsContent,
+  //setSectionsContent,
+  //editor,
 }: SectionBlockProps) {
-  const [focusTrap, { toggle }] = useDisclosure(false);
-  const [activeBlock, setActiveBlock] = activeBlockState;
-  const [sectionNumber, setSectionNumber]=useState<string>('')
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+
+  //const [focusTrap, { toggle }] = useDisclosure(false);
+
+  const [sectionNumber, setSectionNumber] = useState<string>('');
 
   // const updateSectionContent = (event) => {
   //   console.log('section event', event);
@@ -49,18 +57,18 @@ export default function SectionBlock({
   //   setSectionsContent(content);
   // };
 
-  useEffect(()=>{
-    let sectionCounter=0
-    for(let i=0; i<sectionsContent.length; i++){
-      if(sectionsContent[i].typeOfBlock==='section'){
-        sectionCounter+=1
+  useEffect(() => {
+    let sectionCounter = 0;
+    for (let i = 0; i < blocksContent.length; i++) {
+      if (blocksContent[i].typeOfBlock === 'section') {
+        sectionCounter += 1;
       }
-      if(i===idx){
-        setSectionNumber(sectionCounter.toString()+'.')
-        break
+      if (i === idx) {
+        setSectionNumber(sectionCounter.toString() + '.');
+        break;
       }
     }
-  },[activeBlock])
+  }, [activeBlock]);
 
   return (
     <>
@@ -90,11 +98,11 @@ export default function SectionBlock({
         }
         <MarkedBlockFrame
           idx={idx}
-          activeBlockState={activeBlockState}
+          //activeBlockState={activeBlockState}
           blockName="Section"
-          sectionsContent={sectionsContent}
-          setSectionsContent={setSectionsContent}
-          activeTextInputState={activeTextInputState}
+          //sectionsContent={sectionsContent}
+          //setSectionsContent={setSectionsContent}
+          //activeTextInputState={activeTextInputState}
         >
           {/* {activeSection === idx ? (
             // <RichTextEditor editor={editor}>
@@ -108,19 +116,20 @@ export default function SectionBlock({
               {parse(sectionsContent[idx].blockContent as string)}
             </div>
           ) : null} */}
-          <Flex align='center'>
-          <Text fz='xl'fw='bold' ml='xl'>{sectionNumber}</Text>
-          <BasicTexfield
-            idx={idx}
-            activeBlockState={activeBlockState}
-            contentToRead={sectionsContent[idx].blockContent as string}
-            editor={editor}
-            activeTextInputState={activeTextInputState}
-            idxInput={idx.toString()}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            
-          />
+          <Flex align="center">
+            <Text fz="xl" fw="bold" mr="xs" ml="xl" c="var(--mantine-color-gray-6)">
+              {sectionNumber}
+            </Text>
+            <BasicTexfield
+              idx={idx}
+              //activeBlockState={activeBlockState}
+              contentToRead={blocksContent[idx].blockContent as string}
+              //editor={editor}
+              //activeTextInputState={activeTextInputState}
+              idxInput={idx.toString()}
+              //sectionsContent={sectionsContent}
+              //setSectionsContent={setSectionsContent}
+            />
           </Flex>
           {/* <FocusTrap active={focusTrap}>
             <Input

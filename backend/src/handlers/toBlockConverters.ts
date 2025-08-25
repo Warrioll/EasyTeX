@@ -1,4 +1,4 @@
-import { blockType } from "../types"
+import { blockAbleToRef, blockType, referencesElementType } from "../types"
 
 export const documentclassToBlock =(line: string) : blockType=>{
     //tu sprawdzenie czy nie ma jakiegoś innego docuimentclass i ch=ya innych jestn git xddd
@@ -41,6 +41,32 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
     //strikethrough - uzywa paczki ulem
     fontToConvert =fontToConvert.replaceAll(/\\sout\{(.*?)\}/g, (wholeFraze, insideOfFraze) => {
         return '<s>'+insideOfFraze+'</s>';})
+
+        // refs to figures, tables and equations
+    fontToConvert=fontToConvert.replaceAll(/\\ref\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
+        let wholeFrazeCopy=wholeFraze
+        console.log('wholeFraze', wholeFraze)
+        console.log('insideOfFraze', insideOfFraze)
+        //for( let i of insideOfFraze){
+            wholeFrazeCopy =wholeFrazeCopy.replaceAll(`\\ref{${insideOfFraze}}`, `<span class="mention" data-type="mention" data-id="${insideOfFraze}">${insideOfFraze}</span>`)
+       // }
+        console.log('wholeFrazeCopy', wholeFrazeCopy)
+        return wholeFrazeCopy
+         //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+    })
+
+        // refs to bibliography
+        fontToConvert=fontToConvert.replaceAll(/\\cite\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
+        let wholeFrazeCopy=wholeFraze
+        console.log('wholeFraze', wholeFraze)
+        console.log('insideOfFraze', insideOfFraze)
+        //for( let i of insideOfFraze){
+            wholeFrazeCopy =wholeFrazeCopy.replaceAll(`\\cite{${insideOfFraze}}`, `<span class="mention" data-type="mention" data-id="${insideOfFraze}">${insideOfFraze}</span>`)
+       // }
+        console.log('wholeFrazeCopy', wholeFrazeCopy)
+        return wholeFrazeCopy
+         //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+    })
 
         return fontToConvert
 }
@@ -170,7 +196,7 @@ export const textfieldToBlock =(line: string) : blockType=>{
         return '<sup>'+insideOfFraze+'</sup>';})
 
 
-       //----------!!! ususwać \\ przed listami bo błąd!!! albo robić coś żeby w konsoli wciskało enter----------------------- 
+       // FIXME ----------!!! ususwać \\ przed listami bo błąd!!! albo robić coś żeby w konsoli wciskało enter----------------------- 
     //bullet and enumerate list
     line = line.replaceAll( /\\begin\{(itemize|enumerate)\}(.*?)\\end\{(itemize|enumerate)\}/g, (wholeFraze, listType, insideOfFraze) => {
         let items:string[] = insideOfFraze.split('\\item ')
@@ -198,13 +224,26 @@ export const equationToBlock =(line: string) : blockType=>{
     let equation = line.replace('\\begin{equation}', '')
     equation = equation.replace('\\end{equation}', '')
 
-    return {typeOfBlock: 'equation', blockContent: equation}
+    let id:string;
+    equation=equation.replace(/\\label\{(.*)\}/g,(wholeFraze, insideOfFraze)=>{
+        id=insideOfFraze
+        return wholeFraze.replace(`\\label{${insideOfFraze}}`, '')
+    })
+
+    return {typeOfBlock: 'equation', blockContent: {id:id, label: '', content: equation}}
 }
 
 export const tableToBlock =(line: string) : blockType=>{
    
 
-    let tableTeX=line.replace('\\begin{table}[h!]', '').replace('\\begin{center}', '').replace('\\begin{tabular}', '').replace('\\end{tabular}', '').replace('\\end{center}', '').replace('\\end{table}', '').replaceAll('\\hline','')
+    let table: blockAbleToRef;
+    let tableTeX= line.replace(/\\begin\{table\}\[h!\] \\begin\{center\} \\begin\{tabular\}(.*)\\end\{tabular\}\\end\{center\} \\caption\{(.*)\} \\label\{(.*)\} \\end\{table\}/,(wholeFraze, tab, label, id)=>{
+         const labelFormatted = basicToBlockFontConverter(label)
+        table = {id:id, label: labelFormatted, content: ''}
+        return tab.replaceAll('\\hline', '')
+    })
+
+    //let tableTeX=line.replace('\\begin{table}[h!]', '').replace('\\begin{center}', '').replace('\\begin{tabular}', '').replace('\\end{tabular}', '').replace('\\end{center}', '').replace('\\end{table}', '').replaceAll('\\hline','')
     tableTeX=basicToBlockFontConverter(tableTeX)
     let tmp:string[]=tableTeX.split('}')
     const style=tmp.shift()
@@ -212,7 +251,7 @@ export const tableToBlock =(line: string) : blockType=>{
     
     tmp=tmp2.split('\\\\')
     tmp.pop()
-    let table: string[][]=tmp.map((element, id)=>{
+    let tableContent: string[][]=tmp.map((element, id)=>{
         
         return element.split('&').map((ele, id)=>{
             const uniqueArr = [...new Set(ele)]
@@ -226,6 +265,8 @@ export const tableToBlock =(line: string) : blockType=>{
         })
     })
 
+    table.content=tableContent
+
 return {typeOfBlock: 'table', blockContent: table}
 }
 
@@ -233,12 +274,48 @@ return {typeOfBlock: 'table', blockContent: table}
 
 export const figureToBlock =(line: string) : blockType=>{
 
-    let path= line.replace('\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=15cm, keepaspectratio]{', '')
-    path = path.replace('} \\end{figure}', '').replaceAll(' ', '')
+    let figure:blockAbleToRef;
 
-    let pathArray=path.split('/')
-    let fileName=pathArray[pathArray.length-1].split('.')
-    let  figure = fileName[0]
+    line.replace(/\\begin\{figure\} \\centering \\includegraphics\[width=\\linewidth, height=10cm, keepaspectratio\]\{(.*)\} \\caption\{(.*)\} \\label\{(.*)\}\\end\{figure\}/, (wholeFraze, fig, label, id)=>{
+        const link= fig.split('/')
+        const name=link[link.length-1].split('.')
+        const labelFormatted = basicToBlockFontConverter(label)
+        //console.log('figure id')
+        figure={content: name[0], id: id, label: labelFormatted}
+        return wholeFraze
+    })
+
+    // let path= line.replace('\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=15cm, keepaspectratio]{', '')
+    // //TODO regexy to caption i label
+
+    // path = path.replace('} \\end{figure}', '').replaceAll(' ', '')
+
+    // let pathArray=path.split('/')
+    // let fileName=pathArray[pathArray.length-1].split('.')
+    // let  figure = fileName[0]
 
     return {typeOfBlock: 'figure', blockContent: figure}
+}
+
+export const referencesToBlock =(line: string) : blockType=>{ 
+
+    const convertedLine=basicToBlockFontConverter(line)
+     console.log(convertedLine)
+    let references = convertedLine.replace('\\begin{thebibliography}{', '').replace('\\end{thebibliography}', '').split('\\bibitem{')
+    console.log(references)
+    let referencesBlocks = references.map((item, id)=>{
+        let tmp = item.split('}')
+        let referenceId:string=''
+        if(id!==0){
+        referenceId=tmp[0]
+        tmp.splice(0,1);
+        
+        //console.log( {id: Number(referenceId), label: tmp.join('}')})
+        return {id: referenceId, label: tmp.join('}')}
+        }
+      
+    })
+      referencesBlocks=referencesBlocks.filter(item=>item!==undefined && item!==null)
+ console.log( referencesBlocks)
+    return {typeOfBlock: 'references', blockContent: referencesBlocks as referencesElementType[]}
 }

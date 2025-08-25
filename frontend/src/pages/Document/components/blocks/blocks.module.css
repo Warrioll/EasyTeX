@@ -8,6 +8,18 @@
 
 }
 
+.unmarkedFrame{
+    margin-left: 3px;
+    margin-right: 3px;
+    
+}
+
+.unmarkedFramePaper{
+    margin-left: -3px;
+    margin-right: -3px;
+    
+}
+
 .blockFrameStyle{
     /* background-color: var(--mantine-color-cyan-0); */
     border-left: 3px solid var(--mantine-color-cyan-3);
@@ -21,9 +33,9 @@
 }
 
 .textfieldNotFocused{
-    word-wrap: break-word;
+    /* word-wrap: break-word;
     overflow-wrap: break-word;
-    text-align: justify;
+    text-align: justify; */
 }
 
 .centeredInput{

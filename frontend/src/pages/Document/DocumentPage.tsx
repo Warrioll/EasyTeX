@@ -1,14 +1,17 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { FaRegSave } from 'react-icons/fa';
+import { TbFileSad, TbFileX, TbMoodSadSquint, TbRefresh } from 'react-icons/tb';
 //import { Document, Page, pdfjs } from 'react-pdf';
 import { Document, Page, pdfjs } from 'react-pdf';
+import ErrorBanner from '@/components/ErrorInfos/ErrorBanner';
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -30,13 +33,21 @@ import TableOfContentsBlock from './components/blocks/TableOfContentsBlock';
 import TextfieldBlock from './components/blocks/TextfieldBlock';
 import TitlePageBlock from './components/blocks/TitlePageBlock';
 import Header from './components/header/Header';
+import {
+  ActiveTextfieldProvider,
+  EditorProvider,
+  //ReferencesListProvider,
+  useActiveBlockContext,
+  useActiveTableCellContext,
+  useBlocksContentContext,
+} from './DocumentContextProviders';
 import { chceckIfBlockContentEmpty, saveBasicTextInputChanges } from './documentHandlers';
 import pdfClasses from './components/pdfDocument.module.css';
 import classes from './documentPage.module.css';
 
 import 'katex/dist/katex.min.css';
 
-import Latex from 'react-latex-next';
+import ReferencesBlock from './components/blocks/ReferencesBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -48,53 +59,43 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-// type chapterType = {
-//   head: string | null | undefined;
-//   body: string | undefined;
-// };
-
 export default function DocumentPage() {
-  const pdfLink = 'http://localhost:8100/document/getPdf/671396c35547c1fc316c1a06';
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  //FIXME - sprawdzic czy uzywane w tym pliku, jesli nie przeniesc tutaj provider z routera
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  //FIXME - sprawdzic czy uzywane w tym pliku, jesli nie przeniesc tutaj provider z routera
+  const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
 
-  // const [sectionsContent, setSectionsContent] = useState<chapterType[]>([]);
-  const blocksContentState = useState<blockType[]>([]);
-  const [sectionsContent, setSectionsContent] = blocksContentState;
   const [blocksLoaded, setBlocksLoaded] = useState<boolean>(true);
 
-  const activeBlockState = useState<number>(0);
-  const [activeBlock, setActiveBlock] = activeBlockState;
-  const activeTextInputState = useState<string>('');
-  const [activeTextInput, setActiveTextInput] = activeTextInputState;
-
-  const [editorContent, setEditorContent] = useState(sectionsContent[activeBlock]);
-
   const [pdfLoaded, setPdfLoaded] = useState(true);
+  const [workspaceLoaded, setWorkspaceLoaded] = useState<boolean>(false);
   const [pagesNumber, setPagesNumber] = useState<number>(0);
   const [pdf, setPdf] = useState<any>(null);
+
+  const [pdfError, setPdfError] = useState<{
+    title: string;
+    icon?: React.FC;
+    description?: string;
+    buttonLabel?: string;
+    buttonIcon?: React.FC;
+    buttonFunction?: () => void;
+  } | null>(null);
+  const [blocksError, setBlocksError] = useState<{
+    title: string;
+    icon?: React.FC;
+    description?: string;
+    buttonLabel?: string;
+    buttonIcon?: React.FC;
+    buttonFunction?: () => void;
+  } | null>(null);
+
   const pdfZoom = useState<string | null>('1');
   const workspaceZoom = useState<string | null>('1');
   const pdfZoomValue = useState<number>(1);
   const workspaceZoomValue = useState<number>(1);
 
-  const activeTableCellState = useState<[number, number]>([0, 0]); //[row, column]
-  const [activeTableCell, setActiveTableCell] = activeTableCellState;
-
   const { id } = useParams();
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Subscript,
-      Superscript,
-      LinkTiptap,
-      //, Placeholder.configure({ placeholder: 'This is placeholder' })
-    ],
-    //content: editorContent,
-    onUpdate: ({ editor }) => {
-      console.log(editor.getHTML());
-    },
-  });
 
   // const replaceSelectedText = () => {
   //   const selectedText = editor.state.doc.textBetween(
@@ -116,11 +117,6 @@ export default function DocumentPage() {
   //   }
   // };
 
-  //to to przeanalizowania
-  const delay = (ms: number) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  };
-
   // const saveFontTextInputChanges = () => {
   //   saveBasicTextInputChanges(
   //     activeBlock,
@@ -135,190 +131,151 @@ export default function DocumentPage() {
   //   //console.log('OnBlur', editorContent);
   // };
 
-  // const sendChanges = async () => {
-  //   const response = await axios.put(
-  //     `http://localhost:8100/document/documentContent/${id}`,
-  //     sectionsContent
-  //   );
-
-  // await setPdfLoaded(false);
-  // const response = await axios.put(
-  //   'http://localhost:8100/document/lines/671396c35547c1fc316c1a06',
-  //   { sections: sectionsContent }
-  // );
-  // console.log(response);
-  // //kurka przy 800ms działa ale to za długo
-  // //await delay(800);
-  // await setPdfLoaded(true);
-  //}
-
-  // const addSection = () => {
-  //   setSectionsContent([...sectionsContent, { head: 'New Chapter', body: '<u>Write</u> here...' }]);
-  //   console.log(sectionsContent);
-  // };
-
   const addSection = () => {
-    // editor?.commands.setSectionsContent([
-    //   ...sectionsContent,
-    //   //{ typeOfBlock: 'section', blockContent: { idx: 1, sectionContent: '' } },
-    //   { typeOfBlock: 'section', blockContent: '' },
-    // ]);
-    // console.log(sectionsContent);
-
-    // if (activeSection === 0) {
-    //   setSectionsContent([...sectionsContent, { typeOfBlock: 'section', blockContent: '' }]);
-    // } else {
-    //   let blocks = [...sectionsContent];
-    //   blocks.splice(activeSection + 1, 0, { typeOfBlock: 'section', blockContent: '' });
-    //   setSectionsContent(blocks);
-    // }
-
-    // console.log(sectionsContent);
-
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         { typeOfBlock: 'section', blockContent: '<b>New Section</b>' },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'section',
         blockContent: '<b>New Section</b>',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addSubsection = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         { typeOfBlock: 'subsection', blockContent: 'New Subection' },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'subsection',
         blockContent: 'New Subsection',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addSubsubsection = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         { typeOfBlock: 'subsection', blockContent: 'New Subsubection' },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'subsection',
         blockContent: 'New Subsubsection',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   //puste text fieldy się nie wyświetlają!!!
   const addTextfield = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         { typeOfBlock: 'textfield', blockContent: 'New textfield' },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'textfield',
         blockContent: 'New textfield',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addTitlePage = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'titlePage',
           blockContent: { title: 'Title', author: 'Author', date: 'Date' },
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'titlePage',
         blockContent: { title: 'Title', author: 'Author', date: 'Date' },
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addTableOfContents = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'tableOfContents',
           blockContent: '',
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'tableOfContents',
         blockContent: '',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addPageBreak = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'pageBreak',
           blockContent: '',
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'pageBreak',
         blockContent: '',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addEquation = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'equation',
           blockContent: 'New equation',
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'equation',
         blockContent: 'New equation',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addTable = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'table',
           blockContent: [
@@ -328,7 +285,7 @@ export default function DocumentPage() {
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'table',
         blockContent: [
@@ -336,26 +293,26 @@ export default function DocumentPage() {
           ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
         ],
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
   const addFigure = () => {
     if (activeBlock === 0) {
-      setSectionsContent([
-        ...sectionsContent,
+      setBlocksContent([
+        ...blocksContent,
         {
           typeOfBlock: 'figure',
           blockContent: '',
         },
       ]);
     } else {
-      let blocks = [...sectionsContent];
+      let blocks = [...blocksContent];
       blocks.splice(activeBlock + 1, 0, {
         typeOfBlock: 'figure',
         blockContent: '',
       });
-      setSectionsContent(blocks);
+      setBlocksContent(blocks);
     }
   };
 
@@ -365,29 +322,131 @@ export default function DocumentPage() {
     // }, 5000);
   };
 
-  const setPdfFile = async () => {
-    //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
-    //console.log()
-    await setPdfLoaded(false);
-    const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
+  const getPdfFile = async (pdfId: string): Promise<AxiosResponse<any, any>> => {
+    return await axios.get(`http://localhost:8100/document/getPdf/${pdfId}`, {
       withCredentials: true,
       responseType: 'blob',
       headers: {
         'Content-Type': 'application/pdf',
       },
     });
+  };
 
-    setPdf(URL.createObjectURL(await response.data));
+  const setPdfFile = async () => {
+    try {
+      setPdfError(null);
+      setPdfLoaded(false);
+      const response = await getPdfFile(id as string);
+      //console.log(response);
 
-    const document = await pdfjs.getDocument(pdfLink).promise;
-    setPagesNumber(document.numPages);
-    console.log('pages:', pagesNumber);
-    await setPdfLoaded(true);
+      const pdfObjectURL = URL.createObjectURL(await response.data);
+      setPdf(pdfObjectURL);
+
+      const document = await pdfjs.getDocument(pdfObjectURL).promise;
+      setPagesNumber(document.numPages);
+      //console.log('pages:', pagesNumber);
+      setPdfLoaded(true);
+    } catch (error) {
+      setPdf(null);
+      switch (error.status) {
+        case 422:
+          //setPdfError(<ErrorBanner title="Document content contains errors!" description="" />);
+          //TODO description
+          setPdfError({
+            title: 'Document content contains errors!',
+            description: 'Here details about possible mistakes',
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbFileSad />
+              </Box>
+            ),
+            buttonLabel: 'Save document content',
+            buttonFunction: async () => {
+              await sendChanges();
+              //await setPdfFile();
+            },
+            buttonIcon: () => <FaRegSave />,
+          });
+          //setPdfError('Document content contains errors. Cannot generate pdf!');
+          break;
+        case 404:
+          console.log('gg', error);
+          // if (JSON.parse(await error.response.data.text()).error === 'TEX_FILE_NOT_EXISTS') {
+          //   setPdfError({
+          //     title: 'TeX file has not been found!',
+          //     description:
+          //       'TeX file for this document has not been found! Try saving document content.',
+          //     buttonLabel: 'Save document content',
+          //     buttonFunction: async () => {
+          //       await sendChanges();
+          //       //await setPdfFile();
+          //     },
+          //     buttonIcon: () => <FaRegSave />,
+          //     icon: () => (
+          //       <Box mb="-1.5rem">
+          //         <TbFileX />
+          //       </Box>
+          //     ),
+          //   });
+          //   // setPdfError(
+          //   //   'TeX file for this document has not been found! Try saving document content.'
+          //   // );
+          // } else {
+          //   //TODO: wywalanie strony 404
+
+          //   setPdfError({
+          //     title: 'This document does not exists!',
+          //     icon: () => (
+          //       <Box mb="-1.5rem">
+          //         <TbFileX />
+          //       </Box>
+          //     ),
+          //   });
+          //   //setPdfError('This document does not exists!');
+          // }
+
+          //TODO: wywalanie strony 404
+          setPdfError({
+            title: 'This document does not exists!',
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbFileX />
+              </Box>
+            ),
+          });
+          break;
+        case 410:
+          //TODO: może inny komunikat dla użytkownika
+          setPdfError({
+            title: 'This document does not exists!',
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbFileX />
+              </Box>
+            ),
+          });
+          break;
+        default:
+          setPdfError({
+            title: 'Something went wrong!',
+            buttonLabel: 'Refresh',
+            buttonIcon: () => <TbRefresh />,
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbMoodSadSquint />
+              </Box>
+            ),
+            buttonFunction: setPdfFile,
+          });
+        //setPdfError('Something went wrong!');
+      }
+      setPdfLoaded(true);
+    }
   };
 
   const sendChanges = async () => {
     try {
-      const blocks = sectionsContent.filter((block) => {
+      const blocks = blocksContent.filter((block) => {
         switch (block.typeOfBlock) {
           case 'titlePage':
             if (
@@ -398,12 +457,26 @@ export default function DocumentPage() {
               return false;
             }
             return true;
+          case 'equation':
+            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
+            return true;
+          // case 'figure':
+          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
+          //   case 'equation':
+          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
+          case 'references':
+            //FIXME - sprawdzanie czy nie są puste
+            return true;
           case 'tableOfContents':
             return true;
           case 'pageBreak':
             return true;
+          case 'figure':
+            //TODO
+            return true;
           case 'table':
-            //TODO:
+            //FIXME - sprawdzanie czy nie są puste
+            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
             return true;
           default:
             return !chceckIfBlockContentEmpty(block.blockContent);
@@ -415,42 +488,42 @@ export default function DocumentPage() {
         blocks,
         { withCredentials: true }
       );
-
+      console.log('send changes', response.status);
       if (response.status === 200) {
         const reload = await setPdfFile();
       }
     } catch (error) {
-      console.log('save and reaload error:', error);
+      console.log('save and reaload error:', error, 'blocks: ', blocksContent);
     }
   };
 
   const addRowAbove = () => {
     console.log('Row Add');
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
       let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
       tableCopy.splice(activeTableCell[0] - 1, 0, row);
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
       console.log('Row Added');
     }
   };
 
   const addRowBelow = () => {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
       let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
       tableCopy.splice(activeTableCell[0], 0, row);
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
     }
   };
 
   const deleteRow = () => {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
       //let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
       if (tableCopy.length === 1) {
@@ -462,38 +535,38 @@ export default function DocumentPage() {
       }
 
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
     }
   };
 
   const addColumnFromLeft = () => {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
 
       for (let i = 0; i < tableCopy.length; i++) {
         tableCopy[i].splice(activeTableCell[1] - 1, 0, '<p>&nbsp;</p>');
       }
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
     }
   };
 
   const addColumnFromRight = () => {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
       for (let i = 0; i < tableCopy.length; i++) {
         tableCopy[i].splice(activeTableCell[1], 0, '<p>&nbsp;</p>');
       }
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
     }
   };
 
   const deleteColumn = () => {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
-      let blockContentCopy = cloneDeep(sectionsContent);
+      let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent;
       if (tableCopy[0].length === 1) {
         tableCopy = [['<p>&nbsp;</p>']];
@@ -503,7 +576,7 @@ export default function DocumentPage() {
         }
       }
       blockContentCopy[activeBlock].blockContent = tableCopy;
-      setSectionsContent(blockContentCopy);
+      setBlocksContent(blockContentCopy);
     }
   };
 
@@ -538,240 +611,191 @@ export default function DocumentPage() {
     workspaceZoomValue[1](Number(workspaceZoom[0]));
   }, [workspaceZoom[0]]);
 
-  // useEffect(() => {
-  //   const setPdfFile = async () => {
-  //     //brak autoryzacji pdf zrobić to jak ogarne odpowiedni viewer
-  //     const response = await axios.get(`http://localhost:8100/document/getPdf/${id}`, {
-  //       withCredentials: true,
-  //       responseType: 'blob',
-  //       headers: {
-  //         'Content-Type': 'application/pdf',
-  //       },
-  //     });
-
-  //     setPdf(URL.createObjectURL(await response.data));
-
-  //     const document = await pdfjs.getDocument(pdfLink).promise;
-  //     setPagesNumber(document.numPages);
-  //     console.log('pages:', pagesNumber);
-  //   };
-
-  //   setPdfFile();
-  // }, [pdfLoaded]);
-
   useEffect(() => {
     setPdfFile();
   }, []);
 
+  const getBlocksContent = async (documentId: string): Promise<AxiosResponse<any, any>> => {
+    return await axios.get(`http://localhost:8100/document/getDocumentContent/${documentId}`, {
+      withCredentials: true,
+    });
+  };
+
+  const setBlocks = async () => {
+    try {
+      setWorkspaceLoaded(false);
+      setBlocksError(null);
+      const response = await getBlocksContent(id as string);
+      setBlocksContent(response.data);
+      setWorkspaceLoaded(true);
+    } catch (error) {
+      //console.log('co z tym', error);
+      switch (error.status) {
+        case 404:
+          //TODO: wywalanie strony 404
+          //setBlocksError('This document does not exists!');
+          setBlocksError({
+            title: 'This document does not exists!',
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbFileX />
+              </Box>
+            ),
+          });
+          break;
+        case 410:
+          //TODO: może inny komunikat dla użytkownika
+
+          setBlocksError({
+            title: 'This document does not exists!',
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbFileX />
+              </Box>
+            ),
+          });
+          break;
+        default:
+          setBlocksError({
+            title: 'Something went wrong!',
+            buttonLabel: 'Refresh',
+            buttonIcon: () => <TbRefresh />,
+            icon: () => (
+              <Box mb="-1.5rem">
+                <TbMoodSadSquint />
+              </Box>
+            ),
+            buttonFunction: setBlocks,
+          });
+      }
+    }
+    setWorkspaceLoaded(true);
+  };
+
   useEffect(() => {
-    const setBlocks = async () => {
-      const response = await axios.get(`http://localhost:8100/document/getDocumentContent/${id}`, {
-        withCredentials: true,
-      });
-      console.log('doc content', response);
-      setSectionsContent(response.data);
-    };
-    //console.log('SC:', sectionsContent);
     setBlocks();
   }, []);
 
   const renderBlock = (item, idx) => {
     switch (item.typeOfBlock) {
       case 'titlePage':
-        return (
-          <TitlePageBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            editor={editor}
-            activeTextInputState={activeTextInputState}
-          />
-        );
+        return <TitlePageBlock idx={idx} />;
       case 'tableOfContents':
-        return (
-          <TableOfContentsBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            blocksContentState={blocksContentState}
-            activeTextInputState={activeTextInputState}
-          />
-        );
+        return <TableOfContentsBlock idx={idx} />;
       case 'pageBreak':
-        return (
-          <PageBreakBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            blocksContentState={blocksContentState}
-            activeTextInputState={activeTextInputState}
-          />
-        );
+        return <PageBreakBlock idx={idx} />;
       case 'textfield':
-        //console.log('textfield');
-        return (
-          <TextfieldBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            editor={editor}
-            activeTextInputState={activeTextInputState}
-          />
-        );
-        break;
+        return <TextfieldBlock idx={idx} />;
       case 'section':
-        //console.log('section');
-        return (
-          <SectionBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            editor={editor}
-            activeTextInputState={activeTextInputState}
-          />
-        );
-        break;
+        return <SectionBlock idx={idx} />;
       case 'subsection':
-        //console.log('section');
-        return (
-          <SubsectionBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            editor={editor}
-            activeTextInputState={activeTextInputState}
-          />
-        );
-        break;
+        return <SubsectionBlock idx={idx} />;
       case 'subsubsection':
-        //console.log('section');
-        return (
-          <SubsubsectionBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            sectionsContent={sectionsContent}
-            setSectionsContent={setSectionsContent}
-            activeTextInputState={activeTextInputState}
-            editor={editor}
-          />
-        );
+        return <SubsubsectionBlock idx={idx} />;
       case 'equation':
-        return (
-          <EquationBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            blocksContentState={blocksContentState}
-            activeTextInputState={activeTextInputState}
-          />
-        );
+        return <EquationBlock idx={idx} />;
       case 'table':
-        return (
-          <TableBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            blocksContentState={blocksContentState}
-            activeTextInputState={activeTextInputState}
-            activeTableCellState={activeTableCellState}
-            editor={editor}
-          />
-        );
+        return <TableBlock idx={idx} />;
       case 'figure':
-        return (
-          <FigureBlock
-            idx={idx}
-            activeBlockState={activeBlockState}
-            blocksContentState={blocksContentState}
-            activeTextInputState={activeTextInputState}
-            editor={editor}
-          />
-        );
+        return <FigureBlock idx={idx} />;
+      case 'references':
+        return <ReferencesBlock idx={idx} />;
       default:
         return <></>;
     }
   };
 
-  //const pageRefs = useRef([]);
-
   return (
     <>
-      <Header
-        editFunctions={editFunctions}
-        editor={editor}
-        saveElementChanges={() => {
-          saveBasicTextInputChanges(
-            activeBlock,
-            activeTextInput,
-            blocksContentState,
-            editor?.getHTML() as string
-          );
-        }}
-        pdfZoom={pdfZoom}
-        workspaceZoom={workspaceZoom}
-        activeSection={activeBlock}
-        sectionsContent={sectionsContent}
-        //activeTableCellState={activeTableCellState}
-      />
-
-      <Split
-        className={classes.bar}
-        lineBar
-        style={{ width: '100vw', border: 'none' }}
-        renderBar={({ onMouseDown, ...props }) => {
-          return (
-            <div {...props} style={{ boxShadow: 'none' }}>
-              <div onMouseDown={onMouseDown} />
-            </div>
-          );
-        }}
-      >
-        <Center w="100vw" h="90vh" p="0px">
-          <ScrollArea h="100%" w="100%">
-            {/* <Grid> */}
-            {/* <Grid.Col span={6} p={0} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
-            <Box
-              h="100%"
-              w="100%"
-              m="xl"
-              style={{
-                transform: `scale(${workspaceZoomValue[0]})`,
-                transformOrigin: 'top left',
-              }}
-              p="0px"
-            >
-              <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
-                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
-                {/* <TitlePageBlock
-                  idx={-1}
-                  activeSection={activeSection}
-                  setActiveSecion={setActiveSecion}
-                  sectionsContent={sectionsContent}
-                  setSectionsContent={setSectionsContent}
-                /> */}
-                {blocksLoaded && sectionsContent.length > 0 ? (
-                  sectionsContent.map((item, idx) => <div key={idx}>{renderBlock(item, idx)}</div>)
-                ) : (
-                  <></>
-                )}
-                <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
-              </Stack>
-              {/* </Paper> */}
-              {/* </Grid.Col> */}
-            </Box>
-          </ScrollArea>
-        </Center>
-        <Box w="100vw" pos="relative">
-          <LoadingOverlay
-            visible={!pdfLoaded}
-            zIndex={100}
-            overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
-            loaderProps={{ color: 'cyan' }}
+      <ActiveTextfieldProvider>
+        {/* <ReferencesListProvider> */}
+        <EditorProvider>
+          <Header
+            editFunctions={editFunctions}
+            //editor={editor}
+            saveElementChanges={() => {
+              //FIXME - Czemu ta funkcja jest tak przekazywana? nie przekazywać jej!!!
+              // saveBasicTextInputChanges(
+              //   activeBlock,
+              //   activeTextInput,
+              //   [blocksContent, setBlocksContent],
+              //   //blocksContentState,
+              //   editor?.getHTML() as string
+              // );
+            }}
+            pdfZoom={pdfZoom}
+            workspaceZoom={workspaceZoom}
           />
-          <ScrollArea h="90vh">
-            {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
-            <Center m="xl" p={0}>
-              {/* {pdfLoaded ? (
+
+          <Split
+            className={classes.bar}
+            lineBar
+            style={{ width: '100vw', border: 'none' }}
+            renderBar={({ onMouseDown, ...props }) => {
+              return (
+                <div {...props} style={{ boxShadow: 'none' }}>
+                  <div onMouseDown={onMouseDown} />
+                </div>
+              );
+            }}
+          >
+            <Center w="100vw" h="90vh" p="0px" pos="relative">
+              <LoadingOverlay
+                visible={!workspaceLoaded}
+                zIndex={100}
+                overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
+                loaderProps={{ color: 'cyan' }}
+              />
+              <ScrollArea h="100%" w="100%">
+                <Box
+                  h="100%"
+                  w="100%"
+                  m="xl"
+                  style={{
+                    transform: `scale(${workspaceZoomValue[0]})`,
+                    transformOrigin: 'top left',
+                  }}
+                  p="0px"
+                >
+                  {blocksError && (
+                    <Box h="80vh">
+                      <ErrorBanner
+                        title={blocksError.title}
+                        description={blocksError.description}
+                        Icon={blocksError.icon}
+                        ButtonIcon={blocksError.buttonIcon}
+                        buttonLabel={blocksError.buttonLabel}
+                        buttonFunction={blocksError.buttonFunction}
+                      />
+                    </Box>
+                  )}
+                  {workspaceLoaded && !blocksError && (
+                    <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                      <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
+                      {blocksLoaded && blocksContent.length > 0 ? (
+                        blocksContent.map((item, idx) => (
+                          <div key={idx}>{renderBlock(item, idx)}</div>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                      <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
+                    </Stack>
+                  )}
+                </Box>
+              </ScrollArea>
+            </Center>
+            <Box w="100vw" pos="relative">
+              <LoadingOverlay
+                visible={!pdfLoaded}
+                zIndex={100}
+                overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
+                loaderProps={{ color: 'cyan' }}
+              />
+              <ScrollArea h="90vh">
+                {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+                <Center m="xl" p={0}>
+                  {/* {pdfLoaded ? (
                 Array(pagesNumber)
                   .fill(1)
                   .map((x, idx) => (
@@ -796,29 +820,45 @@ export default function DocumentPage() {
               ) : (
                 <>PDF Not found</>
               )} */}
+                  {pdfError && (
+                    <Box h="80vh">
+                      <ErrorBanner
+                        title={pdfError.title}
+                        description={pdfError.description}
+                        Icon={pdfError.icon}
+                        ButtonIcon={pdfError.buttonIcon}
+                        buttonLabel={pdfError.buttonLabel}
+                        buttonFunction={pdfError.buttonFunction}
+                      />
+                    </Box>
+                  )}
+                  {pdf && (
+                    <Document
+                      file={pdf}
+                      //onLoadSuccess={onDocumentLoadSuccess}
+                      //options={options}
+                    >
+                      {Array.from(new Array(pagesNumber), (_el, index) => (
+                        <Page
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          className={pdfClasses.page}
+                          scale={pdfZoomValue[0]}
+                          // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                        />
+                      ))}
+                    </Document>
+                  )}
+                </Center>
 
-              <Document
-                file={pdf}
-                //onLoadSuccess={onDocumentLoadSuccess}
-                //options={options}
-              >
-                {Array.from(new Array(pagesNumber), (_el, index) => (
-                  <Page
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    className={pdfClasses.page}
-                    scale={pdfZoomValue[0]}
-                    // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
-                  />
-                ))}
-              </Document>
-            </Center>
-
-            {/* </Grid.Col> */}
-            {/* </Grid> */}
-          </ScrollArea>
-        </Box>
-      </Split>
+                {/* </Grid.Col> */}
+                {/* </Grid> */}
+              </ScrollArea>
+            </Box>
+          </Split>
+        </EditorProvider>
+        {/* </ReferencesListProvider> */}
+      </ActiveTextfieldProvider>
     </>
   );
 }

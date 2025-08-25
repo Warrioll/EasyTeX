@@ -15,7 +15,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
 
@@ -38,8 +38,9 @@ export default function CreateDocumentModal({
   const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
 
-  const createDocument = async () => {
+  const createDocument = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       let documentClass: string | null = null;
       switch (documentType) {
         case 'Article':
@@ -99,97 +100,109 @@ export default function CreateDocumentModal({
           </Text>
         }
       >
-        <SimpleGrid mt="0px" cols={1} verticalSpacing="xl" p="xl" pt="md" pb="md">
-          <SimpleGrid cols={1} spacing="xl" pl="xl" pr="xl" m="xl">
-            <Box>
-              {' '}
-              <TextInput
-                classNames={{
-                  input: classes.typePicker,
-                }}
-                label="Document type"
-                required
-                disabled
-              />
-              <SegmentedControl
-                mt="lg"
-                value={documentType}
-                withItemsBorders={false}
-                onChange={(value) => {
-                  setDocumentType(value);
-                  switch (value) {
-                    case 'Article':
-                      setSegmentedControlColor(
-                        `var(--mantine-color-${documentColor('article')}-5)`
-                      );
-                      break;
-                    case 'Report':
-                      setSegmentedControlColor(`var(--mantine-color-${documentColor('report')}-5)`);
-                      break;
-                    case 'Book':
-                      setSegmentedControlColor(`var(--mantine-color-${documentColor('book')}-5)`);
-                      break;
-                    case 'Letter':
-                      setSegmentedControlColor(`var(--mantine-color-${documentColor('letter')}-5)`);
-                      break;
-                    case 'Presentation':
-                      setSegmentedControlColor(`var(--mantine-color-${documentColor('beamer')}-5)`);
-                      break;
-                    case 'Slides':
-                      setSegmentedControlColor(`var(--mantine-color-${documentColor('slides')}-5)`);
-                      break;
-                  }
-                }}
-                fullWidth
-                size="sm"
-                radius="md"
-                data={['Article', 'Report', 'Book', 'Letter', 'Presentation', 'Slides']}
-                color={segmentedControlColor}
-              />
-            </Box>
-            <Box h="5.5rem">
-              <TextInput
-                mt="lg"
-                label="Document name"
-                placeholder="Your document name"
-                variant="filled"
-                required
-                value={documentName}
-                error={nameError}
-                onChange={(event) => {
-                  setDocumentName(event.currentTarget.value);
-                  if (docuemntNameRegex.test(event.currentTarget.value)) {
-                    setNameError(null);
-                  } else {
-                    setNameError('Invalid name');
-                  }
-                }}
-                // key={form.key('email')}
-                // {...form.getInputProps('email')}
-              />
-            </Box>
-            {/* <NativeSelect
+        <form>
+          <SimpleGrid mt="0px" cols={1} verticalSpacing="xl" p="xl" pt="md" pb="md">
+            <SimpleGrid cols={1} spacing="xl" pl="xl" pr="xl" m="xl">
+              <Box>
+                {' '}
+                <TextInput
+                  classNames={{
+                    input: classes.typePicker,
+                  }}
+                  label="Document type"
+                  required
+                  disabled
+                />
+                <SegmentedControl
+                  mt="lg"
+                  value={documentType}
+                  withItemsBorders={false}
+                  onChange={(value) => {
+                    setDocumentType(value);
+                    switch (value) {
+                      case 'Article':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('article')}-5)`
+                        );
+                        break;
+                      case 'Report':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('report')}-5)`
+                        );
+                        break;
+                      case 'Book':
+                        setSegmentedControlColor(`var(--mantine-color-${documentColor('book')}-5)`);
+                        break;
+                      case 'Letter':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('letter')}-5)`
+                        );
+                        break;
+                      case 'Presentation':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('beamer')}-5)`
+                        );
+                        break;
+                      case 'Slides':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('slides')}-5)`
+                        );
+                        break;
+                    }
+                  }}
+                  fullWidth
+                  size="sm"
+                  radius="md"
+                  data={['Article', 'Report', 'Book', 'Letter', 'Presentation']} //, 'Slides']}
+                  color={segmentedControlColor}
+                />
+              </Box>
+              <Box h="5.5rem">
+                <TextInput
+                  mt="lg"
+                  label="Document name"
+                  placeholder="Your document name"
+                  variant="filled"
+                  required
+                  value={documentName}
+                  error={nameError}
+                  onChange={(event) => {
+                    setDocumentName(event.currentTarget.value);
+                    if (docuemntNameRegex.test(event.currentTarget.value)) {
+                      setNameError(null);
+                    } else {
+                      setNameError('Invalid name');
+                    }
+                  }}
+                  // key={form.key('email')}
+                  // {...form.getInputProps('email')}
+                />
+              </Box>
+              {/* <NativeSelect
               variant="filled"
               radius="md"
               label="Input label"
               withAsterisk
               data={['Article', 'Report', 'Book', 'Letter', 'Presentation', 'Slides']}
             /> */}
-          </SimpleGrid>
+            </SimpleGrid>
 
-          <SimpleGrid cols={2} spacing="xl" mt="md">
-            <Button onClick={createDocument}>Create</Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                modalHandlers.close();
-                errorDialogHandlers.close();
-              }}
-            >
-              Cancel
-            </Button>
+            <SimpleGrid cols={2} spacing="xl" mt="md">
+              <Button onClick={createDocument} type="submit">
+                Create
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  modalHandlers.close();
+                  errorDialogHandlers.close();
+                }}
+              >
+                Cancel
+              </Button>
+            </SimpleGrid>
           </SimpleGrid>
-        </SimpleGrid>
+        </form>
       </Modal>
       <InfoErrorDialog
         title="Document name requirements"

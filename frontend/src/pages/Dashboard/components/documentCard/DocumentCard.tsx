@@ -27,7 +27,9 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
+import DeleteModal from '@/components/Modals/DeleteModal';
+import RenameModal from '@/components/Modals/RenameModal';
 import {
   documentColor,
   DocumentIcon,
@@ -60,8 +62,10 @@ export default function DocumentCard({
   );
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [renameModalOpened, renameModalHandlers] = useDisclosure(false);
-  const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  const [documentName, setDocumentName] = useState<string>(title);
+  //const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
+  const deleteModalHandlers = useDisclosure(false);
+  const documentNameState = useState<string>(title);
+  const [documentName, setDocumentName] = documentNameState;
   const [renameError, setRenemeError] = useState<string | null>(null);
   const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
   console.log('doc, id: ', documentId);
@@ -123,36 +127,44 @@ export default function DocumentCard({
   const lastUpdateDateString: string = `${lastUpdateDateSplited.join('.')} | ${lastUpdateHourSplited[0]}:${lastUpdateHourSplited[1]}`;
 
   const renameDocument = async () => {
-    try {
-      const response = await axios.put(
-        `http://localhost:8100/document/${documentId}`,
-        {
-          name: documentName,
-        },
-        { withCredentials: true }
-      );
+    // try {
+    //   const response = await axios.put(
+    //     `http://localhost:8100/document/${documentId}`,
+    //     {
+    //       name: documentName,
+    //     },
+    //     { withCredentials: true }
+    //   );
 
-      renameModalHandlers.close();
-      errorDialogHandlers.close();
-      updateReleaser[1](updateReleaser[0] + 1);
-    } catch (error) {
-      errorDialogHandlers.open();
-      console.log('reneme error: ', error);
-    }
+    //   renameModalHandlers.close();
+    //   errorDialogHandlers.close();
+    //   updateReleaser[1](updateReleaser[0] + 1);
+    // } catch (error) {
+    //   errorDialogHandlers.open();
+    //   console.log('reneme error: ', error);
+    // }
+
+    const response = await axios.put(
+      `http://localhost:8100/document/${documentId}`,
+      {
+        name: documentName,
+      },
+      { withCredentials: true }
+    );
+
+    // renameModalHandlers.close();
+    // errorDialogHandlers.close();
+    updateReleaser[1](updateReleaser[0] + 1);
   };
 
   const deleteDocuemnt = async () => {
-    try {
-      const response = await axios.delete(`http://localhost:8100/document/${documentId}`, {
-        withCredentials: true,
-      });
+    const response = await axios.delete(`http://localhost:8100/document/${documentId}`, {
+      withCredentials: true,
+    });
 
-      //console.log('renemae response: ', response);
-      deleteModalHandlers.close();
-      updateReleaser[1](updateReleaser[0] + 1);
-    } catch (error) {
-      console.log('delete error: ', error);
-    }
+    //console.log('renemae response: ', response);
+    //deleteModalHandlers.close();
+    updateReleaser[1](updateReleaser[0] + 1);
   };
 
   const choosenDocumentColor = `var(--mantine-color-${documentColor(type)}-5)`;
@@ -215,7 +227,7 @@ export default function DocumentCard({
                 Rename
               </Menu.Item>
               <Menu.Item
-                onClick={deleteModalHandlers.open}
+                onClick={deleteModalHandlers[1].open}
                 leftSection={
                   <Text c="var(--mantine-color-error)">
                     <FaRegTrashAlt />
@@ -252,7 +264,7 @@ export default function DocumentCard({
           <b>Last update: </b> {lastUpdateDateString}
         </Text>
       </Card>
-      <Modal
+      {/* <Modal
         opened={renameModalOpened}
         onClose={() => {
           renameModalHandlers.close();
@@ -303,58 +315,34 @@ export default function DocumentCard({
             </Button>
           </SimpleGrid>
         </SimpleGrid>
-      </Modal>
-      <Modal
-        opened={deleteModalOpened}
-        onClose={deleteModalHandlers.close}
-        transitionProps={{ transition: 'fade-up' }}
-        yOffset="12%"
-        size="lg"
-        title={
-          <Text c="var(--mantine-color-cyan-8)">
-            <b>Delete document</b>
-          </Text>
-        }
+      </Modal> */}
+
+      <DeleteModal
+        deleteModalHandlers={deleteModalHandlers}
+        thingToDelete="document"
+        deleteFunction={deleteDocuemnt}
       >
-        <SimpleGrid mt="0px" cols={1} verticalSpacing="md" ta="center" p="xl" pt="md" pb="md">
-          <Text fz="1.3rem" m="lg" mb="0px">
-            Are you sure you want to delete this document?
-          </Text>
-          <Group justify="center" m="0px" p="0px">
-            <SimpleGrid
-              ml="xl"
-              mr="xl"
-              mb="md"
-              mt="0px"
-              cols={2}
-              ta="left"
-              verticalSpacing="0.1rem"
-              pt="0px"
-              pb="md"
-              w="84%"
-              spacing="xl"
-            >
-              <b>Name: </b>
-              {title}
-              <b>Type: </b>
-              {choosenDocumentMainLabel}
-              <b>Created: </b>
-              {creationDateString}
-              <b>Last update: </b>
-              {lastUpdateDateString}
-            </SimpleGrid>
-          </Group>
-          <SimpleGrid cols={2} spacing="xl" mt="md">
-            <Button leftSection={<FaRegTrashAlt />} color="red" onClick={deleteDocuemnt}>
-              Delete
-            </Button>
-            <Button color="cyan" variant="outline" onClick={deleteModalHandlers.close}>
-              Cancel
-            </Button>
-          </SimpleGrid>
-        </SimpleGrid>
-      </Modal>
-      <InfoErrorDialog
+        <>
+          <b>Name: </b>
+
+          {title}
+          <b>Type: </b>
+          {choosenDocumentMainLabel}
+          <b>Created: </b>
+          {creationDateString}
+          <b>Last update: </b>
+          {lastUpdateDateString}
+        </>
+      </DeleteModal>
+
+      <RenameModal
+        renameModalHandlers={[renameModalOpened, renameModalHandlers]}
+        thingToRename="Document"
+        renameFunction={renameDocument}
+        renameState={documentNameState}
+      />
+
+      {/* <InfoErrorDialog
         title="Document name requirements"
         errorDialogHandlers={errorDialogHandlers}
         errorDialogOpened={errorDialogOpened}
@@ -372,7 +360,7 @@ export default function DocumentCard({
             </li>
           </Box>
         }
-      />
+      /> */}
     </>
   );
 }

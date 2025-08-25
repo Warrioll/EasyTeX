@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import axios from 'axios';
 import { FaRegCheckCircle } from 'react-icons/fa';
 import { RiErrorWarningFill, RiErrorWarningLine } from 'react-icons/ri';
@@ -14,6 +14,7 @@ import {
   Dialog,
   Flex,
   Group,
+  Loader,
   Modal,
   Paper,
   PasswordInput,
@@ -27,16 +28,23 @@ import {
 import { transitions } from '@mantine/core/lib/components/Transition/transitions';
 import { hasLength, isEmail, matches, matchesField, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import InfoErrorDialog from '@/components/InfoErrorDialog/InfoErrorDialog';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
+import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
+import PasswarodRequirements from '@/components/ErrorInfos/PasswordRequirements';
+import UsernameEmailRequirements from '@/components/ErrorInfos/UsernameRequirements';
 import styles from './registerPage.module.css';
 
 export default function RegisterPage() {
   //const [opened1, { toggle, open, close }] = useDisclosure(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const [errorMsgOpened, errorMsgHandlers] = useDisclosure(false);
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [modalOpened, modalHandlers] = useDisclosure(false);
+  const [disableSignUpButton, setDisableSignUpButton] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const form = useForm({
     mode: 'controlled',
+
     initialValues: { name: '', email: '', password: '', repeatedPassword: '' },
     validate: {
       name: matches(
@@ -59,6 +67,7 @@ export default function RegisterPage() {
 
   const register = async (registerData) => {
     try {
+      console.log('register');
       const response = await axios.post(
         'http://localhost:8100/user/createNewAccount',
         {
@@ -74,8 +83,13 @@ export default function RegisterPage() {
       // }, 150);
       //open();
       //...
+      setDisableSignUpButton(false);
     } catch (error) {
+      setErrorMessage('Sorry, something went wrong!');
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      errorMsgHandlers.open();
       console.log('register error: ', error);
+      setDisableSignUpButton(false);
     }
     //open();
   };
@@ -93,7 +107,25 @@ export default function RegisterPage() {
               <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
                 Create your EasyTeX Account!
               </Text>
-              <form onSubmit={form.onSubmit((values) => register(values))}>
+              <form
+                ref={formRef}
+                onSubmit={form.onSubmit(
+                  async (values) => {
+                    await register(values);
+                  },
+                  async (validationErrors, values, event) => {
+                    console.log(errorMsgOpened);
+                    errorMsgHandlers.close();
+                    setErrorMessage('Invalid sign up data!');
+                    //console.log('uu', validationErrors);
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+                    errorDialogHandlers.open();
+                    errorMsgHandlers.open();
+
+                    setDisableSignUpButton(false);
+                  }
+                )}
+              >
                 <SimpleGrid cols={2} spacing={100} verticalSpacing="0.3rem" p="md" pl="xl" pr="xl">
                   <Box>
                     <Box h="5.5rem">
@@ -138,46 +170,34 @@ export default function RegisterPage() {
                     </Box>
                   </Box>
                 </SimpleGrid>
-                <Box h={30}>
-                  <Transition
-                    mounted={errorMsgOpened}
-                    transition="fade-up"
-                    duration={200}
-                    timingFunction="ease"
-                    keepMounted
-                  >
-                    {(styles) => (
-                      <Flex justify="center" align="center" style={styles}>
-                        {' '}
-                        <Text ta="center" size="md" c="var(--mantine-color-error)">
-                          <RiErrorWarningFill />
-                        </Text>
-                        <Text ta="center" ml={5} mb={3} size="sm" c="var(--mantine-color-error)">
-                          {' '}
-                          Invalid sign up data!
-                        </Text>
-                      </Flex>
-                    )}
-                  </Transition>
-                </Box>
+
+                <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMsgOpened} />
                 <Flex justify="center" pl={210} pr={210} mt="xl">
                   <Button
                     type="submit"
                     fullWidth
+                    disabled={disableSignUpButton}
                     onClick={async () => {
+                      //console.log('click');
+                      setDisableSignUpButton(true);
+                      errorDialogHandlers.close();
                       errorMsgHandlers.close();
 
-                      setTimeout(() => {
-                        errorMsgHandlers.open();
-                        if (!form.isValid('password') || !form.isValid('name')) {
-                          errorDialogHandlers.open();
-                        } else {
-                          errorDialogHandlers.close();
-                        }
-                      }, 150);
+                      formRef.current?.requestSubmit();
+                      //setTimeout(() => {
+
+                      //errorMsgHandlers.open();
+                      // if (!form.isValid('password') || !form.isValid('name')) {
+                      //   errorDialogHandlers.open();
+                      //   setErrorMessage('Invalid sign up data!');
+                      //   setDisableSignUpButton(false);
+                      //} //else {
+                      //   errorDialogHandlers.close();
+                      // }
+                      // }, 150);
                     }}
                   >
-                    Sign up
+                    {disableSignUpButton ? <Loader size={20} /> : <> Sign up</>}
                   </Button>
                 </Flex>
               </form>
@@ -195,28 +215,8 @@ export default function RegisterPage() {
             errorDialogOpened={errorDialogOpened}
             content={
               <>
-                <Box mb="sm">
-                  <b>Username</b> must:
-                  <li> be 3-30 characters long</li>
-                  <li>
-                    not contain any other special{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&*?-</span>
-                  </li>
-                  <li>
-                    not start or end with ._ special{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>characters</span>
-                  </li>
-                </Box>
-                <Box mb="sm">
-                  <b>Password</b> must:
-                  <li>be 8-64 characters long</li>
-                  <li>contain min. one letter</li>
-                  <li>contain min. one number</li>
-                  <li>
-                    contain min. one of @$!%*#?&{' '}
-                    <span style={{ marginLeft: '1.25rem' }}>special character</span>
-                  </li>
-                </Box>
+                <UsernameEmailRequirements />
+                <PasswarodRequirements />
               </>
             }
           />

@@ -13,10 +13,18 @@ import {
   Modal,
   SegmentedControl,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/basicTextfield';
+import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import LibraryFigureTab from './figureBlockComponents/LibraryFigureTab';
 import UploadFigureTab from './figureBlockComponents/UploadFigureTab';
@@ -28,51 +36,73 @@ import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine
 
 type FigureBlockProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  editor: Editor;
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  // activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  // blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
+  //editor: Editor;
 };
 
 export default function FigureBlock({
   idx,
-  activeBlockState,
-  blocksContentState,
-  editor,
-  activeTextInputState,
+  //activeBlockState,
+  //blocksContentState,
+  //editor,
+  //activeTextInputState,
 }: FigureBlockProps) {
-  const [blocksContent, setBlocksContent] = blocksContentState;
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const modalHandlers = useDisclosure(false);
   const [opened, { open, close }] = modalHandlers;
   const startFigure =
-    blocksContent[idx].blockContent === '' ? null : blocksContent[idx].blockContent;
+    blocksContent[idx].blockContent.content === '' ? null : blocksContent[idx].blockContent.content;
   const figureState = useState<string | null>(startFigure);
   const uploadfigureState = useState<FileWithPath[] | null>(null);
   //const libraryFigureState = useState<FileWithPath[] | null>(null);
   const [figure, setFigure] = figureState;
-  const [uploadfigure, setUploadFigure] = uploadfigureState;
+  //const [uploadfigure, setUploadFigure] = uploadfigureState;
   const figureTabState = useState<'Upload' | 'Library'>('Upload');
   const [figureTab, setFigureTab] = figureTabState;
   const [figureUrl, setFigureUrl] = useState<string>('');
   const [figureLoaded, setFigureLoaded] = useState<boolean>(false);
 
+  const [figuresCounter, setFiguresCounter] = useState<number>(1);
+
+  useEffect(() => {
+    let counter = 1;
+    for (let i = 0; i < idx; i++) {
+      if (blocksContent[i].typeOfBlock === 'figure') {
+        counter++;
+      }
+      setFiguresCounter(counter);
+    }
+  }, [blocksContent]);
+
   useEffect(() => {
     const getFigure = async () => {
-      const response = await axios.get(`http://localhost:8100/figure/user/getFigure/${figure}`, {
-        withCredentials: true,
-        responseType: 'blob',
-      });
-      setFigureUrl(URL.createObjectURL(response.data));
-      //console.log(figure);
-      setFigureLoaded(true);
+      try {
+        const response = await axios.get(
+          `http://localhost:8100/figure/user/getFigureFile/${figure}`,
+          {
+            withCredentials: true,
+            responseType: 'blob',
+          }
+        );
+        setFigureUrl(URL.createObjectURL(response.data));
+        //console.log(figure);
+        setFigureLoaded(true);
+      } catch (e) {
+        console.log('block figure getFigure error: ', e);
+        //se;
+      }
     };
     getFigure();
   }, [figure]);
 
   useEffect(() => {
     let blocksContentCopy = cloneDeep(blocksContent);
-    if (!(figure === null || figure === '' || figure === blocksContentCopy[idx].blockContent)) {
-      blocksContentCopy[idx].blockContent = figure;
+    if (
+      !(figure === null || figure === '' || figure === blocksContentCopy[idx].blockContent.content)
+    ) {
+      blocksContentCopy[idx].blockContent.content = figure;
       setBlocksContent(blocksContentCopy);
     }
   }, [figure]);
@@ -82,11 +112,11 @@ export default function FigureBlock({
       <Flex>
         <MarkedBlockFrame
           idx={idx}
-          activeBlockState={activeBlockState}
+          //activeBlockState={activeBlockState}
           blockName="Image"
-          sectionsContent={blocksContent}
-          setSectionsContent={setBlocksContent}
-          activeTextInputState={activeTextInputState}
+          //sectionsContent={blocksContent}
+          //setSectionsContent={setBlocksContent}
+          //activeTextInputState={activeTextInputState}
         >
           <Center>
             <Button
@@ -98,24 +128,30 @@ export default function FigureBlock({
                 open();
               }}
               bg={figureLoaded ? '' : 'var(--mantine-color-gray-1)'}
+              c={figureLoaded ? '' : 'var(--mantine-color-error)'}
             >
               {figure !== null ? (
-                <Image
-                  w="24vh"
-                  h="24vh"
-                  key={0}
-                  src={figure !== null ? figureUrl : ''}
-                  alt=""
-                  //fit={fitImg}
-                  fit="contain"
-                />
+                figureLoaded ? (
+                  //TODO loader zrobić
+                  <Image
+                    w="24vh"
+                    h="24vh"
+                    key={0}
+                    src={figure !== null ? figureUrl : ''}
+                    alt=""
+                    //fit={fitImg}
+                    fit="contain"
+                  />
+                ) : (
+                  <>This asset might have been deleted!</>
+                )
               ) : (
                 <Center h="5rem" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
                   <Center m="xl" fz="3rem" c="dimmed">
                     <FaRegImage />
                   </Center>
                   <Text m="xl" c="dimmed" fw="500">
-                    Click here to set image{' '}
+                    Click here to set image
                   </Text>
                 </Center>
               )}
@@ -131,6 +167,19 @@ export default function FigureBlock({
                     setSectionsContent={setBlocksContent}
                   /> */}
           </Center>
+          <Flex justify="center" align="center" pt="xl">
+            <Box h="1.4rem" mr="xl" ml="md">
+              <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
+            </Box>
+            <Box miw="4rem" c="var(--mantine-color-gray-6)" mr="0px">
+              Figure {figuresCounter}
+            </Box>
+            <BasicTexfield
+              idx={idx}
+              idxInput={idx.toString() + 'figure'}
+              contentToRead={blocksContent[idx].blockContent.label}
+            />
+          </Flex>
         </MarkedBlockFrame>
       </Flex>
       <Modal

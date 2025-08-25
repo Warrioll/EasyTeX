@@ -1,48 +1,78 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { Button, Center, Flex, Grid, Modal, ScrollArea, Table, TableData } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Grid,
+  Modal,
+  ScrollArea,
+  Table,
+  TableData,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
+import {
+  useActiveBlockContext,
+  useActiveTableCellContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/basicTextfield';
+import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type TableBlockProps = {
   idx: number;
-  activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  activeTableCellState: [[number, number], Dispatch<SetStateAction<[number, number]>>];
-  editor: Editor;
+  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
+  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
+  // blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
+  // activeTableCellState: [[number, number], Dispatch<SetStateAction<[number, number]>>];
+  // editor: Editor;
 };
 
 export default function TableBlock({
   idx,
-  activeBlockState,
-  blocksContentState,
-  editor,
-  activeTextInputState,
-  activeTableCellState,
+  //activeBlockState,
+  //blocksContentState,
+  //editor,
+  //activeTextInputState,
+  //activeTableCellState,
 }: TableBlockProps) {
-  const [blocksContent, setBlocksContent] = blocksContentState;
-  const [activeBlock, setActiveBlock] = activeBlockState;
-  const [activeCell, setActiveCell] = activeTableCellState; //[row, column]
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
+  //const [activeCell, setActiveCell] = activeTableCellState; //[row, column]
+  const [tablesCounter, setTablesCounter] = useState<number>(1);
+
+  useEffect(() => {
+    let counter = 1;
+    for (let i = 0; i < idx; i++) {
+      if (blocksContent[i].typeOfBlock === 'table') {
+        counter++;
+      }
+      setTablesCounter(counter);
+    }
+  }, [blocksContent]);
 
   const tableWithTryCatch = () => {
     try {
       return (
         <tbody>
-          {blocksContent[idx].blockContent.map((row, rowId) => {
+          {blocksContent[idx].blockContent.content.map((row, rowId) => {
             return (
               <tr>
                 {row.map((cell, columnId) => {
                   return (
                     <td
                       onFocus={() => {
-                        setActiveCell([rowId + 1, columnId + 1]);
+                        setActiveTableCell([rowId + 1, columnId + 1]);
                       }}
                       style={{
-                        border: `${activeBlock === idx && rowId + 1 === activeCell[0] && columnId + 1 === activeCell[1] ? '3px solid var(--mantine-color-cyan-3)' : ''}`,
+                        border: `${activeBlock === idx && rowId + 1 === activeTableCell[0] && columnId + 1 === activeTableCell[1] ? '3px solid var(--mantine-color-cyan-3)' : ''}`,
                         borderCollapse: 'collapse',
                         margin: '0px',
                       }}
@@ -65,18 +95,20 @@ export default function TableBlock({
 
                       <BasicTexfield
                         idx={idx}
-                        activeBlockState={activeBlockState}
-                        contentToRead={blocksContent[idx].blockContent[rowId][columnId] as string}
-                        editor={editor}
-                        activeTextInputState={activeTextInputState}
+                        //activeBlockState={activeBlockState}
+                        contentToRead={
+                          blocksContent[idx].blockContent.content[rowId][columnId] as string
+                        }
+                        //editor={editor}
+                        //activeTextInputState={activeTextInputState}
                         idxInput={idx
                           .toString()
-                          .concat('table;')
+                          .concat('tableCell;')
                           .concat((rowId + 1).toString())
                           .concat(';')
                           .concat((columnId + 1).toString())}
-                        sectionsContent={blocksContent}
-                        setSectionsContent={setBlocksContent}
+                        // sectionsContent={blocksContent}
+                        //setSectionsContent={setBlocksContent}
                       />
 
                       {/* </Button> */}
@@ -118,11 +150,11 @@ export default function TableBlock({
       <Flex>
         <MarkedBlockFrame
           idx={idx}
-          activeBlockState={activeBlockState}
+          //activeBlockState={activeBlockState}
           blockName="Table"
-          sectionsContent={blocksContent}
-          setSectionsContent={setBlocksContent}
-          activeTextInputState={activeTextInputState}
+          //sectionsContent={blocksContent}
+          //setSectionsContent={setBlocksContent}
+          //activeTextInputState={activeTextInputState}
         >
           <Center>
             <ScrollArea>
@@ -161,6 +193,19 @@ export default function TableBlock({
               /> */}
             </ScrollArea>
           </Center>
+          <Flex justify="center" align="center" pt="xl">
+            <Box h="1.4rem" mr="xl" ml="md">
+              <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
+            </Box>
+            <Box miw="4rem" c="var(--mantine-color-gray-6)" mr="0px">
+              Table {tablesCounter}
+            </Box>
+            <BasicTexfield
+              idx={idx}
+              idxInput={idx.toString() + 'tableLabel'}
+              contentToRead={blocksContent[idx].blockContent.label}
+            />
+          </Flex>
         </MarkedBlockFrame>
       </Flex>
     </div>

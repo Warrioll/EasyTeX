@@ -30,6 +30,7 @@ import {
   MdFunctions,
   MdOutlineAdd,
   MdOutlineInsertPageBreak,
+  MdOutlineLibraryBooks,
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
@@ -69,9 +70,18 @@ import { useDisclosure } from '@mantine/hooks';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
+import { useBlocksList } from '../../blocksList';
+import {
+  useActiveBlockContext,
+  useBlocksContentContext,
+  useEditorContext,
+} from '../../DocumentContextProviders';
+import { useAddBlock } from '../../documentHandlers';
 import FontTab from './FontTab';
 import TableToolsTab from './TableToolsTab';
+import TabTemplate from './TabTemplate';
 import TextfieldToolsTab from './TextfieldToolsTab';
+import { useTextTools } from './TextTools';
 import ZoomTools from './ZoomTools';
 // import {
 //   IconNotification,
@@ -86,27 +96,32 @@ import classes from './Header.module.css';
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
-  editor: Editor;
+  //editor: Editor;
   saveElementChanges: () => void;
   pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
   workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
-  activeSection: number;
-  sectionsContent: blockType[];
+  // activeSection: number;
+  //sectionsContent: blockType[];
   //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
 };
 
 const Header: React.FC<headerProps> = ({
   editFunctions,
-  editor,
+  //editor,
   saveElementChanges,
   pdfZoom,
   workspaceZoom,
-  activeSection,
-  sectionsContent,
+  //activeSection,
+  // sectionsContent,
   //activeTableCellState,
 }) => {
   //const theme = useMantineTheme();
   //const []
+
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  //const {editor}= useEditorContext();
+
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('insert');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
@@ -133,85 +148,57 @@ const Header: React.FC<headerProps> = ({
   //   </Combobox.Option>
   // ));
 
-  const insertTools = (
-    <>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addTextfield}
-      >
-        <BiFont />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        fw="bold"
-        onClick={editFunctions.addSection}
-      >
-        <LuHeading1 />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addSubsection}
-      >
-        <LuHeading2 />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addSubsubsection}
-      >
-        <LuHeading3 />
-      </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addEquation}>
-        <MdFunctions />
-      </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addTable}>
-        <LuTable />
-      </Button>
-      <Button variant="format" fz="var(--mantine-font-size-lg)" onClick={editFunctions.addFigure}>
-        <LuImage />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addTitlePage}
-      >
-        <MdOutlineTitle />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addTableOfContents}
-      >
-        <MdFormatListNumberedRtl />
-      </Button>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={editFunctions.addPageBreak}
-      >
-        <MdOutlineInsertPageBreak />
-      </Button>
-    </>
-  );
+  const blocksList = useBlocksList();
 
+  const insertTools = <TabTemplate buttons={blocksList} iconSize="var(--mantine-font-size-lg)" />;
+  // const insertTools = (
+  //   <>
+  //     {blocksList.map((item) => {
+  //       return (
+  //         <Tooltip
+  //           label={item.blockName}
+  //           color="cyan"
+  //           position="bottom"
+  //           offset={5}
+  //           withArrow
+  //           arrowOffset={50}
+  //           arrowSize={7}
+  //           arrowRadius={2}
+  //         >
+  //           <Button
+  //             variant="format"
+  //             fz="var(--mantine-font-size-lg)"
+  //             //TODO obsługa tego
+  //             //onClick={item..addPageBreak}
+  //           >
+  //             <item.Icon />
+  //           </Button>
+  //         </Tooltip>
+  //       );
+  //     })}
+  //   </>
+  // );
+
+  // const fontTools = (
+  //   <FontTab
+  //     editFunctions={editFunctions}
+
+  //     //saveElementChanges={saveElementChanges}
+  //   />
+  // );
+  const textTools = useTextTools();
   const fontTools = (
-    <FontTab
-      editFunctions={editFunctions}
-      editor={editor}
-      saveElementChanges={saveElementChanges}
+    <TabTemplate
+      buttons={textTools}
+      iconSize="var(--mantine-font-size-sm)"
+      dontRenderButtons={[6, 7, 8, 9]}
     />
   );
 
   const textFieldTools = (
     <TextfieldToolsTab
-      editFunctions={editFunctions}
-      editor={editor}
-      saveElementChanges={saveElementChanges}
-      activeSection={activeSection}
-      sectionsContent={sectionsContent}
+    //editFunctions={editFunctions}
+    //saveElementChanges={saveElementChanges}
     />
   );
 
@@ -224,8 +211,8 @@ const Header: React.FC<headerProps> = ({
   );
 
   const chooseModifyTabName = (): string => {
-    if (activeSection !== 0) {
-      switch (sectionsContent[activeSection].typeOfBlock) {
+    if (activeBlock !== 0) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
           return 'Textfield ';
         case 'table':
@@ -238,8 +225,8 @@ const Header: React.FC<headerProps> = ({
   };
 
   const chooseModifyTabTools = (): ReactNode => {
-    if (activeSection !== 0) {
-      switch (sectionsContent[activeSection].typeOfBlock) {
+    if (activeBlock !== 0) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
           return textFieldTools;
         case 'table':
@@ -253,15 +240,16 @@ const Header: React.FC<headerProps> = ({
 
   const tabs = [
     {
-      value: 'insert',
-      label: 'Insert',
-      tools: insertTools,
-    },
-    {
       value: 'font',
-      label: 'Font',
+      label: 'Text',
       tools: fontTools,
     },
+    {
+      value: 'insert',
+      label: 'Blocks',
+      tools: insertTools,
+    },
+
     {
       value: 'view',
       label: 'View',
@@ -277,10 +265,10 @@ const Header: React.FC<headerProps> = ({
   const isDisabledtab = (tab: string): boolean => {
     if (
       tab === 'modify' &&
-      (activeSection === 0 ||
-        sectionsContent[activeSection].typeOfBlock === 'section' ||
-        sectionsContent[activeSection].typeOfBlock === 'subsection' ||
-        sectionsContent[activeSection].typeOfBlock === 'subsubsection')
+      (activeBlock === 0 ||
+        blocksContent[activeBlock].typeOfBlock === 'section' ||
+        blocksContent[activeBlock].typeOfBlock === 'subsection' ||
+        blocksContent[activeBlock].typeOfBlock === 'subsubsection')
     ) {
       //setValue('insert');
       return true;
@@ -320,7 +308,7 @@ const Header: React.FC<headerProps> = ({
 
   useEffect(() => {
     setValue('insert');
-  }, [activeSection]);
+  }, [activeBlock]);
 
   useEffect(() => {
     const getTitle = async () => {
@@ -328,7 +316,7 @@ const Header: React.FC<headerProps> = ({
         const response = await axios.get(`http://localhost:8100/document/${id}`, {
           withCredentials: true,
         });
-        console.log(response.data);
+        //console.log(response.data);
         setDocumentName({
           name: response.data.name,
           documentClass: response.data.documentClass,
@@ -380,7 +368,7 @@ const Header: React.FC<headerProps> = ({
 
           <Center>
             <HoverCard
-              color="cyan"
+              //color="cyan"
               position="bottom"
               offset={5}
               withArrow

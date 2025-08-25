@@ -15,14 +15,18 @@ import { LuHeading1, LuHeading2 } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { Box, Button, Flex, Tooltip } from '@mantine/core';
+import { useEditorContext } from '../../DocumentContextProviders';
 
 type headerProps = {
   editFunctions: Record<string, (...args: any[]) => any>;
-  editor: Editor;
-  saveElementChanges: () => void;
+  //editor: Editor;
+  //saveElementChanges: () => void;
 };
 
-const FontTab: React.FC<headerProps> = ({ editFunctions, editor, saveElementChanges }) => {
+const FontTab: React.FC<headerProps> = ({
+  editFunctions, //editor,
+  //saveElementChanges,
+}) => {
   type buttonType = {
     content: ReactElement;
     clickFunction: () => void | null;
@@ -30,10 +34,14 @@ const FontTab: React.FC<headerProps> = ({ editFunctions, editor, saveElementChan
     tooltip: string;
   };
 
+  const { editor } = useEditorContext();
+
   const fontStyles: buttonType[] = [
     {
       content: <FaBold />,
-      clickFunction: () => editor?.commands.toggleBold(), //editor.chain().focus().toggleSubscript().run(),
+      clickFunction: () => {
+        editor?.commands.toggleBold();
+      }, //editor.chain().focus().toggleSubscript().run(),
       fontSize: 'var(--mantine-font-size-md)',
       tooltip: 'Bold',
     },
@@ -132,8 +140,10 @@ const FontTab: React.FC<headerProps> = ({ editFunctions, editor, saveElementChan
               fz={formatButton.fontSize}
               onClick={() => {
                 formatButton.clickFunction();
-                saveElementChanges();
+                //saveElementChanges();
               }}
+              //FIXME TODO - porobić te zamalowania
+              bg={editor.isActive('bold') ? 'pink' : ''}
             >
               {formatButton.content}
             </Button>
@@ -156,7 +166,7 @@ const FontTab: React.FC<headerProps> = ({ editFunctions, editor, saveElementChan
                 fz={formatButton.fontSize}
                 onClick={() => {
                   formatButton.clickFunction();
-                  saveElementChanges();
+                  //saveElementChanges();
                 }}
               >
                 {formatButton.content}

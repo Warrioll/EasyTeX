@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Center, Image, Text } from '@mantine/core';
-import classes from './figureBlockComponents.module.css';
+import { Box, Center, Image, Text, Transition } from '@mantine/core';
+import classes from './figuresLibrary.module.css';
 
 type FigureCardPropsType = {
   //wywalić to any
@@ -18,7 +18,7 @@ export default function FigureCard({ idx, figureData, choosenFigureState }: Figu
   useEffect(() => {
     const getFigure = async () => {
       const response = await axios.get(
-        `http://localhost:8100/figure/user/getFigure/${figureData._id}`,
+        `http://localhost:8100/figure/user/getFigureFile/${figureData._id}`,
         {
           withCredentials: true,
           responseType: 'blob',
@@ -31,13 +31,19 @@ export default function FigureCard({ idx, figureData, choosenFigureState }: Figu
     getFigure();
   }, []);
 
+  // useEffect(() => {
+  //   if (idx === choosenFigure) {
+  //     setFitImg('contain');
+  //   }
+  // }, [choosenFigure]);
+
   return (
     <Box className={classes.cardComponent}>
       <Box
         p="md"
         h="30vh"
-        className={idx === choosenFigure ? classes.choosenCard : classes.card}
-        onClick={() => setChoosenFigure(idx)}
+        className={figureData._id === choosenFigure ? classes.choosenCard : classes.card}
+        onClick={() => setChoosenFigure(figureData._id)}
       >
         <Center
           h="24vh"

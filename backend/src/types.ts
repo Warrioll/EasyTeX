@@ -1,20 +1,46 @@
 export type blockType = {
-    typeOfBlock: 
-    'textfield' 
-    | 'section' 
-    | 'subsection' 
-    | 'subsubsection' 
-    | "documentclass" 
-    |'titlePage'
+  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
+  blockContent: blockContentType
+};
+
+export type blockContentType =  string
+    | titleSectionType //title section
+    | string[][] //table
+    | referencesElementType[] //references
+    | blockAbleToRef
+    | null
+    | undefined;
+
+
+  export type typeOfBlockType =
+    | 'textfield'
+    | 'section'
+    | 'subsection'
+    | 'subsubsection'
+    | 'documentclass'
+    | 'titlePage'
     | 'tableOfContents'
     | 'pageBreak'
     | 'equation'
     | 'table'
-    |'figure'
-    | null | undefined;
-    blockContent: string | titlePageType | string[][] | null | undefined; 
-  };
+    | 'figure'
+    | 'references'
+    | null
+    | undefined;
 
-  export type titlePageType = {
-    title: string, author: string, date: string
-  }
+export type referencesElementType = {
+  id: string;
+  label: string;
+};
+
+export type titleSectionType = {
+  title: string;
+  author: string;
+  date: string;
+};
+
+export type blockAbleToRef = {
+  id: string;
+  label: string;
+  content: string | string[][];
+};

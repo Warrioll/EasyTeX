@@ -17,11 +17,11 @@ import {
   Text,
   Tree,
 } from '@mantine/core';
-import { AddComboox } from './addCombobox';
+import { useHover } from '@mantine/hooks';
+import { AddComboox } from '../../../../../components/other/AddCombobox';
 import { elementsToTex } from './equationConverters';
 import { elementsPrototypes } from './equationsElementsPrototypes';
 import classes from './equationEditor.module.css';
-import { useHover } from '@mantine/hooks';
 
 type elementsTreePropsType = {
   activeTreeElementState: [string, Dispatch<SetStateAction<string>>];
@@ -43,7 +43,7 @@ export default function ElementsTree({
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
   const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [elementsContent, setElementsContent] = elementsContentState;
-  const [elementTooltipContent, setElemrntTooltipContent]=useState<string>('')
+  const [elementTooltipContent, setElemrntTooltipContent] = useState<string>('');
   const addElementAbove = (toAdd) => {
     const elementToAdd = cloneDeep(toAdd);
     const ec = insertElement(activeTreeElement, elementsContent, elementToAdd, 0);
@@ -248,21 +248,19 @@ export default function ElementsTree({
           return element.label === 'Expression' ? `"${element.content}"` : element.label;
         });
 
+    //????
+    // useEffect(()=>{
+    //   if(hovered){
+    //     if(node.editable){
+    //       setElemrntTooltipContent(node.content)
+    //       console.log('hover opened: ',node.content )
+    //     }
+    //   }else{
+    //     setElemrntTooltipContent('')
+    //     console.log('hover closed')
+    //   }
 
-        //????
-        // useEffect(()=>{
-        //   if(hovered){
-        //     if(node.editable){
-        //       setElemrntTooltipContent(node.content)
-        //       console.log('hover opened: ',node.content )
-        //     }
-        //   }else{
-        //     setElemrntTooltipContent('')
-        //     console.log('hover closed')
-        //   }
-          
-          
-        // },[hovered])
+    // },[hovered])
 
     return (
       <Group gap="xs" {...elementProps}>
@@ -284,7 +282,7 @@ export default function ElementsTree({
           >
             <HoverCard.Target>
               <Box
-              ref={ref}
+                ref={ref}
                 p="0.25rem"
                 pl="0.35rem"
                 miw="11rem"
@@ -355,6 +353,14 @@ export default function ElementsTree({
     }
   };
 
+  const elementsList = Object.entries(elementsPrototypes).map(([key, value]) => {
+    return {
+      label: value.label,
+      Icon: () => <Latex>$${value.latexRepresentation}$$</Latex>,
+      value: { ...value.elementPrototype },
+    };
+  });
+
   return (
     <>
       <Flex justify="center" p="0px" m="0px" h="2rem">
@@ -378,13 +384,7 @@ export default function ElementsTree({
                   </Text>
                 </>
               }
-              data={Object.entries(elementsPrototypes).map(([key, value]) => {
-                return {
-                  label: value.label,
-                  icon: <Latex>$${value.latexRepresentation}$$</Latex>,
-                  value: { ...value.elementPrototype },
-                };
-              })}
+              data={elementsList}
               iconSize="0.8rem"
               floatingStrategy=""
               withGroups={false}
@@ -401,13 +401,7 @@ export default function ElementsTree({
                   </Text>
                 </>
               }
-              data={Object.entries(elementsPrototypes).map(([key, value]) => {
-                return {
-                  label: value.label,
-                  icon: <Latex>$${value.latexRepresentation}$$</Latex>,
-                  value: { ...value.elementPrototype },
-                };
-              })}
+              data={elementsList}
               iconSize="0.8rem"
               floatingStrategy="absolute"
               withGroups={false}

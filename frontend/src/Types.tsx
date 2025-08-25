@@ -1,3 +1,15 @@
+export type blockType = {
+  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
+  blockContent:
+    | string
+    | titleSectionType //title section
+    | string[][] //table
+    | referencesElementType[] //references
+    | blockAbleToRef
+    | null
+    | undefined;
+};
+
 export type typeOfBlockType =
   | 'textfield'
   | 'section'
@@ -10,17 +22,40 @@ export type typeOfBlockType =
   | 'equation'
   | 'table'
   | 'figure'
+  | 'references'
   | null
   | undefined;
 
-export type blockType = {
-  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
-  blockContent:
-    | string
-    | { title: string; author: string; date: string }
-    | string[][]
-    | null
-    | undefined;
+export type referencesElementType = {
+  id: string;
+  label: string;
+};
+
+export type titleSectionType = {
+  title: string;
+  author: string;
+  date: string;
+};
+
+export type blockAbleToRef = {
+  id: string;
+  label: string;
+  content: string | string[][];
 };
 
 export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides';
+
+export type listElementType = {
+  value: string | object | null;
+  function?: () => void;
+  Icon: React.FC;
+  label: string;
+  belonging?: string[];
+};
+
+export type listType = listElementType[];
+
+export type groupedListType = {
+  label: string;
+  group: listType;
+}[];

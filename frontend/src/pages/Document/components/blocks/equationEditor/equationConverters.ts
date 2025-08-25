@@ -9,7 +9,7 @@ export function elementsToTex(array:any):string{
         switch(array[i].label){
             case 'Expression':
                tmp=array[i].content;
-               console.log('expr',array)
+               //console.log('expr',array)
                tmp=tmp.replaceAll(' ', '\\ ')
                 for(let i of specialCharacters){
                     //console.log('value: ', i.group)
@@ -196,7 +196,7 @@ export function texToElements(originalString:string):any{
         // }
         let elements=[]
         let i =0
-          console.log('parts:', parts)
+         // console.log('parts:', parts)
         while(i<parts.length){
            
             try{
@@ -300,7 +300,7 @@ export function texToElements(originalString:string):any{
             // }
             if(parts[i].includes('\\sqrt')){
                 let indexAndExpr=parts[i].split('\\sqrt')
-                console.log('indx&expr: ',indexAndExpr)
+                //console.log('indx&expr: ',indexAndExpr)
                 
                 let expr={...elementsPrototypes.expression.elementPrototype}
                 expr.content=texToElementsSpecialCHaractersConvertion(indexAndExpr[0])
@@ -362,7 +362,7 @@ export function texToElements(originalString:string):any{
                 || parts[i].includes('\\bigcap')
                 || parts[i].includes('\\bigvee')
                 || parts[i].includes('\\bigwedge')){
-                    console.log('part: ', i, ' - ',parts[i])
+                    //console.log('part: ', i, ' - ',parts[i])
                 let nsum
                 let tmp
                 if(parts[i].includes('\\int')){
@@ -420,8 +420,8 @@ export function texToElements(originalString:string):any{
                     continue
             }
              if(parts[i].includes('\\left.\\begin')){
-                 console.log('actual i:', i)
-                  console.log('part[i]:', parts[i])
+                 //console.log('actual i:', i)
+                 // console.log('part[i]:', parts[i])
                 let expr={...elementsPrototypes.expression.elementPrototype}
                 //let tmp=parts[i].split()
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left.\\begin', ''))
@@ -480,19 +480,19 @@ export function texToElements(originalString:string):any{
                 }
                
                 if(parts[i+2]!=='ll' && parts[i+2]!=='lll' && parts[i+2]!=='cc' && parts[i+2]!=='ccc'){
-                    console.log('not a latex array')
+                    //console.log('not a latex array')
                     nfrac={...elementsPrototypes.expression.elementPrototype}
                     nfrac.content=parts[i]
                     i++
                 }else{
                     if(parts[i+2]==='cc' || parts[i+2]==='ll'){
                          parts[i+8]=parts[i+8].replace('\\right.', '')
-                         console.log('right erased 2')
+                         //console.log('right erased 2')
                          i+=8
                     }else{
                          parts[i+10]=parts[i+10].replace('\\right.', '')
                           i+=10
-                           console.log('right erased 3')
+                           //console.log('right erased 3')
                     }              
                 }
                 if(expr.content==='' || expr.content===' ' || expr.content===undefined ){
