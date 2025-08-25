@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { Editor, EditorContent } from '@tiptap/react';
 import parse from 'html-react-parser';
 import { cloneDeep } from 'lodash';
@@ -6,6 +6,7 @@ import { Badge, Box, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantin
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
 import { blockType } from '@/Types';
 import {
+  useActiveBlockContext,
   useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
@@ -43,6 +44,7 @@ export default function BasicTexfield({
 }: BasicTextfieldProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { editor } = useEditorContext();
 
   const [focusTrap, { toggle }] = useDisclosure(false);
@@ -79,6 +81,13 @@ export default function BasicTexfield({
   //   }
   //   setBlocksContent(blocksContentCopy);
   // };
+
+  useEffect(() => {
+    console.log('active block:', blocksContent[activeBlock]);
+    if (activeTextfield === idxInput && activeBlock !== idx) {
+      setActiveTextfield('');
+    }
+  }, [activeBlock]);
 
   return (
     <div
@@ -137,16 +146,22 @@ export default function BasicTexfield({
           // </RichTextEditor>
 
           <FocusTrap active={focusTrap}>
-            <EditorContent editor={editor} />
+            <EditorContent
+              editor={editor}
+              // style={{
+              //   backgroundColor: activeTextfield === idxInput ? '#ebffff;' : '',
+              // }}
+            />
           </FocusTrap>
         ) : contentToRead ? (
           <Flex
             // ml="3px"
             // mr="3px"
             //align="center"
-            className="tiptap"
+            className="tiptap nonEditor"
+            bg="var(--mantine-color-white)"
           >
-            <div className={styles.textfieldNotFocused}>{parse(contentToRead)}</div>
+            <div className="nonEditor">{parse(contentToRead)}</div>
           </Flex>
         ) : null}
       </Box>

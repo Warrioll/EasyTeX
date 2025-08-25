@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 import { BiFont } from 'react-icons/bi';
 import {
   FaBold,
@@ -40,6 +41,7 @@ import {
   groupedListType,
   listElementType,
   listType,
+  referencesElementType,
 } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
 
@@ -54,7 +56,10 @@ export const useTextTools = (): groupedListType => {
   const { editor } = useEditorContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
-  const [equationList, setEquationList] = useState<listType | null>([]);
+  const [equationList, setEquationList] = useState<listType>([]);
+  const [bibList, setBibList] = useState<listType>([]);
+  const [imageList, setImageList] = useState<listType>([]);
+  const [tableList, setTableList] = useState<listType>([]);
 
   const refToEquationElement = {
     label: 'Reference to equation',
@@ -94,7 +99,7 @@ export const useTextTools = (): groupedListType => {
     belonging: ['article', 'beamer', 'book', 'letter', 'report'],
   };
 
-  const getRefsElement = (item: blockType): listElementType => {
+  const getRefsElement = (item: blockType, label: string): listElementType => {
     // const num = counter;
     //console.log('bc', item.blockContent);
     //console.log('equations', blockCounter);
@@ -117,9 +122,7 @@ export const useTextTools = (): groupedListType => {
           </Text>
         </Center>
       ),
-      label: (item.blockContent as blockAbleToRef).label
-        ? (item.blockContent as blockAbleToRef).label
-        : '',
+      label: label ? DOMPurify.sanitize(label, { ALLOWED_TAGS: [] }) : '',
       value: (item.blockContent as blockAbleToRef).id,
     };
   };
@@ -129,28 +132,82 @@ export const useTextTools = (): groupedListType => {
       let equationCounter = 0;
       let figureCounter = 0;
       let tableCounter = 0;
-      let temp = blocksContent.map((item: blockType, idx: number) => {
+
+      let eqList = [];
+      let figList = [];
+      let tabList = [];
+      for (let i = 0; i < blocksContent.length; i++) {
+        const item = blocksContent[i];
         switch (item.typeOfBlock) {
           case 'equation':
             equationCounter++;
-            return getRefsElement(item); //, equationCounter);
+            //return getRefsElement(item); //, equationCounter);
+
+            eqList = [
+              ...eqList,
+              getRefsElement(
+                item,
+                `Equation (${equationCounter}): ${((item.blockContent as blockAbleToRef).content as string).length < 30 ? (item.blockContent as blockAbleToRef).content : ((item.blockContent as blockAbleToRef).content as string).substring(0, 30).concat('...')}`
+              ),
+            ];
+            break;
           case 'figure':
             figureCounter++;
-            return getRefsElement(item); //, figureCounter);
+            figList = [
+              ...figList,
+              getRefsElement(item, (item.blockContent as blockAbleToRef).label),
+            ]; //, figureCounter);
+            break;
           case 'table':
             tableCounter++;
-            return getRefsElement(item); //, tableCounter);
+            tabList = [
+              ...tabList,
+              getRefsElement(item, (item.blockContent as blockAbleToRef).label),
+            ];
+            break;
+          case 'references':
+            setBibList(
+              item.blockContent.map((ref, idx) => {
+                return {
+                  Icon: () => (
+                    <Center m="xs">
+                      <Text
+                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                        //p="0.1rem"
+                        p="0.3rem"
+                        pt="0px"
+                        pb="0px"
+                        bg="var(--mantine-color-cyan-0)"
+                        c="var(--mantine-color-cyan-9)"
+                        fw="500"
+                        // ml="xs"
+                        fz="sm"
+                      >
+                        {ref.id}
+                      </Text>
+                    </Center>
+                  ),
+                  label: ref.label ? `[${idx + 1}] ${ref.label}` : `[${idx + 1}]`,
+                  value: ref.id,
+                };
+              })
+            );
+            break;
           default:
-            return null;
+            break;
         }
-      });
-
-      if (temp !== null && temp !== undefined) {
-        temp = temp.filter((item) => item !== null);
       }
+
+      setEquationList([...eqList]);
+      setImageList([...figList]);
+      setTableList([...tabList]);
+
+      // if (temp !== null && temp !== undefined) {
+      //   temp = temp.filter((item) => item !== null);
+      // }
       //console.log('yolo3', temp);
 
-      setEquationList(temp);
+      //setEquationList(temp);
     }
   }, [blocksContent]);
 
@@ -182,7 +239,7 @@ export const useTextTools = (): groupedListType => {
 
   const refTableCombobox = (
     <AddComboox
-      data={[]}
+      data={tableList ? tableList : []}
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
@@ -195,7 +252,11 @@ export const useTextTools = (): groupedListType => {
         </>
       }
       //expressionInputContentState,
-      insertFunction={() => {}}
+      insertFunction={(value) => {
+        editor?.commands.insertContent(` <span data-type="mention" data-id="${value}"></span> `);
+
+        console.log(editor?.getHTML());
+      }}
       iconSize="2rem"
       buttonVariant="format"
       tooltip={refToTableElement.label}
@@ -204,7 +265,7 @@ export const useTextTools = (): groupedListType => {
 
   const refFigureCombobox = (
     <AddComboox
-      data={[]}
+      data={imageList ? imageList : []}
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
@@ -217,7 +278,11 @@ export const useTextTools = (): groupedListType => {
         </>
       }
       //expressionInputContentState,
-      insertFunction={() => {}}
+      insertFunction={(value) => {
+        editor?.commands.insertContent(` <span data-type="mention" data-id="${value}"></span> `);
+
+        console.log(editor?.getHTML());
+      }}
       iconSize="2rem"
       buttonVariant="format"
       tooltip={refToImageElement.label}
@@ -226,7 +291,7 @@ export const useTextTools = (): groupedListType => {
 
   const refBibCombobox = (
     <AddComboox
-      data={[]}
+      data={bibList ? bibList : []}
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
@@ -239,7 +304,9 @@ export const useTextTools = (): groupedListType => {
         </>
       }
       //expressionInputContentState,
-      insertFunction={() => {}}
+      insertFunction={(value) => {
+        editor?.commands.insertContent(`<span data-type="mention" data-id="${value}"></span>`);
+      }}
       iconSize="2rem"
       buttonVariant="format"
       tooltip={refToBibElement.label}

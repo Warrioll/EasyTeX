@@ -135,7 +135,7 @@ export default function SubsubsectionBlock({
           // activeTextInputState={activeTextInputState}
         >
           <Flex align="center">
-            <Text fw="bold" ml="xl">
+            <Text fw="bold" ml="xl" mr="xs" c="var(--mantine-color-gray-6)">
               {sectionNumber}
             </Text>
             <BasicTexfield

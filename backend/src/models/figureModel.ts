@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { InferSchemaType, HydratedDocument } from "mongoose";
 
 const figureSchema= new mongoose.Schema({
     name: {type: String, required: true},
@@ -15,6 +16,7 @@ const figureSchema= new mongoose.Schema({
 })
 
 export const figureModel = mongoose.model('Figure', figureSchema, 'Figure');
+export type figureType = HydratedDocument<InferSchemaType<typeof figureSchema>>
 
 //export const getDocuments = () => documentModel.find();
 //export const createDocument = (values: Record<string, any>) => new documentModel(values).save().then((document)=>document.toObject());

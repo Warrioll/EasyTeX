@@ -164,7 +164,10 @@ export default function ButtonsOfMarkedBlock({
                 variant="transparent"
                 size="compact-sm"
                 mt="xs"
-                onClick={() => setActiveBlock(0)}
+                onClick={() => {
+                  setActiveBlock(0);
+                  //setActiveTextfield('');
+                }}
                 className={classes.stickyElement}
                 w="2rem"
                 h="1.5rem"

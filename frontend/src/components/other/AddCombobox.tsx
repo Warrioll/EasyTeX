@@ -49,16 +49,16 @@ export function AddComboox({
   //     setExpressionInputContent(expressionInputContent.concat(specialCharacter));
   //     insertElement(expressionInputContent.concat(specialCharacter));
   //   };
-  console.log('data:', data);
+  //console.log('data:', data);
   const options = withGroups
     ? data.map((group) => {
-        console.log(group);
+        //console.log(group);
         return (
           <Combobox.Group label={group.label}>
             {group.group
               .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
               .map((item) => {
-                console.log(item.Icon);
+                // console.log(item.Icon);
                 return (
                   <Combobox.Option
                     value={item.label}
@@ -82,7 +82,7 @@ export function AddComboox({
     : data
         .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
         .map((item) => {
-          console.log('Icon', item.label, item.Icon);
+          //console.log('Icon', item.label, item.Icon);
           return (
             <Combobox.Option
               value={item.label}

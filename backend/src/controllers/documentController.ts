@@ -20,7 +20,7 @@ import { verifySession,verifySessionWithCallback, extendSession } from '../auth/
 import { blockAbleToRef, blockType, referencesElementType} from '../types';
 import { figureModel } from '../models/figureModel';
 import { Document, InferSchemaType } from 'mongoose';
-import { documentNameRegex } from '../nameRegexes';
+import { nameRegex } from '../nameRegexes';
 
 
 
@@ -184,6 +184,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
           if (!res.headersSent) {
             await extendSession(req.cookies.auth,res)
             res.setHeader('Content-type', 'application/pdf')
+            //FIXME ?można zrobić sendFile??
             const stream = fileHander.createReadStream([documentInstantion.path, [documentInstantion._id as unknown as string, 'pdf'].join('.')].join('/'))
             stream.pipe(res);
             stream.on('error', (error: NodeJS.ErrnoException)=>{
@@ -221,6 +222,8 @@ export const  getTexFile= async (req: express.Request, res: express.Response)=>{
           }else{
     res.setHeader('Content-type', 'text/x-tex')
     await extendSession(req.cookies.auth,res)
+    //FIXME ?można zrobić sendFile??
+    //FIXME obsługa błędow?
     fileHander.createReadStream([documentInstantion.path, [documentInstantion._id, 'tex'].join('.')].join('/')).pipe(res);
           }
  
@@ -262,7 +265,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
             //console.log(line)
 
-            
+             
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
             if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
             if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
@@ -314,7 +317,7 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
 
        
 
-        if(documentNameRegex.test(req.body.name)){
+        if(nameRegex.test(req.body.name)){
         const path: string = ['documentBase', userId].join('/')
 
         const documentData= {name: req.body.name, 
@@ -435,7 +438,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       }case 'tableOfContents':{
         return '\\tableofcontents'
        } case 'pageBreak':{
-        return '\\newpage'
+        return '\\newpage' 
       }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
        } case 'section':{ 
@@ -447,19 +450,24 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       }case 'equation':{
         return equationToTex(block.blockContent)
       }case 'table':{
-        if(Array.isArray(block.blockContent)){
-          return tableToTex(block.blockContent as string [][])
+        if(Array.isArray((block.blockContent as blockAbleToRef).content)){
+          return tableToTex(block.blockContent as blockAbleToRef)
         }
           return ''}
       case 'figure':{
-        const figure= await figureModel.findById(block.blockContent)
+        if((block.blockContent as blockAbleToRef).content!=='' && (block.blockContent as blockAbleToRef).content){
+           const figure= await figureModel.findById((block.blockContent as blockAbleToRef).content)
         if(figure!==null && figure.userId===userId){
           const path=['..', '..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
-           return figureToTex(path)
+           return figureToTex((block.blockContent as blockAbleToRef), path)
         }else{
-          // TODO tu zwaracać texa z pustkym linkiem jeśli kompilacji takie coś nie będzie wywalało
+          //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
           return ''
         }
+        }else{
+          //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
+          return ''}
+       
         
       }
       case 'references':
@@ -513,12 +521,12 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
    // console.log('userId',id)
       
 
-      if(documentNameRegex.test(req.body.name)){
+      if(nameRegex.test(req.body.name)){
         const updatedDocument = await documentModel.findByIdAndUpdate(documentInstantion._id, {name: req.body.name, lastUpdate: new Date(Date.now())})
         await extendSession(req.cookies.auth,res)
         res.sendStatus(200)
       }else{
-        res.sendStatus(403)
+        res.sendStatus(422)
       }
   }catch(error){
     console.log('rename document error: ', error)

@@ -36,6 +36,7 @@
     "@tiptap/suggestion": "^2.26.1",
     "@uiw/react-split": "^5.9.3",
     "axios": "^1.7.7",
+    "dompurify": "^3.2.6",
     "html-react-parser": "^5.1.18",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",

@@ -29,7 +29,7 @@ export type blockContentType =  string
     | undefined;
 
 export type referencesElementType = {
-  id: number;
+  id: string;
   label: string;
 };
 

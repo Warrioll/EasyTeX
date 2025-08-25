@@ -117,7 +117,7 @@ export default function SectionBlock({
             </div>
           ) : null} */}
           <Flex align="center">
-            <Text fz="xl" fw="bold" ml="xl">
+            <Text fz="xl" fw="bold" mr="xs" ml="xl" c="var(--mantine-color-gray-6)">
               {sectionNumber}
             </Text>
             <BasicTexfield

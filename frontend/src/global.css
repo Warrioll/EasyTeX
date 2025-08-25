@@ -8,18 +8,24 @@ body{
 
 .tiptap{
     outline: none;
-    text-align: justify;
+    text-align: left;
     margin: 0px;
     border-radius: var(--mantine-radius-md);
     padding: 0.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
     font-size: 1rem;
-    
+
+        word-wrap: break-word;
+    overflow-wrap: break-word;
+     overflow-wrap: anywhere;
+     background-color: #ebffff;
+
    
 .mention {
-   background-color: var(--mantine-color-cyan-0);
-   color: var(--mantine-color-cyan-9);
+    background-color: var(--mantine-color-cyan-4);
+            color: var(--mantine-color-white);
+  
     border-radius: var(--mantine-radius-md);
     box-decoration-break: clone;
     font-size: var(--mantine-font-size-sm);
@@ -39,12 +45,18 @@ body{
     }
 }
 
+.nonEditor{
+    .mention{
+            background-color: var(--mantine-color-cyan-0);
+   color: var(--mantine-color-cyan-9);
+    }
+}
+
 .tiptap:focus{
-    background-color: #ebffff;
+   
 
     .mention {
-   background-color: var(--mantine-color-cyan-4);
-   color: var(--mantine-color-white);
+
     }
     /* background-color: var(--mantine-color-white); */
    

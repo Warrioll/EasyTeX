@@ -27,7 +27,7 @@ export type typeOfBlockType =
   | undefined;
 
 export type referencesElementType = {
-  id: number;
+  id: string;
   label: string;
 };
 

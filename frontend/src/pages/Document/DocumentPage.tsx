@@ -1,5 +1,5 @@
 //import { IconBold, IconItalic } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
@@ -36,7 +36,7 @@ import Header from './components/header/Header';
 import {
   ActiveTextfieldProvider,
   EditorProvider,
-  ReferencesListProvider,
+  //ReferencesListProvider,
   useActiveBlockContext,
   useActiveTableCellContext,
   useBlocksContentContext,
@@ -471,9 +471,12 @@ export default function DocumentPage() {
             return true;
           case 'pageBreak':
             return true;
+          case 'figure':
+            //TODO
+            return true;
           case 'table':
             //FIXME - sprawdzanie czy nie są puste
-            return chceckIfBlockContentEmpty(block.blockContent.label as string);
+            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
             return true;
           default:
             return !chceckIfBlockContentEmpty(block.blockContent);
@@ -705,94 +708,94 @@ export default function DocumentPage() {
   return (
     <>
       <ActiveTextfieldProvider>
-        <ReferencesListProvider>
-          <EditorProvider>
-            <Header
-              editFunctions={editFunctions}
-              //editor={editor}
-              saveElementChanges={() => {
-                //FIXME - Czemu ta funkcja jest tak przekazywana? nie przekazywać jej!!!
-                // saveBasicTextInputChanges(
-                //   activeBlock,
-                //   activeTextInput,
-                //   [blocksContent, setBlocksContent],
-                //   //blocksContentState,
-                //   editor?.getHTML() as string
-                // );
-              }}
-              pdfZoom={pdfZoom}
-              workspaceZoom={workspaceZoom}
-            />
+        {/* <ReferencesListProvider> */}
+        <EditorProvider>
+          <Header
+            editFunctions={editFunctions}
+            //editor={editor}
+            saveElementChanges={() => {
+              //FIXME - Czemu ta funkcja jest tak przekazywana? nie przekazywać jej!!!
+              // saveBasicTextInputChanges(
+              //   activeBlock,
+              //   activeTextInput,
+              //   [blocksContent, setBlocksContent],
+              //   //blocksContentState,
+              //   editor?.getHTML() as string
+              // );
+            }}
+            pdfZoom={pdfZoom}
+            workspaceZoom={workspaceZoom}
+          />
 
-            <Split
-              className={classes.bar}
-              lineBar
-              style={{ width: '100vw', border: 'none' }}
-              renderBar={({ onMouseDown, ...props }) => {
-                return (
-                  <div {...props} style={{ boxShadow: 'none' }}>
-                    <div onMouseDown={onMouseDown} />
-                  </div>
-                );
-              }}
-            >
-              <Center w="100vw" h="90vh" p="0px" pos="relative">
-                <LoadingOverlay
-                  visible={!workspaceLoaded}
-                  zIndex={100}
-                  overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
-                  loaderProps={{ color: 'cyan' }}
-                />
-                <ScrollArea h="100%" w="100%">
-                  <Box
-                    h="100%"
-                    w="100%"
-                    m="xl"
-                    style={{
-                      transform: `scale(${workspaceZoomValue[0]})`,
-                      transformOrigin: 'top left',
-                    }}
-                    p="0px"
-                  >
-                    {blocksError && (
-                      <Box h="80vh">
-                        <ErrorBanner
-                          title={blocksError.title}
-                          description={blocksError.description}
-                          Icon={blocksError.icon}
-                          ButtonIcon={blocksError.buttonIcon}
-                          buttonLabel={blocksError.buttonLabel}
-                          buttonFunction={blocksError.buttonFunction}
-                        />
-                      </Box>
-                    )}
-                    {workspaceLoaded && !blocksError && (
-                      <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
-                        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
-                        {blocksLoaded && blocksContent.length > 0 ? (
-                          blocksContent.map((item, idx) => (
-                            <div key={idx}>{renderBlock(item, idx)}</div>
-                          ))
-                        ) : (
-                          <></>
-                        )}
-                        <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
-                      </Stack>
-                    )}
-                  </Box>
-                </ScrollArea>
-              </Center>
-              <Box w="100vw" pos="relative">
-                <LoadingOverlay
-                  visible={!pdfLoaded}
-                  zIndex={100}
-                  overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
-                  loaderProps={{ color: 'cyan' }}
-                />
-                <ScrollArea h="90vh">
-                  {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
-                  <Center m="xl" p={0}>
-                    {/* {pdfLoaded ? (
+          <Split
+            className={classes.bar}
+            lineBar
+            style={{ width: '100vw', border: 'none' }}
+            renderBar={({ onMouseDown, ...props }) => {
+              return (
+                <div {...props} style={{ boxShadow: 'none' }}>
+                  <div onMouseDown={onMouseDown} />
+                </div>
+              );
+            }}
+          >
+            <Center w="100vw" h="90vh" p="0px" pos="relative">
+              <LoadingOverlay
+                visible={!workspaceLoaded}
+                zIndex={100}
+                overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
+                loaderProps={{ color: 'cyan' }}
+              />
+              <ScrollArea h="100%" w="100%">
+                <Box
+                  h="100%"
+                  w="100%"
+                  m="xl"
+                  style={{
+                    transform: `scale(${workspaceZoomValue[0]})`,
+                    transformOrigin: 'top left',
+                  }}
+                  p="0px"
+                >
+                  {blocksError && (
+                    <Box h="80vh">
+                      <ErrorBanner
+                        title={blocksError.title}
+                        description={blocksError.description}
+                        Icon={blocksError.icon}
+                        ButtonIcon={blocksError.buttonIcon}
+                        buttonLabel={blocksError.buttonLabel}
+                        buttonFunction={blocksError.buttonFunction}
+                      />
+                    </Box>
+                  )}
+                  {workspaceLoaded && !blocksError && (
+                    <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                      <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
+                      {blocksLoaded && blocksContent.length > 0 ? (
+                        blocksContent.map((item, idx) => (
+                          <div key={idx}>{renderBlock(item, idx)}</div>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                      <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
+                    </Stack>
+                  )}
+                </Box>
+              </ScrollArea>
+            </Center>
+            <Box w="100vw" pos="relative">
+              <LoadingOverlay
+                visible={!pdfLoaded}
+                zIndex={100}
+                overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
+                loaderProps={{ color: 'cyan' }}
+              />
+              <ScrollArea h="90vh">
+                {/* <Grid.Col p={0} span={6} bd="solid 1px var(--mantine-color-gray-4)" h="100%"> */}
+                <Center m="xl" p={0}>
+                  {/* {pdfLoaded ? (
                 Array(pagesNumber)
                   .fill(1)
                   .map((x, idx) => (
@@ -817,44 +820,44 @@ export default function DocumentPage() {
               ) : (
                 <>PDF Not found</>
               )} */}
-                    {pdfError && (
-                      <Box h="80vh">
-                        <ErrorBanner
-                          title={pdfError.title}
-                          description={pdfError.description}
-                          Icon={pdfError.icon}
-                          ButtonIcon={pdfError.buttonIcon}
-                          buttonLabel={pdfError.buttonLabel}
-                          buttonFunction={pdfError.buttonFunction}
+                  {pdfError && (
+                    <Box h="80vh">
+                      <ErrorBanner
+                        title={pdfError.title}
+                        description={pdfError.description}
+                        Icon={pdfError.icon}
+                        ButtonIcon={pdfError.buttonIcon}
+                        buttonLabel={pdfError.buttonLabel}
+                        buttonFunction={pdfError.buttonFunction}
+                      />
+                    </Box>
+                  )}
+                  {pdf && (
+                    <Document
+                      file={pdf}
+                      //onLoadSuccess={onDocumentLoadSuccess}
+                      //options={options}
+                    >
+                      {Array.from(new Array(pagesNumber), (_el, index) => (
+                        <Page
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          className={pdfClasses.page}
+                          scale={pdfZoomValue[0]}
+                          // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
                         />
-                      </Box>
-                    )}
-                    {pdf && (
-                      <Document
-                        file={pdf}
-                        //onLoadSuccess={onDocumentLoadSuccess}
-                        //options={options}
-                      >
-                        {Array.from(new Array(pagesNumber), (_el, index) => (
-                          <Page
-                            key={`page_${index + 1}`}
-                            pageNumber={index + 1}
-                            className={pdfClasses.page}
-                            scale={pdfZoomValue[0]}
-                            // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
-                          />
-                        ))}
-                      </Document>
-                    )}
-                  </Center>
+                      ))}
+                    </Document>
+                  )}
+                </Center>
 
-                  {/* </Grid.Col> */}
-                  {/* </Grid> */}
-                </ScrollArea>
-              </Box>
-            </Split>
-          </EditorProvider>
-        </ReferencesListProvider>
+                {/* </Grid.Col> */}
+                {/* </Grid> */}
+              </ScrollArea>
+            </Box>
+          </Split>
+        </EditorProvider>
+        {/* </ReferencesListProvider> */}
       </ActiveTextfieldProvider>
     </>
   );

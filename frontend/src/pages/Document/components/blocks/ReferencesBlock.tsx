@@ -3,8 +3,11 @@ import { cloneDeep } from 'lodash';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
 import { Box, Button, Flex, Stack, Text, Title } from '@mantine/core';
+import { referencesElementType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
+import { getReferenceForEditor, useEditTextfields } from '../../documentHandlers';
 import BasicTexfield from './blocksComponents/basicTextfield';
+import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 
 type ReferencesBlockPropsType = {
@@ -15,22 +18,39 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
+  const { editTextfields } = useEditTextfields();
+
   const addReference = () => {
     const blocksCopy = cloneDeep(blocksContent);
+    let refId = 0;
+    for (const i of blocksCopy[idx].blockContent) {
+      const iId = Number(i.id.split('ref')[1]);
+      if (refId <= iId) {
+        //refId = iId + 1;
+        //refId++;
+        refId = iId + 1;
+      }
+    }
+
     blocksCopy[idx].blockContent = [
       ...blocksCopy[idx].blockContent,
-      { id: 'ref' + blocksCopy[idx].blockContent.length.toString(), label: 'New reference' },
+      { id: 'ref'.concat(refId.toString()), label: 'New reference' },
     ];
     setBlocksContent(blocksCopy);
   };
 
   const deleteReference = (idxToDelete: number) => {
-    const blocksCopy = cloneDeep(blocksContent);
+    const refId = blocksContent[idx].blockContent[idxToDelete].id;
+
+    const blocksCopy = editTextfields(getReferenceForEditor(refId), '');
+    console.log('copy: ', blocksCopy);
+
+    console.log('delete ref', refId, idxToDelete, blocksCopy[idx].blockContent);
     blocksCopy[idx].blockContent.splice(idxToDelete, 1);
     setBlocksContent(blocksCopy);
   };
 
-  //console.log('refs: ', blocksContent[idx]);
+  console.log('refs: ', blocksContent[idx]);
 
   return (
     <>
@@ -40,44 +60,24 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
             References
           </Text>
           <Stack m="md">
-            {blocksContent[idx].blockContent.map((item, referenceId) => {
-              //console.log(item);
+            {blocksContent[idx].blockContent.map((item: referencesElementType, referenceId) => {
+              console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
               return (
                 <Flex>
-                  <Box h="1rem" mr="xs" mt="0.7rem">
-                    <Text
-                      miw="2rem"
-                      c={
-                        idx === activeBlock
-                          ? 'var(--mantine-color-white)'
-                          : 'var(--mantine-color-cyan-9)'
-                      }
-                      bg={
-                        idx === activeBlock
-                          ? 'var(--mantine-color-cyan-4)'
-                          : 'var(--mantine-color-cyan-0)'
-                      }
-                      fw="500"
-                      fz="sm"
-                      pl="5px"
-                      pr="5px"
-                      ta="center"
-                      //bd="1px solid var(--mantine-color-cyan-5)"
-                      style={{ borderRadius: ' var(--mantine-radius-md)' }}
-                    >
-                      {item.id}
-                    </Text>
+                  <Box h="1.4rem" mr="xs" mt="0.7rem">
+                    <BlockReferenceId referenceId={item.id} />
                   </Box>
                   <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
                     [{referenceId + 1}]
                   </Box>
-
-                  <BasicTexfield
-                    idx={idx}
-                    //FIXME - te toString coś nie tak
-                    idxInput={idx.toString() + 'ref' + item.id.toString()}
-                    contentToRead={item.label}
-                  />
+                  <Box maw="29vw" w="100%">
+                    <BasicTexfield
+                      idx={idx}
+                      //FIXME - te toString coś nie tak
+                      idxInput={idx.toString() + item.id}
+                      contentToRead={item.label}
+                    />
+                  </Box>
                   {activeBlock === idx ? (
                     <Button
                       w="2rem"

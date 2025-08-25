@@ -28,7 +28,7 @@ import { useAddBlock } from './documentHandlers';
 
 let equationCounter = 0;
 let figureCounter = 0;
-let imageCounter = 0;
+let tableCounter = 0;
 
 const texfiledValue: blockType = { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' };
 const sectionValue: blockType = {
@@ -53,12 +53,19 @@ const equationValue: blockType = {
 };
 const tableValue: blockType = {
   typeOfBlock: 'table',
-  blockContent: [
-    ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
-    ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
-  ],
+  blockContent: {
+    id: 'tab',
+    label: 'New table',
+    content: [
+      ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+      ['<p>&nbsp;</p>', '<p>&nbsp;</p>'],
+    ],
+  },
 };
-const figureValue: blockType = { typeOfBlock: 'figure', blockContent: '' };
+const figureValue: blockType = {
+  typeOfBlock: 'figure',
+  blockContent: { id: 'eq', label: 'New image', content: '' },
+};
 const titleSectionValue: blockType = {
   typeOfBlock: 'titlePage',
   blockContent: { title: 'Title', author: 'Author', date: 'Date' },
@@ -136,6 +143,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Table',
           Icon: () => <LuTable />,
           function: () => {
+            tableCounter++;
+            (tableValue.blockContent as blockAbleToRef).id = `tab${tableCounter}`;
             addBlock(tableValue, 1);
           },
           value: tableValue,
@@ -145,6 +154,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Image',
           Icon: () => <LuImage />,
           function: () => {
+            figureCounter++;
+            (figureValue.blockContent as blockAbleToRef).id = `img${figureCounter}`;
             addBlock(figureValue, 1);
           },
           value: figureValue,

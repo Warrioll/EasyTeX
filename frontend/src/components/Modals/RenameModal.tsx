@@ -68,7 +68,7 @@ export default function RenameModal({
       setDisableRenameButton(false);
     } catch (e) {
       console.log(`Rename ${thingToRename} error:`, e);
-      if (e.status === 403) {
+      if (e.status === 422) {
         setErrorMessage('Invalid name format!');
         errorMessageHandlers.open();
         errorDialogHandlers.open();

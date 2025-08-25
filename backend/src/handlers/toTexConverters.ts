@@ -166,26 +166,26 @@ export const equationToTex =(blockContent: blockContentType): string =>{
     return `\\begin{equation} ${(blockContent as blockAbleToRef).content} \\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
 }
 
-export const tableToTex =(blockContent: string[][]): string =>{
+export const tableToTex =(blockContent: blockAbleToRef): string =>{
     let tableContent:string=''
 
-    for(let row=0; row<blockContent.length; row++){
-        for(let column=0; column<blockContent[row].length; column++){
-            tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent[row][column]))
-            if(!(column===blockContent[row].length-1)){
+    for(let row=0; row<blockContent.content.length; row++){
+        for(let column=0; column<blockContent.content[row].length; column++){
+            tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent.content[row][column]))
+            if(!(column===blockContent.content[row].length-1)){
                 
                  tableContent=tableContent+'&'
             }
         }
         tableContent=tableContent+' \\\\ \\hline '
     }
-    const style='|c'.repeat(blockContent[0].length)+'|'
-
-    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\end{table}`
+    const style='|c'.repeat(blockContent.content[0].length)+'|'
+ 
+    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
 }
 
-export const figureToTex =(blockContent:string): string =>{
-    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+blockContent+'} \\end{figure}'
+export const figureToTex =(blockContent:blockAbleToRef, path:string): string =>{
+    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
 }
 
 

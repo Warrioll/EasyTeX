@@ -33,9 +33,9 @@
 }
 
 .textfieldNotFocused{
-    word-wrap: break-word;
+    /* word-wrap: break-word;
     overflow-wrap: break-word;
-    text-align: justify;
+    text-align: justify; */
 }
 
 .centeredInput{
