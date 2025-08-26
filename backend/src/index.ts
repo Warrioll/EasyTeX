@@ -11,7 +11,7 @@ const app = express();
 //dotenv.config()
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:3000',
     credentials: true,
 }));
 // app.use(
@@ -30,13 +30,14 @@ app.use(cookieParser())
 app.use(express.json());
 app.use('/',router());
 
-
+ 
 
  
 //const PORT = process.env.PORT;
-const PORT = 8100;
-//const MONGOURL = process.env.MONGO_URL
-const MONGOURL = "mongodb://localhost:27017/EasyTeX"
+const PORT =  process.env.BACKEND_PORT;
+const MONGOURL = process.env.MONGO_URL
+//const MONGOURL = "mongodb://localhost:27017/EasyTeX"
+//const MONGOURL = "mongodb://user:pass@mongodb/EasyTeX?authSource=admin"
 
 
 mongoose.Promise = Promise;  

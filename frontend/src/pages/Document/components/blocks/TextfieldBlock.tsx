@@ -11,7 +11,7 @@ import {
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-import BasicTexfield from './blocksComponents/basicTextfield';
+import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
 

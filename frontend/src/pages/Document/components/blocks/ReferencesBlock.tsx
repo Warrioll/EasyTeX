@@ -6,7 +6,7 @@ import { Box, Button, Flex, Stack, Text, Title } from '@mantine/core';
 import { referencesElementType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import { getReferenceForEditor, useEditTextfields } from '../../documentHandlers';
-import BasicTexfield from './blocksComponents/basicTextfield';
+import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 

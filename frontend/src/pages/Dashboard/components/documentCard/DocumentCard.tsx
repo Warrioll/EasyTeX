@@ -180,7 +180,7 @@ export default function DocumentCard({
         className={classes.card}
         padding="xl"
         onDoubleClick={() => {
-          window.location.href = `http://localhost:5173/document/${documentId}`;
+          window.location.href = `/document/${documentId}`;
         }}
         bd={cardBorder}
         onMouseEnter={() => setCardBorder(`1px solid ${choosenDocumentColor}`)}
@@ -206,7 +206,7 @@ export default function DocumentCard({
             <MenuDropdown>
               <Menu.Item
                 onClick={() => {
-                  window.location.href = `http://localhost:5173/document/${documentId}`;
+                  window.location.href = `/document/${documentId}`;
                 }}
                 leftSection={<FaArrowRightFromBracket />}
               >
@@ -249,7 +249,7 @@ export default function DocumentCard({
           fw={500}
           className={classes.cardTitle}
           mt="md"
-          href={`http://localhost:5173/document/${documentId}`}
+          href={`/document/${documentId}`}
         >
           {title}
         </Anchor>
