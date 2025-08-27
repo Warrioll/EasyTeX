@@ -13,39 +13,26 @@ import styles from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  //sectionsContent: blockType[];
-  //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  //editor: Editor;
 };
 
-export default function SubsectionBlock({
-  idx,
-  //activeBlockState,
-  //sectionsContent,
-  //setSectionsContent,
-  //editor,
-  //activeTextInputState,
-}: SectionBlockProps) {
-  // const [focusTrap, { toggle }] = useDisclosure(false);
+export default function SubsectionBlock({ idx }: SectionBlockProps) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const [sectionNumber, setSectionNumber] = useState<string>('');
 
-  const updateSectionContent = (event) => {
-    console.log('section event', event);
-    let content = cloneDeep(blocksContent);
-    console.log('section  event.target.value', event.target.value);
-    //content[idx].blockContent = event.target.value;
-    content[idx] = {
-      ...content[idx],
-      //blockContent: { idx: 1, sectionContent: event.target.value },
-      blockContent: event.target.value,
-    };
-    console.log('section content[idx].blockContent', content[idx].blockContent);
-    setBlocksContent(content);
-  };
+  // const updateSectionContent = (event) => {
+  //   console.log('section event', event);
+  //   let content = cloneDeep(blocksContent);
+  //   console.log('section  event.target.value', event.target.value);
+  //   //content[idx].blockContent = event.target.value;
+  //   content[idx] = {
+  //     ...content[idx],
+  //     //blockContent: { idx: 1, sectionContent: event.target.value },
+  //     blockContent: event.target.value,
+  //   };
+  //   console.log('section content[idx].blockContent', content[idx].blockContent);
+  //   setBlocksContent(content);
+  // };
 
   useEffect(() => {
     let sectionCounter = 0;
@@ -67,27 +54,15 @@ export default function SubsectionBlock({
 
   return (
     <Flex>
-      <MarkedBlockFrame
-        idx={idx}
-        //activeBlockState={activeBlockState}
-        blockName="Subsection"
-        //sectionsContent={sectionsContent}
-        //setSectionsContent={setSectionsContent}
-        //activeTextInputState={activeTextInputState}
-      >
+      <MarkedBlockFrame idx={idx} blockName="Subsection">
         <Flex align="center">
           <Text fz="lg" fw="bold" mr="xs" ml="xl" c="var(--mantine-color-gray-6)">
             {sectionNumber}
           </Text>
           <BasicTexfield
             idx={idx}
-            //activeBlockState={activeBlockState}
             contentToRead={blocksContent[idx].blockContent as string}
-            //editor={editor}
-            //activeTextInputState={activeTextInputState}
             idxInput={idx.toString()}
-            //sectionsContent={sectionsContent}
-            //setSectionsContent={setSectionsContent}
           />
         </Flex>
       </MarkedBlockFrame>

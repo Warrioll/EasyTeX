@@ -42,7 +42,7 @@ export default function BasicTexfield({
   //sectionsContent,
   //setSectionsContent,
 }: BasicTextfieldProps) {
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  //const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { editor } = useEditorContext();
@@ -83,7 +83,7 @@ export default function BasicTexfield({
   // };
 
   useEffect(() => {
-    console.log('active block:', blocksContent[activeBlock]);
+    //console.log('active block:', blocksContent[activeBlock]);
     if (activeTextfield === idxInput && activeBlock !== idx) {
       setActiveTextfield('');
     }
@@ -100,7 +100,7 @@ export default function BasicTexfield({
           // sectionsContent[idx].blockContent
           //   ?
           //console.log('sectionsContent: ', sectionsContent);
-          //console.log('contentToREad:', contentToRead);
+          console.log('contentToREad:', contentToRead);
           if (contentToRead === '&nbsp;' || contentToRead === '<p>&nbsp;</p>') {
             await editor?.commands.setContent('');
           } else {
