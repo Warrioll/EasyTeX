@@ -40,8 +40,9 @@ export default function TextfieldBlock({
   //editorContent,
 }: TextfieldBlockProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
-
+  console.log('render textfield', idx);
   const thisBlockContent = useMemo(() => {
+    console.log('useMemo', idx);
     return (
       <BasicTexfield
         idx={idx}

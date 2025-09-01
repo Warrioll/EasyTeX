@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Editor } from '@tiptap/react';
 import parse from 'html-react-parser';
 import {
@@ -30,21 +30,9 @@ import classes from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
-  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  //sectionsContent: blockType[];
-  //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
-  //editor: Editor;
-  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
-export default function TitlePageBlock({
-  idx,
-  //activeBlockState,
-  //sectionsContent,
-  //setSectionsContent,
-  //editor,
-  //activeTextInputState,
-}: SectionBlockProps) {
+export default function TitlePageBlock({ idx }: SectionBlockProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   //const { activeTextfield, setActiveTextfield } = useActiveTextInputContext();
   //const [activeTextfield, setActiveTextfield] = useState<string>('');

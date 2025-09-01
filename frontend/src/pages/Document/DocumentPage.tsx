@@ -677,6 +677,7 @@ export default function DocumentPage() {
   }, []);
 
   const renderBlock = (item, idx) => {
+    console.log('render block:', idx);
     switch (item.typeOfBlock) {
       case 'titlePage':
         return <TitlePageBlock idx={idx} />;
@@ -701,7 +702,7 @@ export default function DocumentPage() {
       case 'references':
         return <ReferencesBlock idx={idx} />;
       default:
-        return <></>;
+        return null;
     }
   };
 

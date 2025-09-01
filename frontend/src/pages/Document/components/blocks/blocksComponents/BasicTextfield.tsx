@@ -145,15 +145,15 @@ export default function BasicTexfield({
           //   <RichTextEditor.Content />f
           // </RichTextEditor>
 
-          <FocusTrap active={focusTrap}>
-            <EditorContent
-              editor={editor}
-              // style={{
-              //   backgroundColor: activeTextfield === idxInput ? '#ebffff;' : '',
-              // }}
-            />
-          </FocusTrap>
-        ) : contentToRead ? (
+          //<FocusTrap active={focusTrap}>
+          <EditorContent
+            editor={editor}
+            // style={{
+            //   backgroundColor: activeTextfield === idxInput ? '#ebffff;' : '',
+            // }}
+          />
+        ) : // </FocusTrap>
+        contentToRead ? (
           <Flex
             // ml="3px"
             // mr="3px"

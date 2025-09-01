@@ -176,31 +176,6 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
       Subscript,
       Superscript,
       LinkTiptap,
-      Mention.configure({
-        HTMLAttributes: {
-          class: 'mention',
-          //title: 'Reference',
-        },
-        suggestion: {
-          char: '',
-          // items: (query) => {
-          //   return ['Yolo', 'Wewo', { id: 1, label: 'xDDD' }, 'Działa?'];
-          // },
-          // render: () => {
-
-          //   console.log('redner', activeBlock, blocksContent[activeBlock]);
-          //   return {
-          //     onStart: (props) => {
-          //       props.editor?.commands.insertContent(
-          //         '<span data-type="mention" data-id="[1]"></span>'
-          //       );;
-          //       console.log('Mention render', props, activeBlock, activeTextfield);
-
-          //     },
-          //   };
-          // },
-        },
-      }),
 
       //, Placeholder.configure({ placeholder: 'This is placeholder' })
     ],

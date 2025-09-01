@@ -150,7 +150,13 @@ const Header: React.FC<headerProps> = ({
 
   const blocksList = useBlocksList();
 
-  const insertTools = <TabTemplate buttons={blocksList} iconSize="var(--mantine-font-size-lg)" />;
+  const insertTools = (
+    <TabTemplate
+      buttons={blocksList}
+      iconSize="var(--mantine-font-size-lg)"
+      getToottipText={(label: string) => `Add ${label.toLocaleLowerCase()}`}
+    />
+  );
   // const insertTools = (
   //   <>
   //     {blocksList.map((item) => {
