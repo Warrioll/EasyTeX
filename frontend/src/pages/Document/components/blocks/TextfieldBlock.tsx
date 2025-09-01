@@ -11,7 +11,7 @@ import {
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-import BasicTexfield from './blocksComponents/basicTextfield';
+import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
 
@@ -27,45 +27,61 @@ type TextfieldBlockProps = {
   // editorContent;
 };
 
-const TextfieldBlock = memo(
-  ({
-    idx,
-    //activeBlockState,
-    //activeSection,
-    //setActiveSecion,
-    //sectionsContent,
-    //setSectionsContent,
-    //editor,
-    //activeTextInputState,
-    //editorContent,
-  }: TextfieldBlockProps) => {
-    const { blocksContent, setBlocksContent } = useBlocksContentContext();
-
-    //const [focusTrap, { toggle }] = useDisclosure(false);
-    //const [activeBlock, setActiveBlock] = activeBlockState;
-
+//const TextfieldBlock = memo(
+export default function TextfieldBlock({
+  idx,
+  //activeBlockState,
+  //activeSection,
+  //setActiveSecion,
+  //sectionsContent,
+  //setSectionsContent,
+  //editor,
+  //activeTextInputState,
+  //editorContent,
+}: TextfieldBlockProps) {
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  console.log('render textfield', idx);
+  const thisBlockContent = useMemo(() => {
+    console.log('useMemo', idx);
     return (
-      <MarkedBlockFrame
+      <BasicTexfield
         idx={idx}
         //activeBlockState={activeBlockState}
-        blockName="Textfield"
+        contentToRead={blocksContent[idx].blockContent as string}
+        //editor={editor}
+        //activeTextInputState={activeTextInputState}
+        idxInput={idx.toString()}
         //sectionsContent={sectionsContent}
         //setSectionsContent={setSectionsContent}
-        //activeTextInputState={activeTextInputState}
-      >
-        <BasicTexfield
-          idx={idx}
-          //activeBlockState={activeBlockState}
-          contentToRead={blocksContent[idx].blockContent as string}
-          //editor={editor}
-          //activeTextInputState={activeTextInputState}
-          idxInput={idx.toString()}
-          //sectionsContent={sectionsContent}
-          //setSectionsContent={setSectionsContent}
-        />
-      </MarkedBlockFrame>
+      />
     );
-  }
-);
+  }, [blocksContent[idx], blocksContent[idx].blockContent]);
 
-export default TextfieldBlock;
+  //const [focusTrap, { toggle }] = useDisclosure(false);
+  //const [activeBlock, setActiveBlock] = activeBlockState;
+
+  return (
+    <MarkedBlockFrame
+      idx={idx}
+      //activeBlockState={activeBlockState}
+      blockName="Textfield"
+      //sectionsContent={sectionsContent}
+      //setSectionsContent={setSectionsContent}
+      //activeTextInputState={activeTextInputState}
+    >
+      <BasicTexfield
+        idx={idx}
+        //activeBlockState={activeBlockState}
+        contentToRead={blocksContent[idx].blockContent as string}
+        //editor={editor}
+        //activeTextInputState={activeTextInputState}
+        idxInput={idx.toString()}
+        //sectionsContent={sectionsContent}
+        //setSectionsContent={setSectionsContent}
+      />
+    </MarkedBlockFrame>
+  );
+}
+//);
+
+//export default TextfieldBlock;

@@ -23,7 +23,7 @@ import {
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-import BasicTexfield from './blocksComponents/basicTextfield';
+import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import LibraryFigureTab from './figureBlockComponents/LibraryFigureTab';

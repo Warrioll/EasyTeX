@@ -23,7 +23,7 @@ import {
   documentPluralNonCapitalLabels,
 } from '@/components/other/documentLabelsAndColors';
 import BasicBanner from './components/banners/BasicBanner';
-import SearchBanner from './components/banners/searchBanner';
+import SearchBanner from './components/banners/SearchBanner';
 import CreateDocumentModal from './components/createDocumentModal/CreateDocumentModal';
 import DocumentCard from './components/documentCard/DocumentCard';
 import NavBar from './components/navBar/NavBar';

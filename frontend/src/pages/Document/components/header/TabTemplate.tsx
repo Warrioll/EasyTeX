@@ -7,12 +7,14 @@ type TabTemplatePropsType = {
   buttons: groupedListType;
   iconSize: string;
   dontRenderButtons?: number[];
+  getToottipText?: (label: string) => string;
 };
 
 export default function TabTemplate({
   buttons,
   iconSize,
   dontRenderButtons,
+  getToottipText,
 }: TabTemplatePropsType) {
   const buttonsNotToRender =
     dontRenderButtons !== undefined && dontRenderButtons !== null && dontRenderButtons.length > 0
@@ -23,14 +25,14 @@ export default function TabTemplate({
 
   return (
     <Flex>
-      {buttons.map((buttonsGroup, groupIdx) => (
-        <Tooltip.Group openDelay={100} closeDelay={300}>
+      <Tooltip.Group openDelay={100} closeDelay={300}>
+        {buttons.map((buttonsGroup, groupIdx) => (
           <Flex ml="2rem">
             {buttonsGroup.group.map((button, idx) => {
               amountOFButtons++;
               return (
                 <Tooltip
-                  label={button.label}
+                  label={getToottipText ? getToottipText(button.label) : button.label}
                   //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
                   color="cyan"
                   position="bottom"
@@ -51,8 +53,8 @@ export default function TabTemplate({
               );
             })}
           </Flex>
-        </Tooltip.Group>
-      ))}
+        ))}
+      </Tooltip.Group>
     </Flex>
   );
 }

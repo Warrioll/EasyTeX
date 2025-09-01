@@ -39,31 +39,42 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
     fontToConvert = fontToConvert.replaceAll('</s>', '}')
 
-    const splitted = fontToConvert.split('<span class="mention" data-type="mention" data-id="')
-    console.log('splitted: ', splitted)
-    const splitted2=splitted.map((item, id)=>{
-        if (id>0){
-        return item.split('">')
-        } 
-        return item
-        })
-    console.log('splitted2: ', splitted2)
-    const converted = splitted2.map((item, id)=>{
-        if(Array.isArray(item) && item.length>1){
-            console.log('item', item)
-            let tmpItem=[...item]
-            const itemId=tmpItem[0]
-            tmpItem.splice(0,1)
-
-            if(itemId.includes('eq') || itemId.includes('tab') || itemId.includes('img')){
-                return `\\ref{${itemId}}${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
-            }
-            return `\\cite{${itemId}} ${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
+    fontToConvert=fontToConvert.replaceAll(/\<span.*?class=\"mention\".*?data-type=\"mention\".*?data-id=\".*?\".*?>(.*?)<\/span>/g, (wholeFraze, insideOfFraze)=>{
+        console.log('mention: ', wholeFraze)
+        if(insideOfFraze.includes('ref')){
+            console.log('cite: ', `\\cite{${insideOfFraze}}`)
+            return `\\cite{${insideOfFraze}}`
         }
-        return item
+        console.log('cite: ', `\\ref{${insideOfFraze}}`)
+        return `\\ref{${insideOfFraze}}`
+        
     })
-     console.log('converted: ', converted)
-    fontToConvert=converted.join('');
+
+    // const splitted = fontToConvert.split('<span class="mention" data-type="mention" data-id="')
+    // console.log('splitted: ', splitted)
+    // const splitted2=splitted.map((item, id)=>{
+    //     if (id>0){
+    //     return item.split('">')
+    //     } 
+    //     return item
+    //     })
+    // console.log('splitted2: ', splitted2)
+    // const converted = splitted2.map((item, id)=>{
+    //     if(Array.isArray(item) && item.length>1){
+    //         console.log('item', item)
+    //         let tmpItem=[...item]
+    //         const itemId=tmpItem[0]
+    //         tmpItem.splice(0,1)
+
+    //         if(itemId.includes('eq') || itemId.includes('tab') || itemId.includes('img')){
+    //             return `\\ref{${itemId}}${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
+    //         }
+    //         return `\\cite{${itemId}} ${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
+    //     }
+    //     return item
+    // })
+    //  console.log('converted: ', converted)
+    // fontToConvert=converted.join('');
 
     //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
 

@@ -1,2 +1,4 @@
 backend/figureBase/*
 backend/documentBase/*
+data/*
+.devcontainer/*

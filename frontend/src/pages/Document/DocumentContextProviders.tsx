@@ -54,7 +54,7 @@ export const ActiveTextfieldProvider = ({ children }: DocumentProvidersPropsType
   const [activeTextfield, setActiveTextfield] = useState<string>('');
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
-  useEffect(() => {}, [activeBlock]);
+  //useEffect(() => {}, [activeBlock]);
 
   return (
     <ActiveTextfieldContext.Provider
@@ -114,28 +114,28 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         //console.log('titlePage');
         if (activeTextfield.includes('title')) {
           //console.log('title');
-          blocksContentCopy[activeBlock].blockContent.title = toSave;
+          blocksContent[activeBlock].blockContent.title = toSave;
         }
         if (activeTextfield.includes('author')) {
-          blocksContentCopy[activeBlock].blockContent.author = toSave;
+          blocksContent[activeBlock].blockContent.author = toSave;
         }
         if (activeTextfield.includes('date')) {
-          blocksContentCopy[activeBlock].blockContent.date = toSave;
+          blocksContent[activeBlock].blockContent.date = toSave;
         }
         //console.log('end');
         break;
       case 'figure':
-        blocksContentCopy[activeBlock].blockContent.label = toSave;
+        blocksContent[activeBlock].blockContent.label = toSave;
         break;
       case 'table':
         //FIXME sprawedzić czy działa i label zapisywanie
         //console.log('table on blur save');
         if (activeTextfield.includes('tableLabel')) {
-          blocksContentCopy[activeBlock].blockContent.label = toSave;
+          blocksContent[activeBlock].blockContent.label = toSave;
         } else {
           const tmp = activeTextfield.split(';');
           const cellId = [tmp[0], tmp[1], tmp[2]]; //0 - id tabeli, 1 - rows, 2- columns
-          blocksContentCopy[activeBlock].blockContent.content[(cellId[1] as unknown as number) - 1][
+          blocksContent[activeBlock].blockContent.content[(cellId[1] as unknown as number) - 1][
             (cellId[2] as unknown as number) - 1
           ] = toSave;
         }
@@ -147,7 +147,7 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         const [blockIdx, refId] = activeTextfield.split('ref');
 
         console.log('whole: ', activeTextfield, 'blockIdx: ', blockIdx, 'refId', refId);
-        const refIdx = blocksContentCopy[activeBlock].blockContent.findIndex(
+        const refIdx = blocksContent[activeBlock].blockContent.findIndex(
           (item) => item.id === 'ref'.concat(refId)
         );
 
@@ -155,18 +155,18 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
           'ref To save: ',
           refIdx,
           'items: ',
-          blocksContentCopy[activeBlock].blockContent,
+          blocksContent[activeBlock].blockContent,
           'refId: ',
           refId
         );
-        blocksContentCopy[activeBlock].blockContent[refIdx].label = toSave;
+        blocksContent[activeBlock].blockContent[refIdx].label = toSave;
         break;
       default:
-        //console.log('default on blur save: ', toSave);
-        blocksContentCopy[activeBlock].blockContent = toSave;
+        blocksContent[activeBlock].blockContent = toSave;
+        console.log('default on blur save: ', blocksContent);
         break;
     }
-    setBlocksContent(blocksContentCopy);
+    //setBlocksContent(blocksContentCopy);
   };
 
   const editor = useEditor({
@@ -176,31 +176,6 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
       Subscript,
       Superscript,
       LinkTiptap,
-      Mention.configure({
-        HTMLAttributes: {
-          class: 'mention',
-          //title: 'Reference',
-        },
-        suggestion: {
-          char: '',
-          // items: (query) => {
-          //   return ['Yolo', 'Wewo', { id: 1, label: 'xDDD' }, 'Działa?'];
-          // },
-          // render: () => {
-
-          //   console.log('redner', activeBlock, blocksContent[activeBlock]);
-          //   return {
-          //     onStart: (props) => {
-          //       props.editor?.commands.insertContent(
-          //         '<span data-type="mention" data-id="[1]"></span>'
-          //       );;
-          //       console.log('Mention render', props, activeBlock, activeTextfield);
-
-          //     },
-          //   };
-          // },
-        },
-      }),
 
       //, Placeholder.configure({ placeholder: 'This is placeholder' })
     ],

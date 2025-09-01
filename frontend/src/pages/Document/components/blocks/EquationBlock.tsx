@@ -26,7 +26,6 @@ import {
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-import BasicTexfield from './blocksComponents/basicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import { updateIdx } from './equationEditor/elementsTreeHelpers';

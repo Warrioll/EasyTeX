@@ -110,7 +110,7 @@ export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
 
   export const getReferenceForEditor = (referenceId:string):string =>{
     //return "<span class=\"mention\" data-type=\"mention\" data-id=\"" + referenceId+ "\">"+referenceId+"</span>"
-    return `<span class=\"mention\" data-type=\"mention\" data-id=\"${referenceId}\">${referenceId}</span>`
+    return `<span class="mention" data-type="mention" data-id="${referenceId}">${referenceId}</span>`
     
   }
 

@@ -303,8 +303,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
     }
 }
 })
-
-}
+  
+} 
 
 export const createDocument = async (req: express.Request, res: express.Response)=>{
 

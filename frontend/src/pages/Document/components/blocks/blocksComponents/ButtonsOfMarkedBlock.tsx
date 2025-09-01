@@ -6,10 +6,12 @@ import { LuHeading1, LuHeading2 } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { TbForbid2 } from 'react-icons/tb';
-import { Badge, Box, Button, Flex, Menu, Stack } from '@mantine/core';
+import { Badge, Box, Button, Flex, Menu, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { AddComboox } from '@/components/other/AddCombobox';
 //import { blocksList } from '../oldBlocksList';
 import { useBlocksList } from '@/pages/Document/blocksList';
+import { useAddBlock } from '@/pages/Document/documentHandlers';
 import { blockType } from '@/Types';
 import {
   useActiveBlockContext,
@@ -47,6 +49,7 @@ export default function ButtonsOfMarkedBlock({
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
 
   const blocksList = useBlocksList();
+  const { addBlock } = useAddBlock();
 
   const moveBlockUp = () => {
     let blocks = cloneDeep(blocksContent);
@@ -90,7 +93,7 @@ export default function ButtonsOfMarkedBlock({
             </Badge>
           </Stack>
           <Flex gap="0px">
-            <Menu>
+            {/* <Menu>
               <Menu.Target>
                 <Button variant="transparent" size="compact-xs" mt="xs" w="2rem" h="1.5rem" m="0px">
                   <MdOutlineAdd />
@@ -107,33 +110,53 @@ export default function ButtonsOfMarkedBlock({
                     </Menu.Item>
                   );
                 })}
-                {/* <Menu.Item
-                  onClick={() => addBlockFunction({ typeOfBlock: 'section', blockContent: '' })}
-                  leftSection={<LuHeading1 />}
-                >
-                  Section
-                </Menu.Item> 
-                <Menu.Item
-                  onClick={() => addBlockFunction({ typeOfBlock: 'textfield', blockContent: '' })}
-                  leftSection={<PiTextTBold />}
-                >
-                  Textfield
-                </Menu.Item> */}
+               
               </Menu.Dropdown>
-            </Menu>
+            </Menu> */}
+            <AddComboox
+              data={blocksList ? blocksList : []}
+              withGroups
+              floatingStrategy="fixed"
+              placeholder=""
+              buttonContent={
+                <>
+                  <Text mt="11px" p="0px" h="1.5rem" m="0px" mr="9px">
+                    <MdOutlineAdd />
+                  </Text>
+                </>
+              }
+              //expressionInputContentState,
+              insertFunction={(value) => {
+                addBlock(value, typeOfAddBlockFunction === 'above' ? 0 : 1);
+              }}
+              iconSize="0.8rem"
+              tooltip={`Add block ${typeOfAddBlockFunction}`}
+            />
             <Flex>
               <Menu position="left-start">
                 <Menu.Target>
-                  <Button
-                    variant="transparent"
-                    mt="xs"
-                    size="compact-sm"
-                    w="2rem"
-                    h="1.5rem"
-                    m="0px"
+                  <Tooltip
+                    label="More"
+                    //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
+                    color="cyan"
+                    position="bottom"
+                    offset={5}
+                    withArrow
+                    arrowOffset={50}
+                    arrowSize={7}
+                    arrowRadius={2}
                   >
-                    <IoMdMore />
-                  </Button>
+                    <Button
+                      variant="transparent"
+                      mt="xs"
+                      size="compact-sm"
+                      w="2rem"
+                      h="1.5rem"
+                      m="0px"
+                    >
+                      <IoMdMore />
+                    </Button>
+                  </Tooltip>
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
@@ -160,21 +183,33 @@ export default function ButtonsOfMarkedBlock({
                 </Menu.Dropdown>
               </Menu>
 
-              <Button
-                variant="transparent"
-                size="compact-sm"
-                mt="xs"
-                onClick={() => {
-                  setActiveBlock(0);
-                  //setActiveTextfield('');
-                }}
-                className={classes.stickyElement}
-                w="2rem"
-                h="1.5rem"
-                m="0px"
+              <Tooltip
+                label="Unmark block"
+                //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
+                color="cyan"
+                position="bottom"
+                offset={5}
+                withArrow
+                arrowOffset={50}
+                arrowSize={7}
+                arrowRadius={2}
               >
-                <TbForbid2 />
-              </Button>
+                <Button
+                  variant="transparent"
+                  size="compact-sm"
+                  mt="xs"
+                  onClick={() => {
+                    setActiveBlock(0);
+                    //setActiveTextfield('');
+                  }}
+                  className={classes.stickyElement}
+                  w="2rem"
+                  h="1.5rem"
+                  m="0px"
+                >
+                  <TbForbid2 />
+                </Button>
+              </Tooltip>
             </Flex>
           </Flex>
         </Flex>
