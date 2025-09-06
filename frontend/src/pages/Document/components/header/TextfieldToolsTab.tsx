@@ -51,20 +51,13 @@ export default function TextfieldToolsTab(
   const { editor } = useEditorContext();
 
   const codeAndLink: buttonType[] = [
-    {
-      //trzeba popatrzeć czemu nie działa https://tiptap.dev/docs/editor/extensions/marks/link
-      content: <FaLink />,
-      clickFunction: () => editor?.commands.toggleLink(),
-      fontSize: 'var(--mantine-font-size-md)',
-      tooltip: 'Link',
-    },
-    {
-      content: <>ref</>,
-      clickFunction: () =>
-        editor?.commands.insertContent(`<span data-type="mention" data-id="[${activeBlock}]"/>`),
-      fontSize: 'var(--mantine-font-size-md)',
-      tooltip: 'Link',
-    },
+    // {
+    //   //trzeba popatrzeć czemu nie działa https://tiptap.dev/docs/editor/extensions/marks/link
+    //   content: <FaLink />,
+    //   clickFunction: () => editor?.commands.toggleLink(),
+    //   fontSize: 'var(--mantine-font-size-md)',
+    //   tooltip: 'Link',
+    // },
   ];
 
   const indexes: buttonType[] = [

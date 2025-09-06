@@ -47,7 +47,13 @@ import classes from './documentPage.module.css';
 
 import 'katex/dist/katex.min.css';
 
+import { ErrorBoundary } from 'react-error-boundary';
+import AddressAndDateBlock from './components/blocks/AddressAndDateBlock';
+import ClosingBlock from './components/blocks/ClosingBlock';
+import OpeningBlock from './components/blocks/OpeningBlock';
 import ReferencesBlock from './components/blocks/ReferencesBlock';
+import SlideBreakBlock from './components/blocks/SlideBreakBlock';
+import UnavailableBlock from './components/blocks/UnavailableBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -130,6 +136,60 @@ export default function DocumentPage() {
 
   //   //console.log('OnBlur', editorContent);
   // };
+  console.log('pageee');
+  const sendChanges = async () => {
+    try {
+      console.log('changes', blocksContent);
+      const blocks = blocksContent.filter((block) => {
+        switch (block.typeOfBlock) {
+          case 'titlePage':
+            if (
+              chceckIfBlockContentEmpty(block.blockContent.title as string) &&
+              chceckIfBlockContentEmpty(block.blockContent.author as string) &&
+              chceckIfBlockContentEmpty(block.blockContent.date as string)
+            ) {
+              return false;
+            }
+            return true;
+          case 'equation':
+            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
+            return true;
+          // case 'figure':
+          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
+          //   case 'equation':
+          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
+          case 'references':
+            //FIXME - sprawdzanie czy nie są puste
+            return true;
+          case 'tableOfContents':
+            return true;
+          case 'pageBreak':
+            return true;
+          case 'figure':
+            //TODO
+            return true;
+          case 'table':
+            //FIXME - sprawdzanie czy nie są puste
+            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
+            return true;
+          default:
+            return !chceckIfBlockContentEmpty(block.blockContent);
+        }
+      });
+
+      const response = await axios.put(
+        `http://localhost:8100/document/documentContent/${id}`,
+        blocks,
+        { withCredentials: true }
+      );
+      console.log('send changes', response.status);
+      if (response.status === 200) {
+        const reload = await setPdfFile();
+      }
+    } catch (error) {
+      console.log('save and reaload error:', error, 'blocks: ', blocksContent);
+    }
+  };
 
   const addSection = () => {
     if (activeBlock === 0) {
@@ -444,59 +504,6 @@ export default function DocumentPage() {
     }
   };
 
-  const sendChanges = async () => {
-    try {
-      const blocks = blocksContent.filter((block) => {
-        switch (block.typeOfBlock) {
-          case 'titlePage':
-            if (
-              chceckIfBlockContentEmpty(block.blockContent.title as string) &&
-              chceckIfBlockContentEmpty(block.blockContent.author as string) &&
-              chceckIfBlockContentEmpty(block.blockContent.date as string)
-            ) {
-              return false;
-            }
-            return true;
-          case 'equation':
-            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
-            return true;
-          // case 'figure':
-          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
-          //   case 'equation':
-          //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
-          case 'references':
-            //FIXME - sprawdzanie czy nie są puste
-            return true;
-          case 'tableOfContents':
-            return true;
-          case 'pageBreak':
-            return true;
-          case 'figure':
-            //TODO
-            return true;
-          case 'table':
-            //FIXME - sprawdzanie czy nie są puste
-            //return chceckIfBlockContentEmpty(block.blockContent.label as string);
-            return true;
-          default:
-            return !chceckIfBlockContentEmpty(block.blockContent);
-        }
-      });
-
-      const response = await axios.put(
-        `http://localhost:8100/document/documentContent/${id}`,
-        blocks,
-        { withCredentials: true }
-      );
-      console.log('send changes', response.status);
-      if (response.status === 200) {
-        const reload = await setPdfFile();
-      }
-    } catch (error) {
-      console.log('save and reaload error:', error, 'blocks: ', blocksContent);
-    }
-  };
-
   const addRowAbove = () => {
     console.log('Row Add');
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
@@ -626,6 +633,7 @@ export default function DocumentPage() {
       setWorkspaceLoaded(false);
       setBlocksError(null);
       const response = await getBlocksContent(id as string);
+      console.log('co z tym', response.data);
       setBlocksContent(response.data);
       setWorkspaceLoaded(true);
     } catch (error) {
@@ -677,32 +685,48 @@ export default function DocumentPage() {
   }, []);
 
   const renderBlock = (item, idx) => {
-    console.log('render block:', idx);
-    switch (item.typeOfBlock) {
-      case 'titlePage':
-        return <TitlePageBlock idx={idx} />;
-      case 'tableOfContents':
-        return <TableOfContentsBlock idx={idx} />;
-      case 'pageBreak':
-        return <PageBreakBlock idx={idx} />;
-      case 'textfield':
-        return <TextfieldBlock idx={idx} />;
-      case 'section':
-        return <SectionBlock idx={idx} />;
-      case 'subsection':
-        return <SubsectionBlock idx={idx} />;
-      case 'subsubsection':
-        return <SubsubsectionBlock idx={idx} />;
-      case 'equation':
-        return <EquationBlock idx={idx} />;
-      case 'table':
-        return <TableBlock idx={idx} />;
-      case 'figure':
-        return <FigureBlock idx={idx} />;
-      case 'references':
-        return <ReferencesBlock idx={idx} />;
-      default:
-        return null;
+    try {
+      switch (item.typeOfBlock) {
+        case 'titlePage':
+          if (blocksContent[0].blockContent === 'letter') {
+            return <AddressAndDateBlock idx={idx} />;
+          }
+          return <TitlePageBlock idx={idx} />;
+        case 'tableOfContents':
+          return <TableOfContentsBlock idx={idx} />;
+        case 'pageBreak':
+          if (blocksContent[0].blockContent === 'beamer') {
+            return <SlideBreakBlock idx={idx} />;
+          }
+          return <PageBreakBlock idx={idx} />;
+        case 'textfield':
+          return <TextfieldBlock idx={idx} />;
+        case 'section':
+          return <SectionBlock idx={idx} />;
+        case 'subsection':
+          if (blocksContent[0].blockContent === 'letter') {
+            return <OpeningBlock idx={idx} />;
+          }
+          return <SubsectionBlock idx={idx} />;
+        case 'subsubsection':
+          if (blocksContent[0].blockContent === 'letter') {
+            return <ClosingBlock idx={idx} />;
+          }
+          return <SubsubsectionBlock idx={idx} />;
+        case 'equation':
+          return <EquationBlock idx={idx} />;
+        case 'table':
+          return <TableBlock idx={idx} />;
+        case 'figure':
+          return <FigureBlock idx={idx} />;
+        case 'references':
+          return <ReferencesBlock idx={idx} />;
+        default:
+          return null;
+      }
+    } catch (e) {
+      console.error('renderBlock error: ', e);
+      return <UnavailableBlock idx={idx} />;
     }
   };
 
@@ -766,16 +790,21 @@ export default function DocumentPage() {
                         Icon={blocksError.icon}
                         ButtonIcon={blocksError.buttonIcon}
                         buttonLabel={blocksError.buttonLabel}
-                        buttonFunction={blocksError.buttonFunction}
+                        buttonFunction={() => blocksError.buttonFunction}
                       />
                     </Box>
                   )}
                   {workspaceLoaded && !blocksError && (
                     <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
                       <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="40vw" h="50px" />
+
                       {blocksLoaded && blocksContent.length > 0 ? (
                         blocksContent.map((item, idx) => (
-                          <div key={idx}>{renderBlock(item, idx)}</div>
+                          <div key={idx}>
+                            <ErrorBoundary fallback={<UnavailableBlock idx={idx} />}>
+                              {renderBlock(item, idx)}
+                            </ErrorBoundary>
+                          </div>
                         ))
                       ) : (
                         <></>
@@ -806,7 +835,7 @@ export default function DocumentPage() {
                           style={{ position: 'relative' }}
                           ref={(el) => (pageRefs.current[idx + 1] = el)}
                         >
-                          <Page
+                          <Page 
                             pageNumber={idx + 1}
                             //renderTextLayer={false}
                             //renderAnnotationLayer={false}

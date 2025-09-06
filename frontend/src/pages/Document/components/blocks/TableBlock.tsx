@@ -198,7 +198,7 @@ export default function TableBlock({
               <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
             </Box>
             <Box miw="4rem" c="var(--mantine-color-gray-6)" mr="0px">
-              Table {tablesCounter}
+              Table {blocksContent[0].blockContent !== 'beamer' && tablesCounter}
             </Box>
             <BasicTexfield
               idx={idx}

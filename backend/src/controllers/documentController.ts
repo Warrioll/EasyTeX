@@ -3,7 +3,21 @@ import * as fileHander from "fs";
 import { documentModel, documentType } from '../models/documentModel'
 import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
 import { deleteFile, doesTexFileExist, loadTexFile,  saveFileWithContent} from '../handlers/fileHandlers';
-import { textfieldToTex, sectionToTex, subsectionToTex, documentclassToTex, subsubsectionToTex, basicToTexFontConverter,titlePageToTex, equationToTex,tableToTex, figureToTex, referencesToTex } from '../handlers/toTexConverters';
+import { textfieldToTex, 
+  sectionToTex, 
+  subsectionToTex, 
+  documentclassToTex, 
+  subsubsectionToTex, 
+  basicToTexFontConverter,
+  titlePageToTex, 
+  equationToTex,
+  tableToTex, 
+  figureToTex, 
+  referencesToTex, 
+  slideBreaktoTex,
+addressAndDateToTex,
+openingToTeX,
+closingToTeX } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
   textfieldToBlock, 
@@ -15,9 +29,13 @@ import { sectionToBlock,
   equationToBlock, 
   figureToBlock,
   referencesToBlock,
-tableToBlock} from '../handlers/toBlockConverters';
+  slideBreakToBlock,
+  addressAndDateToBlock,
+tableToBlock,
+openingToBlock,
+closingToBlock} from '../handlers/toBlockConverters';
 import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
-import { blockAbleToRef, blockType, referencesElementType} from '../types';
+import { blockAbleToRef, blockType, referencesElementType, slideBreak, titleSectionType} from '../types';
 import { figureModel } from '../models/figureModel';
 import { Document, InferSchemaType } from 'mongoose';
 import { nameRegex } from '../nameRegexes';
@@ -263,16 +281,19 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
           let blocks: (blockType)[] = document.map((line, idx)=>{
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
-            //console.log(line)
+            
 
              
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+             if(line.includes('\\address')) {  return  addressAndDateToBlock(line)}
             if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
             if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
             if(line.includes('\\date')) {titlePageData.date=getDateFromTex(line); return  nullBlock};
             if(line.includes('\\maketitle')) return  {typeOfBlock: 'titlePage', blockContent: titlePageData};
+           
             if(line.includes('\\tableofcontents')) return  {typeOfBlock: 'tableOfContents', blockContent: ''};
             if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
+             if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
             if(line.includes('\\section')) return  sectionToBlock(line);
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
@@ -280,10 +301,16 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
             if(line.includes('\\begin{figure}')) return figureToBlock(line);
+            if(line.includes('\\opening{')) return openingToBlock(line)
+            if(line.includes('\\closing{')) return closingToBlock(line)
             if(line.includes('\\begin{thebibliography}')) return referencesToBlock(line);
             if(line.includes('\\begin{document}')) return nullBlock;
             if(line.includes('\\end{document}')) return  nullBlock;
+            if(line.includes('\\begin{letter}')) return nullBlock;
+            if(line.includes('\\end{letter}')) return  nullBlock;
             if(line.includes('\\usepackage')) return  nullBlock;
+            if(line.includes('\\AtBegin')) return nullBlock
+            if(line.includes('\\frame{')) return nullBlock
             if(line==='') return  nullBlock;
             return  textfieldToBlock(line)
             })
@@ -427,25 +454,48 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
       switch(block.typeOfBlock){
         case 'documentclass':{
+          if(documentInstantion.documentClass!==block.blockContent as string){
+            //FIXME branie jednego z typów?
+            throw new Error("Document types are not the same!");
+          }
           return documentclassToTex(block.blockContent as string);
       } case 'titlePage':{
+        if(documentInstantion.documentClass==='letter'){
+          return addressAndDateToTex(block.blockContent as titleSectionType)
+        }
         if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
           // titlePageData=block.blockContent;
           //   return '\\maketitle'
-          return titlePageToTex(block.blockContent)
+          return titlePageToTex(block.blockContent as titleSectionType)
         }
         return ''
       }case 'tableOfContents':{
         return '\\tableofcontents'
        } case 'pageBreak':{
+        if(documentInstantion.documentClass==='beamer'){
+          //TODO jesli zrobion block usepackaga to samo > alb ojakis inny sposob na wykrywanie tego
+          if(idx>1){
+           
+            return slideBreaktoTex(block.blockContent as slideBreak, false)
+                     
+          }
+
+          return slideBreaktoTex(block.blockContent as slideBreak, true)
+        }
         return '\\newpage' 
       }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
        } case 'section':{ 
        return sectionToTex(block.blockContent as string);
       }case 'subsection':{
+        if(documentInstantion.documentClass==='letter'){
+          return openingToTeX(block.blockContent as string)
+        }
        return subsectionToTex(block.blockContent as string);
         }  case 'subsubsection':{
+          if(documentInstantion.documentClass==='letter'){
+          return closingToTeX(block.blockContent as string)
+        }
         return subsubsectionToTex(block.blockContent as string);
       }case 'equation':{
         return equationToTex(block.blockContent)
@@ -456,14 +506,14 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
           return ''}
       case 'figure':{
         if((block.blockContent as blockAbleToRef).content!=='' && (block.blockContent as blockAbleToRef).content){
-           const figure= await figureModel.findById((block.blockContent as blockAbleToRef).content)
-        if(figure!==null && figure.userId===userId){
-          const path=['..', '..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
-           return figureToTex((block.blockContent as blockAbleToRef), path)
-        }else{
-          //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
-          return ''
-        }
+          const figure= await figureModel.findById((block.blockContent as blockAbleToRef).content)
+          if(figure!==null && figure.userId===userId){
+            const path=['..', '..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
+           return figureToTex((block.blockContent as blockAbleToRef), path, documentInstantion.documentClass==='beamer' ? 6 : 10)
+          }else{
+            //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
+            return ''
+          }
         }else{
           //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
           return ''}
@@ -482,15 +532,38 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
     //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
     //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}` 
     // ); 
-    console.log('Przed paczkami doc: ', document)
 
-      document.splice(1,0,'\\usepackage{ulem}'
-        +'\n\\usepackage{amsmath}'
-        +'\n\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}'
-        +'\n\\usepackage{graphicx} '
-        +'\n\\begin{document}'
-      );
-     document.push('\\end{document}')
+
+
+    let defaultPackages =['\\usepackage{ulem}',
+      '\\usepackage{amsmath}', 
+      //'\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}', 
+      '\\usepackage{graphicx} ', 
+     ]
+
+     let beamerSettings=[
+      '\\AtBeginSection[]{{\\centering \\huge{ \\insertsection} \\par}}',
+      '\\AtBeginSubsection[]{{\\centering \\Large{ \\insertsubsection} \\par}}',
+      '\\AtBeginSubsubsection[]{{\\centering \\large{ \\insertsubsubsection} \\par}}'
+     ]
+
+     let defaultEnding=['\\end{document}']
+
+
+     switch (documentInstantion.documentClass){
+      case 'beamer':
+        document.splice(1,0,[...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
+        document.push(['\\end{frame}', ...defaultEnding].join(''))
+        break
+      case 'letter':
+         document.splice(1,0,[...defaultPackages, '\\begin{document}', '\\begin{letter}'].join('\n'))
+          document.push(['\\end{letter}', ...defaultEnding].join(''))
+        break
+      default:
+         document.splice(1,0,[...defaultPackages, '\\begin{document}'].join('\n'))
+          document.push(defaultEnding.join(''))
+     }
+    
    // console.log(document);
     await saveFileWithContent(documentInstantion.path, documentInstantion._id as unknown as string, 'tex',document.join("\n"))
     //fileHander.writeFileSync(documentInstantion.path+`/${id}.tex`, document.join("\n"));

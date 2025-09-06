@@ -6,6 +6,7 @@ export type blockType = {
     | string[][] //table
     | referencesElementType[] //references
     | blockAbleToRef
+    | slideBreak
     | null
     | undefined;
 };
@@ -51,6 +52,11 @@ export type listElementType = {
   Icon: React.FC;
   label: string;
   belonging?: string[];
+};
+
+export type slideBreak = {
+  title: string;
+  subtitle: string;
 };
 
 export type listType = listElementType[];

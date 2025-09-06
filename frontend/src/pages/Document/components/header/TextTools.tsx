@@ -44,6 +44,7 @@ import {
   referencesElementType,
 } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
+import { getReferenceForEditor } from '../../documentHandlers';
 
 // type blockListType = {
 //   blockName: string;
@@ -78,7 +79,7 @@ export const useTextTools = (): groupedListType => {
       //refTableHandlers.toggle();
     },
     value: null,
-    belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+    belonging: ['article', 'beamer', 'book', 'report'],
   };
   const refToImageElement = {
     label: 'Reference to image',
@@ -87,7 +88,7 @@ export const useTextTools = (): groupedListType => {
       //refFigureHandlers.toggle();
     },
     value: null,
-    belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+    belonging: ['article', 'beamer', 'book', 'report'],
   };
   const refToBibElement = {
     label: 'Bibliography reference',
@@ -96,7 +97,7 @@ export const useTextTools = (): groupedListType => {
       //refBibHandlers.toggle();
     },
     value: null,
-    belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+    belonging: ['article', 'beamer', 'book', 'report'],
   };
 
   const getRefsElement = (item: blockType, label: string): listElementType => {
@@ -227,7 +228,7 @@ export const useTextTools = (): groupedListType => {
       }
       //expressionInputContentState,
       insertFunction={(value) => {
-        editor?.commands.insertContent(` <span data-type="mention" data-id="${value}"></span> `);
+        editor?.commands.insertContent(getReferenceForEditor(value));
 
         console.log(editor?.getHTML());
       }}
@@ -253,7 +254,7 @@ export const useTextTools = (): groupedListType => {
       }
       //expressionInputContentState,
       insertFunction={(value) => {
-        editor?.commands.insertContent(` <span data-type="mention" data-id="${value}"></span> `);
+        editor?.commands.insertContent(getReferenceForEditor(value));
 
         console.log(editor?.getHTML());
       }}
@@ -279,7 +280,7 @@ export const useTextTools = (): groupedListType => {
       }
       //expressionInputContentState,
       insertFunction={(value) => {
-        editor?.commands.insertContent(` <span data-type="mention" data-id="${value}"></span> `);
+        editor?.commands.insertContent(getReferenceForEditor(value));
 
         console.log(editor?.getHTML());
       }}
@@ -305,7 +306,7 @@ export const useTextTools = (): groupedListType => {
       }
       //expressionInputContentState,
       insertFunction={(value) => {
-        editor?.commands.insertContent(`<span data-type="mention" data-id="${value}"></span>`);
+        editor?.commands.insertContent(getReferenceForEditor(value));
       }}
       iconSize="2rem"
       buttonVariant="format"

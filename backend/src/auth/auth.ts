@@ -4,12 +4,18 @@ import { userModel } from '../models/userModel';
 
 const sessionSchema= new mongoose.Schema({
     userId: {type: String, required: true},
-    expiresAt: {type: Date, required: true}
+    expiresAt: {type: Date, required: true},
+    lastUpdate: {type: Date, required: true},
+    previousSession: {type: String, required: false},
+    previousAcceptableUnill: {type: Date, required: false},
+    
 })
 
 const sessionModel = mongoose.model('Session', sessionSchema, 'Session');
 
 const expireTime= 1000 * 60 * 60 * 12
+const previousAcceptableTime = 1000 * 60 * 3
+const extendTime = 1000 * 60 * 10
 
 export const login = async (req: express.Request, res: express.Response)=>{
 
@@ -26,7 +32,9 @@ export const login = async (req: express.Request, res: express.Response)=>{
              }else{
              if(user.password=== password){
                 //to do
-                const session= new sessionModel({userId: user.id, expiresAt: new Date(Date.now() + expireTime)});
+                const session= new sessionModel({userId: user.id, expiresAt: new Date(Date.now() + expireTime), lastUpdate: new Date(Date.now() + expireTime)});
+                const deletedSessions = await sessionModel.deleteMany({userId: user.id})
+            
                 const savedSession = await session.save();
 
                // req.session.userId='Warrioll'
@@ -34,6 +42,7 @@ export const login = async (req: express.Request, res: express.Response)=>{
                 res.cookie('auth', savedSession.id, {maxAge: expireTime, sameSite: 'lax', httpOnly: true
                      })
                 res.status(201).send({msg: 'Loged in'});
+                
             }else{
                 res.status(403).send({msg: 'Not logded in'});
             }
@@ -72,40 +81,47 @@ export const verifySessionEndPoint = async (req: express.Request, res: express.R
 }
 
 //jeśli weryfikacja przebiegła pomyślnie zwraca id użytkownika, jeśli nie to zwraca null
-export const verifySessionPlain = async (sessionId:string): Promise<string>=>{
-    try{
-       // console.log("sesionId: ", sessionId)
-        if(sessionId===null || sessionId===undefined)
-            return null
+// export const verifySessionPlain = async (sessionId:string): Promise<string>=>{
+//     try{
+//        // console.log("sesionId: ", sessionId)
+//         if(sessionId===null || sessionId===undefined)
+//             return null
 
-        const session = await sessionModel.findById(sessionId)
-      //  console.log("session: ", session) 
-        if(session===null){
-            return null
-        }else{
-            const user = await userModel.findById(session.userId)
-            if(user===null){
-              return null
-            }else{
-               // console.log("userId: ", session.userId)
+//         const session = await sessionModel.findById(sessionId)
+//       //  console.log("session: ", session) 
+//         if(session===null){
+//             return null
+//         }else{
+//             const user = await userModel.findById(session.userId)
+//             if(user===null){
+//               return null
+//             }else{
+//                // console.log("userId: ", session.userId)
 
-                return session.userId
-            }
+//                 return session.userId
+//             }
            
-        }
+//         }
         
-    }catch(error){
-        console.log("verifySession error: ", error)
-       return null
-    }
-}
+//     }catch(error){
+//         console.log("verifySession error: ", error)
+//        return null
+//     }
+// }
 
 export const verifySession = async (sessionId:string, res: express.Response): Promise<string | null>=>{
     try{
         if(sessionId===null || sessionId===undefined){
             res.sendStatus(401)
         }else{
-            const session = await sessionModel.findById(sessionId)
+            let session = await sessionModel.findById(sessionId)
+
+            if(session===null || session===undefined){
+                session = await sessionModel.findOne({previousSession: sessionId})
+                if(session!==null && session!==undefined && session.previousAcceptableUnill.getTime()< Date.now()){
+                    session=null
+                }
+            }
             if(session===null || session===undefined){
                 res.sendStatus(401)
             }else{
@@ -119,7 +135,8 @@ export const verifySession = async (sessionId:string, res: express.Response): Pr
         }
         return null        
     }catch(error){
-        res.sendStatus(401)
+         if(!res.headersSent){
+        res.sendStatus(401)}
         return null
     }
 }
@@ -129,7 +146,15 @@ export const verifySessionWithCallback = async (sessionId:string, res: express.R
         if(sessionId===null || sessionId===undefined){
             res.sendStatus(401)
         }else{
-            const session = await sessionModel.findById(sessionId)
+            let session = await sessionModel.findById(sessionId)
+
+            if(session===null || session===undefined){
+                session = await sessionModel.findOne({previousSession: sessionId})
+                if(session!==null && session!==undefined && session.previousAcceptableUnill.getTime()< Date.now()){
+                    session=null
+                }
+            }
+
             if(session===null || session===undefined){
                 res.sendStatus(401)
             }else{
@@ -169,15 +194,19 @@ export const extendSession = async (sessionId: string, res: express.Response) =>
     //TODO usuwanie straych sesji i extend tylko jesli minal jakis sensowny czas wiec moze jakies dodatkowe pola createdAt updatedAt
 
     try{
-       
-        const userId = (await sessionModel.findById(sessionId)).userId;
+       const session =await sessionModel.findById(sessionId)
+       if(Date.now()>session.lastUpdate.getTime()+extendTime){
+        const userId = session.userId;
         const deletedSession = await sessionModel.findByIdAndDelete(sessionId)
-        const newSession= new sessionModel({userId: userId, expiresAt: new Date(Date.now() + expireTime)});
+        const newSession= new sessionModel({userId: userId, expiresAt: new Date(Date.now() + expireTime), lastUpdate: new Date(Date.now()), previousSession: deletedSession._id , previousAcceptableUnill: new Date(Date.now() + previousAcceptableTime)});
         const savedSession = await newSession.save();
 
         //console.log("extended sessionID: ",savedSession.id )
         res.cookie('auth',savedSession.id, {maxAge: expireTime, sameSite: 'lax', httpOnly: true
         })
+       }
+
+
     }catch(error){
         console.log(" extend session failed: ", error)
     }

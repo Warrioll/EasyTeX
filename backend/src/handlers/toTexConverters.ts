@@ -1,5 +1,5 @@
 import { figureModel } from "../models/figureModel";
-import { blockAbleToRef, blockContentType, referencesElementType, titleSectionType } from "../types";
+import { blockAbleToRef, blockContentType, referencesElementType, slideBreak, titleSectionType } from "../types";
 
 export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
@@ -77,6 +77,10 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     // fontToConvert=converted.join('');
 
     //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+    const splitted= fontToConvert.split('<p>').filter(i=>i!=='')
+    fontToConvert=splitted.join('\\newline ')
+    fontToConvert= fontToConvert.replaceAll('</p>', "");
+    //fontToConvert= fontToConvert.replaceAll('</p>', "\\newline")
 
 return fontToConvert
 }
@@ -121,8 +125,7 @@ export const textfieldToTex =(blockContent:string): string =>{
     textfield = textfield.replaceAll('</ol>', '\\end{enumerate}')
 
     //p-tagi i nowe linie
-    textfield= textfield.replaceAll('<p>', "");
-    textfield= textfield.replaceAll('</p>', "\\\\")
+
     if(textfield.endsWith("\\\\"))
         textfield= textfield.substring(0, textfield.length-2)
 
@@ -159,6 +162,31 @@ export const subsubsectionToTex =(blockContent:string): string =>{
     return('\\subsubsection{\\textnormal{'+blockContent+'}}');
 }
 
+
+ 
+export const openingToTeX =(blockContent:string): string =>{
+
+   blockContent=basicToTexFontConverter(blockContent);
+   blockContent=erasePTags(blockContent)
+    return('\\opening{'+blockContent+'}');
+}
+
+export const closingToTeX =(blockContent:string): string =>{
+   
+    blockContent=basicToTexFontConverter(blockContent);
+    blockContent=erasePTags(blockContent)
+    return('\\closing{'+blockContent+'}');
+}
+
+export const slideSectionToTex =(blockContent:string): string =>{
+    // tu trzeba uwzględnić wystąpienie \r
+    blockContent=basicToTexFontConverter(blockContent);
+
+    blockContent=blockContent.replaceAll('\r', '')
+    blockContent=erasePTags(blockContent)
+    return('\\section{\\textnormal{'+blockContent+'}}');
+}
+
 export const titlePageToTex =(blockContent: titleSectionType): string =>{
     const title = erasePTags(basicToTexFontConverter( blockContent.title))
     const author = erasePTags(basicToTexFontConverter( blockContent.author))
@@ -171,10 +199,24 @@ export const titlePageToTex =(blockContent: titleSectionType): string =>{
           + '\n\\maketitle'
 }
 
-export const equationToTex =(blockContent: blockContentType): string =>{
-    console.log('equation: ', blockContent)
 
+export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
+    //const title = erasePTags(basicToTexFontConverter( blockContent.title))
+    const address = erasePTags(basicToTexFontConverter( blockContent.author))
+    const date = erasePTags(basicToTexFontConverter( blockContent.date))
+
+
+    return `\\address{${address}}\\date{${date}}\\opening{}` 
+
+}
+
+export const equationToTex =(blockContent: blockContentType): string =>{
     return `\\begin{equation} ${(blockContent as blockAbleToRef).content} \\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
+}
+
+
+export const slideBreaktoTex =(blockContent: blockContentType, isOnBegining: boolean): string =>{
+    return `${isOnBegining ? '' : '\\end{frame}'}\\begin{frame}{${ erasePTags(basicToTexFontConverter((blockContent as slideBreak).title))}}{${ erasePTags(basicToTexFontConverter((blockContent as slideBreak).subtitle))}}`
 }
 
 export const tableToTex =(blockContent: blockAbleToRef): string =>{
@@ -195,8 +237,9 @@ export const tableToTex =(blockContent: blockAbleToRef): string =>{
     return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
 }
 
-export const figureToTex =(blockContent:blockAbleToRef, path:string): string =>{
-    return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
+export const figureToTex =(blockContent:blockAbleToRef, path:string, height: number): string =>{
+    //return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
+     return `\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
 }
 
 

@@ -2,10 +2,18 @@ import axios from "axios"
 import Cookies from 'js-cookie';
 
 
+const notAuthPath="/sessionExpired";
+const authPath="/dashboard";
+
+export const noSessionHandler = ()=>{
+  localStorage.setItem('401', 'true')
+  window.location.href = notAuthPath;
+}
+
 export const checkIfLoggedIn =async ()=>{
    
 
-    const notAuthPath="/login";
+    
 
     try{
         // const authCookie = Cookies.get('auth');
@@ -28,14 +36,14 @@ export const checkIfLoggedIn =async ()=>{
              // }
     }catch(error){
         console.log("checkIfLoggedIn error: ", error)
-        window.location.href = notAuthPath;
+       noSessionHandler()
     }
 }
 
 export const checkIfNotLoggedIn =async ()=>{
    
 
-  const authPath="/dashboard";
+
 
   try{
               const response = await axios.get(`http://localhost:8100/auth/verifySession`, {
@@ -53,7 +61,7 @@ export const checkIfNotLoggedIn =async ()=>{
            // }
   }catch(error){
       console.log("checkIfNotLoggedIn error: ", error)
-      console.log('Not loged in')
+      //console.log('Not loged in')
       //window.location.href = authPath;
   }
 }

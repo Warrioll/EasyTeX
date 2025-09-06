@@ -28,8 +28,8 @@ export default function DeleteBlockModal({
   const deleteBlock = () => {
     let blocks = cloneDeep(blocksContent);
     blocks.splice(activeBlock, 1);
-    setBlocksContent(blocks);
     deleteModalHandlers.close();
+    setBlocksContent(blocks);
   };
 
   return (
@@ -64,7 +64,7 @@ export default function DeleteBlockModal({
             spacing="xl"
           >
             <b>Type:</b>
-            {blocksContent[activeBlock].typeOfBlock}
+            {blocksContent[activeBlock].typeOfBlock ? blocksContent[activeBlock].typeOfBlock : ''}
             <b>Content: </b>
             <Text className={classes.trunckedText}>
               {

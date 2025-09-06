@@ -28,11 +28,11 @@ import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
-type SectionBlockProps = {
+type AddressAndDateBlockPropsType = {
   idx: number;
 };
 
-export default function TitlePageBlock({ idx }: SectionBlockProps) {
+export default function AddressAndDateBlock({ idx }: AddressAndDateBlockPropsType) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   //const { activeTextfield, setActiveTextfield } = useActiveTextInputContext();
   //const [activeTextfield, setActiveTextfield] = useState<string>('');
@@ -82,7 +82,7 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
         <MarkedBlockFrame
           idx={idx}
           //activeBlockState={activeBlockState}
-          blockName="Title, author, date"
+          blockName="Address & date"
           //sectionsContent={sectionsContent}
           //setSectionsContent={setSectionsContent}
           //activeTextInputState={activeTextInputState}
@@ -93,30 +93,22 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
             pt="xl"
             pb="xl"
             m="xl"
-            ml="xs"
-            mr="xs"
             className={classes.titlePage}
+            ml="xs"
           >
-            <Flex ta="left" w="100%">
-              <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
-                Title:
+            <Flex w="100%">
+              <Text
+                ta="left"
+                miw="3rem"
+                mr="xs"
+                mt="xs"
+                fz="xs"
+                fw="500"
+                c="var(--mantine-color-cyan-6)"
+              >
+                Address:
               </Text>
 
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.title as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('title')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
-            </Flex>
-            <Flex ta="left" w="100%">
-              <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
-                Author:
-              </Text>
               <BasicTexfield
                 idx={idx}
                 //activeBlockState={activeBlockState}
@@ -128,10 +120,19 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
                 //setSectionsContent={setSectionsContent}
               />
             </Flex>
-            <Flex ta="left" w="100%">
-              <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
+            <Flex w="100%">
+              <Text
+                ta="left"
+                miw="3rem"
+                mr="xs"
+                mt="xs"
+                fz="xs"
+                fw="500"
+                c="var(--mantine-color-cyan-6)"
+              >
                 Date:
               </Text>
+
               <BasicTexfield
                 idx={idx}
                 //activeBlockState={activeBlockState}

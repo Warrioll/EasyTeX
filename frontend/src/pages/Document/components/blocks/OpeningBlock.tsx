@@ -11,28 +11,14 @@ import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import styles from './blocks.module.css';
 
-type SectionBlockProps = {
+type OpeningBlockPropsType = {
   idx: number;
 };
 
-export default function SubsectionBlock({ idx }: SectionBlockProps) {
+export default function OpeningBlock({ idx }: OpeningBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const [sectionNumber, setSectionNumber] = useState<string>('');
-
-  // const updateSectionContent = (event) => {
-  //   console.log('section event', event);
-  //   let content = cloneDeep(blocksContent);
-  //   console.log('section  event.target.value', event.target.value);
-  //   //content[idx].blockContent = event.target.value;
-  //   content[idx] = {
-  //     ...content[idx],
-  //     //blockContent: { idx: 1, sectionContent: event.target.value },
-  //     blockContent: event.target.value,
-  //   };
-  //   console.log('section content[idx].blockContent', content[idx].blockContent);
-  //   setBlocksContent(content);
-  // };
 
   useEffect(() => {
     let sectionCounter = 0;
@@ -56,21 +42,17 @@ export default function SubsectionBlock({ idx }: SectionBlockProps) {
     <Flex>
       <MarkedBlockFrame idx={idx} blockName="Subsection">
         <Flex w="100%" ml="xs">
-          <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
-            H2:
+          <Text
+            ta="left"
+            miw="3rem"
+            mr="xs"
+            mt="0.65rem"
+            fz="xs"
+            fw="500"
+            c="var(--mantine-color-cyan-6)"
+          >
+            Opening:
           </Text>
-          {blocksContent[0].blockContent !== 'beamer' && (
-            <Text
-              fz="xl"
-              fw="bold"
-              mr="0.3rem"
-              mt="0.13rem"
-              ml="md"
-              c="var(--mantine-color-gray-6)"
-            >
-              {sectionNumber}
-            </Text>
-          )}
           <BasicTexfield
             idx={idx}
             contentToRead={blocksContent[idx].blockContent as string}

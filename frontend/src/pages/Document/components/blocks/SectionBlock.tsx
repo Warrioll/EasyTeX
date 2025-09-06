@@ -116,10 +116,23 @@ export default function SectionBlock({
               {parse(sectionsContent[idx].blockContent as string)}
             </div>
           ) : null} */}
-          <Flex align="center">
-            <Text fz="xl" fw="bold" mr="xs" ml="xl" c="var(--mantine-color-gray-6)">
-              {sectionNumber}
+          <Flex w="100%" ml="xs">
+            <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
+              H1:
             </Text>
+            {blocksContent[0].blockContent !== 'beamer' && (
+              <Text
+                fz="xl"
+                fw="bold"
+                mr="0.3rem"
+                mt="0.13rem"
+                ml="md"
+                c="var(--mantine-color-gray-6)"
+              >
+                {sectionNumber}
+              </Text>
+            )}
+
             <BasicTexfield
               idx={idx}
               //activeBlockState={activeBlockState}

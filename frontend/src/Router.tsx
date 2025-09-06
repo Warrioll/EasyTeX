@@ -11,13 +11,15 @@ import {
 import DocumentPage from './pages/Document/DocumentPage';
 import { HomePage } from './pages/Home.page';
 import LoginPage from './pages/Login/LoginPage';
+import NotFoundPage from './pages/NotFound/NotFoundPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import RegisterPage from './pages/Register/RegisterPage';
+import SessionExpiredPage from './pages/SessionExpired/SessionExpiredPage';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <HomePage />,
+    element: <GuestLayout content={<HomePage />} />,
   },
   {
     path: '/document/:id',
@@ -51,8 +53,21 @@ const router = createBrowserRouter([
     path: '/register',
     element: <GuestLayout content={<RegisterPage />} />,
   },
+  {
+    path: '/sessionExpired',
+    element: (
+      <GuestLayout
+        content={localStorage.getItem('401') ? <SessionExpiredPage /> : <NotFoundPage />}
+      />
+    ),
+  },
+  {
+    path: '*',
+    element: <GuestLayout content={<NotFoundPage />} />,
+  },
 ]);
 
 export function Router() {
+  console.log();
   return <RouterProvider router={router} />;
 }

@@ -3,11 +3,14 @@ export type blockType = {
   blockContent: blockContentType
 };
 
+
+
 export type blockContentType =  string
     | titleSectionType //title section
     | string[][] //table
     | referencesElementType[] //references
     | blockAbleToRef
+    | slideBreak
     | null
     | undefined;
 
@@ -31,6 +34,11 @@ export type blockContentType =  string
 export type referencesElementType = {
   id: string;
   label: string;
+};
+
+export type slideBreak = {
+  title: string;
+  subtitle: string;
 };
 
 export type titleSectionType = {

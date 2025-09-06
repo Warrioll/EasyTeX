@@ -56,8 +56,10 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
     <>
       <Flex>
         <MarkedBlockFrame idx={idx} blockName="Referrences">
-          <Text mb="md" fw="bold" fz="xl">
-            References
+          <Text mb="md" fw="bold" fz="xl" c="var(--mantine-color-gray-6)">
+            {blocksContent[0].blockContent === 'report' || blocksContent[0].blockContent === 'book'
+              ? 'Bibliography'
+              : 'References'}
           </Text>
           <Stack m="md">
             {blocksContent[idx].blockContent.map((item: referencesElementType, referenceId) => {

@@ -155,6 +155,7 @@ const Header: React.FC<headerProps> = ({
       buttons={blocksList}
       iconSize="var(--mantine-font-size-lg)"
       getToottipText={(label: string) => `Add ${label.toLocaleLowerCase()}`}
+      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
     />
   );
   // const insertTools = (
@@ -198,6 +199,7 @@ const Header: React.FC<headerProps> = ({
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
       dontRenderButtons={[6, 7, 8, 9]}
+      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
     />
   );
 
