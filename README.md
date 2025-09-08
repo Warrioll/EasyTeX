@@ -2,7 +2,7 @@
 Web application for creating documents based on LaTeX without needing to know the LaTeX syntax - simply by using GUI.
 
 ## How to run it
-1. Download Docker (https://www.docker.com/get-started/)
+1. Download Docker (https://www.docker.com/get-started/) and start Docker engine
 2. Clone this repository
 3. Run application by executing in terminal one of the commands below, from the project's root directory
 
