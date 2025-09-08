@@ -128,16 +128,24 @@ export const subsubsectionToBlock =(line: string) : blockType=>{
 
 export const addressAndDateToBlock =(line: string) : blockType=>{
 console.log('ddressAndDateToBlock: ', line)
-let addres:string
+let address:string
 let date: string
     // \address{Ministry of Silly Walks\\ The Embankment\\ London}\date{01.01.1999}\opening{}
     line.replace(/\\address\{(.*?)\}\\date\{(.*?)\}\\opening\{\}/g, (wholeFraze, addr, d)=>{
-        addres= addr
+        address= addr
         date=d
         return wholeFraze
     })
 
-return {typeOfBlock: 'titlePage', blockContent: { title: '', author: addres, date: date}}
+    address=address.replaceAll('\\\\','\\newline' )
+    date=date.replaceAll( '\\\\', '\\newline')
+
+    address=basicToBlockFontConverter(address)
+    date=basicToBlockFontConverter(date)
+
+
+
+return {typeOfBlock: 'titlePage', blockContent: { title: '', author: address, date: date}}
 
 }
 export const openingToBlock =(line: string) : blockType=>{

@@ -121,14 +121,23 @@ export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
         return 'Textfield';
       case 'section':
         return 'Section'
-      case 'Subsection':
+      case 'subsection':
+           if(docuimentclass === 'letter'){
+          return 'Opening'
+        }
         return 'Subsection'
       case 'subsubsection':
+          if(docuimentclass === 'letter'){
+          return 'Closing'
+        }
         return 'Subsubsection'
       case 'documentclass' :
         return 'Document type'
       case 'titlePage':
-        return 'Title page'
+           if(docuimentclass === 'letter'){
+          return 'Address & date'
+        }
+        return 'Title section'
       case 'tableOfContents':
         return 'Table of Contents'
       case 'pageBreak':
@@ -139,7 +148,7 @@ export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
       case 'equation':
         return 'Equation'
       case 'table':
-        return 'Rable' 
+        return 'Table' 
       case  'figure':
         return 'Rigure'
       case 'references':

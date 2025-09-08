@@ -293,7 +293,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
            
             if(line.includes('\\tableofcontents')) return  {typeOfBlock: 'tableOfContents', blockContent: ''};
             if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
-             if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
+            if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
+            if(line.includes('\\end{frame}')) return  nullBlock;
             if(line.includes('\\section')) return  sectionToBlock(line);
             if(line.includes('\\subsection')) return  subsectionToBlock(line);
             if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
@@ -553,15 +554,15 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
      switch (documentInstantion.documentClass){
       case 'beamer':
         document.splice(1,0,[...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
-        document.push(['\\end{frame}', ...defaultEnding].join(''))
+        document.push(['\\end{frame}', ...defaultEnding].join('\n'))
         break
       case 'letter':
-         document.splice(1,0,[...defaultPackages, '\\begin{document}', '\\begin{letter}'].join('\n'))
-          document.push(['\\end{letter}', ...defaultEnding].join(''))
+         document.splice(1,0,[...defaultPackages, '\\begin{document}', '\\begin{letter}{}'].join('\n'))
+          document.push(['\\end{letter}', ...defaultEnding].join('\n'))
         break
       default:
          document.splice(1,0,[...defaultPackages, '\\begin{document}'].join('\n'))
-          document.push(defaultEnding.join(''))
+          document.push(defaultEnding.join('\n'))
      }
     
    // console.log(document);

@@ -202,8 +202,11 @@ export const titlePageToTex =(blockContent: titleSectionType): string =>{
 
 export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
     //const title = erasePTags(basicToTexFontConverter( blockContent.title))
-    const address = erasePTags(basicToTexFontConverter( blockContent.author))
-    const date = erasePTags(basicToTexFontConverter( blockContent.date))
+    let address = erasePTags(basicToTexFontConverter( blockContent.author))
+    let date = erasePTags(basicToTexFontConverter( blockContent.date))
+
+    address=address.replaceAll('\\newline', '\\\\')
+    date=date.replaceAll('\\newline', '\\\\')
 
 
     return `\\address{${address}}\\date{${date}}\\opening{}` 
