@@ -53,6 +53,15 @@
     white-space: nowrap;
 }
 
+.trunkTo3Lines{
+   
+ display: -webkit-box;
+  -webkit-line-clamp: 3;   
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+}
+
 .titlePage{
     text-align: center;
 

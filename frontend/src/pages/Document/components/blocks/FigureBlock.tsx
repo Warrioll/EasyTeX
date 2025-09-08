@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
+import { useErrorBoundary } from 'react-error-boundary';
 import { FaRegWindowClose } from 'react-icons/fa';
 import { FaRegImage, FaUpload } from 'react-icons/fa6';
 import {
@@ -49,11 +50,15 @@ export default function FigureBlock({
   //editor,
   //activeTextInputState,
 }: FigureBlockProps) {
+  const { showBoundary, resetBoundary } = useErrorBoundary();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const modalHandlers = useDisclosure(false);
   const [opened, { open, close }] = modalHandlers;
+  console.log('fig: ', blocksContent[idx]);
   const startFigure =
-    blocksContent[idx].blockContent.content === '' ? null : blocksContent[idx].blockContent.content;
+    blocksContent[idx]?.blockContent?.content === ''
+      ? null
+      : blocksContent[idx]?.blockContent?.content;
   const figureState = useState<string | null>(startFigure);
   const uploadfigureState = useState<FileWithPath[] | null>(null);
   //const libraryFigureState = useState<FileWithPath[] | null>(null);
@@ -67,12 +72,16 @@ export default function FigureBlock({
   const [figuresCounter, setFiguresCounter] = useState<number>(1);
 
   useEffect(() => {
-    let counter = 1;
-    for (let i = 0; i < idx; i++) {
-      if (blocksContent[i].typeOfBlock === 'figure') {
-        counter++;
+    try {
+      let counter = 1;
+      for (let i = 0; i < idx; i++) {
+        if (blocksContent[i].typeOfBlock === 'figure') {
+          counter++;
+        }
+        setFiguresCounter(counter);
       }
-      setFiguresCounter(counter);
+    } catch (e) {
+      showBoundary(e);
     }
   }, [blocksContent]);
 
@@ -91,19 +100,30 @@ export default function FigureBlock({
         setFigureLoaded(true);
       } catch (e) {
         console.log('block figure getFigure error: ', e);
+        showBoundary(e);
         //se;
       }
     };
-    getFigure();
+    if (figure) {
+      getFigure();
+    }
   }, [figure]);
 
   useEffect(() => {
-    let blocksContentCopy = cloneDeep(blocksContent);
-    if (
-      !(figure === null || figure === '' || figure === blocksContentCopy[idx].blockContent.content)
-    ) {
-      blocksContentCopy[idx].blockContent.content = figure;
-      setBlocksContent(blocksContentCopy);
+    try {
+      let blocksContentCopy = cloneDeep(blocksContent);
+      if (
+        !(
+          figure === null ||
+          figure === '' ||
+          figure === blocksContentCopy[idx].blockContent.content
+        )
+      ) {
+        blocksContentCopy[idx].blockContent.content = figure;
+        setBlocksContent(blocksContentCopy);
+      }
+    } catch (e) {
+      showBoundary(e);
     }
   }, [figure]);
 
@@ -172,7 +192,7 @@ export default function FigureBlock({
               <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
             </Box>
             <Box miw="4rem" c="var(--mantine-color-gray-6)" mr="0px">
-              Figure {figuresCounter}
+              Figure {blocksContent[0].blockContent !== 'beamer' && figuresCounter}
             </Box>
             <BasicTexfield
               idx={idx}

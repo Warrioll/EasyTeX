@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { blockType } from "@/Types"
+import { blockType, documentClassType } from "@/Types"
 import { cloneDeep } from "lodash"
 import { useActiveBlockContext, useBlocksContentContext } from "./DocumentContextProviders"
 
@@ -110,9 +110,56 @@ export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
 
   export const getReferenceForEditor = (referenceId:string):string =>{
     //return "<span class=\"mention\" data-type=\"mention\" data-id=\"" + referenceId+ "\">"+referenceId+"</span>"
-    return `<span class="mention" data-type="mention" data-id="${referenceId}">${referenceId}</span>`
+    return ` <span class="mention" data-type="mention" data-id="${referenceId}">${referenceId}</span> `
     
   }
+
+
+  export const blockTypeToOfficialName=(blockType: blockType, docuimentclass: documentClassType):string=>{
+    switch (blockType as unknown as string){
+      case   'textfield':
+        return 'Textfield';
+      case 'section':
+        return 'Section'
+      case 'subsection':
+           if(docuimentclass === 'letter'){
+          return 'Opening'
+        }
+        return 'Subsection'
+      case 'subsubsection':
+          if(docuimentclass === 'letter'){
+          return 'Closing'
+        }
+        return 'Subsubsection'
+      case 'documentclass' :
+        return 'Document type'
+      case 'titlePage':
+           if(docuimentclass === 'letter'){
+          return 'Address & date'
+        }
+        return 'Title section'
+      case 'tableOfContents':
+        return 'Table of Contents'
+      case 'pageBreak':
+        if(docuimentclass === 'beamer'){
+          return 'Slide break'
+        }
+        return 'Page break'
+      case 'equation':
+        return 'Equation'
+      case 'table':
+        return 'Table' 
+      case  'figure':
+        return 'Rigure'
+      case 'references':
+        return 'References'
+      default:
+         return '???'
+    }
+  }
+
+
+
 
 
   // export const saveBasicTextInputChanges = (idx: number, idxInput: string, sectionsContentState: any, toSave: string) => {

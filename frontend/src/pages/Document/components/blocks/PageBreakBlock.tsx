@@ -14,8 +14,9 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
-import { useActiveBlockContext } from '../../DocumentContextProviders';
+import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import ButtonsOfMarkedBlock from './blocksComponents/ButtonsOfMarkedBlock';
+import DeleteBlockModal from './blocksComponents/DeleteBlockModal';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
@@ -34,6 +35,7 @@ export default function PageBreakBlock({
 }: PageBreakBlockPropsType) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
   return (
     <div
@@ -57,7 +59,7 @@ export default function PageBreakBlock({
           <ButtonsOfMarkedBlock
             idx={idx}
             //activeBlockState={activeBlockState}
-            blockName="Page break"
+            blockName={blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
             //blockContentState={blocksContentState}
             typeOfAddBlockFunction="above"
             //activeTextInputState={activeTextInputState}
@@ -65,15 +67,15 @@ export default function PageBreakBlock({
           />
         </Paper>
         <Flex justify="center">
-          <Text fw={500} size="sm">
-            Page Break
+          <Text fw={500} size="sm" c="var(--mantine-color-cyan-6)">
+            {blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
           </Text>
         </Flex>
         <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h="50px">
           <ButtonsOfMarkedBlock
             idx={idx}
             //activeBlockState={activeBlockState}
-            blockName="Page break"
+            blockName={blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
             //blockContentState={blocksContentState}
             typeOfAddBlockFunction="below"
             //activeTextInputState={activeTextInputState}
@@ -81,6 +83,10 @@ export default function PageBreakBlock({
           />
         </Paper>
       </Stack>
+      <DeleteBlockModal
+        deleteModalHandlers={deleteModalHandlers}
+        deleteModalOpened={deleteModalOpened}
+      />
     </div>
   );
 }

@@ -14,6 +14,7 @@ type addSpecialCharacterComboboxPropsType = {
   withGroups: boolean;
   buttonVariant?: string;
   tooltip?: string;
+  belongingValidator?: string;
 };
 
 export function AddComboox({
@@ -27,6 +28,7 @@ export function AddComboox({
   withGroups,
   buttonVariant,
   tooltip,
+  belongingValidator,
 }: addSpecialCharacterComboboxPropsType) {
   //const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [search, setSearch] = useState('');
@@ -50,68 +52,84 @@ export function AddComboox({
   //     insertElement(expressionInputContent.concat(specialCharacter));
   //   };
   //console.log('data:', data);
-  const options = withGroups
-    ? data.map((group) => {
-        //console.log(group);
-        return (
-          <Combobox.Group label={group.label}>
-            {group.group
-              .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
-              .map((item) => {
-                // console.log(item.Icon);
-                return (
-                  <Combobox.Option
-                    value={item.label}
-                    key={item.label}
-                    onClick={() => {
-                      insertFunction(item.value);
-                    }}
-                  >
-                    <Flex align="center">
-                      <Box w="2rem" fz={iconSize} fw={500} p="0px" m="0px">
-                        <item.Icon />
-                      </Box>
-                      <Text ml="sm"> {item.label}</Text>
-                    </Flex>
-                  </Combobox.Option>
-                );
-              })}
-          </Combobox.Group>
-        );
-      })
-    : data
-        .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
-        .map((item) => {
-          //console.log('Icon', item.label, item.Icon);
-          return (
-            <Combobox.Option
-              value={item.label}
-              key={item.label}
-              onClick={() => {
-                insertFunction(item.value);
-              }}
-            >
-              <Flex align="center">
-                <Box
-                  miw="4rem"
-                  fz={iconSize}
-                  fw={500}
-                  p="0px"
-                  m="2px"
-                  bg="white"
-                  bd="1px solid var(--mantine-color-gray-1)"
-                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+
+  const getGroupedElements = () => {
+    return data.map((group) => {
+      let filtredGroup = group.group;
+      //console.log('grouiped', filtredGroup);
+      if (belongingValidator) {
+        //console.log('validate', belongingValidator);
+        filtredGroup = filtredGroup.filter((item) => item.belonging?.includes(belongingValidator));
+      }
+      return (
+        <Combobox.Group label={group.label}>
+          {filtredGroup
+            .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
+            .map((item) => {
+              // console.log(item.Icon);
+              return (
+                <Combobox.Option
+                  value={item.label}
+                  key={item.label}
+                  onClick={() => {
+                    insertFunction(item.value);
+                  }}
                 >
-                  {/* jeśli Icon to funkcja-komponent */}
-                  {item.Icon ? <item.Icon /> : 'yolo'}
-                </Box>
-                <Text ml="sm" ta="left">
-                  {item.label}
-                </Text>
-              </Flex>
-            </Combobox.Option>
-          );
-        });
+                  <Flex align="center">
+                    <Box w="2rem" fz={iconSize} fw={500} p="0px" m="0px">
+                      <item.Icon />
+                    </Box>
+                    <Text ml="sm"> {item.label}</Text>
+                  </Flex>
+                </Combobox.Option>
+              );
+            })}
+        </Combobox.Group>
+      );
+    });
+  };
+
+  const getNonGroupedElements = () => {
+    let filtredGroup = data;
+    if (belongingValidator) {
+      filtredGroup = filtredGroup.filter((item) => item.belonging?.includes(belongingValidator));
+    }
+    return filtredGroup
+      .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
+      .map((item) => {
+        //console.log('Icon', item.label, item.Icon);
+        return (
+          <Combobox.Option
+            value={item.label}
+            key={item.label}
+            onClick={() => {
+              insertFunction(item.value);
+            }}
+          >
+            <Flex align="center">
+              <Box
+                miw="4rem"
+                fz={iconSize}
+                fw={500}
+                p="0px"
+                m="2px"
+                bg="white"
+                bd="1px solid var(--mantine-color-gray-1)"
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              >
+                {/* jeśli Icon to funkcja-komponent */}
+                {item.Icon ? <item.Icon /> : 'yolo'}
+              </Box>
+              <Text ml="sm" ta="left">
+                {item.label}
+              </Text>
+            </Flex>
+          </Combobox.Option>
+        );
+      });
+  };
+
+  const options = withGroups ? getGroupedElements() : getNonGroupedElements();
 
   return (
     <div ref={ref}>
@@ -156,7 +174,7 @@ export function AddComboox({
                   combobox.toggleDropdown();
                 }}
                 variant={buttonVariant ? buttonVariant : 'transparent'}
-                p="0px"
+                p=" 0.5rem"
                 m="0px"
               >
                 {buttonContent}

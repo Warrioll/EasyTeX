@@ -134,10 +134,22 @@ export default function SubsubsectionBlock({
           //setSectionsContent={setSectionsContent}
           // activeTextInputState={activeTextInputState}
         >
-          <Flex align="center">
-            <Text fw="bold" ml="xl" mr="xs" c="var(--mantine-color-gray-6)">
-              {sectionNumber}
+          <Flex w="100%" ml="xs">
+            <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
+              H3:
             </Text>
+            {blocksContent[0].blockContent !== 'beamer' && (
+              <Text
+                fz="xl"
+                fw="bold"
+                mr="0.3rem"
+                mt="0.13rem"
+                ml="md"
+                c="var(--mantine-color-gray-6)"
+              >
+                {sectionNumber}
+              </Text>
+            )}
             <BasicTexfield
               idx={idx}
               //activeBlockState={activeBlockState}

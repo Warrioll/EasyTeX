@@ -108,7 +108,7 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
   const saveEditorContent = (idx: string, idxInput: string, toSave: string) => {
     const blocksContentCopy = cloneDeep(blocksContent);
     //console.log(activeBlock, blocksContent[activeBlock]);
-    //console.log('container', activeBlockContainer);
+    console.log('saveEditorContent', toSave);
     switch (blocksContent[activeBlock].typeOfBlock) {
       case 'titlePage':
         //console.log('titlePage');
@@ -161,6 +161,17 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         );
         blocksContent[activeBlock].blockContent[refIdx].label = toSave;
         break;
+      case 'pageBreak':
+        console.log('page breaaaak');
+        // if (typeof blocksContent[activeBlock].blockContent === 'object') {
+        if (activeTextfield.includes('SlideTitle')) {
+          blocksContent[activeBlock].blockContent.title = toSave;
+        }
+        if (activeTextfield.includes('SlideSubtitle')) {
+          blocksContent[activeBlock].blockContent.subtitle = toSave;
+        }
+        // }
+        break;
       default:
         blocksContent[activeBlock].blockContent = toSave;
         console.log('default on blur save: ', blocksContent);
@@ -176,13 +187,21 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
       Subscript,
       Superscript,
       LinkTiptap,
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention',
+        },
+        suggestion: {
+          char: '',
+        },
+      }),
 
       //, Placeholder.configure({ placeholder: 'This is placeholder' })
     ],
     //content: editorContent,
     onUpdate: ({ editor }) => {
       //TODO Memo albo coś żeby zobptymalisowac renderowanie
-      //console.log('updated editor content');
+
       saveEditorContent(activeBlock, activeTextfield, editor.getHTML());
       //console.log(editor.getHTML());
     },

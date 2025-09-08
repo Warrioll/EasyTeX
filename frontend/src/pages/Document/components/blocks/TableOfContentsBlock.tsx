@@ -110,7 +110,7 @@ export default function TableOfContentsBlock({
       //setSectionsContent={blocksContentState[1]}
       //activeTextInputState={activeTextInputState}
     >
-      <Box p="xl">
+      <Box p="xl" c="var(--mantine-color-gray-6)">
         <Text mb="md" fw="bold" fz="xl">
           Contents
         </Text>
