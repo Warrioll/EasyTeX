@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
-import { IoLogInOutline, IoSettingsOutline } from 'react-icons/io5';
+import {
+  IoDocumentsOutline,
+  IoImagesOutline,
+  IoLogInOutline,
+  IoSettingsOutline,
+} from 'react-icons/io5';
 import { MdOutlineLogin } from 'react-icons/md';
 import { RxAvatar } from 'react-icons/rx';
 import {
@@ -78,6 +83,30 @@ export default function MainLayout({ content }: LayoutPropsType) {
                 pt="0px"
                 pb="0px"
                 variant="transparent"
+                leftSection={<IoDocumentsOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/dashboard';
+                }}
+              >
+                Documents
+              </Button>
+              <Button
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                leftSection={<IoImagesOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/assetsLibrary';
+                }}
+              >
+                Assets
+              </Button>
+              <Button
+                pt="0px"
+                pb="0px"
+                variant="transparent"
                 leftSection={<RxAvatar />}
                 className={classes.control}
                 onClick={() => {
@@ -90,6 +119,7 @@ export default function MainLayout({ content }: LayoutPropsType) {
                 pt="0px"
                 pb="0px"
                 variant="transparent"
+                c="var(--mantine-color-gray-7)"
                 leftSection={<MdOutlineLogin />}
                 className={classes.control}
                 onClick={logoutModalHandlers.open}

@@ -94,7 +94,7 @@ const erasePTags = (fontToConvert:string): string =>{
 export const textfieldToTex =(blockContent:string): string =>{
     let textfield= blockContent;
     
-    textfield=basicToTexFontConverter(textfield);
+    
 
         //link
     textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
@@ -126,8 +126,12 @@ export const textfieldToTex =(blockContent:string): string =>{
 
     //p-tagi i nowe linie
 
+    
+
     if(textfield.endsWith("\\\\"))
         textfield= textfield.substring(0, textfield.length-2)
+
+    textfield=basicToTexFontConverter(textfield);
 
     // //znaki specjalne
     // textfield= textfield.replaceAll('\\', '\\textbackslash')
@@ -214,7 +218,7 @@ export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
 }
 
 export const equationToTex =(blockContent: blockContentType): string =>{
-    return `\\begin{equation} ${(blockContent as blockAbleToRef).content} \\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
+    return `\\begin{equation}${(blockContent as blockAbleToRef).content}\\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
 }
 
 

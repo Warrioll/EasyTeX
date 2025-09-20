@@ -12,7 +12,17 @@ import {
   TbMoodSadDizzy,
   TbMoodSadSquint,
 } from 'react-icons/tb';
-import { Box, Button, Container, Flex, ScrollArea, SimpleGrid, Title } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Loader,
+  ScrollArea,
+  SimpleGrid,
+  Title,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
 import ErrorBanner from '@/components/ErrorInfos/ErrorBanner';
@@ -36,6 +46,7 @@ export default function DashboardPage() {
   const searchName = useState<string>('');
   const [documentData, setDocumentData] = useState<any>(null);
   const [createModalOpened, createModalHandlers] = useDisclosure(false);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
   const createDocumentModal = {
     modal: (
@@ -49,6 +60,7 @@ export default function DashboardPage() {
     const checkLogged = async () => {
       //console.log(userId);
       try {
+        setDataLoaded(false);
         if (activeTab[0] !== 'search') {
           const response = await axios.get(
             //`http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
@@ -58,7 +70,7 @@ export default function DashboardPage() {
             }
           );
           //console.log('data ', response.data);
-          console.log('other resp:', response.data);
+          //console.log('other resp:', response.data);
           if (response.data === null || response.data === undefined) {
             setDocumentData(null);
           } else {
@@ -87,6 +99,7 @@ export default function DashboardPage() {
         //console.log('getUserDocuemnts error: ', error);
         setDocumentData(null);
       }
+      setDataLoaded(true);
     };
     checkLogged();
   }, [activeTab[0], updateReleaser[0], searchName[0], searchType[0]]);
@@ -200,56 +213,62 @@ export default function DashboardPage() {
           <Container size="100rem" w="100%" pt="xl" pb="xl">
             <Flex justify="center">{chooseBanner()}</Flex>
             <Flex p="0px" m="0px" justify="center">
-              {documentData ? (
-                documentData.length !== 0 ? (
-                  <SimpleGrid cols={{ base: 1, lg: 2, xl: 3 }} spacing="xs" mt={50}>
-                    {documentData.map((doc) => (
-                      <Box m="sm">
-                        <DocumentCard
-                          documentId={doc._id}
-                          title={doc.name}
-                          type={doc.documentClass}
-                          creationDate={doc.creationDate}
-                          lastUpdate={doc.lastUpdate}
-                          updateReleaser={updateReleaser}
-                        />
-                      </Box>
-                    ))}
-                  </SimpleGrid>
+              {dataLoaded ? (
+                documentData ? (
+                  documentData.length !== 0 ? (
+                    <SimpleGrid cols={{ base: 1, lg: 2, xl: 3 }} spacing="xs" mt={50}>
+                      {documentData.map((doc) => (
+                        <Box m="sm">
+                          <DocumentCard
+                            documentId={doc._id}
+                            title={doc.name}
+                            type={doc.documentClass}
+                            creationDate={doc.creationDate}
+                            lastUpdate={doc.lastUpdate}
+                            updateReleaser={updateReleaser}
+                          />
+                        </Box>
+                      ))}
+                    </SimpleGrid>
+                  ) : (
+                    <Box h="60vh">
+                      <ErrorBanner
+                        title={
+                          activeTab[0] === 'search'
+                            ? 'No results found.'
+                            : `You have no ${toTabLabelConverter()}.`
+                        }
+                        Icon={() => (
+                          <Box mb="-1.5rem">
+                            <TbFilesOff />
+                          </Box>
+                        )}
+                        description=""
+                        buttonLabel="Click here to create new document"
+                        buttonFunction={createDocumentModal.modalHandlers.open}
+                      />
+                    </Box>
+                  )
                 ) : (
                   <Box h="60vh">
                     <ErrorBanner
-                      title={
-                        activeTab[0] === 'search'
-                          ? 'No results found.'
-                          : `You have no ${toTabLabelConverter()}.`
-                      }
+                      title="Sorry, something went wrong."
+                      buttonLabel="Click here to refresh"
                       Icon={() => (
                         <Box mb="-1.5rem">
-                          <TbFilesOff />
+                          <TbMoodSadSquint />
                         </Box>
                       )}
-                      description=""
-                      buttonLabel="Click here to create new document"
-                      buttonFunction={createDocumentModal.modalHandlers.open}
+                      buttonFunction={() => {
+                        updateReleaser[1](updateReleaser[0] + 1);
+                      }}
                     />
                   </Box>
                 )
               ) : (
-                <Box h="60vh">
-                  <ErrorBanner
-                    title="Sorry, something went wrong."
-                    buttonLabel="Click here to refresh"
-                    Icon={() => (
-                      <Box mb="-1.5rem">
-                        <TbMoodSadSquint />
-                      </Box>
-                    )}
-                    buttonFunction={() => {
-                      updateReleaser[1](updateReleaser[0] + 1);
-                    }}
-                  />
-                </Box>
+                <Center h="60vh">
+                  <Loader size={50} />
+                </Center>
               )}
             </Flex>
           </Container>

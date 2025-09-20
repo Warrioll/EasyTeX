@@ -1,10 +1,18 @@
-import { createContext, ReactElement, ReactNode, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Mention from '@tiptap/extension-mention';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
-import { ReactRenderer, useEditor } from '@tiptap/react';
+import { mergeAttributes, ReactRenderer, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { cloneDeep } from 'lodash';
 import { blockType, referencesElementType } from '@/Types';
@@ -22,12 +30,41 @@ export const EditorContext = createContext<any>(null);
 
 export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) => {
   const [blocksContent, setBlocksContent] = useState<blockType[]>([]);
+  const [isNotSaved, setIsNotSaved] = useState<boolean>(false);
+  //const isNotSavedRef = useRef(isNotSaved)
+  let isBlocksLoaded = false;
+
+  useEffect(() => {
+    if (isBlocksLoaded) {
+      setIsNotSaved(true);
+    } else {
+      isBlocksLoaded = true;
+    }
+  }, [blocksContent]);
+
+  useEffect(() => {
+    const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
+      if (isNotSaved) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    //console.log('isnotsaved', isNotSaved);
+
+    if (isNotSaved) {
+      window.addEventListener('beforeunload', notSavedWaringHandler);
+      return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
+    }
+  }, [isNotSaved]);
 
   return (
     <BlocksContentContext.Provider
       value={{
         blocksContent,
         setBlocksContent,
+        isNotSaved,
+        setIsNotSaved,
       }}
     >
       {children}
@@ -52,9 +89,13 @@ export const ActiveBlockProvider = ({ children }: DocumentProvidersPropsType) =>
 
 export const ActiveTextfieldProvider = ({ children }: DocumentProvidersPropsType) => {
   const [activeTextfield, setActiveTextfield] = useState<string>('');
+  const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
-  //useEffect(() => {}, [activeBlock]);
+  useEffect(() => {
+    // const blocksContentCopy = cloneDeep(blocksContent);
+    setBlocksContent(cloneDeep(blocksContent));
+  }, [activeTextfield]);
 
   return (
     <ActiveTextfieldContext.Provider
@@ -100,15 +141,15 @@ export const ActiveTableCellProvider = ({ children }: DocumentProvidersPropsType
 
 export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
   //const { referencesList, setReferencesList } = useReferencesListContext();
   // const activeBlockContainer = { activeBlock };
 
   const saveEditorContent = (idx: string, idxInput: string, toSave: string) => {
-    const blocksContentCopy = cloneDeep(blocksContent);
+    //const blocksContentCopy = cloneDeep(blocksContent);
     //console.log(activeBlock, blocksContent[activeBlock]);
-    console.log('saveEditorContent', toSave);
+    // console.log('saveEditorContent', toSave);
     switch (blocksContent[activeBlock].typeOfBlock) {
       case 'titlePage':
         //console.log('titlePage');
@@ -122,7 +163,8 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         if (activeTextfield.includes('date')) {
           blocksContent[activeBlock].blockContent.date = toSave;
         }
-        //console.log('end');
+        // let tmp = cloneDeep(blocksContent[activeBlock]);
+        // blocksContent[activeBlock] = tmp;
         break;
       case 'figure':
         blocksContent[activeBlock].blockContent.label = toSave;
@@ -142,27 +184,27 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
 
         break;
       case 'references':
-        //FIXME id od reference jset stringkiem! tu i gdzie indziej popatrzć
+        //FIXME id od reference jset stringkiem! tu i gdzie indziej popatrzeć
         //console.log(blocksContentCopy[activeBlock]);
         const [blockIdx, refId] = activeTextfield.split('ref');
 
-        console.log('whole: ', activeTextfield, 'blockIdx: ', blockIdx, 'refId', refId);
+        //console.log('whole: ', activeTextfield, 'blockIdx: ', blockIdx, 'refId', refId);
         const refIdx = blocksContent[activeBlock].blockContent.findIndex(
           (item) => item.id === 'ref'.concat(refId)
         );
 
-        console.log(
-          'ref To save: ',
-          refIdx,
-          'items: ',
-          blocksContent[activeBlock].blockContent,
-          'refId: ',
-          refId
-        );
+        // console.log(
+        //   'ref To save: ',
+        //   refIdx,
+        //   'items: ',
+        //   blocksContent[activeBlock].blockContent,
+        //   'refId: ',
+        //   refId
+        // );
         blocksContent[activeBlock].blockContent[refIdx].label = toSave;
         break;
       case 'pageBreak':
-        console.log('page breaaaak');
+        //console.log('page breaaaak');
         // if (typeof blocksContent[activeBlock].blockContent === 'object') {
         if (activeTextfield.includes('SlideTitle')) {
           blocksContent[activeBlock].blockContent.title = toSave;
@@ -174,10 +216,12 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         break;
       default:
         blocksContent[activeBlock].blockContent = toSave;
-        console.log('default on blur save: ', blocksContent);
+        //console.log('default on blur save: ', blocksContent);
         break;
     }
-    //setBlocksContent(blocksContentCopy);
+    // const blocksContentCopy = cloneDeep(blocksContent);
+    // setBlocksContent(blocksContentCopy);
+    setIsNotSaved(true);
   };
 
   const editor = useEditor({
@@ -191,8 +235,23 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         HTMLAttributes: {
           class: 'mention',
         },
+        renderHTML({ options, node }) {
+          console.log('merge atributes: ', mergeAttributes({ class: 'mention' }));
+          //console.log('html atributes: ', options.HTMLAttributes.);
+          return [
+            'span',
+            mergeAttributes(
+              { class: 'mention' },
+              { 'data-type': 'mention' },
+              { 'data-id': node.attrs.label ?? node.attrs.id }
+            ),
+            `${node.attrs.label ?? node.attrs.id}`,
+          ];
+        },
+        //suggestions working
         suggestion: {
           char: '',
+          allowedPrefixes: null,
         },
       }),
 

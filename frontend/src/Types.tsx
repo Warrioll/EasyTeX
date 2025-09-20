@@ -52,6 +52,8 @@ export type listElementType = {
   Icon: React.FC;
   label: string;
   belonging?: string[];
+  disabledFunction?: () => boolean;
+  backgroundColor?: string;
 };
 
 export type slideBreak = {
@@ -65,3 +67,9 @@ export type groupedListType = {
   label: string;
   group: listType;
 }[];
+
+export type equationsSpecialCharactersStyle = {
+  value: string;
+  label: string;
+  latexRepresentation: string;
+};

@@ -2,10 +2,9 @@ import { RiErrorWarningFill, RiErrorWarningLine } from 'react-icons/ri';
 import { Box, Button, Flex, Paper, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
-import { blockTypeToOfficialName } from '../../documentHandlers';
+import { blockTypeToOfficialName } from '../../hooksAndUtils/documentUtils';
 import ButtonsOfMarkedBlock from './blocksComponents/ButtonsOfMarkedBlock';
 import DeleteBlockModal from './blocksComponents/DeleteBlockModal';
-import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type UnavailableBlockPropsType = {

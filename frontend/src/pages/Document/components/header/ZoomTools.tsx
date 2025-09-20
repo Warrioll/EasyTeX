@@ -50,6 +50,7 @@ export default function ZoomTools({ zoomState }: zoomToolsPropsType) {
             rightSectionPointerEvents="none"
             onClick={() => combobox.toggleDropdown()}
             variant="filled"
+            //bg="var(--mantine-color-cyan-4)"
             p="0px"
           >
             {(Number(zoomValue) * 100).toString().concat('%') || (

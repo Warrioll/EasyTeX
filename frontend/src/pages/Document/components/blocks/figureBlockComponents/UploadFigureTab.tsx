@@ -4,6 +4,7 @@ import { FaRegTrashAlt, FaRegWindowClose } from 'react-icons/fa';
 import { FaRegImage, FaUpload } from 'react-icons/fa6';
 import { Box, Button, Center, Flex, Group, Image, Text } from '@mantine/core';
 import { Dropzone, FileWithPath } from '@mantine/dropzone';
+import { useBlocksContentContext } from '@/pages/Document/DocumentContextProviders';
 
 type UploadFigureTabPropsType = {
   figureState: [string | null, Dispatch<SetStateAction<string | null>>];
@@ -28,6 +29,8 @@ export default function UploadFigureTab({
   const [uploadFigure, setUploadFigure] = uploadfigureState;
   const [figureLabel, setFigureLabel] = useState<ReactNode>(<></>);
 
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
+
   const saveFigure = async () => {
     try {
       const blob = new Blob([uploadFigure[0]], { type: 'image/png' });
@@ -40,8 +43,9 @@ export default function UploadFigureTab({
         },
       });
 
-      console.log('Figure uploaded succesfully', response);
+      //console.log('Figure uploaded succesfully', response);
       setFigure(response.data._id);
+      setIsNotSaved(true);
       close();
     } catch (e) {
       setFigureLabel(<Text c="red">File upload failed</Text>);
@@ -59,7 +63,7 @@ export default function UploadFigureTab({
           }}
           onReject={(files) => {
             setFigureLabel(<Text c="red">File is too large or file type is not supported.</Text>);
-            console.log('rejected files', files);
+            //console.log('rejected files', files);
           }}
           maxSize={5 * 1024 ** 2}
           accept={['image/png', 'image/jpg', 'image/jpeg']}

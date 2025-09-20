@@ -44,7 +44,7 @@ import {
   referencesElementType,
 } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
-import { getReferenceForEditor } from '../../documentHandlers';
+import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
 
 // type blockListType = {
 //   blockName: string;
@@ -314,6 +314,10 @@ export const useTextTools = (): groupedListType => {
     />
   );
 
+  const isActiveBgColorSelector = (mark: string): string => {
+    return editor?.isActive(mark) ? 'var(--mantine-color-gray-2)' : '';
+  };
+
   return [
     {
       label: 'Text',
@@ -326,6 +330,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+          backgroundColor: isActiveBgColorSelector('bold'),
         },
         {
           label: 'Italic',
@@ -335,16 +340,9 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+          backgroundColor: isActiveBgColorSelector('italic'),
         },
-        {
-          label: 'Typewriter',
-          Icon: () => <FaCode />,
-          function: () => {
-            editor?.commands.toggleCode();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-        },
+
         {
           label: 'Underilne',
           Icon: () => <FaUnderline />,
@@ -353,6 +351,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+          backgroundColor: isActiveBgColorSelector('underline'),
         },
         {
           label: 'Strikethrough',
@@ -362,6 +361,22 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+          backgroundColor: isActiveBgColorSelector('strike'),
+        },
+      ],
+    },
+    {
+      label: 'Typewriter',
+      group: [
+        {
+          label: 'Typewriter',
+          Icon: () => <FaCode />,
+          function: () => {
+            editor?.commands.toggleCode();
+          },
+          value: null,
+          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+          backgroundColor: isActiveBgColorSelector('code'),
         },
       ],
     },

@@ -1,7 +1,18 @@
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Combobox, Flex, ScrollArea, Text, Tooltip, useCombobox } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Combobox,
+  Flex,
+  FloatingPosition,
+  ScrollArea,
+  Text,
+  Tooltip,
+  useCombobox,
+} from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
+import classes from './other.module.css';
 
 type addSpecialCharacterComboboxPropsType = {
   data: any; //{ label: string; icon: ReactNode; value: object | string }[];
@@ -15,6 +26,7 @@ type addSpecialCharacterComboboxPropsType = {
   buttonVariant?: string;
   tooltip?: string;
   belongingValidator?: string;
+  position?: FloatingPosition;
 };
 
 export function AddComboox({
@@ -29,6 +41,7 @@ export function AddComboox({
   buttonVariant,
   tooltip,
   belongingValidator,
+  position,
 }: addSpecialCharacterComboboxPropsType) {
   //const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [search, setSearch] = useState('');
@@ -45,6 +58,7 @@ export function AddComboox({
     },
   });
 
+  combobox.dropdownOpened;
   const ref = useClickOutside(() => combobox.closeDropdown());
 
   //   const addSpecialCharacter = (specialCharacter: string) => {
@@ -71,7 +85,7 @@ export function AddComboox({
                 <Combobox.Option
                   value={item.label}
                   key={item.label}
-                  onClick={() => {
+                  onMouseUp={() => {
                     insertFunction(item.value);
                   }}
                 >
@@ -105,6 +119,7 @@ export function AddComboox({
             onClick={() => {
               insertFunction(item.value);
             }}
+            className={classes.hoverButton}
           >
             <Flex align="center">
               <Box
@@ -136,21 +151,22 @@ export function AddComboox({
       <Combobox
         store={combobox}
         width={400}
-        withArrow
+        //withArrow
         withinPortal={false}
         onOptionSubmit={(val) => {
           setSelectedItem(val);
           combobox.closeDropdown();
         }}
         zIndex={5000}
-        position="bottom"
+        position={position ? position : 'bottom'}
         floatingStrategy={floatingStrategy}
         shadow="md"
         styles={{
           search: { backgroundColor: 'var(--mantine-color-gray-1)' },
           dropdown: {
-            border: '1px solid var(--mantine-color-cyan-2)',
-            backgroundColor: 'var(--mantine-color-gray-1)',
+            arrow: { borderColor: 'var(--mantine-color-cyan-2)' },
+            border: '1px solid var(--mantine-color-cyan-3)',
+            backgroundColor: 'var(--mantine-color-gray-0)',
           },
           groupLabel: { color: 'var(--mantine-color-cyan-7)' },
         }}
@@ -173,9 +189,13 @@ export function AddComboox({
                   //e.stopPropagation();
                   combobox.toggleDropdown();
                 }}
+                //variant={buttonVariant ? buttonVariant : 'transparent'}
                 variant={buttonVariant ? buttonVariant : 'transparent'}
                 p=" 0.5rem"
                 m="0px"
+                px="0.45rem"
+                mx="3px"
+                bg={combobox.dropdownOpened ? 'var(--mantine-color-gray-2)' : ''}
               >
                 {buttonContent}
               </Button>
@@ -196,6 +216,7 @@ export function AddComboox({
         </Combobox.Target>
 
         <Combobox.Dropdown //bg="var(--mantine-color-gray-1)"
+          styles={{ arrow: { backgroundColor: 'var(--mantine-color-cyan-2)' } }}
         >
           <Combobox.Search
             value={search}
@@ -207,7 +228,10 @@ export function AddComboox({
             h="50vh"
             mb="0px"
           >
-            <ScrollArea h="100%">
+            <ScrollArea
+              h="100%"
+              styles={{ thumb: { backgroundColor: 'var(--mantine-color-cyan-4)' } }}
+            >
               {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
             </ScrollArea>
           </Combobox.Options>

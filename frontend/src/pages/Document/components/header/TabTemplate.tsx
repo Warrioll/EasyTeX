@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { includes } from 'lodash';
-import { Box, Button, Flex, Tooltip } from '@mantine/core';
+import { Box, Button, Center, Flex, Stack, Text, Tooltip } from '@mantine/core';
 import { groupedListType } from '@/Types';
 import { useBlocksContentContext } from '../../DocumentContextProviders';
 
@@ -44,7 +44,20 @@ export default function TabTemplate({
                 }
                 return (
                   <Tooltip
-                    label={getToottipText ? getToottipText(button.label) : button.label}
+                    label={
+                      <>
+                        <Text fz="sm" w="100%" ta="center">
+                          {getToottipText ? getToottipText(button.label) : button.label}
+                        </Text>
+                        <Text fz="sm" w="100%" ta="center">
+                          {button.disabledFunction
+                            ? button.disabledFunction()
+                              ? '(Maximum quantity is already used)'
+                              : ''
+                            : ''}
+                        </Text>
+                      </>
+                    }
                     //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
                     color="cyan"
                     position="bottom"
@@ -57,7 +70,13 @@ export default function TabTemplate({
                     {buttonsNotToRender.includes(amountOFButtons) ? (
                       <button.Icon />
                     ) : (
-                      <Button variant="format" fz={iconSize} onClick={button.function}>
+                      <Button
+                        variant="format"
+                        fz={iconSize}
+                        onMouseUp={button.function}
+                        disabled={button.disabledFunction ? button.disabledFunction() : false}
+                        bg={button.backgroundColor ? button.backgroundColor : ''}
+                      >
                         <button.Icon />
                       </Button>
                     )}

@@ -2,13 +2,14 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
-import { BiFont } from 'react-icons/bi';
+import { BiFont, BiFontFamily } from 'react-icons/bi';
 import {
   FaBold,
   FaCode,
   FaItalic,
   FaList,
   FaRegSave,
+  FaSave,
   FaStrikethrough,
   FaSubscript,
   FaSuperscript,
@@ -16,7 +17,15 @@ import {
 } from 'react-icons/fa';
 import { FaListOl } from 'react-icons/fa6';
 import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
+import { HiDocumentDownload, HiOutlineDocumentDownload } from 'react-icons/hi';
 import {
+  IoDocumentsOutline,
+  IoImagesOutline,
+  IoLogInOutline,
+  IoSettingsOutline,
+} from 'react-icons/io5';
+import {
+  LuDownload,
   LuHeading1,
   LuHeading2,
   LuHeading3,
@@ -31,11 +40,14 @@ import {
   MdOutlineAdd,
   MdOutlineInsertPageBreak,
   MdOutlineLibraryBooks,
+  MdOutlineLogin,
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { RiFileDownloadFill, RiFileDownloadLine, RiSplitCellsHorizontal } from 'react-icons/ri';
-import { useParams } from 'react-router-dom';
+import { RxAvatar } from 'react-icons/rx';
+import { TbBlocks, TbEye } from 'react-icons/tb';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Anchor,
   Box,
@@ -70,57 +82,39 @@ import { useDisclosure } from '@mantine/hooks';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
-import { useBlocksList } from '../../blocksList';
+import { dateFormatter } from '@/utils/formatters';
 import {
   useActiveBlockContext,
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-import { useAddBlock } from '../../documentHandlers';
+import { useAddBlock } from '../../hooksAndUtils/documentHooks';
+import { useBlocksList } from '../blocksList';
 import FontTab from './FontTab';
-import TableToolsTab from './TableToolsTab';
+import { useTableTools } from './TableTools';
 import TabTemplate from './TabTemplate';
 import TextfieldToolsTab from './TextfieldToolsTab';
 import { useTextTools } from './TextTools';
 import ZoomTools from './ZoomTools';
-// import {
-//   IconNotification,
-//   IconCode,
-//   IconBook,
-//   IconChartPie3,
-//   IconFingerprint,
-//   IconCoin,
-//   IconChevronDown,
-// } from '@tabler/icons-react';
 import classes from './Header.module.css';
 
 type headerProps = {
-  editFunctions: Record<string, (...args: any[]) => any>;
-  //editor: Editor;
-  saveElementChanges: () => void;
+  pdfLoaded: boolean;
+  saveDocumentContent: () => void;
+  setPdfFile: () => void;
   pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
   workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
-  // activeSection: number;
-  //sectionsContent: blockType[];
-  //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
 };
 
 const Header: React.FC<headerProps> = ({
-  editFunctions,
-  //editor,
-  saveElementChanges,
+  saveDocumentContent,
+  pdfLoaded,
   pdfZoom,
   workspaceZoom,
-  //activeSection,
-  // sectionsContent,
-  //activeTableCellState,
+  setPdfFile,
 }) => {
-  //const theme = useMantineTheme();
-  //const []
-
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-  //const {editor}= useEditorContext();
 
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('insert');
@@ -129,24 +123,19 @@ const Header: React.FC<headerProps> = ({
     controlsRefs[val] = node;
     setControlsRefs(controlsRefs);
   };
-  const [documentName, setDocumentName] = useState<{ name: string; documentClass: string }>({
+  const [documentName, setDocumentName] = useState<{
+    name: string;
+    documentClass: string;
+    lastUpdate: string;
+    creationDate: string;
+  }>({
     name: '',
     documentClass: '',
+    lastUpdate: '',
+    creationDate: '',
   });
 
   const { id } = useParams();
-
-  //const [zoomValue, setZoomValue] = pdfZoom;
-
-  // const combobox = useCombobox({
-  //   onDropdownClose: () => combobox.resetSelectedOption(),
-  // });
-  // const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-  // const options = zoomValuesList.map((item) => (
-  //   <Combobox.Option value={item.toString()} key={item.toString()}>
-  //     {item * 100}%
-  //   </Combobox.Option>
-  // ));
 
   const blocksList = useBlocksList();
 
@@ -158,43 +147,9 @@ const Header: React.FC<headerProps> = ({
       belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
     />
   );
-  // const insertTools = (
-  //   <>
-  //     {blocksList.map((item) => {
-  //       return (
-  //         <Tooltip
-  //           label={item.blockName}
-  //           color="cyan"
-  //           position="bottom"
-  //           offset={5}
-  //           withArrow
-  //           arrowOffset={50}
-  //           arrowSize={7}
-  //           arrowRadius={2}
-  //         >
-  //           <Button
-  //             variant="format"
-  //             fz="var(--mantine-font-size-lg)"
-  //             //TODO obsługa tego
-  //             //onClick={item..addPageBreak}
-  //           >
-  //             <item.Icon />
-  //           </Button>
-  //         </Tooltip>
-  //       );
-  //     })}
-  //   </>
-  // );
 
-  // const fontTools = (
-  //   <FontTab
-  //     editFunctions={editFunctions}
-
-  //     //saveElementChanges={saveElementChanges}
-  //   />
-  // );
   const textTools = useTextTools();
-  const fontTools = (
+  const textToolsTab = (
     <TabTemplate
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
@@ -203,14 +158,16 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-  const textFieldTools = (
-    <TextfieldToolsTab
-    //editFunctions={editFunctions}
-    //saveElementChanges={saveElementChanges}
+  const textFieldTools = <TextfieldToolsTab />;
+
+  const tableTools = useTableTools();
+  const tableToolsTab = (
+    <TabTemplate
+      buttons={tableTools}
+      iconSize="var(--mantine-font-size-lg)"
+      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
     />
   );
-
-  const tableTools = <TableToolsTab editFunctions={editFunctions} />;
 
   const viewTools = (
     <>
@@ -232,13 +189,27 @@ const Header: React.FC<headerProps> = ({
     return '';
   };
 
+  const chooseModifyTabIcon = (): React.FC => {
+    if (activeBlock !== 0) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
+        case 'textfield':
+          return () => <BiFont />;
+        case 'table':
+          return () => <LuTable />;
+        default:
+          return () => <></>;
+      }
+    }
+    return () => <></>;
+  };
+
   const chooseModifyTabTools = (): ReactNode => {
     if (activeBlock !== 0) {
       switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
           return textFieldTools;
         case 'table':
-          return tableTools;
+          return tableToolsTab;
         default:
           return '';
       }
@@ -248,25 +219,29 @@ const Header: React.FC<headerProps> = ({
 
   const tabs = [
     {
-      value: 'font',
-      label: 'Text',
-      tools: fontTools,
-    },
-    {
       value: 'insert',
       label: 'Blocks',
       tools: insertTools,
+      Icon: () => <TbBlocks />,
+    },
+    {
+      value: 'font',
+      label: 'Text',
+      tools: textToolsTab,
+      Icon: () => <BiFontFamily />,
     },
 
     {
       value: 'view',
       label: 'View',
       tools: viewTools,
+      Icon: () => <TbEye />,
     },
     {
       value: 'modify',
       label: `${chooseModifyTabName()}`,
       tools: chooseModifyTabTools(),
+      Icon: chooseModifyTabIcon(),
     },
   ];
 
@@ -325,43 +300,51 @@ const Header: React.FC<headerProps> = ({
           withCredentials: true,
         });
         //console.log(response.data);
-        setDocumentName({
-          name: response.data.name,
-          documentClass: response.data.documentClass,
-        });
+        setDocumentName(response.data);
       } catch (error) {
         console.log('doc page get doc Name error:', error);
       }
     };
-    getTitle();
-  }, []);
+
+    if (!isNotSaved) {
+      getTitle();
+    }
+  }, [isNotSaved]);
 
   return (
     <Box h="10vh">
       {/* <header> */}
       <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
-        <SimpleGrid cols={5} h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
+        <SimpleGrid cols={3} h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
           <Group h="100%" w="100%">
-            <Anchor href="/dashboard" className={classes.anchor} pl="xs" pr="xs">
-              <Flex justify="center" align="center">
-                <Logo width="1.3rem" />
-                <Text mt="0.1rem" c="var(--mantine-color-yellow-8)" fz="md" fw="700" ml="sm">
-                  Easy
-                </Text>
-                <Text mt="0.1rem" fz="md" fw="700" c="var(--mantine-color-cyan-9)">
-                  TeX
-                </Text>
-              </Flex>
-            </Anchor>
-          </Group>
-          <Group h="100%">
+            <Button
+              p="0px"
+              m="0px"
+              variant="transparent"
+              onClick={() => {
+                window.location.href = '/dashboard';
+                //navigate('/dashboard');
+              }}
+              fz="md"
+            >
+              <Logo width="1.4rem" />
+              <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fw="700" ml="sm">
+                Easy
+              </Text>
+              <Text mt="0.2rem" fw="700" c="var(--mantine-color-cyan-9)">
+                TeX
+              </Text>
+            </Button>
             <Tabs.List ref={setRootRef} className={classes.list}>
               {tabs.map((tab) => (
                 <Tabs.Tab
+                  //mr="xs"
                   value={tab.value}
                   ref={setControlRef(tab.value)}
                   className={classes.tab}
                   disabled={isDisabledtab(tab.value)}
+                  leftSection={<tab.Icon />}
+                  styles={{ tabSection: { marginRight: '6px' } }}
                 >
                   {tab.label}
                 </Tabs.Tab>
@@ -373,6 +356,9 @@ const Header: React.FC<headerProps> = ({
               />
             </Tabs.List>
           </Group>
+          {/* <Group h="100%">
+            
+          </Group> */}
 
           <Center>
             <HoverCard
@@ -383,59 +369,132 @@ const Header: React.FC<headerProps> = ({
               arrowOffset={50}
               arrowSize={7}
               arrowRadius={2}
+              shadow="sm"
+              styles={{
+                arrow: { border: `1px solid ${documentColor(documentName.documentClass)}` },
+              }}
             >
               <HoverCard.Target>
-                <Button variant="transparent">
-                  <Text mr="xs" c={documentColor(documentName.documentClass)}>
-                    <b>{documentMainLabels(documentName.documentClass)}</b>
-                  </Text>{' '}
-                  |
-                  <Text className={classes.documentName} ml="xs" c="var(--mantine-color-gray-7)">
+                <Button
+                  variant="transparent"
+                  rightSection={
+                    isNotSaved ? (
+                      <Flex c="var(--mantine-color-yellow-8)">
+                        <Text mt="0.4rem">
+                          <FaSave />
+                        </Text>
+
+                        <Text fw="700" mt="0.15rem" ml="0.1rem" fz="lg" w="0.4rem">
+                          !
+                        </Text>
+                      </Flex>
+                    ) : null
+                  }
+                >
+                  <Text
+                    maw="10rem"
+                    className={classes.documentName}
+                    c={documentColor(documentName.documentClass)}
+                  >
                     <b> {documentName.name}</b>
                   </Text>
                 </Button>
               </HoverCard.Target>
-              <HoverCard.Dropdown>
-                <Box maw="20vw">
-                  <Flex>
-                    <b>Type:</b>
-                    <Text ml="lg" c={documentColor(documentName.documentClass)}>
-                      {documentMainLabels(documentName.documentClass)}
+              <HoverCard.Dropdown bd={`1px solid ${documentColor(documentName.documentClass)}`}>
+                <SimpleGrid maw="20vw" cols={2} verticalSpacing="0.3rem">
+                  <Text ml="xs" fw="700">
+                    Document type:
+                  </Text>
+                  <Text ml="xs" c={documentColor(documentName.documentClass)}>
+                    {documentMainLabels(documentName.documentClass)}
+                  </Text>
+
+                  <Text ml="xs" fw="700">
+                    Document name:
+                  </Text>
+                  <Text ml="xs" c="var(--mantine-color-gray-7)" mb="sm">
+                    {documentName.name}
+                  </Text>
+
+                  <Text ml="xs" fw="700">
+                    Last update:
+                  </Text>
+                  <Text ml="xs" c="var(--mantine-color-gray-7)">
+                    {documentName.lastUpdate
+                      ? dateFormatter(documentName.lastUpdate.toString())
+                      : ''}
+                  </Text>
+
+                  <Text fw="700" ml="xs">
+                    Creation date:
+                  </Text>
+                  <Text ml="xs" c="var(--mantine-color-gray-7)">
+                    {documentName.creationDate
+                      ? dateFormatter(documentName.creationDate.toString())
+                      : ''}
+                  </Text>
+                </SimpleGrid>
+                {isNotSaved ? (
+                  <Flex justify="center" c="var(--mantine-color-yellow-8)" mt="lg">
+                    <Text mt="0.15rem" mr="xs">
+                      <FaSave />
+                    </Text>
+
+                    <Text fw="500">You have unsaved changes!</Text>
+                  </Flex>
+                ) : (
+                  <Flex justify="center" c="red" mt="lg">
+                    <Text c="var(--mantine-color-gray-6)" fw="500">
+                      No unsaved changes
                     </Text>
                   </Flex>
-                  <Flex>
-                    <b>Name:</b>
-                    <Text ml="xs" c="var(--mantine-color-gray-7)">
-                      {documentName.name}
-                    </Text>
-                  </Flex>
-                </Box>
+                )}
               </HoverCard.Dropdown>
             </HoverCard>
           </Center>
-          <Group justify="end" gap="0px">
-            {/* <Button variant="transparent">
-              <RiSplitCellsHorizontal />
-            </Button> */}
-            <Button
-              variant="transparent"
-              leftSection={<RiFileDownloadLine />}
-              onClick={downloadTex}
-            >
-              .tex
-            </Button>
-            <Button
-              variant="transparent"
-              leftSection={<RiFileDownloadFill />}
-              onClick={downloadPdf}
-            >
-              .pdf
-            </Button>
-          </Group>
-          <Group justify="end" h="100%" w="100%">
-            <Button variant="default" size="xs">
-              Profile
-            </Button>
+
+          <Group>
+            <Group justify="end" h="100%" w="100%" ml="xl" gap={0} visibleFrom="sm">
+              <Button
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                c="var(--mantine-color-gray-7)"
+                leftSection={<IoDocumentsOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/dashboard';
+                }}
+              >
+                Documents
+              </Button>
+              <Button
+                c="var(--mantine-color-gray-7)"
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                leftSection={<IoImagesOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/assetsLibrary';
+                }}
+              >
+                Assets
+              </Button>
+              <Button
+                c="var(--mantine-color-gray-7)"
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                leftSection={<RxAvatar />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/profile';
+                }}
+              >
+                Account
+              </Button>
+            </Group>
           </Group>
         </SimpleGrid>
 
@@ -452,37 +511,113 @@ const Header: React.FC<headerProps> = ({
               <Tabs.Panel value={tab.value}>{tab.tools}</Tabs.Panel>
             ))}
           </Center>
-          <Center
+          <Group
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
             pr="lg"
             ml="xs"
             mr="lg"
+            gap="xl"
             className={classes.band}
+            justify="center"
           >
-            <Box ml="2rem" mr="2rem">
-              <Button
-                variant="format"
-                leftSection={<FaRegSave />}
-                onClick={editFunctions.sendChanges}
+            <Box>
+              <Tooltip
+                label={
+                  <>
+                    <Text fz="sm" ta="center">
+                      Save document
+                    </Text>
+                    <Text fz="sm" ta="center">
+                      {!pdfLoaded ? '(Loading...)' : ''}
+                    </Text>
+                  </>
+                }
+                color="cyan"
+                position="bottom"
+                offset={5}
+                withArrow
+                arrowOffset={50}
+                arrowSize={7}
+                arrowRadius={2}
               >
-                Save
-              </Button>
-              <Button
-                variant="format"
-                leftSection={<LuRefreshCcw />}
-                onClick={editFunctions.reloadPdf}
+                <Button
+                  variant="format"
+                  disabled={!pdfLoaded}
+                  leftSection={<FaRegSave />}
+                  onClick={saveDocumentContent}
+                >
+                  Save
+                </Button>
+              </Tooltip>
+              <Tooltip
+                label={
+                  <>
+                    <Text fz="sm" ta="center">
+                      Reload PDF without saving
+                    </Text>
+                    <Text fz="sm" ta="center">
+                      {!pdfLoaded ? '(Loading...)' : ''}
+                    </Text>
+                  </>
+                }
+                color="cyan"
+                position="bottom"
+                offset={5}
+                withArrow
+                arrowOffset={50}
+                arrowSize={7}
+                arrowRadius={2}
               >
-                Reload PDF
-              </Button>
+                <Button
+                  variant="format"
+                  disabled={!pdfLoaded}
+                  leftSection={<LuRefreshCcw />}
+                  onClick={setPdfFile}
+                >
+                  Reload PDF
+                </Button>
+              </Tooltip>
             </Box>
             <ZoomTools zoomState={pdfZoom} />
-          </Center>
+            <Group justify="end" gap="0px">
+              {/* <Button variant="transparent">
+              <RiSplitCellsHorizontal />
+            </Button> */}
+              <Tooltip
+                label="Download .tex file"
+                color="cyan"
+                position="bottom"
+                offset={5}
+                withArrow
+                arrowOffset={50}
+                arrowSize={7}
+                arrowRadius={2}
+              >
+                <Button variant="format" leftSection={<LuDownload />} onClick={downloadTex}>
+                  .tex
+                </Button>
+              </Tooltip>
+              <Tooltip
+                label="Download .pdf file"
+                color="cyan"
+                position="bottom"
+                offset={5}
+                withArrow
+                arrowOffset={50}
+                arrowSize={7}
+                arrowRadius={2}
+              >
+                <Button variant="format" leftSection={<LuDownload />} onClick={downloadPdf}>
+                  .pdf
+                </Button>
+              </Tooltip>
+            </Group>
+          </Group>
         </SimpleGrid>
 
         {/* <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" /> */}
       </Tabs>
-      {/* </header> */}
 
       {/* //do Burgera
       <Drawer

@@ -79,7 +79,14 @@ export default function SlideBreakBlock({
           </>
         )}
         <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)">
-          <Accordion defaultValue="closed" chevronPosition="left">
+          <Accordion
+            className={
+              idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : classes.unmarkedFrame
+            }
+            defaultValue="closed"
+            chevronPosition="left"
+            styles={{ item: { border: 'none' }, chevron: { color: 'var(--mantine-color-cyan-6)' } }}
+          >
             <Accordion.Item key="header" value="header">
               <Accordion.Control>
                 <Text fz="sm" fw="500" c="var(--mantine-color-cyan-6)">

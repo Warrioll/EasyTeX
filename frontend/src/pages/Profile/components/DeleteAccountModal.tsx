@@ -115,7 +115,8 @@ export default function DeleteAccountModal({
       if (deletionPhrase === 'delete my account') {
         const status = await deleteAccount();
         if (status === 200) {
-          window.location.href = '/login';
+          localStorage.setItem('accountDeleted', 'true');
+          window.location.href = '/accountDeleted';
         } else {
           throw new Error('Status not 200!');
         }
@@ -155,7 +156,7 @@ export default function DeleteAccountModal({
           <Box h="22rem">
             <form>
               <Center p="0px" h="15rem" m="xl" mb="xs">
-                <Stack w="100%" justify="space-around">
+                <Stack w="100%" justify="space-around" align="center">
                   <Text ta="center" c="var(--mantine-color-gray-6)">
                     To delete account, first verify your password.
                   </Text>
@@ -170,6 +171,7 @@ export default function DeleteAccountModal({
                       //setCurrentPasswordError('');
                       setCurrentPassword(event.currentTarget.value);
                     }}
+                    w="70%"
                   />
                 </Stack>
               </Center>

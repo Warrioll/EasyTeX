@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Editor } from '@tiptap/react';
 import parse from 'html-react-parser';
+import { cloneDeep } from 'lodash';
 import {
   Badge,
   Box,
@@ -37,6 +38,8 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
   //const { activeTextfield, setActiveTextfield } = useActiveTextInputContext();
   //const [activeTextfield, setActiveTextfield] = useState<string>('');
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const [thisBlockContent, setThisBlockContent] = useState(blocksContent[idx].blockContent);
+  //const [authorTextfiled, setAuthorTextfiled]
 
   // const [activeBlock, setActiveBlock] = activeBlockState;
 
@@ -82,7 +85,7 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
         <MarkedBlockFrame
           idx={idx}
           //activeBlockState={activeBlockState}
-          blockName="Title, author, date"
+          blockName="Title"
           //sectionsContent={sectionsContent}
           //setSectionsContent={setSectionsContent}
           //activeTextInputState={activeTextInputState}

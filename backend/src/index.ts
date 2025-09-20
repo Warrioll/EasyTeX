@@ -39,10 +39,34 @@ const MONGOURL = process.env.MONGO_URL
 //const MONGOURL = "mongodb://localhost:27017/EasyTeX"
 //const MONGOURL = "mongodb://user:pass@mongodb/EasyTeX?authSource=admin"
 
+const connectToDatabase = async () =>{
+    for(let i=0; i<10 ; i++){
+        try{
+             console.log('Trying to connect to database... ')
+            await mongoose.connect(MONGOURL);
+            mongoose.connection.on('error', (error: Error)=> console.log(error));
+            console.log('Connected to database successfully')
+            return
+            
+        }catch(e){
+            console.log('Connection to database failed: ', e)
+            await new Promise(resume => setTimeout(resume, 5000));
+        }
 
-mongoose.Promise = Promise;  
-mongoose.connect(MONGOURL);
-mongoose.connection.on('error', (error: Error)=> console.log(error));
+          
+    }
+    throw new Error('Cannot establish connection to database!')
+}
 
 
-app.listen(PORT, ()=> console.log("Listening on port ", PORT))
+
+//mongoose.Promise = Promise;  
+// mongoose.connect(MONGOURL);
+// mongoose.connection.on('error', (error: Error)=> console.log(error));
+
+// app.listen(PORT, ()=> console.log("Listening on port ", PORT))
+
+connectToDatabase().then(()=>{
+    app.listen(PORT, ()=> console.log("Listening on port ", PORT))
+})
+

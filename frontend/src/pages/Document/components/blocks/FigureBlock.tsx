@@ -11,6 +11,7 @@ import {
   Flex,
   Group,
   Image,
+  Loader,
   Modal,
   SegmentedControl,
   Text,
@@ -50,6 +51,7 @@ export default function FigureBlock({
   //editor,
   //activeTextInputState,
 }: FigureBlockProps) {
+  const [isFigureLoading, setIsFigureLoading] = useState<boolean>(true);
   const { showBoundary, resetBoundary } = useErrorBoundary();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const modalHandlers = useDisclosure(false);
@@ -87,6 +89,7 @@ export default function FigureBlock({
 
   useEffect(() => {
     const getFigure = async () => {
+      setIsFigureLoading(true);
       try {
         const response = await axios.get(
           `http://localhost:8100/figure/user/getFigureFile/${figure}`,
@@ -103,6 +106,7 @@ export default function FigureBlock({
         showBoundary(e);
         //se;
       }
+      setIsFigureLoading(false);
     };
     if (figure) {
       getFigure();
@@ -162,6 +166,10 @@ export default function FigureBlock({
                     //fit={fitImg}
                     fit="contain"
                   />
+                ) : isFigureLoading ? (
+                  <Center w="100%" h="100%">
+                    <Loader size="2rem" />
+                  </Center>
                 ) : (
                   <>This asset might have been deleted!</>
                 )

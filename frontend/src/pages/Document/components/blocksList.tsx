@@ -23,8 +23,15 @@ import {
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiSignature } from 'react-icons/pi';
-import { blockAbleToRef, blockType, documentClassType, groupedListType } from '@/Types';
-import { useAddBlock } from './documentHandlers';
+import {
+  blockAbleToRef,
+  blockType,
+  documentClassType,
+  groupedListType,
+  typeOfBlockType,
+} from '@/Types';
+import { useBlocksContentContext } from '../DocumentContextProviders';
+import { useAddBlock } from '../hooksAndUtils/documentHooks';
 
 // type blockListType = {
 //   blockName: string;
@@ -32,10 +39,6 @@ import { useAddBlock } from './documentHandlers';
 //   blockToAdd: blockType;
 //   documentClasses: documentClassType[];
 // };
-
-let equationCounter = 0;
-let figureCounter = 0;
-let tableCounter = 0;
 
 const texfiledValue: blockType = { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' };
 const sectionValue: blockType = {
@@ -63,7 +66,7 @@ const closingValue: blockType = {
 const equationValue: blockType = {
   typeOfBlock: 'equation',
   blockContent: {
-    id: 'eq'.concat(equationCounter.toString()),
+    id: 'eq',
     label: 'New equation',
     content: 'New equation',
   },
@@ -81,7 +84,7 @@ const tableValue: blockType = {
 };
 const figureValue: blockType = {
   typeOfBlock: 'figure',
-  blockContent: { id: 'eq', label: 'New image', content: '' },
+  blockContent: { id: 'img', label: 'New image', content: '' },
 };
 const titleSectionValue: blockType = {
   typeOfBlock: 'titlePage',
@@ -95,20 +98,53 @@ const addressAndDateValue: blockType = {
 
 const referencesValue: blockType = { typeOfBlock: 'references', blockContent: [] };
 const tableOfContentsValue: blockType = { typeOfBlock: 'tableOfContents', blockContent: '' };
-const pageBreakValue: blockType = { typeOfBlock: 'pageBreak', blockContent: '' };
-const pageBreakBeamerValue: blockType = {
+const pageBreakValue: blockType = {
   typeOfBlock: 'pageBreak',
-  blockContent: { title: 'Title', subtitle: 'Subtitle' },
+  blockContent: { title: 'Slide title', subtitle: 'Slide subtitle' },
 };
+// const pageBreakBeamerValue: blockType = {
+//   typeOfBlock: 'pageBreak',
+//   blockContent: { title: 'Title', subtitle: 'Subtitle' },
+// };
 
 export const useBlocksList = (): groupedListType => {
   const { addBlock } = useAddBlock();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
+
+  const disableButtons = (typeOfBlock: typeOfBlockType, allowedCount: number) => {
+    let counter = 0;
+    for (const i of blocksContent) {
+      if (i.typeOfBlock === typeOfBlock) {
+        counter++;
+      }
+      if (counter >= allowedCount) {
+        break;
+      }
+    }
+    return counter >= allowedCount;
+  };
+
+  const getAvailableIdNumberForRefId = (typeOfBlock: typeOfBlockType, idPrefix: string): number => {
+    const assignedNumbers: number[] = [];
+    for (const block of blocksContent) {
+      if (block.typeOfBlock === typeOfBlock) {
+        assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
+      }
+    }
+    //assignedNumbers.sort();
+    let counter = 1;
+    while (assignedNumbers.includes(counter)) {
+      counter++;
+    }
+    return counter;
+  };
+
   const blocksList: groupedListType = [
     {
       label: 'Structure',
       group: [
         {
-          label: 'Title section',
+          label: 'Title',
           Icon: () => <MdOutlineTitle />,
           function: () => {
             addBlock(titleSectionValue, 1);
@@ -118,6 +154,7 @@ export const useBlocksList = (): groupedListType => {
             blockContent: titleSectionValue,
           },
           belonging: ['article', 'beamer', 'book', 'report'],
+          disabledFunction: (): boolean => disableButtons('titlePage', 1),
         },
 
         {
@@ -128,6 +165,7 @@ export const useBlocksList = (): groupedListType => {
           },
           value: tableOfContentsValue,
           belonging: ['article', 'beamer', 'book', 'report'],
+          disabledFunction: (): boolean => disableButtons('tableOfContents', 1),
         },
         {
           label: 'Address & date',
@@ -140,6 +178,7 @@ export const useBlocksList = (): groupedListType => {
             blockContent: addressAndDateValue,
           },
           belonging: ['letter'],
+          disabledFunction: (): boolean => disableButtons('titlePage', 1),
         },
         {
           label: 'Opening',
@@ -149,6 +188,7 @@ export const useBlocksList = (): groupedListType => {
           },
           value: openingValue,
           belonging: [],
+          disabledFunction: (): boolean => disableButtons('subsection', 1),
         },
         {
           label: 'Closing',
@@ -158,15 +198,17 @@ export const useBlocksList = (): groupedListType => {
           },
           value: closingValue,
           belonging: ['letter'],
+          disabledFunction: (): boolean => disableButtons('subsubsection', 1),
         },
         {
-          label: 'References',
+          label: 'Bibliography/References',
           Icon: () => <MdOutlineLibraryBooks />,
           function: () => {
             addBlock(referencesValue, 1);
           },
           value: referencesValue,
           belonging: ['article', 'beamer', 'book', 'report'],
+          disabledFunction: (): boolean => disableButtons('references', 1),
         },
       ],
     },
@@ -225,8 +267,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Equation',
           Icon: () => <MdFunctions />,
           function: () => {
-            equationCounter++;
-            (equationValue.blockContent as blockAbleToRef).id = `eq${equationCounter}`;
+            (equationValue.blockContent as blockAbleToRef).id =
+              `eq${getAvailableIdNumberForRefId('equation', 'eq').toString()}`;
             addBlock(equationValue, 1);
           },
           value: equationValue,
@@ -236,8 +278,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Table',
           Icon: () => <LuTable />,
           function: () => {
-            tableCounter++;
-            (tableValue.blockContent as blockAbleToRef).id = `tab${tableCounter}`;
+            (tableValue.blockContent as blockAbleToRef).id =
+              `tab${getAvailableIdNumberForRefId('table', 'tab').toString()}`;
             addBlock(tableValue, 1);
           },
           value: tableValue,
@@ -248,7 +290,8 @@ export const useBlocksList = (): groupedListType => {
           Icon: () => <LuImage />,
           function: () => {
             figureCounter++;
-            (figureValue.blockContent as blockAbleToRef).id = `img${figureCounter}`;
+            (figureValue.blockContent as blockAbleToRef).id =
+              `img${getAvailableIdNumberForRefId('figure', 'img').toString()}`;
             addBlock(figureValue, 1);
           },
           value: figureValue,
@@ -273,9 +316,9 @@ export const useBlocksList = (): groupedListType => {
           label: 'Slide break',
           Icon: () => <MdOutlineInsertPageBreak />,
           function: () => {
-            addBlock(pageBreakBeamerValue, 1);
+            addBlock(pageBreakValue, 1);
           },
-          value: pageBreakBeamerValue,
+          value: pageBreakValue,
           belonging: ['beamer'],
         },
       ],

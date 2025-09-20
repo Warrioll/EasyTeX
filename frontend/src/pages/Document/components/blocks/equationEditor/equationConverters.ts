@@ -1,6 +1,7 @@
 import { elementsPrototypes } from "./equationsElementsPrototypes";
 import { specialCharacters } from "./SpecialCharacters";
 import { cloneDeep } from "lodash";
+import { equationsSpecialCharactersStyle } from "@/Types";
 
 export function elementsToTex(array:any):string{
     let formula:string ='';
@@ -14,7 +15,7 @@ export function elementsToTex(array:any):string{
                 for(let i of specialCharacters){
                     //console.log('value: ', i.group)
                     for(let j of i.group ){
-                        tmp=tmp.replaceAll(j.value, ` ${j.latexRepresentation} `)
+                        tmp=tmp.replaceAll(j.value, `${j.latexRepresentation}`)
                     }
                     
                 }
@@ -179,6 +180,9 @@ export function texToElements(originalString:string):any{
                 if(i%2===1){
                     let tmp= originalString.slice(toSplit[i], toSplit[i+1]+1).slice(1)
                     tmp=tmp.slice(0,tmp.length-1)
+                    if(tmp===''){
+                        tmp='\\ '
+                    }
                     parts=[...parts,tmp] 
                 }else{
                     parts=[...parts, originalString.slice(toSplit[i]+1, toSplit[i+1])]
@@ -187,7 +191,7 @@ export function texToElements(originalString:string):any{
     
             parts=[...parts, originalString.slice(toSplit[toSplit.length-2]+1)]
         
-            parts=parts.filter(part=>part!=='' && part!==' ' )
+            parts=parts.filter(part=>part!=='' && part!==' ' ) 
         
         //console.log('original: ', originalString, 'parts: ',parts)
         
@@ -206,15 +210,16 @@ export function texToElements(originalString:string):any{
             //     continue
             // }
             if(parts[i].includes('\\frac') || parts[i].includes('\\binom')){
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                //let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 let nfrac
                 if(parts[i].includes('\\frac') ){
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\frac', ''))
-                    nfrac={...elementsPrototypes.fraction.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.fraction.elementPrototype)
                 }
                 if(parts[i].includes('\\binom') ){
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\binom', ''))
-                    nfrac={...elementsPrototypes.combination.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.combination.elementPrototype)
                 }
                 
                
@@ -302,11 +307,11 @@ export function texToElements(originalString:string):any{
                 let indexAndExpr=parts[i].split('\\sqrt')
                 //console.log('indx&expr: ',indexAndExpr)
                 
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 expr.content=texToElementsSpecialCHaractersConvertion(indexAndExpr[0])
                 const index=indexAndExpr[1].replaceAll(']','').replaceAll('[','')
                 
-                let nfrac={...elementsPrototypes.root.elementPrototype}
+                let nfrac=cloneDeep(elementsPrototypes.root.elementPrototype)
                 nfrac.children[0].children=cloneDeep(texToElements(index))
                 nfrac.children[1].children=cloneDeep(texToElements(parts[i+1]))
                 if(expr.content==='' || expr.content===' '){
@@ -341,10 +346,10 @@ export function texToElements(originalString:string):any{
             //      continue
             // }
             if(parts[i].includes('\\lim')){
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\lim', '').replace('_', ''))
                 
-                let nfrac={...elementsPrototypes.limes.elementPrototype}
+                let nfrac=cloneDeep(elementsPrototypes.limes.elementPrototype)
                 nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                 if(expr.content==='' || expr.content===' '){
                     elements=[...elements, nfrac]
@@ -366,38 +371,38 @@ export function texToElements(originalString:string):any{
                 let nsum
                 let tmp
                 if(parts[i].includes('\\int')){
-                    nsum={...elementsPrototypes.integral.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.integral.elementPrototype)
                     tmp =parts[i].split('\\int')
                 }
                 if(parts[i].includes('\\oint')){
-                    nsum={...elementsPrototypes.lineIntegral.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.lineIntegral.elementPrototype)
                     tmp =parts[i].split('\\oint')
                 }
                 if(parts[i].includes('\\sum')){
-                    nsum={...elementsPrototypes.sum.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.sum.elementPrototype)
                     tmp =parts[i].split('\\sum')
                 }
                 if(parts[i].includes('\\prod')){
-                    nsum={...elementsPrototypes.product.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.product.elementPrototype)
                     tmp =parts[i].split('\\prod')
                 }
                 if(parts[i].includes('\\bigcup')){
-                    nsum={...elementsPrototypes.bigUnion.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.bigUnion.elementPrototype)
                     tmp =parts[i].split('\\bigcup')
                 }
                 if(parts[i].includes('\\bigcap')){
-                    nsum={...elementsPrototypes.bigIntersection.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.bigIntersection.elementPrototype)
                     tmp =parts[i].split('\\bigcap')
                 }
                 if(parts[i].includes('\\bigvee')){
-                    nsum={...elementsPrototypes.bigDisjunction.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.bigDisjunction.elementPrototype)
                     tmp =parts[i].split('\\bigvee')
                 }
                 if(parts[i].includes('\\bigwedge')){
-                    nsum={...elementsPrototypes.bigConjunction.elementPrototype}
+                    nsum=cloneDeep(elementsPrototypes.bigConjunction.elementPrototype)
                     tmp =parts[i].split('\\bigwedge')
                 }
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                    expr.content=texToElementsSpecialCHaractersConvertion(tmp[0])
                     if(tmp[1]==='^'){
                         nsum.children[0].children=texToElements(parts[i+1])
@@ -422,7 +427,7 @@ export function texToElements(originalString:string):any{
              if(parts[i].includes('\\left.\\begin')){
                  //console.log('actual i:', i)
                  // console.log('part[i]:', parts[i])
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 //let tmp=parts[i].split()
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left.\\begin', ''))
                 let nfrac
@@ -481,7 +486,7 @@ export function texToElements(originalString:string):any{
                
                 if(parts[i+2]!=='ll' && parts[i+2]!=='lll' && parts[i+2]!=='cc' && parts[i+2]!=='ccc'){
                     //console.log('not a latex array')
-                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.expression.elementPrototype)
                     nfrac.content=parts[i]
                     i++
                 }else{
@@ -504,22 +509,22 @@ export function texToElements(originalString:string):any{
              }
              if(parts[i].endsWith('\\left\\lbrace')){
                 let nfrac
-                let  expr={...elementsPrototypes.expression.elementPrototype}
+                let  expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 if(parts[i+2].startsWith('\\right.')){
                     
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left\\lbrace', ''))
-                    nfrac={...elementsPrototypes.bigLeftCurlyBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigLeftCurlyBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right.', '')
                 }else{
                 if(parts[i+2].startsWith('\\right\\rbrace')){
                    
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left\\lbrace', ''))
-                    nfrac={...elementsPrototypes.bigCurlyBrackets.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigCurlyBrackets.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right\\rbrace', '')
                 }else{
-                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.expression.elementPrototype)
                     nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
                 }
             }
@@ -533,22 +538,22 @@ export function texToElements(originalString:string):any{
              }
              if(parts[i].endsWith('\\left(')){
                 let nfrac
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 if(parts[i+2].startsWith('\\right.')){
                     
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left(', ''))
-                    nfrac={...elementsPrototypes.bigLeftRegularBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigLeftRegularBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right.', '')
                 }else{
                 if(parts[i+2].startsWith('\\right)')){
                    
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left(', ''))
-                    nfrac={...elementsPrototypes.bigRegularBrackets.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigRegularBrackets.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right)', '')
                 }else{
-                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.expression.elementPrototype)
                     nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
                 }
             }
@@ -562,22 +567,22 @@ export function texToElements(originalString:string):any{
              }
              if(parts[i].endsWith('\\left[')){
                 let nfrac
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 if(parts[i+2].startsWith('\\right.')){
                     
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left[', ''))
-                    nfrac={...elementsPrototypes.bigLeftSquareBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigLeftSquareBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right.', '')
                 }else{
                 if(parts[i+2].startsWith('\\right]')){
                    
                     expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left[', ''))
-                    nfrac={...elementsPrototypes.bigSquareBrackets.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigSquareBrackets.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                     parts[i+2]=parts[i+2].replace('\\right]', '')
                 }else{
-                    nfrac={...elementsPrototypes.expression.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.expression.elementPrototype)
                     nfrac.content=texToElementsSpecialCHaractersConvertion(parts[i+1])
                 }
             }
@@ -591,18 +596,18 @@ export function texToElements(originalString:string):any{
              }
              if(parts[i].endsWith('\\left.')){
                 let nfrac
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('\\left', ''))
                 if(parts[i+2].startsWith('\\right}')){
-                    nfrac={...elementsPrototypes.bigRightCurlyBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigRightCurlyBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                 }
                 if(parts[i+2].startsWith('\\right)')){
-                    nfrac={...elementsPrototypes.bigRightRegularBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigRightRegularBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                 }
                 if(parts[i+2].startsWith('\\right]')){
-                    nfrac={...elementsPrototypes.bigRightSquareBracket.elementPrototype}
+                    nfrac=cloneDeep(elementsPrototypes.bigRightSquareBracket.elementPrototype)
                     nfrac.children[0].children=cloneDeep(texToElements(parts[i+1]))
                 }
                 if(expr.content==='' || expr.content===' '){
@@ -615,10 +620,10 @@ export function texToElements(originalString:string):any{
 
              }
             if(parts[i].endsWith('^')){
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('^', ''))
                 if(parts[i+2]==='_'){
-                     let indexes={...elementsPrototypes.upperAndLowerIndex.elementPrototype}
+                     let indexes=cloneDeep(elementsPrototypes.upperAndLowerIndex.elementPrototype)
                      indexes.children[0].children=texToElements(parts[i+1])
                      indexes.children[1].children=texToElements(parts[i+3])
                      indexes.children[2].children=[expr]
@@ -626,7 +631,7 @@ export function texToElements(originalString:string):any{
                      i=i+4
                      continue
                 }else{
-                    let indexes={...elementsPrototypes.upperIndex.elementPrototype}
+                    let indexes=cloneDeep(elementsPrototypes.upperIndex.elementPrototype)
                      indexes.children[0].children=texToElements(parts[i+1])
                      indexes.children[1].children=[expr]
                       elements=[...elements, indexes]
@@ -635,10 +640,10 @@ export function texToElements(originalString:string):any{
                 }
              }
             if(parts[i].endsWith('_')){
-                let expr={...elementsPrototypes.expression.elementPrototype}
+                let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
                 expr.content=texToElementsSpecialCHaractersConvertion(parts[i].replace('_', ''))
                 if(parts[i+2]==='^'){
-                     let indexes={...elementsPrototypes.upperAndLowerIndex.elementPrototype}
+                     let indexes=cloneDeep(elementsPrototypes.upperAndLowerIndex.elementPrototype)
                      indexes.children[0].children=texToElements(parts[i+1])
                      indexes.children[1].children=texToElements(parts[i+3])
                      indexes.children[2].children=[expr]
@@ -646,7 +651,7 @@ export function texToElements(originalString:string):any{
                       i=i+4
                      continue
                 }else{
-                    let indexes={...elementsPrototypes.lowerIndex.elementPrototype}
+                    let indexes=cloneDeep(elementsPrototypes.lowerIndex.elementPrototype)
                      indexes.children[0].children=texToElements(parts[i+1])
                      indexes.children[1].children=[expr]
                       elements=[...elements, indexes]
@@ -656,7 +661,7 @@ export function texToElements(originalString:string):any{
              }
             
             if(parts[i]!=='' || parts[i]!==' '){
-            let expr={...elementsPrototypes.expression.elementPrototype}
+            let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
             expr.content=texToElementsSpecialCHaractersConvertion(parts[i])
             elements=[...elements,expr]
             }
@@ -668,7 +673,7 @@ export function texToElements(originalString:string):any{
             
         }catch(e){
             console.log('texToElements conversion error (in loop): ', e)
-            let expr={...elementsPrototypes.expression.elementPrototype}
+            let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
             expr.content=texToElementsSpecialCHaractersConvertion(parts[i])
             elements=[...elements,expr]
         }
@@ -687,12 +692,12 @@ export function texToElements(originalString:string):any{
         if(originalString===undefined ){
             return null
         }
-        let expr={...elementsPrototypes.expression.elementPrototype}
+        let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
         expr.content=texToElementsSpecialCHaractersConvertion(originalString)
         return [expr]
     }catch(e){
         console.log('texToElements conversion error (in loop): ', e)
-        let expr={...elementsPrototypes.expression.elementPrototype}
+        let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
         expr.content=texToElementsSpecialCHaractersConvertion(originalString)
         return [expr]
 
@@ -702,12 +707,15 @@ export function texToElements(originalString:string):any{
 
 export const texToElementsSpecialCHaractersConvertion=(originalString: string):string=>{
     let converterString=originalString
-
+    let sc:equationsSpecialCharactersStyle[] =[]
     converterString=converterString.replaceAll('\\ ', ' ')
     for(let i =0; i<specialCharacters.length; i++){
-        for(let j=0; j<specialCharacters[i].group.length; j++){
-            converterString=converterString.replaceAll(specialCharacters[i].group[j].latexRepresentation, specialCharacters[i].group[j].value)
-        }
+        sc=[...sc, ...cloneDeep(specialCharacters[i].group)]
     }
+        sc.sort((a,b)=> b.latexRepresentation.length- a.latexRepresentation.length)
+        for(let j=0; j<sc.length; j++){
+            converterString=converterString.replaceAll(sc[j].latexRepresentation, sc[j].value)
+        }
+    
     return converterString
 }

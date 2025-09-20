@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import GuestLayout from './components/Layout/GuestLayout/GuestLayout';
 import MainLayout from './components/Layout/MainLayout/MainLayout';
+import AccountDeletedPage from './pages/AccountDeleted/AccountDeletedPage';
 import MyAssetsPage from './pages/Assets/MyAssetsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import {
@@ -9,7 +10,7 @@ import {
   BlocksContentProvider,
 } from './pages/Document/DocumentContextProviders';
 import DocumentPage from './pages/Document/DocumentPage';
-import { HomePage } from './pages/Home.page';
+import Homepage from './pages/Homepage/Homepage';
 import LoginPage from './pages/Login/LoginPage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -19,11 +20,13 @@ import SessionExpiredPage from './pages/SessionExpired/SessionExpiredPage';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <GuestLayout content={<HomePage />} />,
+    element: <GuestLayout content={<Homepage />} />,
   },
   {
     path: '/document/:id',
-    element: (
+    element: localStorage.getItem('documentNotExists') ? (
+      <NotFoundPage />
+    ) : (
       <BlocksContentProvider>
         <ActiveBlockProvider>
           <ActiveTableCellProvider>
@@ -58,6 +61,14 @@ const router = createBrowserRouter([
     element: (
       <GuestLayout
         content={localStorage.getItem('401') ? <SessionExpiredPage /> : <NotFoundPage />}
+      />
+    ),
+  },
+  {
+    path: '/accountDeleted',
+    element: (
+      <GuestLayout
+        content={localStorage.getItem('accountDeleted') ? <AccountDeletedPage /> : <NotFoundPage />}
       />
     ),
   },

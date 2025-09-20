@@ -123,7 +123,9 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
 export const  getDocuments= async (req: express.Request, res: express.Response)=>{
 
   try{
-      const documents = await documentModel.find();
+      const documents = await documentModel.find().sort({ lastUpdate: -1 });
+      //console.log('documents list',documents)
+     // documents.sort((a, b)=>new Date(a.lastUpdate).getTime() - new Date(b.lastUpdate).getTime())
       res.status(200).json(documents);
   }catch(error){
       console.log("Get ERROR: ", error)
@@ -140,25 +142,25 @@ export const getUserDocuments = async (req: express.Request, res: express.Respon
       let  userDocuments;
       switch (documentClass){
         case 'all':
-        userDocuments = await documentModel.find({userId: userId})
+        userDocuments = await documentModel.find({userId: userId}).sort({ lastUpdate: -1 });
         break;
         case 'article':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'article'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'article'}).sort({ lastUpdate: -1 });
         break;
         case 'beamer':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'beamer'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'beamer'}).sort({ lastUpdate: -1 });
         break; 
         case 'report':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'report'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'report'}).sort({ lastUpdate: -1 });
         break;
         case 'book':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'book'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'book'}).sort({ lastUpdate: -1 });
         break;
         case 'letter':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'letter'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'letter'}).sort({ lastUpdate: -1 });
         break;
         case 'slides':
-        userDocuments = await documentModel.find({userId: userId, documentClass: 'slides'})
+        userDocuments = await documentModel.find({userId: userId, documentClass: 'slides'}).sort({ lastUpdate: -1 });
         break;
         default:
         userDocuments = null
@@ -443,8 +445,6 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
  await verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
 
-// TODO z jakiegoś powodu wrzuciło się to dłuższe usepackage do środka, oraz po listach nie mozna dawać nowej lini
-
   try{
 
    
@@ -540,6 +540,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       '\\usepackage{amsmath}', 
       //'\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}', 
       '\\usepackage{graphicx} ', 
+      '\\usepackage{amssymb}',
      ]
 
      let beamerSettings=[

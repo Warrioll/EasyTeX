@@ -62,6 +62,7 @@ export default function GuestLayout({ content }) {
                 pb="0px"
                 onClick={() => {
                   localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
                   navigate('/login');
                 }}
                 variant="transparent"
@@ -74,6 +75,7 @@ export default function GuestLayout({ content }) {
                 pb="0px"
                 onClick={() => {
                   localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
                   navigate('/register');
                 }}
                 variant="transparent"

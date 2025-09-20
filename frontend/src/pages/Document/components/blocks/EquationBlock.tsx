@@ -54,7 +54,8 @@ const EquationBlock = memo(
     //const thisBlockContent = useContextSelector(BlocksContentContext, (blocks:blockType[])=>blocks[idx])
 
     const { activeBlock, setActiveBlock } = useActiveBlockContext();
-    const { blocksContent, setBlocksContent } = useBlocksContentContext();
+    const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } =
+      useBlocksContentContext();
     const [modalOpened, modalHandlers] = useDisclosure(false);
     const [editorTab, setEditorTab] = useState<'Visual editor' | 'LaTeX fromula'>('Visual editor');
     const equationFormulaState = useState<string>('');
@@ -87,7 +88,7 @@ const EquationBlock = memo(
       } else {
         blocks[idx].blockContent.content = equationFormula;
       }
-
+      setIsNotSaved(true);
       setBlocksContent(blocks);
       modalHandlers.close();
     };
@@ -110,6 +111,10 @@ const EquationBlock = memo(
       }
       setEquationNumber(temp);
     }, [blocksContent]);
+
+    // useEffect(() => {
+    //   setIsNotSaved(true);
+    // }, [blocksContent[idx].blockContent.content]);
 
     return (
       <>

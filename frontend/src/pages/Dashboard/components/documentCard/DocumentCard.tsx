@@ -9,6 +9,7 @@ import { IoMdMore } from 'react-icons/io';
 import { MdEmail } from 'react-icons/md';
 import { PiPresentationChartFill } from 'react-icons/pi';
 import { RiArticleFill, RiBook2Fill, RiSlideshow2Fill } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import {
   Anchor,
   Badge,
@@ -36,6 +37,7 @@ import {
   documentMainLabels,
 } from '@/components/other/documentLabelsAndColors';
 import { documentClassType } from '@/Types';
+import { dateFormatter } from '@/utils/formatters';
 import classes from './documentCard.module.css';
 
 type documentCardTypeProps = {
@@ -68,7 +70,8 @@ export default function DocumentCard({
   const [documentName, setDocumentName] = documentNameState;
   const [renameError, setRenemeError] = useState<string | null>(null);
   const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
-  console.log('doc, id: ', documentId);
+  //console.log('doc, id: ', documentId);
+
   // const chooseCardContent = (): { typeLabel: string; icon: any; color: string } => {
   //   // return <RiArticleFill size={50} stroke={2} color={theme.colors.blue[6]} />;
 
@@ -116,15 +119,15 @@ export default function DocumentCard({
 
   // const cardContent = chooseCardContent();
 
-  const creationWholeDateSplited: Array<string> = creationDate.toString().split('T');
-  const creationDateSplited: Array<string> = creationWholeDateSplited[0].split('-').reverse();
-  const creationHourSplited: Array<string> = creationWholeDateSplited[1].split(':');
-  const creationDateString: string = `${creationDateSplited.join('.')} | ${creationHourSplited[0]}:${creationHourSplited[1]}`;
+  // const creationWholeDateSplited: Array<string> = creationDate.toString().split('T');
+  // const creationDateSplited: Array<string> = creationWholeDateSplited[0].split('-').reverse();
+  // const creationHourSplited: Array<string> = creationWholeDateSplited[1].split(':');
+  // const creationDateString: string = `${creationDateSplited.join('.')} | ${creationHourSplited[0]}:${creationHourSplited[1]}`;
 
-  const lastUpdateWholeDateSplited: Array<string> = lastUpdate.toString().split('T');
-  const lastUpdateDateSplited: Array<string> = lastUpdateWholeDateSplited[0].split('-').reverse();
-  const lastUpdateHourSplited: Array<string> = lastUpdateWholeDateSplited[1].split(':');
-  const lastUpdateDateString: string = `${lastUpdateDateSplited.join('.')} | ${lastUpdateHourSplited[0]}:${lastUpdateHourSplited[1]}`;
+  // const lastUpdateWholeDateSplited: Array<string> = lastUpdate.toString().split('T');
+  // const lastUpdateDateSplited: Array<string> = lastUpdateWholeDateSplited[0].split('-').reverse();
+  // const lastUpdateHourSplited: Array<string> = lastUpdateWholeDateSplited[1].split(':');
+  // const lastUpdateDateString: string = `${lastUpdateDateSplited.join('.')} | ${lastUpdateHourSplited[0]}:${lastUpdateHourSplited[1]}`;
 
   const renameDocument = async () => {
     // try {
@@ -197,13 +200,23 @@ export default function DocumentCard({
             //cardContent.icon
           }
           <DocumentIcon type={type} color={null} size={50} />
-          <Menu position="right-start" offset={-20}>
+          <Menu
+            position="right-start"
+            offset={-20}
+            withArrow
+            arrowOffset={15}
+            arrowSize={8}
+            styles={{ arrow: { border: ' 1px solid var(--mantine-color-gray-4)' } }}
+          >
             <Menu.Target>
               <Button fz="xl" c="black" variant="transparent" className={classes.cardMoreButton}>
                 <IoMdMore />
               </Button>
             </Menu.Target>
-            <MenuDropdown>
+            <MenuDropdown
+              bd=" 1px solid var(--mantine-color-gray-4)"
+              //bg="var(--mantine-color-gray-0)"
+            >
               <Menu.Item
                 onClick={() => {
                   window.location.href = `/document/${documentId}`;
@@ -258,10 +271,10 @@ export default function DocumentCard({
           <b>Type: </b> {choosenDocumentMainLabel}
         </Text>
         <Text fz="sm" c="dimmed" mb="0.3rem">
-          <b>Created: </b> {creationDateString}
+          <b>Created: </b> {dateFormatter(creationDate.toString())}
         </Text>
         <Text fz="sm" c="dimmed">
-          <b>Last update: </b> {lastUpdateDateString}
+          <b>Last update: </b> {dateFormatter(lastUpdate.toString())}
         </Text>
       </Card>
       {/* <Modal
@@ -329,9 +342,9 @@ export default function DocumentCard({
           <b>Type: </b>
           {choosenDocumentMainLabel}
           <b>Created: </b>
-          {creationDateString}
+          {dateFormatter(creationDate.toString())}
           <b>Last update: </b>
-          {lastUpdateDateString}
+          {dateFormatter(lastUpdate.toString())}
         </>
       </DeleteModal>
 

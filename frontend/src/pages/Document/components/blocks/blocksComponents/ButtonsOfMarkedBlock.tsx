@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { cloneDeep } from 'lodash';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
 import { IoMdMore } from 'react-icons/io';
@@ -6,12 +6,12 @@ import { LuHeading1, LuHeading2 } from 'react-icons/lu';
 import { MdOutlineAdd } from 'react-icons/md';
 import { PiTextTBold } from 'react-icons/pi';
 import { TbForbid2 } from 'react-icons/tb';
-import { Badge, Box, Button, Flex, Menu, Stack, Text, Tooltip } from '@mantine/core';
+import { Badge, Box, Button, Center, Flex, Menu, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AddComboox } from '@/components/other/AddCombobox';
 //import { blocksList } from '../oldBlocksList';
-import { useBlocksList } from '@/pages/Document/blocksList';
-import { useAddBlock } from '@/pages/Document/documentHandlers';
+import { useBlocksList } from '@/pages/Document/components/blocksList';
+import { useAddBlock } from '@/pages/Document/hooksAndUtils/documentHooks';
 import { blockType } from '@/Types';
 import {
   useActiveBlockContext,
@@ -45,8 +45,10 @@ export default function ButtonsOfMarkedBlock({
   //const [activeTextInput, setActiveTextInput] = activeTextInputState;
 
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+
+  const [openedMenu, setOpenedMenu] = useState<boolean>(false);
 
   const blocksList = useBlocksList();
   const { addBlock } = useAddBlock();
@@ -58,6 +60,7 @@ export default function ButtonsOfMarkedBlock({
     setBlocksContent(blocks);
     setActiveBlock(activeBlock - 1);
     setActiveTextfield('');
+    setIsNotSaved(true);
   };
   const moveBlockDown = () => {
     let blocks = cloneDeep(blocksContent);
@@ -66,22 +69,8 @@ export default function ButtonsOfMarkedBlock({
     setBlocksContent(blocks);
     setActiveBlock(activeBlock + 1);
     setActiveTextfield('');
+    setIsNotSaved(true);
   };
-
-  const addBlockBelow = (block: blockType) => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock + 1, 0, block);
-    setBlocksContent(blocks);
-    setActiveBlock(activeBlock + 1);
-  };
-
-  const addBlockAbove = (block: blockType) => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock, 0, block);
-    setBlocksContent(blocks);
-  };
-
-  const addBlockFunction = typeOfAddBlockFunction === 'above' ? addBlockAbove : addBlockBelow;
 
   return (
     <>
@@ -118,12 +107,20 @@ export default function ButtonsOfMarkedBlock({
               withGroups
               floatingStrategy="fixed"
               placeholder=""
+              position="left-start"
               buttonContent={
-                <>
-                  <Text mt="11px" p="0px" h="1.5rem" m="0px" mr="9px">
-                    <MdOutlineAdd />
-                  </Text>
-                </>
+                <Text
+                  w="100%"
+                  mt="4px"
+                  //mt="11px"
+                  p="0px"
+                  h="1.5rem"
+                  m="0px"
+                  //mr="9px"
+                  ta="center"
+                >
+                  <MdOutlineAdd />
+                </Text>
               }
               //expressionInputContentState,
               insertFunction={(value) => {
@@ -134,7 +131,14 @@ export default function ButtonsOfMarkedBlock({
               belongingValidator={blocksContent[0].blockContent as string}
             />
             <Flex>
-              <Menu position="left-start">
+              <Menu
+                opened={openedMenu}
+                onChange={setOpenedMenu}
+                position="left-start"
+                //withArrow
+                arrowSize={8}
+                styles={{ arrow: { border: ' 1px solid var(--mantine-color-cyan-2)' } }}
+              >
                 <Menu.Target>
                   <Tooltip
                     label="More"
@@ -149,17 +153,34 @@ export default function ButtonsOfMarkedBlock({
                   >
                     <Button
                       variant="transparent"
-                      mt="xs"
-                      size="compact-sm"
+                      //mt="xs"
+                      //mt="6px"
+                      //size="compact-sm"
                       w="2rem"
-                      h="1.5rem"
+                      p="0px"
+                      //h="1.5rem"
                       m="0px"
+                      bg={openedMenu ? 'var(--mantine-color-gray-2)' : ''}
                     >
-                      <IoMdMore />
+                      <Text
+                        w="100%"
+                        mt="5px"
+                        //mt="11px"
+                        p="0px"
+                        h="1.5rem"
+                        m="0px"
+                        //mr="9px"
+                        ta="center"
+                      >
+                        <IoMdMore />
+                      </Text>
                     </Button>
                   </Tooltip>
                 </Menu.Target>
-                <Menu.Dropdown>
+                <Menu.Dropdown
+                  bg="var(--mantine-color-gray-0)"
+                  bd=" 1px solid var(--mantine-color-cyan-3)"
+                >
                   <Menu.Item
                     leftSection={<FaArrowUp />}
                     disabled={activeBlock === 1}
@@ -197,18 +218,32 @@ export default function ButtonsOfMarkedBlock({
               >
                 <Button
                   variant="transparent"
-                  size="compact-sm"
-                  mt="xs"
+                  //size="compact-sm"
+                  //mt="xs"
+                  p="0px"
+                  //mt="6px"
                   onClick={() => {
                     setActiveBlock(0);
                     //setActiveTextfield('');
                   }}
                   className={classes.stickyElement}
                   w="2rem"
-                  h="1.5rem"
+                  //h="1.5rem"
                   m="0px"
                 >
-                  <TbForbid2 />
+                  <Text
+                    w="100%"
+                    mt="5px"
+                    //mt="11px"
+                    p="0px"
+                    h="1.5rem"
+                    m="0px"
+                    //mr="9px"
+                    ta="center"
+                  >
+                    {' '}
+                    <TbForbid2 />
+                  </Text>
                 </Button>
               </Tooltip>
             </Flex>

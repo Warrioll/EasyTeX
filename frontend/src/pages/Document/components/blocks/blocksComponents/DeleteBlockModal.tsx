@@ -2,12 +2,16 @@ import { Dispatch, SetStateAction } from 'react';
 import { cloneDeep } from 'lodash';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import sanitizeHtml from 'sanitize-html';
-import { Button, Flex, Group, Modal, SimpleGrid, Stack, Text } from '@mantine/core';
+import { Box, Button, Flex, Group, Modal, SimpleGrid, Stack, Text } from '@mantine/core';
 import {
   useActiveBlockContext,
   useBlocksContentContext,
 } from '@/pages/Document/DocumentContextProviders';
-import { blockTypeToOfficialName } from '@/pages/Document/documentHandlers';
+import { useEditTextfields } from '@/pages/Document/hooksAndUtils/documentHooks';
+import {
+  blockTypeToOfficialName,
+  getReferenceForEditor,
+} from '@/pages/Document/hooksAndUtils/documentUtils';
 import { blockType } from '@/Types';
 import classes from '../blocks.module.css';
 
@@ -22,17 +26,47 @@ export default function DeleteBlockModal({
   deleteModalOpened,
   deleteModalHandlers, //blockContentState, activeBlock
 }: DeleteBlockModalPropsType) {
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
   //const [sectionsContent, setSectionsContent] = blockContentState;
 
+  const { editTextfields } = useEditTextfields();
+
   const deleteBlock = () => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock, 1);
     deleteModalHandlers.close();
     setActiveBlock(0);
+    let blocks: blockType[];
+    if (
+      blocksContent[activeBlock].typeOfBlock === 'figure' ||
+      blocksContent[activeBlock].typeOfBlock === 'table' ||
+      blocksContent[activeBlock].typeOfBlock === 'equation'
+    ) {
+      blocks = editTextfields(
+        getReferenceForEditor(blocksContent[activeBlock].blockContent.id),
+        ''
+      );
+      // console.log(
+      //   'deleteModal, fig, tab, eq - mention ',
+      //   getReferenceForEditor(blocksContent[activeBlock].blockContent.id),
+      //   '-blocks:',
+      //   blocksContent
+      // );
+    } else if (
+      blocksContent[activeBlock].typeOfBlock === 'references' &&
+      blocksContent[activeBlock].blockContent.length > 0
+    ) {
+      for (const i of blocksContent[activeBlock].blockContent) {
+        blocks = editTextfields(getReferenceForEditor(i.id), '');
+      }
+    } else {
+      blocks = cloneDeep(blocksContent);
+    }
+
+    //console.log('deleteModal, copy blocks: ', blocks);
+    blocks.splice(activeBlock, 1);
     setBlocksContent(blocks);
+    setIsNotSaved(true);
   };
 
   const getDeleteBlockContent = () => {
@@ -131,18 +165,27 @@ export default function DeleteBlockModal({
         return (
           <>
             <Stack gap="0px">
-              <Text className={classes.trunkTo3Lines}>
-                {sanitizeHtml(['[1] ', blocksContent[activeBlock].blockContent[0].label].join(''), {
-                  allowedTags: [],
-                })}
-              </Text>
-              {blocksContent[activeBlock].blockContent.length > 1 && (
-                <Flex>
-                  <Text mr="xs">. . .</Text>
-                  <Text c="var(--mantine-color-gray-6)">
-                    ({blocksContent[activeBlock].blockContent.length - 1} more)
+              {blocksContent[activeBlock].blockContent.length > 0 ? (
+                <>
+                  <Text className={classes.trunkTo3Lines}>
+                    {sanitizeHtml(
+                      ['[1] ', blocksContent[activeBlock].blockContent[0].label].join(''),
+                      {
+                        allowedTags: [],
+                      }
+                    )}
                   </Text>
-                </Flex>
+                  {blocksContent[activeBlock].blockContent.length > 1 && (
+                    <Flex>
+                      <Text mr="xs">. . .</Text>
+                      <Text c="var(--mantine-color-gray-6)">
+                        ({blocksContent[activeBlock].blockContent.length - 1} more)
+                      </Text>
+                    </Flex>
+                  )}
+                </>
+              ) : (
+                <></>
               )}
             </Stack>
           </>
@@ -170,9 +213,19 @@ export default function DeleteBlockModal({
       }
     >
       <SimpleGrid mt="0px" cols={1} verticalSpacing="md" ta="center" p="xl" pt="md" pb="md">
-        <Text fz="1.3rem" m="lg" mb="0px">
-          Are you sure you want to delete this block?
-        </Text>
+        <Box>
+          <Text fz="1.3rem" m="lg" mb="0px">
+            Are you sure you want to delete this block?
+          </Text>
+          {blocksContent[activeBlock].typeOfBlock === 'figure' ||
+          blocksContent[activeBlock].typeOfBlock === 'table' ||
+          blocksContent[activeBlock].typeOfBlock === 'equation' ||
+          blocksContent[activeBlock].typeOfBlock === 'references' ? (
+            <Text m="xs" c="var(--mantine-color-gray-7)">
+              All references to this block will be also deleted.
+            </Text>
+          ) : null}
+        </Box>
         <Group justify="center" m="0px" mt="lg" p="0px">
           <SimpleGrid
             ml="xl"

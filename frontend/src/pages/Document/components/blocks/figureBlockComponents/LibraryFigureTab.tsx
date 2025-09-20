@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Button, Center, Flex, ScrollArea, SimpleGrid, Text } from '@mantine/core';
 import FiguresLibrary from '@/components/FiguresLibrary/FiguresLibrary';
+import { useBlocksContentContext } from '@/pages/Document/DocumentContextProviders';
 import FigureCard from './FigureCard';
 
 type LibraryFigureTabPropsType = {
@@ -26,6 +27,7 @@ export default function LibraryFigureTab({
   const choosenFigureState = useState<number | null>(null);
   const [choosenFigure, setChoosenFigure] = choosenFigureState;
   const [opened, { open, close }] = modalHandlers;
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
   useEffect(() => {
     const getFigures = async () => {
@@ -72,6 +74,7 @@ export default function LibraryFigureTab({
             //setFigure(figures[choosenFigure]._id);
             if (choosenFigure !== null) {
               setFigure(choosenFigure as unknown as string);
+              setIsNotSaved(true);
             }
 
             close();
