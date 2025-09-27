@@ -1,4 +1,4 @@
-import React, { Children, Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { Children, Dispatch, ReactElement, SetStateAction, useEffect } from 'react';
 import parse from 'html-react-parser';
 import { cloneDeep } from 'lodash';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
@@ -28,7 +28,11 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { blockType } from '@/Types';
-import { useActiveBlockContext, useBlocksContentContext } from '../../../DocumentContextProviders';
+import {
+  useActiveBlockContext,
+  useActiveTextfieldContext,
+  useBlocksContentContext,
+} from '../../../DocumentContextProviders';
 import ButtonsOfMarkedBlock from './ButtonsOfMarkedBlock';
 import DeleteBlockModal from './DeleteBlockModal';
 import classes from '../blocks.module.css';
@@ -40,6 +44,7 @@ type MarkedBlockFrameProps = {
   //setActiveSecion: Dispatch<SetStateAction<number>>;
   blockName: string;
   children: React.ReactNode;
+  defaultBasicInputId?: string;
   //sectionsContent: blockType[];
   //setSectionsContent: Dispatch<SetStateAction<blockType[]>>;
   //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
@@ -52,51 +57,15 @@ export default function MarkedBlockFrame({
   //setActiveSecion,
   //activeBlockState,
   blockName,
+  defaultBasicInputId,
   //sectionsContent,
   //setSectionsContent,
   //activeTextInputState,
 }: MarkedBlockFrameProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
-  //const [activeBlock, setActiveBlock] = activeBlockState;
-
-  //editor trzeba wyczyszczać czy coś przy dodawaniu textfiesd
-  const addBlockBelow = (block: blockType) => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock + 1, 0, block);
-    setBlocksContent(blocks);
-    setActiveBlock(activeBlock + 1);
-  };
-
-  const addBlockAbove = (block: blockType) => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock, 0, block);
-    setBlocksContent(blocks);
-  };
-
-  const moveBlockUp = () => {
-    let blocks = cloneDeep(blocksContent);
-    const [block] = blocks.splice(activeBlock, 1);
-    blocks.splice(activeBlock - 1, 0, block);
-    setBlocksContent(blocks);
-    setActiveBlock(activeBlock - 1);
-  };
-  const moveBlockDown = () => {
-    let blocks = cloneDeep(blocksContent);
-    const [block] = blocks.splice(activeBlock, 1);
-    blocks.splice(activeBlock + 1, 0, block);
-    setBlocksContent(blocks);
-    setActiveBlock(activeBlock + 1);
-  };
-
-  const deleteBlock = () => {
-    let blocks = cloneDeep(blocksContent);
-    blocks.splice(activeBlock, 1);
-    setBlocksContent(blocks);
-    deleteModalHandlers.close();
-  };
 
   // const frameToolBar = (addBlockFunction: (block: blockType) => void): ReactElement => {
   //   return (
@@ -198,6 +167,13 @@ export default function MarkedBlockFrame({
   //   );
   // };
   //console.log('Markedblock sectionsContent: ', sectionsContent)
+
+  // useEffect(() => {
+  //   if (activeBlock === idx && defaultBasicInputId) {
+  //     setActiveTextfield(defaultBasicInputId);
+  //   }
+  // }, [activeBlock]);
+
   return (
     <div
       key={idx}

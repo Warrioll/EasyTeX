@@ -20,6 +20,7 @@ export type blockContentType =  string
     | 'section'
     | 'subsection'
     | 'subsubsection'
+    | 'subsubsubsection'
     | 'documentclass'
     | 'titlePage'
     | 'tableOfContents'

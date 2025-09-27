@@ -99,7 +99,7 @@ export default function SectionBlock({
         <MarkedBlockFrame
           idx={idx}
           //activeBlockState={activeBlockState}
-          blockName="Section"
+          blockName="Heading 1"
           //sectionsContent={sectionsContent}
           //setSectionsContent={setSectionsContent}
           //activeTextInputState={activeTextInputState}

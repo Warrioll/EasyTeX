@@ -1,7 +1,8 @@
 import { useState } from "react"
-import { blockType, documentClassType } from "@/Types"
+import { blockAbleToRef, blockType, documentClassType } from "@/Types"
 import { cloneDeep } from "lodash"
 import { useActiveBlockContext, useBlocksContentContext } from "../DocumentContextProviders"
+import { typeOfBlockType } from "@/Types"
 import { chceckIfBlockContentEmpty } from "./documentUtils"
 import axios from "axios"
 import { AxiosResponse } from "axios"
@@ -13,6 +14,40 @@ import { AxiosResponse } from "axios"
     const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
     const addBlock =(block: blockType, distanceFromMarkedBlock:number)=>{
+  
+      const getAvailableIdNumberForBlockRefId = (
+      typeOfBlock: typeOfBlockType,
+      idPrefix: string
+    ): number => {
+      const assignedNumbers: number[] = [];
+      for (const block of blocksContent) {
+        if (block.typeOfBlock === typeOfBlock) {
+          assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
+        }
+      }
+      //assignedNumbers.sort();
+      let counter = 1;
+      while (assignedNumbers.includes(counter)) {
+        counter++;
+      }
+      return counter;
+    };
+
+    switch(block.typeOfBlock){
+      case 'equation':
+        (block.blockContent as blockAbleToRef).id =
+              `eq${getAvailableIdNumberForBlockRefId('equation', 'eq').toString()}`;
+      break;
+            case 'figure':
+        (block.blockContent as blockAbleToRef).id =
+              `img${getAvailableIdNumberForBlockRefId('figure', 'img').toString()}`;
+      break;
+            case 'table':
+        (block.blockContent as blockAbleToRef).id =
+              `tab${getAvailableIdNumberForBlockRefId('table', 'tab').toString()}`;
+      break;
+    }
+
 
 
     let blocks = cloneDeep(blocksContent);
@@ -88,6 +123,30 @@ import { AxiosResponse } from "axios"
   return {editTextfields}
   }
 
+  export const useGetAvailableIdNumberForBlockRefId = (): {getAvailableIdNumberForBlockRefId: ( typeOfBlock: typeOfBlockType,
+      idPrefix: string
+    ) =>number } => {
+
+       const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
+   const getAvailableIdNumberForBlockRefId = (
+      typeOfBlock: typeOfBlockType,
+      idPrefix: string
+    ): number => {
+      const assignedNumbers: number[] = [];
+      for (const block of blocksContent) {
+        if (block.typeOfBlock === typeOfBlock) {
+          assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
+        }
+      }
+      //assignedNumbers.sort();
+      let counter = 1;
+      while (assignedNumbers.includes(counter)) {
+        counter++;
+      }
+      return counter;
+    };
+  return {getAvailableIdNumberForBlockRefId}
+  }
 
 //   export const useSaveDocumentContent = (): {saveDocumentContent: ()=>AxiosResponse<any, any>} =>{
 

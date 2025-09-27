@@ -1,14 +1,51 @@
 import { figureModel } from "../models/figureModel";
 import { blockAbleToRef, blockContentType, referencesElementType, slideBreak, titleSectionType } from "../types";
+import { specialCharacters } from "../specialCharacters";
 
 export const documentclassToTex =(blockContent:string): string =>{
     return('\\documentclass{'+blockContent+'}');
 }
 
+export const specialCharactersToTexConverter = (toConvert: string):string=>{
+    toConvert=toConvert.replaceAll('\\', '\\textbackslash ') // UWAGA!!! zmienia wszystkie backslashe wiec wczesniejsza konwersja na latex jest rozwalana
+    toConvert=toConvert.replaceAll('&lt;', '\\textless ') //zmianiane rpzez html
+    toConvert=toConvert.replaceAll('&gt;', '\\textgreater ')  //zmianiane rpzez html
+toConvert=toConvert.replaceAll('{', '\\{')
+  toConvert=toConvert.replaceAll('}', '\\}')
+    toConvert=toConvert.replaceAll('#', '\\#{}')
+    toConvert=toConvert.replaceAll('$', '\\${}')
+    toConvert=toConvert.replaceAll('%', '\\%{}')
+    toConvert=toConvert.replaceAll('^', '\\^{}')
+    toConvert=toConvert.replaceAll('&amp;', '\\&{}') //zmianiane rpzez html
+        toConvert=toConvert.replaceAll('_', '\\_{}')
+        toConvert=toConvert.replaceAll('~', '\\textasciitilde ')
+  toConvert=toConvert.replaceAll('|', '\\textbar ')
+
+    for(const specChar of specialCharacters){
+        //console.log('value:', specChar.value, 'latex:',`$${specChar.latexRepresentation}$` )
+        console.log('before:',toConvert )
+        toConvert=toConvert.replaceAll(specChar.value, `$${specChar.latexRepresentation}$`)
+        console.log('after:',toConvert )
+    }
+  
+
+    return toConvert
+}
+
+// export const curlyBracketsToTexConverter = (toConvert: string):string=>{
+//   toConvert=toConvert.replaceAll('{', '\\{')
+//   toConvert=toConvert.replaceAll('}', '\\}')
+  
+
+//     return toConvert
+// }
+
 export const basicToTexFontConverter = (fontToConvert:string): string=>{
 //znaki specjalne
     //z tym coś nie działa
     //textfield= textfield.replaceAll('\\', '\\textbackslash')
+
+ fontToConvert=specialCharactersToTexConverter(fontToConvert);
 
     //obsługa znaku non-breaking space w sytuacji gdy ma rolę placeholdera na froncie
     if(fontToConvert==='&nbsp;' || fontToConvert==='<p>&nbsp;</p>'){
@@ -38,6 +75,14 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
 
     fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
     fontToConvert = fontToConvert.replaceAll('</s>', '}')
+
+     //subscript
+     fontToConvert =  fontToConvert.replaceAll('<sub>', '\\textsubscript{')
+     fontToConvert =  fontToConvert.replaceAll('</sub>', '}')
+
+    //superscript
+     fontToConvert =  fontToConvert.replaceAll('<sup>', '\\textsuperscript{')
+     fontToConvert =  fontToConvert.replaceAll('</sup>', '}')
 
     fontToConvert=fontToConvert.replaceAll(/\<span.*?class=\"mention\".*?data-type=\"mention\".*?data-id=\".*?\".*?>(.*?)<\/span>/g, (wholeFraze, insideOfFraze)=>{
         console.log('mention: ', wholeFraze)
@@ -82,6 +127,8 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     fontToConvert= fontToConvert.replaceAll('</p>', "");
     //fontToConvert= fontToConvert.replaceAll('</p>', "\\newline")
 
+   
+
 return fontToConvert
 }
 
@@ -94,19 +141,20 @@ const erasePTags = (fontToConvert:string): string =>{
 export const textfieldToTex =(blockContent:string): string =>{
     let textfield= blockContent;
     
-    
+    textfield=basicToTexFontConverter(textfield);
+
 
         //link
-    textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
-    textfield = textfield.replaceAll('</a>', '}}')
+    // textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
+    // textfield = textfield.replaceAll('</a>', '}}')
 
-    //subscript
-    textfield = textfield.replaceAll('<sub>', '$_{\\textnormal{')
-    textfield = textfield.replaceAll('</sub>', '}}$')
+    // //subscript
+    // textfield = textfield.replaceAll('<sub>', '$_{\\textnormal{')
+    // textfield = textfield.replaceAll('</sub>', '}}$')
 
-    //superscript
-    textfield = textfield.replaceAll('<sup>', '$^{\\textnormal{')
-    textfield = textfield.replaceAll('</sup>', '}}$')
+    // //superscript
+    // textfield = textfield.replaceAll('<sup>', '$^{\\textnormal{')
+    // textfield = textfield.replaceAll('</sup>', '}}$')
 
     //lists points with p-tags inside
     textfield = textfield.replaceAll('<li><p>', '\\item ')
@@ -131,8 +179,7 @@ export const textfieldToTex =(blockContent:string): string =>{
     if(textfield.endsWith("\\\\"))
         textfield= textfield.substring(0, textfield.length-2)
 
-    textfield=basicToTexFontConverter(textfield);
-
+    
     // //znaki specjalne
     // textfield= textfield.replaceAll('\\', '\\textbackslash')
 
@@ -150,6 +197,14 @@ export const sectionToTex =(blockContent:string): string =>{
     blockContent=blockContent.replaceAll('\r', '')
     blockContent=erasePTags(blockContent)
     return('\\section{\\textnormal{'+blockContent+'}}');
+}
+export const bookSectionToTex =(blockContent:string): string =>{
+    // tu trzeba uwzględnić wystąpienie \r
+    blockContent=basicToTexFontConverter(blockContent);
+
+    blockContent=blockContent.replaceAll('\r', '')
+    blockContent=erasePTags(blockContent)
+    return('\\chapter{\\textnormal{'+blockContent+'}}');
 }
 
 export const subsectionToTex =(blockContent:string): string =>{

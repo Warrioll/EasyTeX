@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
+import DOMPurify from 'dompurify';
 import { cloneDeep } from 'lodash';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import sanitizeHtml from 'sanitize-html';
 import { Box, Button, Flex, Group, Modal, SimpleGrid, Stack, Text } from '@mantine/core';
 import {
   useActiveBlockContext,
@@ -84,13 +84,17 @@ export default function DeleteBlockModal({
               </Stack>
               <Stack gap="0px">
                 <Text className={classes.trunckedText}>
-                  {sanitizeHtml(blocksContent[activeBlock].blockContent.author, {
-                    allowedTags: [],
+                  {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.author, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: [],
                   })}
                 </Text>
 
                 <Text className={classes.trunckedText}>
-                  {sanitizeHtml(blocksContent[activeBlock].blockContent.date, { allowedTags: [] })}
+                  {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.date, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: [],
+                  })}
                 </Text>
               </Stack>
             </Flex>
@@ -104,15 +108,24 @@ export default function DeleteBlockModal({
             </Stack>
             <Stack gap="0px">
               <Text className={classes.trunckedText} m="0px" p="0px">
-                {sanitizeHtml(blocksContent[activeBlock].blockContent.title, { allowedTags: [] })}
+                {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.title, {
+                  ALLOWED_TAGS: [],
+                  ALLOWED_ATTR: [],
+                })}
               </Text>
 
               <Text className={classes.trunckedText}>
-                {sanitizeHtml(blocksContent[activeBlock].blockContent.author, { allowedTags: [] })}
+                {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.author, {
+                  ALLOWED_TAGS: [],
+                  ALLOWED_ATTR: [],
+                })}
               </Text>
 
               <Text className={classes.trunckedText}>
-                {sanitizeHtml(blocksContent[activeBlock].blockContent.date, { allowedTags: [] })}
+                {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.date, {
+                  ALLOWED_TAGS: [],
+                  ALLOWED_ATTR: [],
+                })}
               </Text>
             </Stack>
           </Flex>
@@ -128,14 +141,16 @@ export default function DeleteBlockModal({
               </Stack>
               <Stack gap="0px">
                 <Text className={classes.trunckedText}>
-                  {sanitizeHtml(blocksContent[activeBlock].blockContent.title, {
-                    allowedTags: [],
+                  {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.title, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: [],
                   })}
                 </Text>
 
                 <Text className={classes.trunckedText}>
-                  {sanitizeHtml(blocksContent[activeBlock].blockContent.subtitle, {
-                    allowedTags: [],
+                  {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.subtitle, {
+                    ALLOWED_TAGS: [],
+                    ALLOWED_ATTR: [],
                   })}
                 </Text>
               </Stack>
@@ -146,19 +161,28 @@ export default function DeleteBlockModal({
       case 'equation':
         return (
           <Text className={classes.trunkTo3Lines}>
-            {sanitizeHtml(blocksContent[activeBlock].blockContent.content, { allowedTags: [] })}
+            {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.content, {
+              ALLOWED_TAGS: [],
+              ALLOWED_ATTR: [],
+            })}
           </Text>
         );
       case 'table':
         return (
           <Text className={classes.trunkTo3Lines}>
-            {sanitizeHtml(blocksContent[activeBlock].blockContent.label, { allowedTags: [] })}
+            {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.label, {
+              ALLOWED_TAGS: [],
+              ALLOWED_ATTR: [],
+            })}
           </Text>
         );
       case 'figure':
         return (
           <Text className={classes.trunkTo3Lines}>
-            {sanitizeHtml(blocksContent[activeBlock].blockContent.label, { allowedTags: [] })}
+            {DOMPurify.sanitize(blocksContent[activeBlock].blockContent.label, {
+              ALLOWED_TAGS: [],
+              ALLOWED_ATTR: [],
+            })}
           </Text>
         );
       case 'references':
@@ -168,10 +192,11 @@ export default function DeleteBlockModal({
               {blocksContent[activeBlock].blockContent.length > 0 ? (
                 <>
                   <Text className={classes.trunkTo3Lines}>
-                    {sanitizeHtml(
+                    {DOMPurify.sanitize(
                       ['[1] ', blocksContent[activeBlock].blockContent[0].label].join(''),
                       {
-                        allowedTags: [],
+                        ALLOWED_TAGS: [],
+                        ALLOWED_ATTR: [],
                       }
                     )}
                   </Text>
@@ -193,7 +218,10 @@ export default function DeleteBlockModal({
       default:
         return (
           <Text className={classes.trunkTo3Lines}>
-            {sanitizeHtml(blocksContent[activeBlock].blockContent, { allowedTags: [] })}
+            {DOMPurify.sanitize(blocksContent[activeBlock].blockContent, {
+              ALLOWED_TAGS: [],
+              ALLOWED_ATTR: [],
+            })}
           </Text>
         );
     }

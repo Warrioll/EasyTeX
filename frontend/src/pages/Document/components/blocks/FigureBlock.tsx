@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useErrorBoundary } from 'react-error-boundary';
 import { FaRegWindowClose } from 'react-icons/fa';
 import { FaRegImage, FaUpload } from 'react-icons/fa6';
+import { LuImageOff } from 'react-icons/lu';
 import {
   Box,
   Button,
@@ -103,7 +104,8 @@ export default function FigureBlock({
         setFigureLoaded(true);
       } catch (e) {
         console.log('block figure getFigure error: ', e);
-        showBoundary(e);
+
+        //showBoundary(e);
         //se;
       }
       setIsFigureLoading(false);
@@ -147,12 +149,19 @@ export default function FigureBlock({
               variant="transparent"
               h="100%"
               w="100%"
-              mih="10rem"
+              mih="15rem"
               onClick={() => {
                 open();
               }}
-              bg={figureLoaded ? '' : 'var(--mantine-color-gray-1)'}
+              bg={
+                figureLoaded
+                  ? ''
+                  : isFigureLoading
+                    ? 'var(--mantine-color-gray-1)'
+                    : 'var(--mantine-color-red-0)'
+              }
               c={figureLoaded ? '' : 'var(--mantine-color-error)'}
+              p="0px"
             >
               {figure !== null ? (
                 figureLoaded ? (
@@ -171,7 +180,14 @@ export default function FigureBlock({
                     <Loader size="2rem" />
                   </Center>
                 ) : (
-                  <>This asset might have been deleted!</>
+                  <Center h="5rem" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+                    <Center m="xl" fz="3rem">
+                      <LuImageOff />
+                    </Center>
+                    <Text m="xl" fw="500">
+                      This asset might have been deleted!
+                    </Text>
+                  </Center>
                 )
               ) : (
                 <Center h="5rem" w="100%" style={{ borderRadius: 'var(--mantine-radius-md)' }}>

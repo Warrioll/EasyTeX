@@ -185,12 +185,12 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
         break;
       case 'references':
         //FIXME id od reference jset stringkiem! tu i gdzie indziej popatrzeć
-        //console.log(blocksContentCopy[activeBlock]);
-        const [blockIdx, refId] = activeTextfield.split('ref');
+        console.log('act txt: ', activeTextfield);
+        const [blockIdx, refId] = activeTextfield.split('bib');
 
         //console.log('whole: ', activeTextfield, 'blockIdx: ', blockIdx, 'refId', refId);
         const refIdx = blocksContent[activeBlock].blockContent.findIndex(
-          (item) => item.id === 'ref'.concat(refId)
+          (item) => item.id === 'bib'.concat(refId)
         );
 
         // console.log(
@@ -259,11 +259,12 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
     ],
     //content: editorContent,
     onUpdate: ({ editor }) => {
-      //TODO Memo albo coś żeby zobptymalisowac renderowanie
-
       saveEditorContent(activeBlock, activeTextfield, editor.getHTML());
       //console.log(editor.getHTML());
     },
+    // onSelectionUpdate({ editor }) {
+    //   console.log('onSelectionUpdate: ', editor.state.selection.head);
+    // },
   });
 
   return (

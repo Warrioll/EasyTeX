@@ -55,6 +55,7 @@ import ClosingBlock from './components/blocks/ClosingBlock';
 import OpeningBlock from './components/blocks/OpeningBlock';
 import ReferencesBlock from './components/blocks/ReferencesBlock';
 import SlideBreakBlock from './components/blocks/SlideBreakBlock';
+import SubsubsubsectionBlock from './components/blocks/SubsubsubsectionBlock';
 import UnavailableBlock from './components/blocks/UnavailableBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -217,7 +218,8 @@ export default function DocumentPage() {
           setPdfError({
             title: 'Document content contains errors!',
             description:
-              "If you're intentionally using LaTeX syntax, make sure it's correct and error-free. If not, try saving the document or contact support.",
+              //"If you're intentionally using LaTeX syntax, make sure it's correct and error-free. If not, try saving the document or contact support.",
+              'The document may reference an image that has been removed from your library. If so, remove the associated block or set a new image and save the document. Otherwise, try saving the document, refreshing the page, or contacting support.',
             icon: () => (
               <Box mb="-1.5rem">
                 <TbFileSad />
@@ -365,6 +367,11 @@ export default function DocumentPage() {
             return <ClosingBlock idx={idx} />;
           }
           return <SubsubsectionBlock idx={idx} />;
+        case 'subsubsubsection':
+          if (blocksContent[0].blockContent === 'book') {
+            return <SubsubsubsectionBlock idx={idx} />;
+          }
+          return <UnavailableBlock idx={idx} />;
         case 'equation':
           return <EquationBlock idx={idx} />;
         case 'table':

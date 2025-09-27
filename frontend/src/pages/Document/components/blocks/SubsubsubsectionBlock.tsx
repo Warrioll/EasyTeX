@@ -25,7 +25,7 @@ type SectionBlockProps = {
   // activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
-export default function SubsubsectionBlock({
+export default function SubsubsubsectionBlock({
   idx,
   //activeBlockState,
   //sectionsContent,
@@ -38,36 +38,43 @@ export default function SubsubsectionBlock({
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const [sectionNumber, setSectionNumber] = useState<string>('');
 
-  const updateSectionContent = (event) => {
-    console.log('section event', event);
-    let content = cloneDeep(blocksContent);
-    console.log('section  event.target.value', event.target.value);
-    //content[idx].blockContent = event.target.value;
-    content[idx] = {
-      ...content[idx],
-      //blockContent: { idx: 1, sectionContent: event.target.value },
-      blockContent: event.target.value,
-    };
-    console.log('section content[idx].blockContent', content[idx].blockContent);
-    setBlocksContent(content);
-  };
+  //   const updateSectionContent = (event) => {
+  //     //console.log('section event', event);
+  //     let content = cloneDeep(blocksContent);
+  //     //console.log('section  event.target.value', event.target.value);
+  //     //content[idx].blockContent = event.target.value;
+  //     content[idx] = {
+  //       ...content[idx],
+  //       //blockContent: { idx: 1, sectionContent: event.target.value },
+  //       blockContent: event.target.value,
+  //     };
+  //     console.log('section content[idx].blockContent', content[idx].blockContent);
+  //     setBlocksContent(content);
+  //   };
 
   useEffect(() => {
     let sectionCounter = 0;
     let subsectionCounter = 0;
     let subsubsectionCounter = 0;
+    let subsubsubsectionCounter = 0;
     for (let i = 0; i < blocksContent.length; i++) {
       if (blocksContent[i].typeOfBlock === 'section') {
         sectionCounter += 1;
         subsectionCounter = 0;
         subsubsectionCounter = 0;
+        subsubsubsectionCounter = 0;
       }
       if (blocksContent[i].typeOfBlock === 'subsection') {
         subsectionCounter += 1;
         subsubsectionCounter = 0;
+        subsubsubsectionCounter = 0;
       }
       if (blocksContent[i].typeOfBlock === 'subsubsection') {
         subsubsectionCounter += 1;
+        subsubsubsectionCounter = 0;
+      }
+      if (blocksContent[i].typeOfBlock === 'subsubsubsection') {
+        subsubsubsectionCounter += 1;
       }
       if (i === idx) {
         setSectionNumber(
@@ -76,6 +83,8 @@ export default function SubsubsectionBlock({
             subsectionCounter.toString() +
             '.' +
             subsubsectionCounter.toString() +
+            '.' +
+            subsubsubsectionCounter.toString() +
             '.'
         );
         break;
@@ -129,14 +138,14 @@ export default function SubsubsectionBlock({
         <MarkedBlockFrame
           idx={idx}
           //activeBlockState={activeBlockState}
-          blockName="Heading 3"
+          blockName="Heading 4"
           // sectionsContent={sectionsContent}
           //setSectionsContent={setSectionsContent}
           // activeTextInputState={activeTextInputState}
         >
           <Flex w="100%" ml="xs">
             <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
-              H3:
+              H4:
             </Text>
             {blocksContent[0].blockContent !== 'beamer' && (
               <Text

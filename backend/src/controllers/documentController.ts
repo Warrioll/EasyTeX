@@ -17,6 +17,7 @@ import { textfieldToTex,
   slideBreaktoTex,
 addressAndDateToTex,
 openingToTeX,
+bookSectionToTex,
 closingToTeX } from '../handlers/toTexConverters';
 import { sectionToBlock, 
   documentclassToBlock, 
@@ -31,6 +32,8 @@ import { sectionToBlock,
   referencesToBlock,
   slideBreakToBlock,
   addressAndDateToBlock,
+  chapterToBlock, 
+    bookSubsubsectionToBlock,
 tableToBlock,
 openingToBlock,
 closingToBlock} from '../handlers/toBlockConverters';
@@ -297,9 +300,10 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
             if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
             if(line.includes('\\end{frame}')) return  nullBlock;
-            if(line.includes('\\section')) return  sectionToBlock(line);
-            if(line.includes('\\subsection')) return  subsectionToBlock(line);
-            if(line.includes('\\subsubsection')) return  subsubsectionToBlock(line);
+             if(line.includes('\\chapter'))  return chapterToBlock(line)
+            if(line.includes('\\section')) {if(documentInstantion.documentClass==='book'){subsectionToBlock(line)} return sectionToBlock(line)}
+            if(line.includes('\\subsection')) {if(documentInstantion.documentClass==='book'){return subsubsectionToBlock(line)} return  subsectionToBlock(line)};
+            if(line.includes('\\subsubsection')) {if(documentInstantion.documentClass==='book'){return   bookSubsubsectionToBlock(line)} return  subsubsectionToBlock(line)};
             if(line.includes('\\begin{equation}')) return equationToBlock(line);
             if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
@@ -345,7 +349,7 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
       //const userId = await verifySession(req.cookies.auth, res)
        
 
-       
+        
 
         if(nameRegex.test(req.body.name)){
         const path: string = ['documentBase', userId].join('/')
@@ -487,37 +491,50 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
        } case 'section':{ 
+         if(documentInstantion.documentClass==='book'){
+          return bookSectionToTex(block.blockContent as string);
+         }
        return sectionToTex(block.blockContent as string);
       }case 'subsection':{
-        if(documentInstantion.documentClass==='letter'){
+          if(documentInstantion.documentClass==='book'){
+          return sectionToTex(block.blockContent as string);
+         }else
+        if(documentInstantion.documentClass==='letter'){ 
           return openingToTeX(block.blockContent as string)
         }
        return subsectionToTex(block.blockContent as string);
         }  case 'subsubsection':{
+           if(documentInstantion.documentClass==='book'){
+          return subsectionToTex(block.blockContent as string);
+         }else
           if(documentInstantion.documentClass==='letter'){
           return closingToTeX(block.blockContent as string)
-        }
+        } 
         return subsubsectionToTex(block.blockContent as string);
+      }case 'subsubsubsection':{
+           if(documentInstantion.documentClass==='book'){
+          return subsubsectionToTex(block.blockContent as string);
+         }
+        return '%'+subsubsectionToTex(block.blockContent as string);
       }case 'equation':{
         return equationToTex(block.blockContent)
       }case 'table':{
         if(Array.isArray((block.blockContent as blockAbleToRef).content)){
-          return tableToTex(block.blockContent as blockAbleToRef)
+          return tableToTex(block.blockContent as blockAbleToRef) 
         }
           return ''}
       case 'figure':{
+         const noImagePath=['..', '..', 'figureBase/noImage.png'].join('/')
         if((block.blockContent as blockAbleToRef).content!=='' && (block.blockContent as blockAbleToRef).content){
           const figure= await figureModel.findById((block.blockContent as blockAbleToRef).content)
           if(figure!==null && figure.userId===userId){
             const path=['..', '..', figure.path, [figure._id, figure.fileType].join('.')].join('/')
            return figureToTex((block.blockContent as blockAbleToRef), path, documentInstantion.documentClass==='beamer' ? 6 : 10)
           }else{
-            //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
-            return ''
+            return figureToTex((block.blockContent as blockAbleToRef), noImagePath, documentInstantion.documentClass==='beamer' ? 6 : 10)
           }
         }else{
-          //TODO zwracać jako link jakiś odpowiednik pustego zdjęcia?
-          return ''}
+         return figureToTex((block.blockContent as blockAbleToRef), noImagePath, documentInstantion.documentClass==='beamer' ? 6 : 10)}
        
         
       }

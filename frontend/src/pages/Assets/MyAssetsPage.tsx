@@ -177,7 +177,7 @@ export default function MyAssetsPage() {
             <Center>
               <FaArrowLeft />
               <Text fw="500" ml="xs">
-                Go to dashboard
+                See documents
               </Text>
             </Center>
           </Anchor>

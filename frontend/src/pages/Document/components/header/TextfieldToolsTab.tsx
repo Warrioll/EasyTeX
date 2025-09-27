@@ -92,7 +92,7 @@ export default function TextfieldToolsTab(
 
   const textfiledTools = (
     <>
-      <Box ml="2rem">
+      {/* <Box ml="2rem">
         {codeAndLink.map((formatButton, idx) => (
           <Tooltip
             label={formatButton.tooltip}
@@ -116,9 +116,9 @@ export default function TextfieldToolsTab(
             </Button>
           </Tooltip>
         ))}
-      </Box>
+      </Box> */}
 
-      <Box ml="2rem" mr="2rem">
+      {/* <Box ml="2rem" mr="2rem">
         {indexes.map((formatButton, idx) => (
           <Tooltip
             label={formatButton.tooltip}
@@ -142,7 +142,7 @@ export default function TextfieldToolsTab(
             </Button>
           </Tooltip>
         ))}
-      </Box>
+      </Box> */}
 
       {lists.map((formatButton, idx) => (
         <Tooltip

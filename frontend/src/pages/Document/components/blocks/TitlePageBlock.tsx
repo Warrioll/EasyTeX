@@ -22,6 +22,7 @@ import { RichTextEditor } from '@mantine/tiptap';
 import { blockType } from '@/Types';
 import {
   useActiveBlockContext,
+  useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
@@ -35,10 +36,12 @@ type SectionBlockProps = {
 
 export default function TitlePageBlock({ idx }: SectionBlockProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
-  //const { activeTextfield, setActiveTextfield } = useActiveTextInputContext();
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
   //const [activeTextfield, setActiveTextfield] = useState<string>('');
   const [focusTrap, { toggle }] = useDisclosure(false);
   const [thisBlockContent, setThisBlockContent] = useState(blocksContent[idx].blockContent);
+
   //const [authorTextfiled, setAuthorTextfiled]
 
   // const [activeBlock, setActiveBlock] = activeBlockState;
@@ -56,6 +59,16 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
   //   console.log('section content[idx].blockContent', content[idx].blockContent);
   //   setSectionsContent(content);
   // };
+
+  useEffect(() => {
+    if (
+      activeBlock === idx &&
+      activeTextfield !== idx.toString().concat('author') &&
+      activeTextfield !== idx.toString().concat('date')
+    ) {
+      setActiveTextfield(idx.toString().concat('title'));
+    }
+  }, [activeBlock]);
 
   return (
     <div
@@ -89,6 +102,7 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
           //sectionsContent={sectionsContent}
           //setSectionsContent={setSectionsContent}
           //activeTextInputState={activeTextInputState}
+          defaultBasicInputId={idx.toString().concat('title')}
         >
           <Stack
             justify="center"

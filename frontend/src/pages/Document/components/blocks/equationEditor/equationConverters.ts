@@ -1,5 +1,5 @@
 import { elementsPrototypes } from "./equationsElementsPrototypes";
-import { specialCharacters } from "./SpecialCharacters";
+import { specialCharacters } from "../../SpecialCharacters";
 import { cloneDeep } from "lodash";
 import { equationsSpecialCharactersStyle } from "@/Types";
 

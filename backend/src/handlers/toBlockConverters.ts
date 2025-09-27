@@ -1,4 +1,5 @@
 import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType } from "../types"
+import { specialCharacters } from "../specialCharacters"
 
 export const documentclassToBlock =(line: string) : blockType=>{
     //tu sprawdzenie czy nie ma jakiegoś innego docuimentclass i ch=ya innych jestn git xddd
@@ -12,6 +13,31 @@ export const documentclassToBlock =(line: string) : blockType=>{
     documentclass = documentclass.replace("}", "")
     const documentclassBlock: blockType = {typeOfBlock: 'documentclass', blockContent: documentclass}
     return documentclassBlock;
+}
+
+export const specialCharactersToBlockConverter = (toConvert: string):string=>{
+   
+    toConvert=toConvert.replaceAll('\\textless ',  '&lt;') //zmianiane pzez html
+    toConvert=toConvert.replaceAll('\\textgreater ',  '&gt;')  //zmianiane pzez html
+    toConvert=toConvert.replaceAll('\\#{}',  '#')
+    toConvert=toConvert.replaceAll( '\\${}' , '$')
+    toConvert=toConvert.replaceAll('\\%{}',  '%')
+    toConvert=toConvert.replaceAll('\\^{}' , '^')
+    toConvert=toConvert.replaceAll('\\&{}',  '&amp;') //zmianiane pzez html
+        toConvert=toConvert.replaceAll('\\_{}', '_')
+        toConvert=toConvert.replaceAll('\\textasciitilde ' ,'~' )
+          toConvert=toConvert.replaceAll('\\textbar ', '|' )
+          toConvert=toConvert.replaceAll('\\{',  '{')
+  toConvert=toConvert.replaceAll('\\}' , '}')
+
+      for(const specChar of specialCharacters){
+          toConvert=toConvert.replaceAll(`$${specChar.latexRepresentation}$`, specChar.value )
+      }
+
+   toConvert=toConvert.replaceAll('\\textbackslash ' , '\\') // UWAGA!!! zmienia wszystkie backslashe wiec wczesniejsza konwersja na latex jest rozwalana
+  
+
+    return toConvert
 }
 
 const basicToBlockFontConverter = (fontToConvert:string): string=>{
@@ -55,6 +81,15 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
          //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
     })
 
+      //subscript               
+     fontToConvert = fontToConvert.replaceAll(/\\textsubscript\{(.*?)\}/g, (wholeFraze, insideOfFraze) => {
+        return '<sub>'+insideOfFraze+'</sub>';})
+
+    //superscript           
+    fontToConvert = fontToConvert.replaceAll(/\\textsuperscript\{(.*?)\}/g, (wholeFraze, insideOfFraze) => {
+        return '<sup>'+insideOfFraze+'</sup>';})
+
+
         // refs to bibliography
         fontToConvert=fontToConvert.replaceAll(/\\cite\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
         let wholeFrazeCopy=wholeFraze
@@ -73,54 +108,99 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
               fontToConvert =fontToConvert.split('\\newline ').map(temp=> '<p>'+temp+'</p>').join('')
      
 
+    fontToConvert=specialCharactersToBlockConverter(fontToConvert)
+
         return fontToConvert
 }
 
-export const sectionToBlock =(line: string) : blockType=>{
+export const chapterToBlock =(line: string) : blockType=>{
 
-    let section= basicToBlockFontConverter (line)
+    //let section= basicToBlockFontConverter (line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-     section = section.replace('\\section{', '')
-     section = section.replace('\\textnormal{', '')
-    section= section.replaceAll('}', '')
+    //  let section = line.replace('\\chapter{', '')
+    //  section = section.replace('\\textnormal{', '')
+    // section= section.replaceAll('}', '')
+     let section = line.replace(/\\chapter\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+    })
 
    
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'section', blockContent: section}
+    const sectionBlock: blockType = {typeOfBlock: 'section', blockContent: basicToBlockFontConverter (section)}
+    return sectionBlock;
+}
+export const sectionToBlock =(line: string) : blockType=>{
+
+    //let section= basicToBlockFontConverter (line)
+
+    //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
+    let section = line.replace(/\\section\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+    })
+    //section = section.replace('\\textnormal{', '')
+    //section= section.replaceAll('}', '')
+
+   
+    //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
+    //section= section.replace('\r', '')
+    const sectionBlock: blockType = {typeOfBlock: 'section', blockContent: basicToBlockFontConverter (section)}
     return sectionBlock;
 }
 
 export const subsectionToBlock =(line: string) : blockType=>{
 
-    let section= basicToBlockFontConverter(line)
+   // let section= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    section = section.replace('\\subsection{', '')
-    section = section.replace('\\textnormal{', '')
-   section= section.replaceAll('}', '')
+//     let section = line.replace('\\subsection{', '')
+//     section = section.replace('\\textnormal{', '')
+//    section= section.replaceAll('}', '')
+    let section = line.replace(/\\subsection\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+        })
 
    
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent: section}
+    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent:  basicToBlockFontConverter(section)}
     return sectionBlock;
 }
 
 export const subsubsectionToBlock =(line: string) : blockType=>{
 
-    let section= basicToBlockFontConverter(line)
+   // let section=
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    section = section.replace('\\subsubsection{', '')
-    section = section.replace('\\textnormal{', '')
-   section= section.replaceAll('}', '')
+//     let section = line.replace('\\subsubsection{', '')
+//     section = section.replace('\\textnormal{', '')
+//    section= section.replaceAll('}', '')
+    let section = line.replace(/\\subsubsection\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+        })
+    
+    //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
+    //section= section.replace('\r', '')
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent:  basicToBlockFontConverter(section)}
+    return sectionBlock;
+}
+export const bookSubsubsectionToBlock =(line: string) : blockType=>{
+
+    //let section=
+
+    //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
+//    let section = line.replace('\\subsubsection{', '')
+//     section = section.replace('\\textnormal{', '')
+//    section= section.replaceAll('}', '')
+    let section = line.replace(/\\subsubsection\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+        })
 
     
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: section}
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsubsection', blockContent: basicToBlockFontConverter(section)}
     return sectionBlock;
 }
 
@@ -150,68 +230,83 @@ return {typeOfBlock: 'titlePage', blockContent: { title: '', author: address, da
 }
 export const openingToBlock =(line: string) : blockType=>{
 
-    let section= basicToBlockFontConverter(line)
+    //let section= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    section = section.replace('\\opening{', '')
-    //section = section.replace('\\textnormal{', '')
-   section= section.replaceAll('}', '')
+//     section = section.replace('\\opening{', '')
+//     //section = section.replace('\\textnormal{', '')
+//    section= section.replaceAll('}', '')
+    let section = line.replace(/\\opening\{(.*)\}/, (wholeFraze, section)=>{
+        return section
+        })
 
    
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent: section}
+    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent: basicToBlockFontConverter(section)}
     return sectionBlock;
 }
 
 export const closingToBlock =(line: string) : blockType=>{
 
-    let section= basicToBlockFontConverter(line)
+    //let section= 
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    section = section.replace('\\closing{', '')
-    //section = section.replace('\\textnormal{', '')
-   section= section.replaceAll('}', '')
+//     section = section.replace('\\closing{', '')
+//     //section = section.replace('\\textnormal{', '')
+//    section= section.replaceAll('}', '')
+    let section = line.replace(/\\closing\{(.*)\}/, (wholeFraze, section)=>{
+        return section
+        })
 
     
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: section}
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: basicToBlockFontConverter(section )}
     return sectionBlock;
 }
 
 
 export const getTitleFromTex =(line: string) : string=>{
 
-    let title= basicToBlockFontConverter(line)
+    //let title= 
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    title = title.replace('\\title{', '')
-    title= title.replace('}', '')
+    // title = title.replace('\\title{', '')
+    // title= title.replace('}', '')
+        let title = line.replace(/\\title\{(.*)\}/, (wholeFraze, section)=>{
+        return section
+        })
    
-    return title
+    return basicToBlockFontConverter(title)
 }
 
 export const getAuthorFromTex =(line: string) : string=>{
 
-    let author= basicToBlockFontConverter(line)
+    //let author= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    author = author.replace('\\author{', '')
-    author= author.replace('}', '')
-   
-    return author
+    // author = author.replace('\\author{', '')
+    // author= author.replace('}', '')
+        let author = line.replace(/\\author\{(.*)\}/, (wholeFraze, section)=>{
+        return section
+        })
+    return basicToBlockFontConverter(author)
+
 }
 
 export const getDateFromTex =(line: string) : string=>{
 
-    let date= basicToBlockFontConverter(line)
+    //let date= basicToBlockFontConverter(line)
 
     //zakładam że jest czysta linijka z samym section bez spacji z przodu itp.
-    date = date.replace('\\date{', '')
-    date= date.replace('}', '')
+    // date = date.replace('\\date{', '')
+    // date= date.replace('}', '')
+            let date = line.replace(/\\date\{(.*)\}/, (wholeFraze, section)=>{
+        return section
+        })
    
-    return date
+    return basicToBlockFontConverter(date)
 }
 
 
@@ -246,15 +341,15 @@ export const textfieldToBlock =(line: string) : blockType=>{
     // line = line.replaceAll(/\\sout\{(.*?)\}/g, (wholeFraze, insideOfFraze) => {
     //     return '<s>'+insideOfFraze+'</s>';})
 
-    line=basicToBlockFontConverter(line)
+    
 
-    //subscript               
-     line = line.replaceAll(/\$_\{\\textnormal\{(.*?)\}\}\$/g, (wholeFraze, insideOfFraze) => {
-        return '<sub>'+insideOfFraze+'</sub>';})
+    // //subscript               
+    //  line = line.replaceAll(/\$_\{\\textnormal\{(.*?)\}\}\$/g, (wholeFraze, insideOfFraze) => {
+    //     return '<sub>'+insideOfFraze+'</sub>';})
 
-    //superscript           
-     line = line.replaceAll(/\$\^\{\\textnormal\{(.*?)\}\}\$/g, (wholeFraze, insideOfFraze) => {
-        return '<sup>'+insideOfFraze+'</sup>';})
+    // //superscript           
+    //  line = line.replaceAll(/\$\^\{\\textnormal\{(.*?)\}\}\$/g, (wholeFraze, insideOfFraze) => {
+    //     return '<sup>'+insideOfFraze+'</sup>';})
 
 
        // FIXME ----------!!! ususwać \\ przed listami bo błąd!!! albo robić coś żeby w konsoli wciskało enter----------------------- 
@@ -272,7 +367,7 @@ export const textfieldToBlock =(line: string) : blockType=>{
     
 
 
-
+        line=basicToBlockFontConverter(line)
 
 
     const textfieldBlock: blockType = {typeOfBlock: 'textfield', blockContent: line}
@@ -307,7 +402,7 @@ export const slideBreakToBlock =(line: string) : blockType=>{
         return null
     })
 
-    return {typeOfBlock: 'pageBreak', blockContent: {title: title, subtitle: subtitle}}
+    return {typeOfBlock: 'pageBreak', blockContent: {title: basicToBlockFontConverter(title), subtitle:  basicToBlockFontConverter(subtitle)}}
 }
 
 
@@ -323,10 +418,10 @@ export const tableToBlock =(line: string) : blockType=>{
     })
 
     //let tableTeX=line.replace('\\begin{table}[h!]', '').replace('\\begin{center}', '').replace('\\begin{tabular}', '').replace('\\end{tabular}', '').replace('\\end{center}', '').replace('\\end{table}', '').replaceAll('\\hline','')
-    tableTeX=basicToBlockFontConverter(tableTeX)
+    //tableTeX=basicToBlockFontConverter(tableTeX)
     let tmp:string[]=tableTeX.split('}')
     const style=tmp.shift()
-    let tmp2=tmp.join()
+    let tmp2=tmp.join('}')
     
     tmp=tmp2.split('\\\\')
     tmp.pop()
@@ -338,7 +433,7 @@ export const tableToBlock =(line: string) : blockType=>{
             if(uniqueStr==='' || uniqueStr===' '){
                 return '<p>&nbsp;</p>'
             }else{
-                 return ele
+                 return basicToBlockFontConverter(ele)
             }
            
         })
@@ -360,7 +455,7 @@ export const figureToBlock =(line: string) : blockType=>{
         const name=link[link.length-1].split('.')
         const labelFormatted = basicToBlockFontConverter(label)
         //console.log('figure id')
-        figure={content: name[0], id: id, label: labelFormatted}
+        figure={content: name[0]==='noImage'? null : name[0] , id: id, label: labelFormatted}
         return wholeFraze
     })
 
@@ -373,30 +468,39 @@ export const figureToBlock =(line: string) : blockType=>{
     // let fileName=pathArray[pathArray.length-1].split('.')
     // let  figure = fileName[0]
     const blockFigure = {typeOfBlock:'figure' as typeOfBlockType, blockContent: figure}
-    console.log('block figure---------: ', blockFigure)
+    //console.log('block figure---------: ', blockFigure)
 
     return blockFigure
 }
 
 export const referencesToBlock =(line: string) : blockType=>{ 
 
-    const convertedLine=basicToBlockFontConverter(line)
+    //const convertedLine=basicToBlockFontConverter(line)
+    const convertedLine=line
      console.log(convertedLine)
     let references = convertedLine.replace('\\begin{thebibliography}{', '').replace('\\end{thebibliography}', '').split('\\bibitem{')
     console.log(references)
     let referencesBlocks = references.map((item, id)=>{
-        let tmp = item.split('}')
-        let referenceId:string=''
+        // let tmp = item.split('}')
+         let referenceId:string=''
+       
+        let label:string=''
         if(id!==0){
-        referenceId=tmp[0]
-        tmp.splice(0,1);
+            item.replace(/(.*?)\}(.*)/, (wholeFraze, refId, refLabel)=>{
+                referenceId=refId
+                label=refLabel
+                return wholeFraze
+            })
+        // referenceId=tmp[0]
+        // tmp.splice(0,1);
         
         //console.log( {id: Number(referenceId), label: tmp.join('}')})
-        return {id: referenceId, label: tmp.join('}')}
+        //return {id: referenceId, label: tmp.join('}')}
+         return {id: referenceId, label: basicToBlockFontConverter(label)}
         }
       
     })
       referencesBlocks=referencesBlocks.filter(item=>item!==undefined && item!==null)
- console.log( referencesBlocks)
+ //console.log( referencesBlocks)
     return {typeOfBlock: 'references', blockContent: referencesBlocks as referencesElementType[]}
 }

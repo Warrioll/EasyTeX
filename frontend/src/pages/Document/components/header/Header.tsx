@@ -39,6 +39,7 @@ import {
   MdFunctions,
   MdOutlineAdd,
   MdOutlineInsertPageBreak,
+  MdOutlineLibraryAdd,
   MdOutlineLibraryBooks,
   MdOutlineLogin,
   MdOutlineTitle,
@@ -85,12 +86,14 @@ import { blockType } from '@/Types';
 import { dateFormatter } from '@/utils/formatters';
 import {
   useActiveBlockContext,
+  useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
 import { useAddBlock } from '../../hooksAndUtils/documentHooks';
-import { useBlocksList } from '../blocksList';
+import { useBlocksList } from '../blocksListAndPrototypes';
 import FontTab from './FontTab';
+import { useInsertTools } from './InsertTools';
 import { useTableTools } from './TableTools';
 import TabTemplate from './TabTemplate';
 import TextfieldToolsTab from './TextfieldToolsTab';
@@ -115,9 +118,10 @@ const Header: React.FC<headerProps> = ({
 }) => {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+  const { editor } = useEditorContext();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
-  const [value, setValue] = useState<string | null>('insert');
+  const [value, setValue] = useState<string | null>('blocks');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
   const setControlRef = (val: string) => (node: HTMLButtonElement) => {
     controlsRefs[val] = node;
@@ -139,7 +143,7 @@ const Header: React.FC<headerProps> = ({
 
   const blocksList = useBlocksList();
 
-  const insertTools = (
+  const blocksTools = () => (
     <TabTemplate
       buttons={blocksList}
       iconSize="var(--mantine-font-size-lg)"
@@ -149,19 +153,29 @@ const Header: React.FC<headerProps> = ({
   );
 
   const textTools = useTextTools();
-  const textToolsTab = (
+  const textToolsTab = () => (
     <TabTemplate
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
-      dontRenderButtons={[6, 7, 8, 9]}
+      //dontRenderButtons={[6, 7, 8, 9]}
       belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
     />
   );
 
-  const textFieldTools = <TextfieldToolsTab />;
+  const insertTools = useInsertTools();
+  const insertToolsTab = () => (
+    <TabTemplate
+      dontRenderButtons={[1, 2, 3, 4, 5]}
+      buttons={insertTools}
+      iconSize="var(--mantine-font-size-lg)"
+      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+    />
+  );
+
+  const textFieldTools = () => <TextfieldToolsTab />;
 
   const tableTools = useTableTools();
-  const tableToolsTab = (
+  const tableToolsTab = () => (
     <TabTemplate
       buttons={tableTools}
       iconSize="var(--mantine-font-size-lg)"
@@ -169,7 +183,7 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-  const viewTools = (
+  const viewTools = () => (
     <>
       <ZoomTools zoomState={workspaceZoom} />
     </>
@@ -203,7 +217,7 @@ const Header: React.FC<headerProps> = ({
     return () => <></>;
   };
 
-  const chooseModifyTabTools = (): ReactNode => {
+  const chooseModifyTabTools = (): React.FC => {
     if (activeBlock !== 0) {
       switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
@@ -211,39 +225,86 @@ const Header: React.FC<headerProps> = ({
         case 'table':
           return tableToolsTab;
         default:
-          return '';
+          return () => '';
       }
     }
-    return '';
+    return () => '';
   };
 
-  const tabs = [
+  const basicTabs = [
     {
-      value: 'insert',
+      value: 'blocks',
       label: 'Blocks',
-      tools: insertTools,
+      tools: () => blocksTools,
       Icon: () => <TbBlocks />,
-    },
-    {
-      value: 'font',
-      label: 'Text',
-      tools: textToolsTab,
-      Icon: () => <BiFontFamily />,
     },
 
     {
       value: 'view',
       label: 'View',
-      tools: viewTools,
+      tools: () => viewTools,
       Icon: () => <TbEye />,
     },
+  ];
+  const basicTextfieldTabs = [
     {
-      value: 'modify',
-      label: `${chooseModifyTabName()}`,
-      tools: chooseModifyTabTools(),
-      Icon: chooseModifyTabIcon(),
+      value: 'font',
+      label: 'Text',
+      tools: () => textToolsTab,
+      Icon: () => <BiFontFamily />,
+    },
+    {
+      value: 'insert',
+      label: 'Insert',
+      tools: () => insertToolsTab,
+      Icon: () => <MdOutlineLibraryAdd />,
     },
   ];
+
+  const [tabs, setTabs] = useState(basicTabs);
+
+  const tableTab = {
+    value: 'modify',
+    label: 'Table',
+    tools: () => tableToolsTab,
+    Icon: () => <LuTable />,
+  };
+
+  const textfieldTab = {
+    value: 'modify',
+    label: 'Textfield',
+    tools: () => textFieldTools,
+    Icon: () => <BiFont />,
+  };
+
+  // const tabsV = [
+  //   {
+  //     value: 'font',
+  //     label: 'Text',
+  //     tools: textToolsTab,
+  //     Icon: () => <BiFontFamily />,
+  //   },
+  //   {
+  //     value: 'insert',
+  //     label: 'Blocks',
+  //     tools: insertTools,
+  //     Icon: () => <TbBlocks />,
+  //   },
+
+  //   {
+  //     value: 'view',
+  //     label: 'View',
+  //     tools: viewTools,
+  //     Icon: () => <TbEye />,
+  //   },
+
+  //   {
+  //     value: 'modify',
+  //     label: `${chooseModifyTabName()}`,
+  //     tools: chooseModifyTabTools(),
+  //     Icon: chooseModifyTabIcon(),
+  //   },
+  // ];
 
   const isDisabledtab = (tab: string): boolean => {
     if (
@@ -290,8 +351,51 @@ const Header: React.FC<headerProps> = ({
   };
 
   useEffect(() => {
-    setValue('insert');
-  }, [activeBlock]);
+    if (blocksContent[activeBlock]) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
+        case 'textfield':
+          setTabs([...basicTabs, ...basicTextfieldTabs, textfieldTab]);
+          break;
+        case 'table':
+          setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
+          break;
+        default:
+          if (value === 'modify') {
+            setValue('blocks');
+          }
+          if (activeTextfield === '') {
+            setValue('blocks');
+            setTabs(basicTabs);
+          } else {
+            setTabs([...basicTabs, ...basicTextfieldTabs]);
+          }
+      }
+    } else {
+      setValue('blocks');
+    }
+    //console.log('traning to cvhamge');
+  }, [activeBlock, workspaceZoom[0], blocksContent, editor.state.selection.head, activeTextfield]);
+
+  const getTabs = (): any[] => {
+    if (blocksContent[activeBlock]) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
+        case 'textfield':
+          return [...basicTabs, textfieldTab];
+
+        case 'table':
+          return [...basicTabs, tableTab];
+
+        default:
+          if (value === 'modify') {
+            //setValue('font');
+          }
+          return basicTabs;
+      }
+    } else {
+      //setValue('font');
+      return basicTabs;
+    }
+  };
 
   useEffect(() => {
     const getTitle = async () => {
@@ -315,8 +419,8 @@ const Header: React.FC<headerProps> = ({
     <Box h="10vh">
       {/* <header> */}
       <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
-        <SimpleGrid cols={3} h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
-          <Group h="100%" w="100%">
+        <Flex justify="space-between" h="5vh" pl="lg" pr="lg" ml="xs" mr="xs" pb="0px" mb="0px">
+          <Group h="100%" w="40vw" mb="0px">
             <Button
               p="0px"
               m="0px"
@@ -335,14 +439,14 @@ const Header: React.FC<headerProps> = ({
                 TeX
               </Text>
             </Button>
-            <Tabs.List ref={setRootRef} className={classes.list}>
+            <Tabs.List ref={setRootRef} className={classes.list} mb="0px" mt="5px">
               {tabs.map((tab) => (
                 <Tabs.Tab
                   //mr="xs"
                   value={tab.value}
                   ref={setControlRef(tab.value)}
                   className={classes.tab}
-                  disabled={isDisabledtab(tab.value)}
+                  //disabled={isDisabledtab(tab.value)}
                   leftSection={<tab.Icon />}
                   styles={{ tabSection: { marginRight: '6px' } }}
                 >
@@ -360,7 +464,7 @@ const Header: React.FC<headerProps> = ({
             
           </Group> */}
 
-          <Center>
+          <Center mb="0px" p="0px" w="10vw">
             <HoverCard
               //color="cyan"
               position="bottom"
@@ -376,6 +480,7 @@ const Header: React.FC<headerProps> = ({
             >
               <HoverCard.Target>
                 <Button
+                  m="0px"
                   variant="transparent"
                   rightSection={
                     isNotSaved ? (
@@ -453,8 +558,17 @@ const Header: React.FC<headerProps> = ({
             </HoverCard>
           </Center>
 
-          <Group>
-            <Group justify="end" h="100%" w="100%" ml="xl" gap={0} visibleFrom="sm">
+          <Group mb="0px" w="40vw">
+            <Group
+              justify="end"
+              h="100%"
+              w="100%"
+              ml="xl"
+              gap={0}
+              visibleFrom="sm"
+              mb="0px"
+              p="0px"
+            >
               <Button
                 pt="0px"
                 pb="0px"
@@ -496,7 +610,7 @@ const Header: React.FC<headerProps> = ({
               </Button>
             </Group>
           </Group>
-        </SimpleGrid>
+        </Flex>
 
         <SimpleGrid cols={2} spacing="0px" h="5vh">
           <Center
@@ -508,7 +622,7 @@ const Header: React.FC<headerProps> = ({
             className={classes.band}
           >
             {tabs.map((tab) => (
-              <Tabs.Panel value={tab.value}>{tab.tools}</Tabs.Panel>
+              <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
             ))}
           </Center>
           <Group

@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import sanitizeHtml from 'sanitize-html';
 import { Box, Button, Flex, Popover, Stack, Text } from '@mantine/core';
 import { useBlocksContentContext } from '@/pages/Document/DocumentContextProviders';
 import { useEditTextfields } from '../../../hooksAndUtils/documentHooks';
@@ -79,8 +79,9 @@ export default function DeleteReferencePopover({
             </Box>
             <Text className={classes.trunckedText}>
               [{referenceId + 1}]{' '}
-              {sanitizeHtml(blocksContent[idx].blockContent[referenceId].label, {
-                allowedTags: [],
+              {DOMPurify.sanitize(blocksContent[idx].blockContent[referenceId].label, {
+                ALLOWED_TAGS: [],
+                ALLOWED_ATTR: [],
               })}
             </Text>
           </Flex>

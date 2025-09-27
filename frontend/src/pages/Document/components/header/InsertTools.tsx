@@ -30,6 +30,7 @@ import {
   MdOutlineLibraryBooks,
   MdOutlineTitle,
 } from 'react-icons/md';
+import { TbOmega } from 'react-icons/tb';
 import Latex from 'react-latex-next';
 import { Box, Center, Flex, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -45,6 +46,7 @@ import {
 } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
 import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
+import { specialCharacters } from '../SpecialCharacters';
 
 // type blockListType = {
 //   blockName: string;
@@ -53,7 +55,7 @@ import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
 //   documentClasses: documentClassType[];
 // };
 
-export const useTextTools = (): groupedListType => {
+export const useInsertTools = (): groupedListType => {
   const { editor } = useEditorContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
@@ -98,6 +100,16 @@ export const useTextTools = (): groupedListType => {
     },
     value: null,
     belonging: ['article', 'beamer', 'book', 'report'],
+  };
+
+  const specialCharacterElement = {
+    label: 'Special character',
+    Icon: () => <>{specialCharactersCombobox}</>,
+    function: () => {
+      //refEquationHandlers.toggle();
+    },
+    value: null,
+    belonging: ['article', 'beamer', 'book', 'letter', 'report'],
   };
 
   const getRefsElement = (item: blockType, label: string): listElementType => {
@@ -319,92 +331,49 @@ export const useTextTools = (): groupedListType => {
     />
   );
 
-  const isActiveBgColorSelector = (mark: string): string => {
-    //console.log('isActive:', mark, ' - ', editor?.isActive(mark));
-    return editor?.isActive(mark) ? 'var(--mantine-color-gray-2)' : '';
-  };
+  const specialCharacersForCombobox = specialCharacters.map((group) => {
+    return {
+      label: group.label,
+      group: group.group.map((item) => {
+        return {
+          label: item.label,
+          Icon: () => (
+            <>{item.latexRepresentation ? <Latex>$${item.latexRepresentation}$$</Latex> : null}</>
+          ),
+          value: item.value,
+        };
+      }),
+    };
+  });
+
+  const specialCharactersCombobox = (
+    <AddComboox
+      insertFunction={(value) => {
+        editor?.commands.insertContent(value);
+      }}
+      placeholder="elements"
+      buttonContent={
+        <Text fz="lg" c="black" mb="-0.4rem">
+          <TbOmega />
+        </Text>
+      }
+      data={specialCharacersForCombobox}
+      iconSize="0.8rem"
+      floatingStrategy="fixed"
+      withGroups
+      tooltip={specialCharacterElement.label}
+      buttonVariant="format"
+    />
+  );
 
   return [
     {
-      label: 'Text',
-      group: [
-        {
-          label: 'Bold',
-          Icon: () => <FaBold />,
-          function: () => {
-            editor?.commands.toggleBold();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('bold'),
-        },
-        {
-          label: 'Italic',
-          Icon: () => <FaItalic />,
-          function: () => {
-            editor?.commands.toggleItalic();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('italic'),
-        },
-
-        {
-          label: 'Underilne',
-          Icon: () => <FaUnderline />,
-          function: () => {
-            editor?.commands.toggleUnderline();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('underline'),
-        },
-        {
-          label: 'Strikethrough',
-          Icon: () => <FaStrikethrough />,
-          function: () => {
-            editor?.commands.toggleStrike();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('strike'),
-        },
-      ],
+      label: 'Special characters',
+      group: [specialCharacterElement],
     },
     {
-      label: 'Typewriter',
-      group: [
-        {
-          label: 'Typewriter',
-          Icon: () => <FaCode />,
-          function: () => {
-            editor?.commands.toggleCode();
-          },
-          value: null,
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('code'),
-        },
-      ],
-    },
-
-    {
-      label: 'Indexes',
-      group: [
-        {
-          Icon: () => <FaSubscript />,
-          function: () => editor?.commands.toggleSubscript(),
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          label: 'Subscript',
-          value: null,
-        },
-        {
-          Icon: () => <FaSuperscript />,
-          function: () => editor?.commands.toggleSuperscript(),
-          belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          label: 'Superscript',
-          value: null,
-        },
-      ],
+      label: 'References',
+      group: [refToEquationElement, refToTableElement, refToImageElement, refToBibElement],
     },
   ];
 };

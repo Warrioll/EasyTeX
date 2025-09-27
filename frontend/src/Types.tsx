@@ -24,6 +24,7 @@ export type typeOfBlockType =
   | 'table'
   | 'figure'
   | 'references'
+  | 'subsubsubsection'
   | null
   | undefined;
 

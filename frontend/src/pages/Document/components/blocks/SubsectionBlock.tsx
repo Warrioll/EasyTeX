@@ -54,7 +54,7 @@ export default function SubsectionBlock({ idx }: SectionBlockProps) {
 
   return (
     <Flex>
-      <MarkedBlockFrame idx={idx} blockName="Subsection">
+      <MarkedBlockFrame idx={idx} blockName="Heading 2">
         <Flex w="100%" ml="xs">
           <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
             H2:

@@ -1,4 +1,26 @@
 import { blockType, documentClassType } from "@/Types"
+import DOMPurify from 'dompurify';
+
+
+export const sanitizeBlocksContent = (toSanitize:string):string=>{
+ return DOMPurify.sanitize(toSanitize, {
+                    ALLOWED_TAGS: [
+                      'p',
+                      'strong',
+                      'em',
+                      'code',
+                      'u',
+                      's',
+                      'span',
+                      'sub',
+                      'sup',
+                      'li',
+                      'ul',
+                      'ol',
+                    ],
+                    ALLOWED_ATTR: ['class', 'data-type', 'data-id'],
+                  })
+}
 
 export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
   //console.log('ifContentEmpty: ', content)

@@ -10,7 +10,7 @@ import { Badge, Box, Button, Center, Flex, Menu, Stack, Text, Tooltip } from '@m
 import { useDisclosure } from '@mantine/hooks';
 import { AddComboox } from '@/components/other/AddCombobox';
 //import { blocksList } from '../oldBlocksList';
-import { useBlocksList } from '@/pages/Document/components/blocksList';
+import { useBlocksList } from '@/pages/Document/components/blocksListAndPrototypes';
 import { useAddBlock } from '@/pages/Document/hooksAndUtils/documentHooks';
 import { blockType } from '@/Types';
 import {

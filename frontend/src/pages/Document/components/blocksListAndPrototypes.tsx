@@ -1,6 +1,7 @@
 import { AiOutlineSignature } from 'react-icons/ai';
 import { BiFont } from 'react-icons/bi';
 import { FaFileSignature } from 'react-icons/fa';
+import { FaHeading } from 'react-icons/fa6';
 import { LiaFileSignatureSolid } from 'react-icons/lia';
 import {
   LuDoorClosed,
@@ -8,6 +9,7 @@ import {
   LuHeading1,
   LuHeading2,
   LuHeading3,
+  LuHeading4,
   LuImage,
   LuMapPinned,
   LuRefreshCcw,
@@ -43,15 +45,15 @@ import { useAddBlock } from '../hooksAndUtils/documentHooks';
 const texfiledValue: blockType = { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' };
 const sectionValue: blockType = {
   typeOfBlock: 'section',
-  blockContent: '<p><strong>New section</strong></p>',
+  blockContent: '<p><strong>New heading 1</strong></p>',
 };
 const subsectionValue: blockType = {
   typeOfBlock: 'subsection',
-  blockContent: '<p><strong>New subsection</strong></p>',
+  blockContent: '<p><strong>New heading 2</strong></p>',
 };
 const subsubsectionValue: blockType = {
   typeOfBlock: 'subsubsection',
-  blockContent: '<p><strong>New subsubsection</strong></p>',
+  blockContent: '<p><strong>New heading 3</strong></p>',
 };
 
 const openingValue: blockType = {
@@ -96,6 +98,11 @@ const addressAndDateValue: blockType = {
   blockContent: { title: 'Title', author: 'Address', date: 'Date' },
 };
 
+const subsubsubsectionValue: blockType = {
+  typeOfBlock: 'subsubsubsection',
+  blockContent: '<p><strong>New heading 4</strong></p>',
+};
+
 const referencesValue: blockType = { typeOfBlock: 'references', blockContent: [] };
 const tableOfContentsValue: blockType = { typeOfBlock: 'tableOfContents', blockContent: '' };
 const pageBreakValue: blockType = {
@@ -124,7 +131,10 @@ export const useBlocksList = (): groupedListType => {
     return counter >= allowedCount;
   };
 
-  const getAvailableIdNumberForRefId = (typeOfBlock: typeOfBlockType, idPrefix: string): number => {
+  const getAvailableIdNumberForBlockRefId = (
+    typeOfBlock: typeOfBlockType,
+    idPrefix: string
+  ): number => {
     const assignedNumbers: number[] = [];
     for (const block of blocksContent) {
       if (block.typeOfBlock === typeOfBlock) {
@@ -231,31 +241,41 @@ export const useBlocksList = (): groupedListType => {
       label: 'Sections',
       group: [
         {
-          label: 'Section',
+          label: 'Heading 1',
           Icon: () => <LuHeading1 />,
           function: () => {
             addBlock(sectionValue, 1);
           },
           value: sectionValue,
-          belonging: ['article', 'beamer', 'book', 'report'],
+          belonging: ['article', 'beamer', 'report', 'book'],
         },
         {
-          label: 'Subsection',
+          label: 'Heading 2',
           Icon: () => <LuHeading2 />,
           function: () => {
             addBlock(subsectionValue, 1);
           },
           value: subsectionValue,
-          belonging: ['article', 'beamer', 'book', 'report'],
+          belonging: ['article', 'beamer', 'report', 'book'],
         },
         {
-          label: 'Subsubsection',
+          label: 'Heading 3',
           Icon: () => <LuHeading3 />,
           function: () => {
             addBlock(subsubsectionValue, 1);
           },
           value: subsubsectionValue,
-          belonging: ['article', 'beamer', 'book', 'report'],
+          belonging: ['article', 'beamer', 'report', 'book'],
+        },
+
+        {
+          label: 'Heading 4',
+          Icon: () => <LuHeading4 />,
+          function: () => {
+            addBlock(subsubsubsectionValue, 1);
+          },
+          value: subsubsectionValue,
+          belonging: [],
         },
       ],
     },
@@ -267,8 +287,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Equation',
           Icon: () => <MdFunctions />,
           function: () => {
-            (equationValue.blockContent as blockAbleToRef).id =
-              `eq${getAvailableIdNumberForRefId('equation', 'eq').toString()}`;
+            // (equationValue.blockContent as blockAbleToRef).id =
+            //   `eq${getAvailableIdNumberForBlockRefId('equation', 'eq').toString()}`;
             addBlock(equationValue, 1);
           },
           value: equationValue,
@@ -278,8 +298,8 @@ export const useBlocksList = (): groupedListType => {
           label: 'Table',
           Icon: () => <LuTable />,
           function: () => {
-            (tableValue.blockContent as blockAbleToRef).id =
-              `tab${getAvailableIdNumberForRefId('table', 'tab').toString()}`;
+            // (tableValue.blockContent as blockAbleToRef).id =
+            //   `tab${getAvailableIdNumberForBlockRefId('table', 'tab').toString()}`;
             addBlock(tableValue, 1);
           },
           value: tableValue,
@@ -289,9 +309,9 @@ export const useBlocksList = (): groupedListType => {
           label: 'Image',
           Icon: () => <LuImage />,
           function: () => {
-            figureCounter++;
-            (figureValue.blockContent as blockAbleToRef).id =
-              `img${getAvailableIdNumberForRefId('figure', 'img').toString()}`;
+            //figureCounter++;
+            // (figureValue.blockContent as blockAbleToRef).id =
+            //   `img${getAvailableIdNumberForBlockRefId('figure', 'img').toString()}`;
             addBlock(figureValue, 1);
           },
           value: figureValue,

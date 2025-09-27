@@ -1,9 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Editor, EditorContent } from '@tiptap/react';
+import DOMPurify from 'dompurify';
 import parse from 'html-react-parser';
 import { cloneDeep } from 'lodash';
 import { Badge, Box, Button, Flex, FocusTrap, Group, Input, Menu } from '@mantine/core';
 import { useDisclosure, useFocusWithin } from '@mantine/hooks';
+import { sanitizeBlocksContent } from '@/pages/Document/hooksAndUtils/documentUtils';
 import { blockType } from '@/Types';
 import {
   useActiveBlockContext,
@@ -48,6 +50,7 @@ export default function BasicTexfield({
   //const [updateReleaser, setUpdateReleaser] = useState<boolean>(false);
 
   const [focusTrap, { toggle }] = useDisclosure(false);
+  const basicTextfieldRef = useRef<HTMLInputElement>(null);
   // const [activeBlock, setActiveBlock] = activeBlockState;
   //const [activeTextInput, setActiveTextInput] = activeTextInputState;
   //const blocksContentState = [sectionsContent, setSectionsContent];
@@ -89,6 +92,20 @@ export default function BasicTexfield({
     }
   }, [activeBlock]);
 
+  useEffect(() => {
+    if (activeTextfield === idxInput) {
+      if (basicTextfieldRef.current) {
+        basicTextfieldRef.current.focus();
+      }
+      if (contentToRead === '&nbsp;' || contentToRead === '<p>&nbsp;</p>') {
+        editor?.commands.setContent('');
+      } else {
+        editor?.commands.setContent(contentToRead);
+      }
+      editor?.commands.focus('end');
+    }
+  }, [activeTextfield]);
+
   // useEffect(() => {
   //   setUpdateReleaser((prev) => !prev);
   //   console.log('updateReleaser!');
@@ -105,7 +122,7 @@ export default function BasicTexfield({
           // sectionsContent[idx].blockContent
           //   ?
           //console.log('sectionsContent: ', sectionsContent);
-          console.log('contentToREad:', contentToRead);
+          //console.log('contentToREad:', contentToRead);
           if (contentToRead === '&nbsp;' || contentToRead === '<p>&nbsp;</p>') {
             await editor?.commands.setContent('');
           } else {
@@ -126,7 +143,7 @@ export default function BasicTexfield({
           //<FocusTrap active={focusTrap}>
           <EditorContent
             editor={editor}
-
+            ref={basicTextfieldRef}
             // style={{
             //   backgroundColor: activeTextfield === idxInput ? '#ebffff;' : '',
             // }}
@@ -140,7 +157,7 @@ export default function BasicTexfield({
             className="tiptap nonEditor"
             bg="var(--mantine-color-white)"
           >
-            <div className="nonEditor">{parse(contentToRead)}</div>
+            <div className="nonEditor">{parse(sanitizeBlocksContent(contentToRead))}</div>
           </Flex>
         ) : null}
       </Box>

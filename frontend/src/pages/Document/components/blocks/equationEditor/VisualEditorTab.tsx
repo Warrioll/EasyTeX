@@ -27,11 +27,11 @@ import {
   useCombobox,
 } from '@mantine/core';
 import { AddComboox } from '../../../../../components/other/AddCombobox';
+import { specialCharacters } from '../../SpecialCharacters';
 //import { AddSpecialCharacterComboox } from './AddSpecialCharacterCombobox';
 import ElementsTree from './ElementsTree';
 import { elementsToTex, texToElements } from './equationConverters';
 import { elementsPrototypes } from './equationsElementsPrototypes';
-import { specialCharacters } from './SpecialCharacters';
 import classes from './equationEditor.module.css';
 
 type elementType = {
