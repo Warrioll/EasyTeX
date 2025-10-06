@@ -4,11 +4,7 @@ import MainLayout from './components/Layout/MainLayout/MainLayout';
 import AccountDeletedPage from './pages/AccountDeleted/AccountDeletedPage';
 import MyAssetsPage from './pages/Assets/MyAssetsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
-import {
-  ActiveBlockProvider,
-  ActiveTableCellProvider,
-  BlocksContentProvider,
-} from './pages/Document/DocumentContextProviders';
+import { BlocksContentProvider } from './pages/Document/DocumentContextProviders';
 import DocumentPage from './pages/Document/DocumentPage';
 import Homepage from './pages/Homepage/Homepage';
 import LoginPage from './pages/Login/LoginPage';
@@ -24,15 +20,9 @@ const router = createBrowserRouter([
   },
   {
     path: '/document/:id',
-    element: localStorage.getItem('documentNotExists') ? (
-      <NotFoundPage />
-    ) : (
+    element: (
       <BlocksContentProvider>
-        <ActiveBlockProvider>
-          <ActiveTableCellProvider>
-            <DocumentPage />
-          </ActiveTableCellProvider>
-        </ActiveBlockProvider>
+        <DocumentPage />
       </BlocksContentProvider>
     ),
   },
@@ -42,7 +32,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/profile',
-    element: <MainLayout content={<ProfilePage />} />,
+    element: <MainLayout whiteBackground content={<ProfilePage />} />,
   },
   {
     path: '/assetsLibrary',

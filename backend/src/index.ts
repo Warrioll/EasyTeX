@@ -5,6 +5,7 @@ import cors from "cors";
 import bodyParser from "body-parser"
 import router from "./router";
 import cookieParser from 'cookie-parser'
+import { exec } from 'child_process'; 
 //import session from 'express-session'
 
 const app = express();
@@ -38,6 +39,9 @@ const PORT =  process.env.BACKEND_PORT;
 const MONGOURL = process.env.MONGO_URL
 //const MONGOURL = "mongodb://localhost:27017/EasyTeX"
 //const MONGOURL = "mongodb://user:pass@mongodb/EasyTeX?authSource=admin"
+
+exec('docker build -t worker ../worker')
+//console.log('Worker image')
 
 const connectToDatabase = async () =>{
     for(let i=0; i<10 ; i++){

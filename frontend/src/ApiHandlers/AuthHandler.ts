@@ -71,6 +71,9 @@ export const logout = async ()=>{
   try{
       const response = axios.delete('http://localhost:8100/auth/logout', {withCredentials: true})
       window.location.href='/login'
+                        localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
+      window.localStorage.removeItem('unavailableDocument');
   }catch(error){
     console.log("error logout: ", error)
   }

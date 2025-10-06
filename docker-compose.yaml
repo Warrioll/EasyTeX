@@ -23,6 +23,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - BACKEND_PORT=8100
       - MONGO_URL=mongodb://user:pass@mongodb/EasyTeX?authSource=admin
+    privileged: true 
   mongodb:
     image: mongodb/mongodb-community-server:6.0-ubi8
     container_name: database

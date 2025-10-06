@@ -28,8 +28,13 @@ import { execSync } from 'child_process';
 
 
 export const compileTex = async (path:string, fileName: string): Promise<void>=>{
-   execSync(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
-   execSync(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
+   execSync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+   execSync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+   
+  
+   //execSync(`firejail --private=/${path} pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+   //execSync(`docker run --rm worker pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
+   
     // await execute(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
     // await execute(`pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
 }

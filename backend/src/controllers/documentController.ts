@@ -40,7 +40,7 @@ closingToBlock} from '../handlers/toBlockConverters';
 import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
 import { blockAbleToRef, blockType, referencesElementType, slideBreak, titleSectionType} from '../types';
 import { figureModel } from '../models/figureModel';
-import { Document, InferSchemaType } from 'mongoose';
+import { Document, InferSchemaType, isValidObjectId } from 'mongoose';
 import { nameRegex } from '../nameRegexes';
 
 
@@ -49,7 +49,7 @@ import { nameRegex } from '../nameRegexes';
 const verifyAccesToDocument= async (sessionId:string, documentId:string, res: express.Response, callback: (userId:string, documentInstantion: documentType)=>Promise<void>): Promise<void>=>{
   await verifySessionWithCallback(sessionId, res, async (userId: string)=>{
     try{
-        if(documentId===null || documentId===undefined){
+        if(documentId===null || documentId===undefined || !isValidObjectId(documentId)){
           res.sendStatus(400);
         }else{
           const documentInstantion = await documentModel.findById(documentId)
