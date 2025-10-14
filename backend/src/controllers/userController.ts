@@ -166,7 +166,7 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
       if(emailRegex.test(data.email) && userNameRegex.test(data.userName) && passwordRegex.test(data.password)){
   
         const checkEmail = await userModel.findOne({email: data.email})
-        const checkUserName = await userModel.findOne({email: data.userName})
+        const checkUserName = await userModel.findOne({userName: data.userName})
         console.log(checkEmail)
         //walidacja regexem emaila i username (długość) ale może w innym if
         if((checkEmail===null || checkEmail===undefined) && (checkUserName===null || checkUserName===undefined)){

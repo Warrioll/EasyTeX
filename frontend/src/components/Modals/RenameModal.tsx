@@ -16,6 +16,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import ErrorMessage from '../ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '../ErrorInfos/InfoErrorDialog';
+import NameRequirements from '../ErrorInfos/NameRequirements';
 
 type renameModalPropsType = {
   renameModalHandlers: readonly [
@@ -142,18 +143,8 @@ export default function RenameModal({
         errorDialogHandlers={errorDialogHandlers}
         errorDialogOpened={errorDialogOpened}
         content={
-          <Box mb="sm">
-            <b>{thingToRename} name</b> must:
-            <li> be 3-255 characters long</li>
-            <li>
-              not contain any other special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&-</span>
-            </li>
-            <li>
-              not start or end with ._ special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters</span>
-            </li>
-          </Box>
+          <NameRequirements thingToName={thingToRename}/>
+        
         }
       />
     </>

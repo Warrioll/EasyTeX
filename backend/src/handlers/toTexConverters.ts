@@ -23,9 +23,9 @@ toConvert=toConvert.replaceAll('{', '\\{')
 
     for(const specChar of specialCharacters){
         //console.log('value:', specChar.value, 'latex:',`$${specChar.latexRepresentation}$` )
-        console.log('before:',toConvert )
+        //console.log('before:',toConvert )
         toConvert=toConvert.replaceAll(specChar.value, `$${specChar.latexRepresentation}$`)
-        console.log('after:',toConvert )
+       // console.log('after:',toConvert )
     }
   
 

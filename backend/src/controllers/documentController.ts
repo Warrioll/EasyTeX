@@ -283,12 +283,14 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             author: '',
             date: ''
           }
+          let latexExpression:string[]=[]
+          let isGettingLatexExpression:boolean = false
 
           let blocks: (blockType)[] = document.map((line, idx)=>{
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
             
 
-             
+             if(!isGettingLatexExpression){
             if(line.includes('\\documentclass')) return  documentclassToBlock(line);
              if(line.includes('\\address')) {  return  addressAndDateToBlock(line)}
             if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
@@ -318,9 +320,23 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\usepackage')) return  nullBlock;
             if(line.includes('\\AtBegin')) return nullBlock
             if(line.includes('\\frame{')) return nullBlock
+            if(line==='%latexExpression-start') { isGettingLatexExpression=true; return nullBlock}
             if(line==='') return  nullBlock;
             return  textfieldToBlock(line)
-            })
+            }else{
+              //console.log(line)
+              console.log(latexExpression)
+              if(line==='%latexExpression-end'){
+                isGettingLatexExpression=false
+                const le: blockType=  {typeOfBlock: 'latex', blockContent: latexExpression.join('\n')}
+                console.log('bc: ', le)
+                latexExpression=[]
+                return le
+              }else{
+                latexExpression=[...latexExpression, line]
+                return  nullBlock 
+              }
+            }})
           blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
           //console.log(blocks)
 
@@ -540,6 +556,8 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       }
       case 'references':
         return referencesToTex(block.blockContent as referencesElementType[])
+      case 'latex':
+        return `%latexExpression-start\n${block.blockContent as string}\n%latexExpression-end`
       default:
         console.log("This type of block don't exists! ", block.typeOfBlock)
     }

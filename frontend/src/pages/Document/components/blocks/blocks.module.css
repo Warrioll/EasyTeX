@@ -94,3 +94,34 @@
         cursor: default;
     }
 }
+
+.codeEditorNumbers{
+    font-family: monospace;
+    line-height: 1.2rem;
+    padding: 0px;
+    margin: 0px;
+
+
+
+}
+
+
+    .codeEditorInput{
+       outline: none;
+       font-family: monospace;
+        font-size: 1rem;
+         line-height: 1.2rem;
+          padding:0.5rem;
+           margin: 0px;
+         border-bottom-left-radius: 0px;
+           border-top-left-radius: 0px;
+    }
+
+    .codeEditorInput:focus{
+         outline: none;
+         border: none
+    }
+
+    .codeEditor{
+        /* border: 1px solid red; */
+    }

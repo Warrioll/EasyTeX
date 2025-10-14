@@ -10,7 +10,7 @@ import classes from '../hompage.module.css';
 
 export default function WhatIs() {
   return (
-    <Box h="90vh" bg="var(--mantine-color-white)" className={classes.whatIsBg}>
+    <Box h="90vh" bg="var(--mantine-color-white)" className={classes.whatIsBg} pos='relative'>
       <SimpleGrid cols={2} h="100%" p="xl" px="7rem">
         <Center className={classes.process} ml="3rem" mb="6rem">
           <Center>

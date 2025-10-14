@@ -103,7 +103,8 @@ export default function LoginPage() {
                 </Title>
                 <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
                   Do not have an account yet?{' '}
-                  <Anchor size="sm" href="/register" target="_blank">
+                  <Anchor size="sm" href="/register" //target="_blank"
+                  >
                     Create account
                   </Anchor>
                 </Text>

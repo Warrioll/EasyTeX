@@ -3,6 +3,7 @@ import { BiFont } from 'react-icons/bi';
 import { FaFileSignature } from 'react-icons/fa';
 import { FaHeading } from 'react-icons/fa6';
 import { LiaFileSignatureSolid } from 'react-icons/lia';
+import { HiOutlineCodeBracketSquare } from 'react-icons/hi2';
 import {
   LuDoorClosed,
   LuDoorOpen,
@@ -70,7 +71,7 @@ const equationValue: blockType = {
   blockContent: {
     id: 'eq',
     label: 'New equation',
-    content: 'New equation',
+    content: 'New\\ equation',
   },
 };
 const tableValue: blockType = {
@@ -109,6 +110,8 @@ const pageBreakValue: blockType = {
   typeOfBlock: 'pageBreak',
   blockContent: { title: 'Slide title', subtitle: 'Slide subtitle' },
 };
+
+const latexExpressionValue: blockType={ typeOfBlock: 'latex', blockContent: '' }
 // const pageBreakBeamerValue: blockType = {
 //   typeOfBlock: 'pageBreak',
 //   blockContent: { title: 'Title', subtitle: 'Subtitle' },
@@ -340,6 +343,15 @@ export const useBlocksList = (): groupedListType => {
           },
           value: pageBreakValue,
           belonging: ['beamer'],
+        },
+        {
+          label: 'LaTeX expression',
+          Icon: () => <HiOutlineCodeBracketSquare  />,
+          function: () => {
+            addBlock(latexExpressionValue, 1);
+          },
+          value: latexExpressionValue,
+          belonging: ['article', 'beamer', 'book', 'report', 'letter'],
         },
       ],
     },

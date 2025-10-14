@@ -2,7 +2,7 @@ import { BackgroundImage, Button, Center, Stack, Text, Title } from '@mantine/co
 
 export default function Encouragement() {
   return (
-    <Center w="100%" h="100vh" px="11rem" pb="12rem" pt="10rem" bg="var(--mantine-color-white)">
+    <Center w="100%" h="100vh" px="11rem" pb="12rem" pt="10rem" bg="var(--mantine-color-white)" style={{zIndex: '10'}} pos='relative'>
       <BackgroundImage
         src="bgDesk.jpg"
         w="100%"

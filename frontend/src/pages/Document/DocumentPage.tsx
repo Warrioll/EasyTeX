@@ -61,6 +61,7 @@ import ReferencesBlock from './components/blocks/ReferencesBlock';
 import SlideBreakBlock from './components/blocks/SlideBreakBlock';
 import SubsubsubsectionBlock from './components/blocks/SubsubsubsectionBlock';
 import UnavailableBlock from './components/blocks/UnavailableBlock';
+import LatexExpressionBlock from './components/blocks/LatexExpressionBlock';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 //   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -394,6 +395,8 @@ export default function DocumentPage() {
           return <FigureBlock idx={idx} />;
         case 'references':
           return <ReferencesBlock idx={idx} />;
+case 'latex':
+return <LatexExpressionBlock idx={idx}/>
         default:
           return null;
       }
@@ -437,7 +440,7 @@ export default function DocumentPage() {
                   setPdfFile={setPdfFile}
                   pdfLoaded={pdfLoaded}
                 />
-
+  <Box maw='100vh'>
                 <Split
                   className={classes.bar}
                   lineBar
@@ -517,17 +520,18 @@ export default function DocumentPage() {
                       </Box>
                     </ScrollArea>
                   </Center>
-                  <Box w="100vw" pos="relative">
+                  <Box w='100%' pos="relative" style={{overflow: 'hidden'}}>
                     <LoadingOverlay
                       visible={!pdfLoaded}
                       zIndex={100}
                       overlayProps={{ radius: 'sm', blur: 1, color: 'var(--mantine-color-gray-1)' }}
                       loaderProps={{ color: 'cyan' }}
                     />
-                    <ScrollArea h="90vh">
+                    <ScrollArea h="90vh" pb='10px'  scrollbars='xy' style={{overflow: 'visible'}}  // miw='50vw' 
+                    >
                       <Center m="xl" p={0}>
                         {pdfError && (
-                          <Box h="80vh">
+                          <Box h="80vh" >
                             <ErrorBanner
                               title={pdfError.title}
                               description={pdfError.description}
@@ -567,6 +571,7 @@ export default function DocumentPage() {
                     </ScrollArea>
                   </Box>
                 </Split>
+                </Box>
               </EditorProvider>
               {/* </ReferencesListProvider> */}
             </ActiveTextfieldProvider>

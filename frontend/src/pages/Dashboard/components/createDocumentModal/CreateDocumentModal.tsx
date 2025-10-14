@@ -18,6 +18,7 @@ import { useDisclosure } from '@mantine/hooks';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
+import NameRequirements from '@/components/ErrorInfos/NameRequirements';
 
 type createDocumentModalPropsType = {
   modalOpened: boolean;
@@ -35,7 +36,7 @@ export default function CreateDocumentModal({
   );
   const [documentName, setDocumentName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
-  const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
+  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_. ])$/
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
 
   const createDocument = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -209,18 +210,7 @@ export default function CreateDocumentModal({
         errorDialogHandlers={errorDialogHandlers}
         errorDialogOpened={errorDialogOpened}
         content={
-          <Box mb="sm">
-            <b>Document name</b> must:
-            <li> be 3-255 characters long</li>
-            <li>
-              not contain any other special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&-</span>
-            </li>
-            <li>
-              not start or end with ._ special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters</span>
-            </li>
-          </Box>
+               <NameRequirements thingToName='Document'/>
         }
       />
     </>

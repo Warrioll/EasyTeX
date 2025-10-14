@@ -181,6 +181,7 @@ export default function VisualEditorTab({
           <Textarea
             variant="filled"
             w="100%"
+            placeholder='Expression'
             value={expressionInputContent}
             onChange={(e) => {
               setExpressionInputContent(e.currentTarget.value);

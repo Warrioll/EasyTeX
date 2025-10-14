@@ -44,7 +44,7 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const form = useForm({
     mode: 'controlled',
-
+   //  onSubmitPreventDefault: 'never',
     initialValues: { name: '', email: '', password: '', repeatedPassword: '' },
     validate: {
       name: matches(
@@ -67,7 +67,7 @@ export default function RegisterPage() {
 
   const register = async (registerData) => {
     try {
-      console.log('register');
+      console.log('registerrrrrrr');
       const response = await axios.post(
         'http://localhost:8100/user/createNewAccount',
         {
@@ -85,7 +85,14 @@ export default function RegisterPage() {
       //...
       setDisableSignUpButton(false);
     } catch (error) {
-      setErrorMessage('Sorry, something went wrong!');
+      switch(error.response.status){
+        case 409:
+           setErrorMessage('Provided email or username i already used!');
+           break;
+        default:
+           setErrorMessage('Sorry, something went wrong!');
+      }
+      //setErrorMessage('Sorry, something went wrong!');
       await new Promise((resolve) => setTimeout(resolve, 200));
       errorMsgHandlers.open();
       console.log('register error: ', error);
@@ -111,10 +118,12 @@ export default function RegisterPage() {
                 ref={formRef}
                 onSubmit={form.onSubmit(
                   async (values) => {
+                    setDisableSignUpButton(true);
                     await register(values);
+                     setDisableSignUpButton(false);
                   },
                   async (validationErrors, values, event) => {
-                    console.log(errorMsgOpened);
+                    //console.log(errorMsgOpened);
                     errorMsgHandlers.close();
                     setErrorMessage('Invalid sign up data!');
                     //console.log('uu', validationErrors);
@@ -179,7 +188,7 @@ export default function RegisterPage() {
                     disabled={disableSignUpButton}
                     onClick={async () => {
                       //console.log('click');
-                      setDisableSignUpButton(true);
+                      
                       errorDialogHandlers.close();
                       errorMsgHandlers.close();
 
