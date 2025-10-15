@@ -49,7 +49,7 @@ export default function ProfilePage() {
           //radius="md"
           //m="md"
           mt="0px"
-          style={{ borderTop: '1px solid var(--mantine-color-cyan-6)' }}
+          //style={{ borderTop: '1px solid var(--mantine-color-cyan-6)' }}
           // style={{
           //   background:
           //     'linear-gradient(to  top, rgba(0,0,0,0),var(--mantine-color-gray-1)), url(./bg13.png) ',

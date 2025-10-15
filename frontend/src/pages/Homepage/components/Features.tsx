@@ -68,7 +68,7 @@ export default function Features() {
   ));
 
   return (
-    <Box bg="var(--mantine-color-gray-1)" w="100%" h="100%">
+    <Box bg="var(--mantine-color-gray-1)" w="100%" h="100%" pos='relative' style={{zIndex: 1}}>
       <Container size="80vw" pt="8rem" pb="13rem">
         <Group justify="center">
           <Badge variant="transparent" size="1.3rem" color="var(--mantine-color-cyan-7)">

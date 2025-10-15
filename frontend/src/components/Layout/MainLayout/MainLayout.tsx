@@ -29,9 +29,10 @@ import classes from './MainLayout.module.css';
 
 type LayoutPropsType = {
   content: React.ReactNode;
+  whiteBackground?: boolean;
 };
 
-export default function MainLayout({ content }: LayoutPropsType) {
+export default function MainLayout({ content, whiteBackground }: LayoutPropsType) {
   const [burgerOpened, burgerHandlers] = useDisclosure();
   const [logoutModalOpened, logoutModalHandlers] = useDisclosure(false);
 
@@ -49,7 +50,13 @@ export default function MainLayout({ content }: LayoutPropsType) {
       padding="md"
     >
       <AppShell.Header bd="none">
-        <Group h="100%" px="md" justify="space-between" bg="var(--mantine-color-gray-1)">
+        <Group
+          h="100%"
+          px="md"
+          justify="space-between"
+          bg={whiteBackground ? 'var(--mantine-color-white)' : 'var(--mantine-color-gray-1)'}
+          style={{ borderBottom: whiteBackground ? '1px solid var(--mantine-color-gray-3)' : '' }}
+        >
           <Burger opened={burgerOpened} onClick={burgerHandlers.toggle} hiddenFrom="sm" size="sm" />
 
           {
@@ -86,6 +93,9 @@ export default function MainLayout({ content }: LayoutPropsType) {
                 leftSection={<IoDocumentsOutline />}
                 className={classes.control}
                 onClick={() => {
+                  localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   window.location.href = '/dashboard';
                 }}
               >
@@ -98,6 +108,9 @@ export default function MainLayout({ content }: LayoutPropsType) {
                 leftSection={<IoImagesOutline />}
                 className={classes.control}
                 onClick={() => {
+                  localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   window.location.href = '/assetsLibrary';
                 }}
               >
@@ -110,6 +123,9 @@ export default function MainLayout({ content }: LayoutPropsType) {
                 leftSection={<RxAvatar />}
                 className={classes.control}
                 onClick={() => {
+                  localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   window.location.href = '/profile';
                 }}
               >

@@ -70,7 +70,7 @@ export const login = async (req: express.Request, res: express.Response)=>{
 export const verifySessionEndPoint = async (req: express.Request, res: express.Response)=>{        
     try{
         const userId:string = await verifySession(req.cookies.auth, res);
-        res.status(200).json({userId: userId})
+        //res.status(200).json({userId: userId})
 
     }catch(error){
         console.log("verifySession error: ", error)

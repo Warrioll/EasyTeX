@@ -29,6 +29,7 @@ export type blockContentType =  string
     | 'table'
     | 'figure'
     | 'references'
+    | 'latex'
     | null
     | undefined;
 

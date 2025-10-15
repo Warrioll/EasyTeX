@@ -17,7 +17,7 @@ export default function HeroHeader() {
   //Sign up now to create and edit documents based on LaTeX without struggle with syntax!
 
   return (
-    <Stack h="150vh" align="center">
+    <Stack h="150vh" align="center" pos='relative' style={{zIndex: 1}}>
       <BackgroundImage src="bg13.png" h="89vh" className={classes.heroBg} />
       <Box className={classes.belowBg} h="63vh" w="100%" />
 

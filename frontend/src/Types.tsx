@@ -25,6 +25,7 @@ export type typeOfBlockType =
   | 'figure'
   | 'references'
   | 'subsubsubsection'
+  | 'latex'
   | null
   | undefined;
 

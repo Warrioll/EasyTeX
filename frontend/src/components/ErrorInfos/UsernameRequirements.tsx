@@ -10,6 +10,10 @@ export default function UsernameRequirements() {
         <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&*?-</span>
       </li>
       <li>
+        not contain white characters
+       
+      </li>
+      <li>
         not start or end with ._ special <span style={{ marginLeft: '1.25rem' }}>characters</span>
       </li>
     </Box>

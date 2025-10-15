@@ -88,6 +88,7 @@ export function AddComboox({
                   onMouseUp={() => {
                     insertFunction(item.value);
                   }}
+                  disabled={item.disabledFunction ? item.disabledFunction() : false}
                 >
                   <Flex align="center">
                     <Box w="2rem" fz={iconSize} fw={500} p="0px" m="0px">
@@ -120,6 +121,7 @@ export function AddComboox({
               insertFunction(item.value);
             }}
             className={classes.hoverButton}
+            disabled={item.disabledFunction ? item.disabledFunction() : false}
           >
             <Flex align="center">
               <Box

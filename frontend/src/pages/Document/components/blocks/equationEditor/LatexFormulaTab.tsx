@@ -27,7 +27,7 @@ export default function LatexFormulaTab({ equationFormulaState }: LatexFormulaTa
         variant="filled"
         radius="md"
         label="LaTeX formula:"
-        placeholder="Input placeholder"
+        placeholder="LaTeX formula"
         classNames={{ input: classes.formulaTabTextarea }}
         value={equationFormula}
         onChange={(event) => {

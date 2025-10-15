@@ -49,6 +49,8 @@ export default function GuestLayout({ content }) {
                 pb="0px"
                 onClick={() => {
                   localStorage.removeItem('401');
+                  localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   navigate('/');
                 }}
                 variant="transparent"
@@ -63,6 +65,7 @@ export default function GuestLayout({ content }) {
                 onClick={() => {
                   localStorage.removeItem('401');
                   localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   navigate('/login');
                 }}
                 variant="transparent"
@@ -76,6 +79,7 @@ export default function GuestLayout({ content }) {
                 onClick={() => {
                   localStorage.removeItem('401');
                   localStorage.removeItem('accountDeleted');
+                  window.localStorage.removeItem('unavailableDocument');
                   navigate('/register');
                 }}
                 variant="transparent"
