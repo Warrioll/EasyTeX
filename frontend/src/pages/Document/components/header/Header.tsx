@@ -635,7 +635,7 @@ const Header: React.FC<headerProps> = ({
             className={classes.band}
             justify="center"
           >
-            <Box>
+            <Box w='12vw'>
               <Tooltip
                 label={
                   <>
@@ -693,8 +693,10 @@ const Header: React.FC<headerProps> = ({
                 </Button>
               </Tooltip>
             </Box>
+            <Box w='12vw'>
             <ZoomTools zoomState={pdfZoom} />
-            <Group justify="end" gap="0px">
+            </Box>
+            <Group justify="end" gap="0px" w='12vw'>
               {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
             </Button> */}
