@@ -236,21 +236,21 @@ export default function DeleteBlockModal({
       size="xl"
       title={
         <Text c="var(--mantine-color-cyan-8)">
-          <b>Delete block</b>
+          <b>Remove block</b>
         </Text>
       }
     >
       <SimpleGrid mt="0px" cols={1} verticalSpacing="md" ta="center" p="xl" pt="md" pb="md">
         <Box>
           <Text fz="1.3rem" m="lg" mb="0px">
-            Are you sure you want to delete this block?
+            Are you sure you want to remove this block?
           </Text>
           {blocksContent[activeBlock].typeOfBlock === 'figure' ||
           blocksContent[activeBlock].typeOfBlock === 'table' ||
           blocksContent[activeBlock].typeOfBlock === 'equation' ||
           blocksContent[activeBlock].typeOfBlock === 'references' ? (
             <Text m="xs" c="var(--mantine-color-gray-7)">
-              All references to this block will be also deleted.
+              All references to this block will be also removed.
             </Text>
           ) : null}
         </Box>
@@ -287,7 +287,7 @@ export default function DeleteBlockModal({
         </Group>
         <SimpleGrid cols={2} spacing="xl" mt="md">
           <Button leftSection={<FaRegTrashAlt />} color="red" onClick={deleteBlock}>
-            Delete
+            Remove
           </Button>
           <Button color="cyan" variant="outline" onClick={deleteModalHandlers.close}>
             Cancel

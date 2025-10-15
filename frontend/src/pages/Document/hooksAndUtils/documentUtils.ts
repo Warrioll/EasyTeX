@@ -98,6 +98,8 @@ export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
         return 'Rigure'
       case 'references':
         return 'References'
+      case 'latex':
+        return 'LaTeX expression'
       default:
          return '???'
     }

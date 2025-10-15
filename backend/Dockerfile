@@ -8,6 +8,7 @@ RUN npm install
 
 RUN apt-get update
 RUN apt install -y texlive-latex-extra
+#RUN apt install texlive-lang-all
 RUN apt install -y latexmk
 RUN  DEBIAN_FRONTEND=noninteractive apt install -y firejail
 

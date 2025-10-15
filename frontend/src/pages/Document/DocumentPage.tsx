@@ -225,9 +225,11 @@ export default function DocumentPage() {
             title: 'Document content contains errors!',
             description:
               //"If you're intentionally using LaTeX syntax, make sure it's correct and error-free. If not, try saving the document or contact support.",
-              ['If you are using LaTeX expression block, make sure within it code is valid.',
-               'If you are using image block make sure it references an image that exists in your assets library (if not, delete this image block).',
-               'If none of these apply, try saving the document, refreshing the page, or contacting support.'].join(' '),
+              [
+                'If you are using LaTeX expression block, make sure within it code is valid.',
+                'If you are using image block make sure it references an image that exists in your assets library (if not, delete this image block).',
+                'If none of these apply, try saving the document, refreshing the page, or contacting support.',
+              ].join(' '),
             icon: () => (
               <Box mb="-1.5rem">
                 <TbFileSad />
@@ -420,9 +422,19 @@ export default function DocumentPage() {
     const checkLogged = async () => {
       const userId = await checkIfLoggedIn();
     };
+
+    const saveShortcutHandler = (event: KeyboardEvent) => {
+      //console.log('event target: ', event.target);
+      if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();
+        saveDocumentContent();
+      }
+    };
+    window.addEventListener('keydown', saveShortcutHandler);
     checkLogged();
     setPdfFile();
     setBlocks();
+    return () => window.removeEventListener('keydown', saveShortcutHandler);
   }, []);
 
   return (
@@ -537,35 +549,35 @@ export default function DocumentPage() {
                         }}
                         loaderProps={{ color: 'cyan' }}
                       />
-                     
-                          {pdfError && (
-                            <Box h="80vh" px='5rem'>
-                              <ErrorBanner
-                                title={pdfError.title}
-                                description={pdfError.description}
-                                Icon={pdfError.icon}
-                                ButtonIcon={pdfError.buttonIcon}
-                                buttonLabel={pdfError.buttonLabel}
-                                buttonFunction={pdfError.buttonFunction}
-                              />
-                            </Box>
-                          )}
-                          {pdf && (
-                             <ScrollArea
-                        h="90vh"
-                        //p="xs"
-                        pb="10px"
-                        pr="10px"
-                        scrollbars="xy"
-                        bg="transparent"
-                        //style={{ overflow: 'visible' }} // miw='50vw'
-                      >
-                        <Center
-                          p={0}
-                          w={`calc(100% * ${pdfZoomValue[0] / 1.4})`}
-                          miw="100%"
-                          mih="85vh"
+
+                      {pdfError && (
+                        <Box h="80vh" px="5rem">
+                          <ErrorBanner
+                            title={pdfError.title}
+                            description={pdfError.description}
+                            Icon={pdfError.icon}
+                            ButtonIcon={pdfError.buttonIcon}
+                            buttonLabel={pdfError.buttonLabel}
+                            buttonFunction={pdfError.buttonFunction}
+                          />
+                        </Box>
+                      )}
+                      {pdf && (
+                        <ScrollArea
+                          h="90vh"
+                          //p="xs"
+                          pb="10px"
+                          pr="10px"
+                          scrollbars="xy"
+                          bg="transparent"
+                          //style={{ overflow: 'visible' }} // miw='50vw'
                         >
+                          <Center
+                            p={0}
+                            w={`calc(100% * ${pdfZoomValue[0] / 1.4})`}
+                            miw="100%"
+                            mih="85vh"
+                          >
                             <Document
                               file={pdf}
                               loading={
@@ -586,13 +598,12 @@ export default function DocumentPage() {
                                 />
                               ))}
                             </Document>
-                             </Center>
+                          </Center>
 
-                        {/* </Grid.Col> */}
-                        {/* </Grid> */}
-                      </ScrollArea>
-                          )}
-                       
+                          {/* </Grid.Col> */}
+                          {/* </Grid> */}
+                        </ScrollArea>
+                      )}
                     </Box>
                   </Split>
                 </Box>

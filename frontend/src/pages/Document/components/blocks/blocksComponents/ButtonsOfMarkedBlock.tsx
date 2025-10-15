@@ -200,7 +200,7 @@ export default function ButtonsOfMarkedBlock({
                     leftSection={<FaRegTrashAlt />}
                     onClick={deleteModalHandlers.open}
                   >
-                    Delete Block
+                    Remove Block
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

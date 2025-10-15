@@ -36,9 +36,9 @@ export default function SessionExpiredPage() {
           >
             Sign in here
           </Button>
-          <Text c="var(--mantine-color-gray-6)" m="5rem" mb="0px">
+          {/* <Text c="var(--mantine-color-gray-6)" m="5rem" mb="0px">
             Error code: 401
-          </Text>
+          </Text> */}
         </Stack>
       </Paper>
     </Center>
