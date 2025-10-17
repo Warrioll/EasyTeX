@@ -32,12 +32,12 @@ const mockdata = [
   },
   {
     title: 'Equation editor',
-    description: '...',
+    description: 'With visual editor you can create complex equations without any LaTeX knowledge.',
     icon: () => <SiLibreofficemath />,
   },
   {
     title: 'Storing documents and assest',
-    description: '...',
+    description: 'EasyTex stores the documents you create and the images you upload, which you can access at any time using your account.',
     icon: () => <FaArchive />,
   },
 ];
@@ -69,7 +69,7 @@ export default function Features() {
 
   return (
     <Box bg="var(--mantine-color-gray-1)" w="100%" h="100%" pos='relative' style={{zIndex: 1}}>
-      <Container size="80vw" pt="8rem" pb="13rem">
+      <Container size="80vw" pt="8rem" pb="4rem">
         <Group justify="center">
           <Badge variant="transparent" size="1.3rem" color="var(--mantine-color-cyan-7)">
             Features

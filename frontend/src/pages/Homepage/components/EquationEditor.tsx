@@ -3,7 +3,7 @@ import classes from '../hompage.module.css';
 
 export default function EquationEditor() {
   return (
-    <Box h="85vh" className={classes.equationBg} pos='relative' style={{zIndex: 1}}>
+    <Box h="100vh" className={classes.equationBg} pos='relative' style={{zIndex: 1}}pt='10vh'>
       <SimpleGrid cols={2} h="100%" p="xl" px="7rem">
         <Stack c="white" justify="center" pl="8rem" w="60%">
           <Title order={2} fz="3rem" ta="left">
