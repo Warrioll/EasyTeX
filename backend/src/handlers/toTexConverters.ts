@@ -86,11 +86,11 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
 
     fontToConvert=fontToConvert.replaceAll(/\<span.*?class=\"mention\".*?data-type=\"mention\".*?data-id=\".*?\".*?>(.*?)<\/span>/g, (wholeFraze, insideOfFraze)=>{
         console.log('mention: ', wholeFraze)
-        if(insideOfFraze.includes('ref')){
+        if(insideOfFraze.includes('bib')){
             console.log('cite: ', `\\cite{${insideOfFraze}}`)
             return `\\cite{${insideOfFraze}}`
         }
-        console.log('cite: ', `\\ref{${insideOfFraze}}`)
+        //console.log('cite: ', `\\ref{${insideOfFraze}}`)
         return `\\ref{${insideOfFraze}}`
         
     })

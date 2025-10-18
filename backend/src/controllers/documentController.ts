@@ -573,7 +573,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
     let defaultPackages =['\\usepackage{ulem}',
       '\\usepackage{amsmath}', 
-      //'\\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}', 
+      '\\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue]{hyperref}', 
       '\\usepackage{graphicx} ', 
       '\\usepackage{amssymb}',
      ]

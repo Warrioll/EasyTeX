@@ -1,5 +1,6 @@
 import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType } from "../types"
 import { specialCharacters } from "../specialCharacters"
+import { cloneDeep } from "lodash"
 
 export const documentclassToBlock =(line: string) : blockType=>{
     //tu sprawdzenie czy nie ma jakiegoś innego docuimentclass i ch=ya innych jestn git xddd
@@ -27,8 +28,8 @@ export const specialCharactersToBlockConverter = (toConvert: string):string=>{
         toConvert=toConvert.replaceAll('\\_{}', '_')
         toConvert=toConvert.replaceAll('\\textasciitilde ' ,'~' )
           toConvert=toConvert.replaceAll('\\textbar ', '|' )
-          toConvert=toConvert.replaceAll('\\{',  '{')
-  toConvert=toConvert.replaceAll('\\}' , '}')
+          toConvert=toConvert.replaceAll('\\{','\\tmpleftcurlybracket', )
+  toConvert=toConvert.replaceAll('\\}','\\tmprightcurlybracket')
 
       for(const specChar of specialCharacters){
           toConvert=toConvert.replaceAll(`$${specChar.latexRepresentation}$`, specChar.value )
@@ -46,8 +47,10 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
     
     //znaki specjalne
     //w drugą stronę z tym coś nie działało
-    //line= line.replaceAll('\\textbackslash', '\\')  
-
+    //line= line.replaceAll('\\textbackslash', '\\')
+    
+    //OLD VERSION
+/*
     //bold
     fontToConvert =fontToConvert.replaceAll(/\\textbf\{(.*?)\}/g, (wholeFraze, insideOfFraze) => {
         return '<strong>'+insideOfFraze+'</strong>';})
@@ -111,6 +114,104 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
     fontToConvert=specialCharactersToBlockConverter(fontToConvert)
 
         return fontToConvert
+        */
+
+
+        //NEW VERSION
+
+         // refs to figures, tables and equations
+        fontToConvert=fontToConvert.replaceAll(/\\ref\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
+        let wholeFrazeCopy=wholeFraze
+        //console.log('wholeFraze', wholeFraze)
+        //console.log('insideOfFraze', insideOfFraze)
+        //for( let i of insideOfFraze){
+            wholeFrazeCopy =wholeFrazeCopy.replaceAll(`\\ref{${insideOfFraze}}`, `<span class="mention" data-type="mention" data-id="${insideOfFraze}">${insideOfFraze}</span>`)
+       // }
+       
+        return wholeFrazeCopy
+         //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+    })
+
+
+        // refs to bibliography
+        fontToConvert=fontToConvert.replaceAll(/\\cite\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
+        let wholeFrazeCopy=wholeFraze
+        console.log('wholeFraze', wholeFraze)
+        console.log('insideOfFraze', insideOfFraze)
+        //for( let i of insideOfFraze){
+            wholeFrazeCopy =wholeFrazeCopy.replaceAll(`\\cite{${insideOfFraze}}`, `<span class="mention" data-type="mention" data-id="${insideOfFraze}">${insideOfFraze}</span>`)
+       // }
+       
+
+
+        return wholeFrazeCopy
+         //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+    })
+
+     //special characters
+    fontToConvert=specialCharactersToBlockConverter(fontToConvert)
+
+    //other
+    let stack:(RegExpExecArray)[]=[]
+
+const fonts = [
+    {reg: /\\textbf\{/g, tag: 'strong'},
+    {reg: /\\textit\{/g, tag: 'em'},
+    {reg: /\\texttt\{/g, tag: 'code'}, 
+    {reg: /\\uline\{/g, tag: 'u'},
+    {reg: /\\sout\{/g, tag: 's'},
+    {reg: /\\textsubscript\{/g, tag: 'sub'},
+    {reg: /\\textsuperscript\{/g, tag: 'sup'}
+]
+
+
+
+let converted =''
+
+const splitted =fontToConvert.split('}')
+
+for (let i=0; i<splitted.length; i++){
+    let tmpStack:(RegExpExecArray)[]=[]
+    for( let font of fonts){
+         tmpStack = [...tmpStack, ...cloneDeep([...splitted[i].matchAll( new RegExp(font.reg.source, 'g'))])]
+       //console.log('to stack', font , ' : ', splitted[i],":",[...splitted[i].matchAll(font.reg)])
+    }
+    
+     tmpStack.sort((a,b)=> a.index - b.index)
+     stack=[...stack, ...tmpStack]
+     console.log('stack:', stack)
+    if (i!==splitted.length-1)
+    {
+         const poped = stack.pop()
+        console.log('pop',poped)
+       for( let font of fonts){
+       if(( new RegExp(font.reg.source, 'g')).test(poped[0])){
+          converted = converted+splitted[i]
+            let splittedPart = converted.split(new RegExp(font.reg.source, 'g'))
+           splittedPart[splittedPart.length-1]=`<${font.tag}>`+splittedPart[splittedPart.length-1]
+            let joinedPart=splittedPart.join('')+`</${font.tag}>`
+           
+        //   let part = splitted[i].slice(0, poped.index)+`<${font.tag}>`+splitted[i].slice(poped.index+poped[0].length)+`</${font.tag}>`
+           converted =joinedPart
+       }
+    
+       }
+    }else{
+        converted=converted+splitted[i]
+    }
+   
+}
+    fontToConvert=converted
+
+    //new lines
+    fontToConvert =fontToConvert.split('\\newline ').map(temp=> '<p>'+temp+'</p>').join('')
+
+    //replacing temporary curly brackets markers
+    fontToConvert=fontToConvert.replaceAll('\\tmpleftcurlybracket', '{')
+    fontToConvert=fontToConvert.replaceAll( '\\tmprightcurlybracket', '}')
+
+
+ return fontToConvert
 }
 
 export const chapterToBlock =(line: string) : blockType=>{

@@ -226,7 +226,7 @@ export default function DocumentPage() {
             description:
               //"If you're intentionally using LaTeX syntax, make sure it's correct and error-free. If not, try saving the document or contact support.",
               [
-                'If you are using LaTeX expression block, make sure within it code is valid.',
+                'If you are using a LaTeX expression block or the LaTeX formula tab in the equation editor, make sure that the code contained therein is valid.',
                 'If you are using image block make sure it references an image that exists in your assets library (if not, delete this image block).',
                 'If none of these apply, try saving the document, refreshing the page, or contacting support.',
               ].join(' '),

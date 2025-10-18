@@ -11,7 +11,25 @@ export function elementsToTex(array:any):string{
             case 'Expression':
                tmp=array[i].content;
                //console.log('expr',array)
-               tmp=tmp.replaceAll(' ', '\\ ')
+                tmp=tmp.replaceAll('\\', '\\backslash ') //! UWAGA!!! zmienia wszystkie backslashe wiec wczesniejsza konwersja na latex jest rozwalana
+                tmp=tmp.replaceAll(' ', '\\ ')
+                tmp=tmp.replaceAll('\n', '\\ ')
+                
+
+               
+                //tmp=tmp.replaceAll('&lt;', '\\textlessoo ') //zmianiane rpzez html
+                //tmp=tmp.replaceAll('&gt;', '\\textgreater ')  //zmianiane rpzez html
+                tmp=tmp.replaceAll('{', '\\{')
+                tmp=tmp.replaceAll('}', '\\}')
+                tmp=tmp.replaceAll('#', '\\#{}')
+                //tmp=tmp.replaceAll('$', '\\${}')
+                tmp=tmp.replaceAll('%', '\\%{}')
+                tmp=tmp.replaceAll('^', '\\text{\\textasciicircum}')
+                tmp=tmp.replaceAll('&', '\\&{}') // !
+                tmp=tmp.replaceAll('_', '\\_{}')
+                tmp=tmp.replaceAll('~', '\\sim ') //!
+                tmp=tmp.replaceAll('|', '\\mid ') // !
+
                 for(let i of specialCharacters){
                     //console.log('value: ', i.group)
                     for(let j of i.group ){
@@ -146,9 +164,29 @@ export function elementsToTex(array:any):string{
 }
 
 
-export function texToElements(originalString:string):any{
+export function texToElements(originalStringArg:string):any{
         //originalString=originalString.replaceAll('\r','').replaceAll('\n','').replaceAll('\t','')
         try{
+
+        let originalString: string=originalStringArg;
+
+        //originalString=originalString.replaceAll('\\textless ',  '&lt;') //zmianiane pzez html
+        //originalString=originalString.replaceAll('\\textgreater ',  '&gt;')  //zmianiane pzez html
+        originalString=originalString.replaceAll('\\#{}',  '#')
+        //originalString=originalString.replaceAll( '\\${}' , '$')
+        originalString=originalString.replaceAll('\\%{}',  '%')
+        originalString=originalString.replaceAll('\\text{\\textasciicircum}' , '^')
+        originalString=originalString.replaceAll('\\&{}',  '&') //zmianiane pzez html
+        originalString=originalString.replaceAll('\\_{}', '_')
+        originalString=originalString.replaceAll('\\sim ' ,'~' )
+        originalString=originalString.replaceAll('\\mid ', '|' )
+        originalString=originalString.replaceAll('\\{','\\tmpleftcurlybracket', )
+        originalString=originalString.replaceAll('\\}','\\tmprightcurlybracket')
+
+
+
+        originalString=originalString.replaceAll('\\backslash ' , '\\') // UWAGA!!! zmienia wszystkie backslashe wiec wczesniejsza konwersja na latex jest rozwalana
+
         let parts=[]
         if( originalString!==undefined &&originalString.includes('{') && originalString.includes('}')){
             let counter=0
@@ -698,7 +736,7 @@ export function texToElements(originalString:string):any{
     }catch(e){
         console.log('texToElements conversion error (in loop): ', e)
         let expr=cloneDeep(elementsPrototypes.expression.elementPrototype)
-        expr.content=texToElementsSpecialCHaractersConvertion(originalString)
+        expr.content=texToElementsSpecialCHaractersConvertion(originalStringArg)
         return [expr]
 
     }
@@ -712,10 +750,13 @@ export const texToElementsSpecialCHaractersConvertion=(originalString: string):s
     for(let i =0; i<specialCharacters.length; i++){
         sc=[...sc, ...cloneDeep(specialCharacters[i].group)]
     }
-        sc.sort((a,b)=> b.latexRepresentation.length- a.latexRepresentation.length)
-        for(let j=0; j<sc.length; j++){
+    sc.sort((a,b)=> b.latexRepresentation.length- a.latexRepresentation.length)
+    for(let j=0; j<sc.length; j++){
             converterString=converterString.replaceAll(sc[j].latexRepresentation, sc[j].value)
-        }
+    }
+
+    converterString=converterString.replaceAll('\\tmpleftcurlybracket', '{' )
+    converterString=converterString.replaceAll('\\tmprightcurlybracket', '}')
     
     return converterString
 }

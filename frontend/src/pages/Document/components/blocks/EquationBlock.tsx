@@ -131,7 +131,7 @@ const EquationBlock = memo(
               <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
             </Box>
 
-            <Box w="100%">
+            <Box w="100%" style={{ overflow: 'hidden' }} fz="0.9rem">
               {idx === activeBlock ? (
                 <div
                   tabIndex={idx}
