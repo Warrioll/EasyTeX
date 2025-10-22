@@ -59,7 +59,9 @@ export default function PageBreakBlock({
           <ButtonsOfMarkedBlock
             idx={idx}
             //activeBlockState={activeBlockState}
-            blockName={blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
+            blockName={
+              blocksContent[0].blockContent.class === 'beamer' ? 'Slide break' : 'Page Break'
+            }
             //blockContentState={blocksContentState}
             typeOfAddBlockFunction="above"
             //activeTextInputState={activeTextInputState}
@@ -68,14 +70,16 @@ export default function PageBreakBlock({
         </Paper>
         <Flex justify="center">
           <Text fw={500} size="sm" c="var(--mantine-color-cyan-6)">
-            {blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
+            {blocksContent[0].blockContent.class === 'beamer' ? 'Slide break' : 'Page Break'}
           </Text>
         </Flex>
         <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h="50px">
           <ButtonsOfMarkedBlock
             idx={idx}
             //activeBlockState={activeBlockState}
-            blockName={blocksContent[0].blockContent === 'beamer' ? 'Slide break' : 'Page Break'}
+            blockName={
+              blocksContent[0].blockContent.class === 'beamer' ? 'Slide break' : 'Page Break'
+            }
             //blockContentState={blocksContentState}
             typeOfAddBlockFunction="below"
             //activeTextInputState={activeTextInputState}

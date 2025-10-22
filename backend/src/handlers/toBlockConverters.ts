@@ -1,19 +1,75 @@
-import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType } from "../types"
+import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType, documentOptionsType, documentClassType } from "../types"
 import { specialCharacters } from "../specialCharacters"
 //import { cloneDeep } from "lodash"
 
 export const documentclassToBlock =(line: string) : blockType=>{
-    //tu sprawdzenie czy nie ma jakiegoś innego docuimentclass i ch=ya innych jestn git xddd
-    const regex = /\\documentclass\{[a-z]+\}/g
-    const fromRegex =  [...line.matchAll(regex)] 
-    let documentclassLine: string[] = fromRegex.map(temp => temp[0])
-    //documentclassLine = documentclassLine.flat();
-    // if(documentclass.lenght >1) {...}        //sprawdzenie czy w lini nie ma więcej trakich  dziadostw
-    let [documentclass] = documentclassLine;
-    documentclass = documentclass.replace("\\documentclass{", "")
-    documentclass = documentclass.replace("}", "")
-    const documentclassBlock: blockType = {typeOfBlock: 'documentclass', blockContent: documentclass}
-    return documentclassBlock;
+
+    // const regex = /\\documentclass\{[a-z]+\}/g
+    // const fromRegex =  [...line.matchAll(regex)] 
+    // let documentclassLine: string[] = fromRegex.map(temp => temp[0])
+    // //documentclassLine = documentclassLine.flat();
+    // // if(documentclass.lenght >1) {...}        //sprawdzenie czy w lini nie ma więcej trakich  dziadostw
+    // let [documentclass] = documentclassLine;
+    // documentclass = documentclass.replace("\\documentclass{", "")
+    // documentclass = documentclass.replace("}", "")
+    // const documentclassBlock: blockType = {typeOfBlock: 'documentclass', blockContent: documentclass}
+    // return documentclassBlock;
+
+    let docBlockContent:documentOptionsType ={class: 'article'}
+
+    if(line.includes('\\documentclass[')){
+         line.replace(/\\documentclass\[([,a-z0-9 ]*?)\]\{([a-z]*?)\}/, (wholeFraze, options, docClass)=>{
+            docBlockContent.class=docClass
+               console.log('if class:',docClass )
+            
+            //font size
+            if(options.includes('12pt')){
+                docBlockContent.fontSize='12pt'
+            }else if(options.includes('11pt')){
+                docBlockContent.fontSize='11pt'
+            }else {
+                docBlockContent.fontSize='10pt'
+            }
+
+            //paper size
+            if(docClass!=='beamer'){
+            if(options.includes('letterpaper')){
+                docBlockContent.paperSize='letterpaper'
+            }else if(options.includes('a5paper')){
+                docBlockContent.paperSize='a5paper'
+            }else if(options.includes('b5paper')){
+                docBlockContent.paperSize='b5paper'
+            }else if(options.includes('executivepaper')){
+                docBlockContent.paperSize='executivepaper'
+            }else if(options.includes('legalpaper')){
+                docBlockContent.paperSize='legalpaper'
+            }
+            else {
+                docBlockContent.paperSize='a4paper'
+            }
+        }
+
+            //orientation
+            if(docClass!=='letter'){
+             if(options.includes('landscape')){
+                docBlockContent.orientation='landscape'
+            }
+            else {
+                docBlockContent.orientation=''
+            }
+        }
+
+            return wholeFraze
+        }) 
+
+    }else{
+        docBlockContent.class=(line.replace(/\\documentclass\{([a-z]*?)\}/, (wholeFraze, docClass)=>{
+            console.log('else class:',docClass )
+            return docClass 
+        }) as documentClassType)
+    }
+    console.log('doc.class:', docBlockContent.class)
+    return {typeOfBlock: 'documentclass', blockContent: docBlockContent}
 }
 
 export const specialCharactersToBlockConverter = (toConvert: string):string=>{
@@ -136,8 +192,8 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
         // refs to bibliography
         fontToConvert=fontToConvert.replaceAll(/\\cite\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
         let wholeFrazeCopy=wholeFraze
-        console.log('wholeFraze', wholeFraze)
-        console.log('insideOfFraze', insideOfFraze)
+       // console.log('wholeFraze', wholeFraze)
+        //console.log('insideOfFraze', insideOfFraze)
         //for( let i of insideOfFraze){
             wholeFrazeCopy =wholeFrazeCopy.replaceAll(`\\cite{${insideOfFraze}}`, `<span class="mention" data-type="mention" data-id="${insideOfFraze}">${insideOfFraze}</span>`)
        // }
@@ -179,11 +235,11 @@ for (let i=0; i<splitted.length; i++){
     
      tmpStack.sort((a,b)=> a.index - b.index)
      stack=[...stack, ...tmpStack]
-     console.log('stack:', stack)
+     //console.log('stack:', stack)
     if (i!==splitted.length-1)
     {
          const poped = stack.pop()
-        console.log('pop',poped)
+       //console.log('pop',poped)
        for( let font of fonts){
        if(( new RegExp(font.reg.source, 'g')).test(poped[0])){
           converted = converted+splitted[i]

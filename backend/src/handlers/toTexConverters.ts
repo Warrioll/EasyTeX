@@ -1,9 +1,29 @@
 import { figureModel } from "../models/figureModel";
-import { blockAbleToRef, blockContentType, referencesElementType, slideBreak, titleSectionType } from "../types";
+import { blockAbleToRef, blockContentType, documentOptionsType, referencesElementType, slideBreak, titleSectionType } from "../types";
 import { specialCharacters } from "../specialCharacters";
 
-export const documentclassToTex =(blockContent:string): string =>{
-    return('\\documentclass{'+blockContent+'}');
+export const documentclassToTex =(blockContent:documentOptionsType): string =>{
+    let options: string[] =[]
+
+    if(blockContent.fontSize){
+        options=[...options, blockContent.fontSize]
+    }
+    if(blockContent.fontType){
+        options=[...options, blockContent.fontType]
+    }
+    if(blockContent.paperSize){
+        options=[...options, blockContent.paperSize]
+    }
+    if(blockContent.orientation){
+        options=[...options, blockContent.orientation]
+    }
+
+    if(options.length>=1){
+        return(`\\documentclass[${options.join(', ')}]{${blockContent.class}}`);
+    }else{
+        return('\\documentclass{'+blockContent.class+'}');
+    }
+    
 }
 
 export const specialCharactersToTexConverter = (toConvert: string):string=>{

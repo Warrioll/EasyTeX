@@ -120,7 +120,7 @@ export default function SectionBlock({
             <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
               H1:
             </Text>
-            {blocksContent[0].blockContent !== 'beamer' && (
+            {blocksContent[0].blockContent.class !== 'beamer' && (
               <Text
                 fz="xl"
                 fw="bold"

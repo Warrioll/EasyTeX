@@ -38,7 +38,7 @@ tableToBlock,
 openingToBlock,
 closingToBlock} from '../handlers/toBlockConverters';
 import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
-import { blockAbleToRef, blockType, referencesElementType, slideBreak, titleSectionType} from '../types';
+import { blockAbleToRef, blockType, documentOptionsType, referencesElementType, slideBreak, titleSectionType} from '../types';
 import { figureModel } from '../models/figureModel';
 import { Document, InferSchemaType, isValidObjectId } from 'mongoose';
 import { nameRegex } from '../nameRegexes';
@@ -337,7 +337,8 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
                 return  nullBlock 
               }
             }})
-          blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
+          //blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
+          blocks = blocks.filter(block => (block.typeOfBlock))
           //console.log(blocks)
 
     // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
@@ -383,7 +384,7 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
 
 
 
-        const content: (string |undefined)[] = [`\\documentclass{${savedDocument.documentClass}}`, , 
+        const content: (string |undefined)[] = [`\\documentclass[10pt, a4paper, onecolumn]{${savedDocument.documentClass}}`, , 
           "\\begin{document}",'New document', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
         
@@ -409,56 +410,7 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
 };
 
 
-// TODO reaczej do usuniecia
-export const addLine = async (req: express.Request, res: express.Response)=>{
-  // try{
-  //   const {id} = req.params;
-  //   const {lineNr, line} = req.body;
-  //   let content: (string | undefined)[] = await loadTexFile(id);
-  //   content.splice(lineNr-1,0, line);
-  //   console.log(content);
 
-  //   fileHander.writeFileSync(`documentBase/${id}.tex`, content.join("\n"));
-
-  //   res.sendStatus(200);
-  // }catch(error){
-  //   console.log(error);
-  //   res.sendStatus(500);
-  // }
-
-  try{
-    const {id} = req.params;
-    const {idx, block} = req.body as {idx: number, block: blockType};
-
-    let line;
-    switch(block.typeOfBlock){
-      case 'textfield':
-       line = textfieldToTex(block.blockContent as string);
-       break;
-      case 'section':
-       line = sectionToTex(block.blockContent as string);
-       break;
-       case 'subsection':
-        line = subsectionToTex(block.blockContent as string); 
-        break; 
-      default: 
-        console.log("This type of block don't exists! ", block.typeOfBlock)
-    } 
-    
-    let document: (string | undefined)[] = await loadTexFile('documentBase/',id);
-    document.splice(idx,0, line);
-    //console.log(content);
-
-    fileHander.writeFileSync(`documentBase/${id}.tex`, document.join("\n"));
-
-    res.sendStatus(200);
-  }catch(error){
-    console.log(error);
-    if(!res.headersSent){
-          res.sendStatus(500);
-    }
-  }
-}
 
 
 export const updateWholeDocumentContent  = async (req: express.Request, res: express.Response)=>{
@@ -475,11 +427,13 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
       switch(block.typeOfBlock){
         case 'documentclass':{
-          if(documentInstantion.documentClass!==block.blockContent as string){
+          if(documentInstantion.documentClass!==(block.blockContent as documentOptionsType).class as string){
+            console.log('class from blocks: ', (block.blockContent as documentOptionsType).class)
+            console.log('class from db: ', documentInstantion.documentClass)
             //FIXME branie jednego z typów?
             throw new Error("Document types are not the same!");
           }
-          return documentclassToTex(block.blockContent as string);
+          return documentclassToTex(block.blockContent as documentOptionsType);
       } case 'titlePage':{
         if(documentInstantion.documentClass==='letter'){
           return addressAndDateToTex(block.blockContent as titleSectionType)
@@ -573,10 +527,10 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
     let defaultPackages =['\\usepackage{ulem}',
       '\\usepackage{amsmath}', 
-      '\\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue]{hyperref}', 
-      '\\usepackage{graphicx} ', 
       '\\usepackage{amssymb}',
      ]
+
+     let noForBeamerPackages = [ '\\usepackage{graphicx} ',  '\\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue]{hyperref}', ]
 
      let beamerSettings=[
       '\\AtBeginSection[]{{\\centering \\huge{ \\insertsection} \\par}}',
@@ -589,15 +543,15 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
      switch (documentInstantion.documentClass){
       case 'beamer':
-        document.splice(1,0,[...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
+        document.splice(1,0,document[1].startsWith('\\begin{frame}') ? [...defaultPackages, ...beamerSettings, '\\begin{document}'].join('\n'): [...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
         document.push(['\\end{frame}', ...defaultEnding].join('\n'))
         break
       case 'letter':
-         document.splice(1,0,[...defaultPackages, '\\begin{document}', '\\begin{letter}{}'].join('\n'))
+         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages, '\\begin{document}', '\\begin{letter}{}'].join('\n'))
           document.push(['\\end{letter}', ...defaultEnding].join('\n'))
         break
       default:
-         document.splice(1,0,[...defaultPackages, '\\begin{document}'].join('\n'))
+         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages,'\\begin{document}'].join('\n'))
           document.push(defaultEnding.join('\n'))
      }
     

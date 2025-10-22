@@ -79,7 +79,8 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
       <Flex>
         <MarkedBlockFrame idx={idx} blockName="Bibliography / References">
           <Text mb="md" fw="bold" fz="xl" c="var(--mantine-color-gray-6)">
-            {blocksContent[0].blockContent === 'report' || blocksContent[0].blockContent === 'book'
+            {blocksContent[0].blockContent.class === 'report' ||
+            blocksContent[0].blockContent.class === 'book'
               ? 'Bibliography'
               : 'References'}
           </Text>

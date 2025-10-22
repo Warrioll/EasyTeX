@@ -1,6 +1,6 @@
 import express from 'express'
 import multer from 'multer'
-import { getDocuments, getDocumentById, createDocument,  addLine, getPdf, getDocumentContent, updateWholeDocumentContent, // updateLines, updateLine,
+import { getDocuments, getDocumentById, createDocument,   getPdf, getDocumentContent, updateWholeDocumentContent, // updateLines, updateLine,
 getUserDocuments,
 renameDocument,
 deleteDocument,
@@ -26,7 +26,7 @@ export default (): express.Router =>{
         router.get('/document/getTex/:id', getTexFile)
         router.get('/document/getDocumentContent/:id', getDocumentContent)
         router.post('/document',createDocument);
-        router.post("/document/line/:id",addLine )
+        //router.post("/document/line/:id",addLine )
         //router.put("/document/line/:id",updateLine )
        // router.put("/document/lines/:id",updateLines )
         router.put("/document/documentContent/:id",updateWholeDocumentContent )

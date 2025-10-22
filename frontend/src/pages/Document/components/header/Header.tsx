@@ -3,7 +3,6 @@ import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
 import { BiFont, BiFontFamily } from 'react-icons/bi';
-import DocumentToolsTab from './DocumentToolsTab';
 import {
   FaBold,
   FaCode,
@@ -21,6 +20,7 @@ import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
 import { HiDocumentDownload, HiOutlineDocumentDownload } from 'react-icons/hi';
 import {
   IoDocumentsOutline,
+  IoDocumentTextOutline,
   IoImagesOutline,
   IoLogInOutline,
   IoSettingsOutline,
@@ -85,7 +85,6 @@ import { documentColor, documentMainLabels } from '@/components/other/documentLa
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
 import { dateFormatter } from '@/utils/formatters';
-import { IoDocumentTextOutline } from "react-icons/io5";
 import {
   useActiveBlockContext,
   useActiveTextfieldContext,
@@ -94,6 +93,7 @@ import {
 } from '../../DocumentContextProviders';
 import { useAddBlock } from '../../hooksAndUtils/documentHooks';
 import { useBlocksList } from '../blocksListAndPrototypes';
+import DocumentToolsTab from './DocumentToolsTab';
 import FontTab from './FontTab';
 import { useInsertTools } from './InsertTools';
 import { useTableTools } from './TableTools';
@@ -150,7 +150,9 @@ const Header: React.FC<headerProps> = ({
       buttons={blocksList}
       iconSize="var(--mantine-font-size-lg)"
       getToottipText={(label: string) => `Add ${label.toLocaleLowerCase()}`}
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
@@ -160,7 +162,9 @@ const Header: React.FC<headerProps> = ({
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
       //dontRenderButtons={[6, 7, 8, 9]}
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
@@ -170,7 +174,9 @@ const Header: React.FC<headerProps> = ({
       dontRenderButtons={[1, 2, 3, 4, 5]}
       buttons={insertTools}
       iconSize="var(--mantine-font-size-lg)"
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
@@ -181,14 +187,19 @@ const Header: React.FC<headerProps> = ({
     <TabTemplate
       buttons={tableTools}
       iconSize="var(--mantine-font-size-lg)"
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
-  const viewTools = ()=> <><ZoomTools zoomState={workspaceZoom}/></>
-  
-  const docTools = () => <DocumentToolsTab zoomState={workspaceZoom}/>
+  const viewTools = () => (
+    <>
+      <ZoomTools zoomState={workspaceZoom} />
+    </>
+  );
 
+  const docTools = () => <DocumentToolsTab zoomState={workspaceZoom} />;
 
   const chooseModifyTabName = (): string => {
     if (activeBlock !== 0) {
@@ -233,13 +244,13 @@ const Header: React.FC<headerProps> = ({
   };
 
   const basicTabs = [
-            {
+    {
       value: 'document',
       label: 'Document',
       tools: () => docTools,
       Icon: () => <IoDocumentTextOutline />,
     },
-        {
+    {
       value: 'view',
       label: 'View',
       tools: () => viewTools,
@@ -252,8 +263,6 @@ const Header: React.FC<headerProps> = ({
       tools: () => blocksTools,
       Icon: () => <TbBlocks />,
     },
-
-
   ];
   const basicTextfieldTabs = [
     {
@@ -441,12 +450,12 @@ const Header: React.FC<headerProps> = ({
               fz="md"
             >
               <Logo width="1.4rem" />
-              <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fw="700" ml="sm">
+              {/* <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fw="700" ml="sm">
                 Easy
               </Text>
               <Text mt="0.2rem" fw="700" c="var(--mantine-color-cyan-9)">
                 TeX
-              </Text>
+              </Text> */}
             </Button>
             <Tabs.List ref={setRootRef} className={classes.list} mb="0px" mt="5px">
               {tabs.map((tab) => (
@@ -459,7 +468,7 @@ const Header: React.FC<headerProps> = ({
                   leftSection={<tab.Icon />}
                   styles={{ tabSection: { marginRight: '6px' } }}
                 >
-                  {tab.label}
+                  <Box visibleFrom="xxl">{tab.label}</Box>
                 </Tabs.Tab>
               ))}
               <FloatingIndicator
@@ -589,7 +598,7 @@ const Header: React.FC<headerProps> = ({
                   window.location.href = '/dashboard';
                 }}
               >
-                Documents
+                <span className="mantine-visible-from-md">Documents</span>
               </Button>
               <Button
                 c="var(--mantine-color-gray-7)"
@@ -602,7 +611,7 @@ const Header: React.FC<headerProps> = ({
                   window.location.href = '/assetsLibrary';
                 }}
               >
-                Assets
+                <span className="mantine-visible-from-md">Assets</span>
               </Button>
               <Button
                 c="var(--mantine-color-gray-7)"
@@ -615,7 +624,7 @@ const Header: React.FC<headerProps> = ({
                   window.location.href = '/profile';
                 }}
               >
-                Account
+                <span className="mantine-visible-from-md">Account</span>
               </Button>
             </Group>
           </Group>
@@ -634,6 +643,7 @@ const Header: React.FC<headerProps> = ({
               <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
             ))}
           </Center>
+
           <Group
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
@@ -644,7 +654,7 @@ const Header: React.FC<headerProps> = ({
             className={classes.band}
             justify="center"
           >
-            <Box w='12vw'>
+            <Box w="12vw">
               <Tooltip
                 label={
                   <>
@@ -702,10 +712,10 @@ const Header: React.FC<headerProps> = ({
                 </Button>
               </Tooltip>
             </Box>
-            <Box w='12vw'>
-            <ZoomTools zoomState={pdfZoom} />
+            <Box w="12vw">
+              <ZoomTools zoomState={pdfZoom} />
             </Box>
-            <Group justify="end" gap="0px" w='12vw'>
+            <Group justify="end" gap="0px" w="12vw">
               {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
             </Button> */}

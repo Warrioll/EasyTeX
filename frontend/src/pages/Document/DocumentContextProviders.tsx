@@ -31,14 +31,44 @@ export const EditorContext = createContext<any>(null);
 export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) => {
   const [blocksContent, setBlocksContent] = useState<blockType[]>([]);
   const [isNotSaved, setIsNotSaved] = useState<boolean>(false);
+
+  let blocksContentHistory: blockType[][] = [];
+  let historyPivot: number = 0;
   //const isNotSavedRef = useRef(isNotSaved)
   let isBlocksLoaded = false;
+
+  const historyBuffer = 10;
+
+  const undo = (): void => {
+    isBlocksLoaded = false;
+    if (historyPivot < historyBuffer) {
+      historyPivot++;
+      setBlocksContent(cloneDeep(blocksContentHistory[historyPivot]));
+    }
+  };
+
+  const undoPossible = (): boolean => {
+    console.log('hisotry lht:', blocksContentHistory);
+    return blocksContentHistory.length > 1;
+  };
+
+  const redo = (): void => {
+    isBlocksLoaded = false;
+    if (historyPivot > 0) {
+      historyPivot--;
+      setBlocksContent(cloneDeep(blocksContentHistory[historyPivot]));
+    }
+  };
+
+  const redoPossible = (): boolean => historyPivot > 0;
 
   useEffect(() => {
     if (isBlocksLoaded) {
       setIsNotSaved(true);
     } else {
       isBlocksLoaded = true;
+      blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
+      historyPivot = 0;
     }
   }, [blocksContent]);
 
@@ -54,6 +84,17 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
 
     if (isNotSaved) {
       window.addEventListener('beforeunload', notSavedWaringHandler);
+      if (historyPivot === 0) {
+        blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
+      } else if (historyPivot) {
+        blocksContentHistory = blocksContentHistory.slice(historyPivot);
+        blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
+      }
+
+      if (blocksContentHistory.length > historyBuffer) {
+        blocksContentHistory.pop();
+      }
+
       return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
     }
   }, [isNotSaved]);
@@ -65,6 +106,10 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
         setBlocksContent,
         isNotSaved,
         setIsNotSaved,
+        undo,
+        redo,
+        undoPossible,
+        redoPossible,
       }}
     >
       {children}

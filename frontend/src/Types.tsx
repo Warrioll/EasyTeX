@@ -7,6 +7,7 @@ export type blockType = {
     | referencesElementType[] //references
     | blockAbleToRef
     | slideBreak
+    | documentOptionsType
     | null
     | undefined;
 };
@@ -29,8 +30,6 @@ export type typeOfBlockType =
   | null
   | undefined;
 
-
-
 export type referencesElementType = {
   id: string;
   label: string;
@@ -48,16 +47,15 @@ export type blockAbleToRef = {
   content: string | string[][];
 };
 
+export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides';
 
-export type documentClassType ='article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides'
-
-export type documentType = {
-  class: documentClassType,
-  fontSize: '10pt' | '11pt' | '12pt',
-  fontType: 'roman' | 'sans' | 'typewriter',
-  pageSize: 'a4paper' | 'a5papper' | 'b5paper' | 'letterpaper',
-  orientation: 'landscape' | ''
-}
+export type documentOptionsType = {
+  class: documentClassType;
+  fontSize?: '10pt' | '11pt' | '12pt';
+  fontType?: 'roman' | 'sans' | 'typewriter';
+  paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
+  orientation?: 'landscape' | '';
+};
 
 export type listElementType = {
   value: string | object | null;

@@ -40,10 +40,12 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
           <ButtonsOfMarkedBlock
             idx={idx}
             blockName={
-              blocksContent[idx].typeOfBlock && blocksContent[0].blockContent
+              blocksContent[idx].typeOfBlock &&
+              blocksContent[0].blockContent &&
+              blocksContent[0].blockContent.class
                 ? blockTypeToOfficialName(
                     blocksContent[idx].typeOfBlock,
-                    blocksContent[0].blockContent
+                    blocksContent[0].blockContent.class
                   )
                 : '???'
             }
@@ -102,10 +104,12 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
           <ButtonsOfMarkedBlock
             idx={idx}
             blockName={
-              blocksContent[idx].typeOfBlock && blocksContent[0].blockContent
+              blocksContent[idx].typeOfBlock &&
+              blocksContent[0].blockContent &&
+              blocksContent[0].blockContent.class
                 ? blockTypeToOfficialName(
                     blocksContent[idx].typeOfBlock,
-                    blocksContent[0].blockContent
+                    blocksContent[0].blockContent.class
                   )
                 : '???'
             }

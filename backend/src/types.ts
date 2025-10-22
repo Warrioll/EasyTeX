@@ -11,10 +11,20 @@ export type blockContentType =  string
     | referencesElementType[] //references
     | blockAbleToRef
     | slideBreak
+    | documentOptionsType
     | null
     | undefined;
 
+    export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides';
 
+export type documentOptionsType = {
+  class: documentClassType;
+  fontSize?: '10pt' | '11pt' | '12pt';
+  fontType?: 'roman' | 'sans' | 'typewriter';
+  paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
+  orientation?: 'landscape' | '';
+  columns?: 'onecolumn' | 'twocolumn';
+};
   export type typeOfBlockType =
     | 'textfield'
     | 'section'

@@ -71,7 +71,7 @@ export default function DeleteBlockModal({
 
   const getDeleteBlockContent = () => {
     const blockType = blocksContent[activeBlock].typeOfBlock;
-    const docuimentclass = blocksContent[0].blockContent;
+    const docuimentclass = blocksContent[0].blockContent.class;
     switch (blockType as unknown as string) {
       case 'documentclass':
         return 'Document type';
@@ -274,7 +274,7 @@ export default function DeleteBlockModal({
 
               blockTypeToOfficialName(
                 blocksContent[activeBlock].typeOfBlock,
-                blocksContent[0].blockContent
+                blocksContent[0].blockContent.class
               )
             }
             <b>Content: </b>

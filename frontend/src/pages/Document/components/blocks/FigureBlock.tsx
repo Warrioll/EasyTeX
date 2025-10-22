@@ -216,7 +216,7 @@ export default function FigureBlock({
               <BlockReferenceId referenceId={blocksContent[idx].blockContent.id} />
             </Box>
             <Box miw="4rem" c="var(--mantine-color-gray-6)" mr="0px">
-              Figure {blocksContent[0].blockContent !== 'beamer' && figuresCounter}
+              Figure {blocksContent[0].blockContent.class !== 'beamer' && figuresCounter}
             </Box>
             <BasicTexfield
               idx={idx}

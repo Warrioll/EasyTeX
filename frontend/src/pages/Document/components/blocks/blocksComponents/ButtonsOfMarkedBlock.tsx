@@ -128,7 +128,7 @@ export default function ButtonsOfMarkedBlock({
               }}
               iconSize="0.8rem"
               tooltip={`Add block ${typeOfAddBlockFunction}`}
-              belongingValidator={blocksContent[0].blockContent as string}
+              belongingValidator={blocksContent[0].blockContent.class as string}
             />
             <Flex>
               <Menu

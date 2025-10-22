@@ -20,7 +20,7 @@ import Split from '@uiw/react-split';
 import { cloneDeep } from 'lodash';
 import { useParams } from 'react-router-dom';
 //import Split from 'react-split';
-import { Box, Center, Loader, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
+import { Box, Center, Flex, Loader, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
 import { blockType } from '@/Types';
 import EquationBlock from './components/blocks/EquationBlock';
 import FigureBlock from './components/blocks/FigureBlock';
@@ -123,6 +123,9 @@ export default function DocumentPage() {
     try {
       const blocks = blocksContent.filter((block: blockType) => {
         switch (block.typeOfBlock) {
+          case 'documentclass':
+            console.log('class: ', block.blockContent.class);
+            return true;
           case 'titlePage':
             if (
               chceckIfBlockContentEmpty(block.blockContent.title as string) &&
@@ -153,6 +156,7 @@ export default function DocumentPage() {
             //FIXME - sprawdzanie czy nie są puste
             //return chceckIfBlockContentEmpty(block.blockContent.label as string);
             return true;
+
           default:
             return !chceckIfBlockContentEmpty(block.blockContent);
         }
@@ -301,6 +305,7 @@ export default function DocumentPage() {
       const response = await getBlocksContent(id as string);
       console.log('co z tym', response.data);
       setBlocksContent(response.data);
+      console.log('blocksContent: ', response.data);
       setWorkspaceLoaded(true);
     } catch (error) {
       //console.log('co z tym', error);
@@ -361,14 +366,14 @@ export default function DocumentPage() {
     try {
       switch (item.typeOfBlock) {
         case 'titlePage':
-          if (blocksContent[0].blockContent === 'letter') {
+          if (blocksContent[0].blockContent.class === 'letter') {
             return <AddressAndDateBlock idx={idx} />;
           }
           return <TitlePageBlock idx={idx} />;
         case 'tableOfContents':
           return <TableOfContentsBlock idx={idx} />;
         case 'pageBreak':
-          if (blocksContent[0].blockContent === 'beamer') {
+          if (blocksContent[0].blockContent.class === 'beamer') {
             return <SlideBreakBlock idx={idx} />;
           }
           return <PageBreakBlock idx={idx} />;
@@ -377,17 +382,17 @@ export default function DocumentPage() {
         case 'section':
           return <SectionBlock idx={idx} />;
         case 'subsection':
-          if (blocksContent[0].blockContent === 'letter') {
+          if (blocksContent[0].blockContent.class === 'letter') {
             return <OpeningBlock idx={idx} />;
           }
           return <SubsectionBlock idx={idx} />;
         case 'subsubsection':
-          if (blocksContent[0].blockContent === 'letter') {
+          if (blocksContent[0].blockContent.class === 'letter') {
             return <ClosingBlock idx={idx} />;
           }
           return <SubsubsectionBlock idx={idx} />;
         case 'subsubsubsection':
-          if (blocksContent[0].blockContent === 'book') {
+          if (blocksContent[0].blockContent.class === 'book') {
             return <SubsubsubsectionBlock idx={idx} />;
           }
           return <UnavailableBlock idx={idx} />;
@@ -411,7 +416,8 @@ export default function DocumentPage() {
   };
 
   useEffect(() => {
-    pdfZoomValue[1](1.4 * Number(pdfZoom[0]));
+    //pdfZoomValue[1](1.4 * Number(pdfZoom[0]));
+    pdfZoomValue[1](Number(pdfZoom[0]));
   }, [pdfZoom[0]]);
 
   useEffect(() => {
@@ -445,167 +451,176 @@ export default function DocumentPage() {
             <ActiveTextfieldProvider>
               {/* <ReferencesListProvider> */}
               <EditorProvider>
-                <Header
-                  //editFunctions={editFunctions}
-                  saveDocumentContent={saveDocumentContent}
-                  //editor={editor}
-                  pdfZoom={pdfZoom}
-                  workspaceZoom={workspaceZoom}
-                  setPdfFile={setPdfFile}
-                  pdfLoaded={pdfLoaded}
-                />
-                <Box maw="100vh">
-                  <Split
-                    className={classes.bar}
-                    lineBar
-                    style={{ width: '100vw', border: 'none' }}
-                    renderBar={({ onMouseDown, ...props }) => {
-                      return (
-                        <div {...props} style={{ boxShadow: 'none' }}>
-                          <div onMouseDown={onMouseDown} />
-                        </div>
-                      );
-                    }}
-                  >
-                    <Center w="100vw" h="90vh" p="0px" pos="relative">
-                      <LoadingOverlay
-                        visible={!workspaceLoaded}
-                        zIndex={100}
-                        overlayProps={{
-                          radius: 'sm',
-                          blur: 1,
-                          color: 'var(--mantine-color-gray-1)',
-                        }}
-                        loaderProps={{ color: 'cyan' }}
-                      />
-                      <ScrollArea h="100%" w="100%">
-                        <Box
-                          h="100%"
-                          w="100%"
-                          m="xl"
-                          style={{
-                            transform: `scale(${workspaceZoomValue[0]})`,
-                            transformOrigin: 'top left',
+                <Box maw="100vw" mah="100vh">
+                  <Header
+                    //editFunctions={editFunctions}
+                    saveDocumentContent={saveDocumentContent}
+                    //editor={editor}
+                    pdfZoom={pdfZoom}
+                    workspaceZoom={workspaceZoom}
+                    setPdfFile={setPdfFile}
+                    pdfLoaded={pdfLoaded}
+                  />
+                  <Box maw="100vh">
+                    <Split
+                      className={classes.bar}
+                      lineBar
+                      style={{ width: '100vw', border: 'none' }}
+                      renderBar={({ onMouseDown, ...props }) => {
+                        return (
+                          <div {...props} style={{ boxShadow: 'none' }}>
+                            <div onMouseDown={onMouseDown} />
+                          </div>
+                        );
+                      }}
+                    >
+                      <Center w="100vw" h="90vh" p="0px" pos="relative">
+                        <LoadingOverlay
+                          visible={!workspaceLoaded}
+                          zIndex={100}
+                          overlayProps={{
+                            radius: 'sm',
+                            blur: 1,
+                            color: 'var(--mantine-color-gray-1)',
                           }}
-                          p="0px"
-                        >
-                          {blocksError && (
-                            <Box h="80vh">
-                              <ErrorBanner
-                                title={blocksError.title}
-                                description={blocksError.description}
-                                Icon={blocksError.icon}
-                                ButtonIcon={blocksError.buttonIcon}
-                                buttonLabel={blocksError.buttonLabel}
-                                buttonFunction={() => blocksError.buttonFunction}
-                              />
-                            </Box>
-                          )}
-                          {workspaceLoaded && !blocksError && (
-                            <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
-                              <Paper
-                                radius="0px"
-                                pt="0px"
-                                pb="0px"
-                                pl="lg"
-                                pr="lg"
-                                w="40vw"
-                                h="50px"
-                              />
-
-                              {blocksLoaded && blocksContent.length > 0 ? (
-                                blocksContent.map((item, idx) => (
-                                  <div key={idx}>
-                                    <ErrorBoundary fallback={<UnavailableBlock idx={idx} />}>
-                                      {renderBlock(item, idx)}
-                                    </ErrorBoundary>
-                                  </div>
-                                ))
-                              ) : (
-                                <></>
-                              )}
-                              <Paper
-                                radius="0px"
-                                pt="0px"
-                                pb="0px"
-                                pl="lg"
-                                pr="lg"
-                                w="40vw"
-                                h="50px"
-                              />
-                            </Stack>
-                          )}
-                        </Box>
-                      </ScrollArea>
-                    </Center>
-                    <Box w="100%" pos="relative" style={{ overflow: 'hidden' }}>
-                      <LoadingOverlay
-                        visible={!pdfLoaded}
-                        zIndex={100}
-                        overlayProps={{
-                          radius: 'sm',
-                          blur: 1,
-                          color: 'var(--mantine-color-gray-1)',
-                        }}
-                        loaderProps={{ color: 'cyan' }}
-                      />
-
-                      {pdfError && (
-                        <Box h="80vh" px="5rem">
-                          <ErrorBanner
-                            title={pdfError.title}
-                            description={pdfError.description}
-                            Icon={pdfError.icon}
-                            ButtonIcon={pdfError.buttonIcon}
-                            buttonLabel={pdfError.buttonLabel}
-                            buttonFunction={pdfError.buttonFunction}
-                          />
-                        </Box>
-                      )}
-                      {pdf && (
-                        <ScrollArea
-                          h="90vh"
-                          //p="xs"
-                          pb="10px"
-                          pr="10px"
-                          scrollbars="xy"
-                          bg="transparent"
-                          //style={{ overflow: 'visible' }} // miw='50vw'
-                        >
-                          <Center
-                            p={0}
-                            w={`calc(100% * ${pdfZoomValue[0] / 1.4})`}
-                            miw="100%"
-                            mih="85vh"
+                          loaderProps={{ color: 'cyan' }}
+                        />
+                        <ScrollArea h="100%" w="100%">
+                          <Box
+                            h="100%"
+                            w="100%"
+                            m="xl"
+                            style={{
+                              transform: `scale(${workspaceZoomValue[0]})`,
+                              transformOrigin: 'top left',
+                            }}
+                            p="0px"
                           >
-                            <Document
-                              file={pdf}
-                              loading={
-                                <Center>
-                                  <Loader size={5} />
-                                </Center>
-                              }
-                              //onLoadSuccess={onDocumentLoadSuccess}
-                              //options={options}
-                            >
-                              {Array.from(new Array(pagesNumber), (_el, index) => (
-                                <Page
-                                  key={`page_${index + 1}`}
-                                  pageNumber={index + 1}
-                                  className={classes.page}
-                                  scale={pdfZoomValue[0]}
-                                  // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                            {blocksError && (
+                              <Box h="80vh">
+                                <ErrorBanner
+                                  title={blocksError.title}
+                                  description={blocksError.description}
+                                  Icon={blocksError.icon}
+                                  ButtonIcon={blocksError.buttonIcon}
+                                  buttonLabel={blocksError.buttonLabel}
+                                  buttonFunction={blocksError.buttonFunction}
                                 />
-                              ))}
-                            </Document>
-                          </Center>
+                              </Box>
+                            )}
+                            {workspaceLoaded && !blocksError && (
+                              <Stack h="100%" w="100%" align="center" justify="center" gap="0%">
+                                <Paper
+                                  radius="0px"
+                                  pt="0px"
+                                  pb="0px"
+                                  pl="lg"
+                                  pr="lg"
+                                  w="40vw"
+                                  h="50px"
+                                />
 
-                          {/* </Grid.Col> */}
-                          {/* </Grid> */}
+                                {blocksLoaded && blocksContent.length > 0 ? (
+                                  blocksContent.map((item, idx) => (
+                                    <div key={idx}>
+                                      <ErrorBoundary fallback={<UnavailableBlock idx={idx} />}>
+                                        {renderBlock(item, idx)}
+                                      </ErrorBoundary>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <></>
+                                )}
+                                <Paper
+                                  radius="0px"
+                                  pt="0px"
+                                  pb="0px"
+                                  pl="lg"
+                                  pr="lg"
+                                  w="40vw"
+                                  h="50px"
+                                />
+                              </Stack>
+                            )}
+                          </Box>
                         </ScrollArea>
-                      )}
-                    </Box>
-                  </Split>
+                      </Center>
+                      <Box w="100%" pos="relative" style={{ overflow: 'hidden' }}>
+                        <LoadingOverlay
+                          visible={!pdfLoaded}
+                          zIndex={100}
+                          overlayProps={{
+                            radius: 'sm',
+                            blur: 1,
+                            color: 'var(--mantine-color-gray-1)',
+                          }}
+                          loaderProps={{ color: 'cyan' }}
+                        />
+
+                        {pdfError && (
+                          <Box h="80vh" px="5rem">
+                            <ErrorBanner
+                              title={pdfError.title}
+                              description={pdfError.description}
+                              Icon={pdfError.icon}
+                              ButtonIcon={pdfError.buttonIcon}
+                              buttonLabel={pdfError.buttonLabel}
+                              buttonFunction={pdfError.buttonFunction}
+                            />
+                          </Box>
+                        )}
+                        {pdf && (
+                          <ScrollArea
+                            h="90vh"
+                            //p="xs"
+                            pb="10px"
+                            pr="10px"
+                            scrollbars="xy"
+                            bg="transparent"
+                            w="100%"
+                            miw="100%"
+                            //style={{ overflow: 'visible' }} // miw='50vw'
+                          >
+                            <Center
+                              p="sm"
+                              //w={`calc(100% * ${pdfZoomValue[0] / 1.4})`}
+                              //w={`calc(100% * ${pdfZoomValue[0]})`}
+                              //w="100%"
+                              //display="contents"
+                              miw="max-content"
+                              mih="85vh"
+
+                              //style={{ overflow: 'auto' }}
+                            >
+                              <Document
+                                file={pdf}
+                                loading={
+                                  <Center>
+                                    <Loader size={5} />
+                                  </Center>
+                                }
+                                //onLoadSuccess={onDocumentLoadSuccess}
+                                //options={options}
+                              >
+                                {Array.from(new Array(pagesNumber), (_el, index) => (
+                                  <Page
+                                    key={`page_${index + 1}`}
+                                    pageNumber={index + 1}
+                                    className={classes.page}
+                                    scale={pdfZoomValue[0]}
+                                    // width={containerWidth ? Math.min(containerWidth, maxWidth) : maxWidth}
+                                  />
+                                ))}
+                              </Document>
+                            </Center>
+
+                            {/* </Grid.Col> */}
+                            {/* </Grid> */}
+                          </ScrollArea>
+                        )}
+                      </Box>
+                    </Split>
+                  </Box>
                 </Box>
               </EditorProvider>
               {/* </ReferencesListProvider> */}
