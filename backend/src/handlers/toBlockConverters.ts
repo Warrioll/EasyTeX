@@ -1,6 +1,6 @@
 import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType } from "../types"
 import { specialCharacters } from "../specialCharacters"
-import { cloneDeep } from "lodash"
+//import { cloneDeep } from "lodash"
 
 export const documentclassToBlock =(line: string) : blockType=>{
     //tu sprawdzenie czy nie ma jakiegoś innego docuimentclass i ch=ya innych jestn git xddd
@@ -173,7 +173,7 @@ const splitted =fontToConvert.split('}')
 for (let i=0; i<splitted.length; i++){
     let tmpStack:(RegExpExecArray)[]=[]
     for( let font of fonts){
-         tmpStack = [...tmpStack, ...cloneDeep([...splitted[i].matchAll( new RegExp(font.reg.source, 'g'))])]
+         tmpStack = [...tmpStack, ...[...splitted[i].matchAll( new RegExp(font.reg.source, 'g'))]]
        //console.log('to stack', font , ' : ', splitted[i],":",[...splitted[i].matchAll(font.reg)])
     }
     

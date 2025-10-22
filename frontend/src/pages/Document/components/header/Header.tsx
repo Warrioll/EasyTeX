@@ -3,6 +3,7 @@ import { Extension } from '@tiptap/core';
 import { Editor } from '@tiptap/react';
 import axios from 'axios';
 import { BiFont, BiFontFamily } from 'react-icons/bi';
+import DocumentToolsTab from './DocumentToolsTab';
 import {
   FaBold,
   FaCode,
@@ -84,6 +85,7 @@ import { documentColor, documentMainLabels } from '@/components/other/documentLa
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
 import { dateFormatter } from '@/utils/formatters';
+import { IoDocumentTextOutline } from "react-icons/io5";
 import {
   useActiveBlockContext,
   useActiveTextfieldContext,
@@ -183,11 +185,10 @@ const Header: React.FC<headerProps> = ({
     />
   );
 
-  const viewTools = () => (
-    <>
-      <ZoomTools zoomState={workspaceZoom} />
-    </>
-  );
+  const viewTools = ()=> <><ZoomTools zoomState={workspaceZoom}/></>
+  
+  const docTools = () => <DocumentToolsTab zoomState={workspaceZoom}/>
+
 
   const chooseModifyTabName = (): string => {
     if (activeBlock !== 0) {
@@ -232,6 +233,19 @@ const Header: React.FC<headerProps> = ({
   };
 
   const basicTabs = [
+            {
+      value: 'document',
+      label: 'Document',
+      tools: () => docTools,
+      Icon: () => <IoDocumentTextOutline />,
+    },
+        {
+      value: 'view',
+      label: 'View',
+      tools: () => viewTools,
+      Icon: () => <TbEye />,
+    },
+
     {
       value: 'blocks',
       label: 'Blocks',
@@ -239,12 +253,7 @@ const Header: React.FC<headerProps> = ({
       Icon: () => <TbBlocks />,
     },
 
-    {
-      value: 'view',
-      label: 'View',
-      tools: () => viewTools,
-      Icon: () => <TbEye />,
-    },
+
   ];
   const basicTextfieldTabs = [
     {
