@@ -68,6 +68,6 @@ body{
 .w-split-vertical > .w-split-line-bar div::after {
     border-radius: var(--mantine-radius-md);
     width: 5px !important;
-    background-color: var(--mantine-color-gray-3) !important; /* Ustaw swój kolor */
+    background-color: var(--mantine-color-cyan-7) !important;
 }
 

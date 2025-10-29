@@ -55,6 +55,7 @@ export type documentOptionsType = {
   fontType?: 'roman' | 'sans' | 'typewriter';
   paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
   orientation?: 'landscape' | '';
+  columns?: 'onecolumn' | 'twocolumn'
 };
 
 export type listElementType = {

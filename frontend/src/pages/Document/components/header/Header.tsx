@@ -368,6 +368,8 @@ const Header: React.FC<headerProps> = ({
     window.URL.revokeObjectURL(url);
   };
 
+//let optionsLoaded: boolean=false
+
   useEffect(() => {
     if (blocksContent[activeBlock]) {
       switch (blocksContent[activeBlock].typeOfBlock) {
@@ -392,7 +394,8 @@ const Header: React.FC<headerProps> = ({
       setValue('blocks');
     }
     //console.log('traning to cvhamge');
-  }, [activeBlock, workspaceZoom[0], blocksContent, editor.state.selection.head, activeTextfield]);
+  }, [activeBlock, workspaceZoom[0], editor.state.selection.head, activeTextfield //, blocksContent
+]);
 
   const getTabs = (): any[] => {
     if (blocksContent[activeBlock]) {

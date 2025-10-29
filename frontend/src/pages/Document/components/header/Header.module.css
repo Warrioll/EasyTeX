@@ -1,6 +1,6 @@
   .band{
     background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-9));
-    border: 1px solid light-dark(var(--mantine-color-cyan-7), var(--mantine-color-dark-6));
+    border: 2px solid light-dark(var(--mantine-color-cyan-7), var(--mantine-color-dark-6));
         /* background-color: light-dark(var(--mantine-color-cyan-0), var(--mantine-color-dark-9));
     border: 1px solid light-dark(var(--mantine-color-cyan-2), var(--mantine-color-dark-6)); */
     z-index: 1;

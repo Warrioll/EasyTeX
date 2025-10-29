@@ -118,6 +118,10 @@
            margin: 0px;
          border-bottom-left-radius: 0px;
            border-top-left-radius: 0px;
+        word-wrap: normal;
+        word-break: normal;
+        overflow: auto;
+                border-radius: var(--mantine-radius-md);
     }
 
     .codeEditorInput:focus{
