@@ -451,7 +451,7 @@ export default function DocumentPage() {
             <ActiveTextfieldProvider>
               {/* <ReferencesListProvider> */}
               <EditorProvider>
-                <Box maw="100vw" mah="100vh">
+                <Box maw="100vw" mah="100vh" miw="57rem">
                   <Header
                     //editFunctions={editFunctions}
                     saveDocumentContent={saveDocumentContent}
@@ -461,11 +461,11 @@ export default function DocumentPage() {
                     setPdfFile={setPdfFile}
                     pdfLoaded={pdfLoaded}
                   />
-                  <Box maw="100vh">
+                  <Box h="calc(100vh - 6rem)">
                     <Split
                       className={classes.bar}
                       lineBar
-                      style={{ width: '100vw', border: 'none' }}
+                      style={{ width: '100vw', border: 'none', height: 'calc(100vh - 6rem)' }}
                       renderBar={({ onMouseDown, ...props }) => {
                         return (
                           <div {...props} style={{ boxShadow: 'none' }}>
@@ -474,7 +474,7 @@ export default function DocumentPage() {
                         );
                       }}
                     >
-                      <Center w="100vw" h="90vh" p="0px" pos="relative">
+                      <Center w="100vw" h="calc(100vh - 6rem)" p="0px" pos="relative">
                         <LoadingOverlay
                           visible={!workspaceLoaded}
                           zIndex={100}
@@ -571,7 +571,7 @@ export default function DocumentPage() {
                         )}
                         {pdf && (
                           <ScrollArea
-                            h="90vh"
+                            h="calc(100vh - 6rem)"
                             //p="xs"
                             pb="10px"
                             pr="10px"

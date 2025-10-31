@@ -37,7 +37,8 @@ const mockdata = [
   },
   {
     title: 'Storing documents and assest',
-    description: 'EasyTex stores the documents you create and the images you upload, which you can access at any time using your account.',
+    description:
+      'EasyTex stores the documents you create and the images you upload, which you can access at any time using your account.',
     icon: () => <FaArchive />,
   },
 ];
@@ -68,7 +69,7 @@ export default function Features() {
   ));
 
   return (
-    <Box bg="var(--mantine-color-gray-1)" w="100%" h="100%" pos='relative' style={{zIndex: 1}}>
+    <Box bg="var(--mantine-color-gray-1)" w="100%" h="100%" pos="relative" style={{ zIndex: 1 }}>
       <Container size="80vw" pt="8rem" pb="4rem">
         <Group justify="center">
           <Badge variant="transparent" size="1.3rem" color="var(--mantine-color-cyan-7)">
@@ -84,7 +85,7 @@ export default function Features() {
           EasyTex offers various features to help you create documents.
         </Text>
 
-        <SimpleGrid cols={{ base: 1, md: 4 }} spacing="6rem" mt="5rem">
+        <SimpleGrid cols={{ base: 1, sm: 2, xxl: 4 }} spacing="6rem" mt="5rem">
           {features}
         </SimpleGrid>
       </Container>

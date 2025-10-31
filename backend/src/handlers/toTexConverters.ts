@@ -17,6 +17,9 @@ export const documentclassToTex =(blockContent:documentOptionsType): string =>{
     if(blockContent.orientation){
         options=[...options, blockContent.orientation]
     }
+    if(blockContent.columns){
+        options=[...options, blockContent.columns]
+    }
 
     if(options.length>=1){
         return(`\\documentclass[${options.join(', ')}]{${blockContent.class}}`);
@@ -64,6 +67,7 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
 //znaki specjalne
     //z tym coś nie działa
     //textfield= textfield.replaceAll('\\', '\\textbackslash')
+    console.log('bacis text:', fontToConvert)
 
  fontToConvert=specialCharactersToTexConverter(fontToConvert);
 
@@ -71,6 +75,9 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     if(fontToConvert==='&nbsp;' || fontToConvert==='<p>&nbsp;</p>'){
         return ' '
     }
+
+    //usuniecie &nbsp;
+    fontToConvert = fontToConvert.replaceAll('&nbsp;', '')
 
     //bold
     fontToConvert = fontToConvert.replaceAll('<strong>', '\\textbf{')
@@ -142,6 +149,8 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     // fontToConvert=converted.join('');
 
     //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
+     fontToConvert =  fontToConvert.replaceAll('<br>', '\\newline ')
+
     const splitted= fontToConvert.split('<p>').filter(i=>i!=='')
     fontToConvert=splitted.join('\\newline ')
     fontToConvert= fontToConvert.replaceAll('</p>', "");
@@ -180,9 +189,13 @@ export const textfieldToTex =(blockContent:string): string =>{
     textfield = textfield.replaceAll('<li><p>', '\\item ')
     textfield = textfield.replaceAll('</p></li>', '')
 
+
+
      //lists points without p-tags inside just in case
      textfield = textfield.replaceAll('<li>', '\\item ')
-     textfield = textfield.replaceAll('</li>', '')
+     textfield = textfield.replaceAll('</li>', '')     
+
+
     
     //bulletlist
     textfield = textfield.replaceAll('<ul>', '\\begin{itemize}')
@@ -190,7 +203,15 @@ export const textfieldToTex =(blockContent:string): string =>{
     
     //enumaratedlist
     textfield = textfield.replaceAll('<ol>', '\\begin{enumerate}')
-    textfield = textfield.replaceAll('</ol>', '\\end{enumerate}')
+    textfield = textfield.replaceAll('</ol>', '\\end{enumerate}') 
+
+    textfield = textfield.replaceAll(/(?:\\newline[ ]*)*\\item/g, '\\item')
+    textfield = textfield.replaceAll(/\\item(?:[ ]*\\newline)*/g, '\\item')
+    console.log('test')
+    textfield = textfield.replaceAll(/\\end{itemize}(?:[ ]*\\newline)*/g, ()=>{
+        console.log('boooo')
+        return '\\end{itemize}'})
+    textfield = textfield.replaceAll(/\\end{enumerate}(?:[ ]*\\newline)*/g, '\\end{enumerate}')
 
     //p-tagi i nowe linie
 
@@ -321,7 +342,7 @@ export const tableToTex =(blockContent: blockAbleToRef): string =>{
 
 export const figureToTex =(blockContent:blockAbleToRef, path:string, height: number): string =>{
     //return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
-     return `\\begin{figure}[h] \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
+     return `\\begin{figure}[H] \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
 }
 
 

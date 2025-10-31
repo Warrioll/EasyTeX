@@ -211,7 +211,7 @@ export default function DashboardPage() {
           p="0px"
         >
           <Container size="100rem" w="100%" pt="xl" pb="xl">
-            <Flex justify="center">{chooseBanner()}</Flex>
+            <Flex justify={{ sm: 'center' }}>{chooseBanner()}</Flex>
             <Flex p="0px" m="0px" justify="center">
               {dataLoaded ? (
                 documentData ? (

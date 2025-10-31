@@ -149,52 +149,22 @@ export default function MyAssetsPage() {
   return (
     <>
       <SimpleGrid
-        cols={3}
+        cols={2}
         mb="xs"
         style={{
           background:
             choosenFigureState[0] === null
-              ? `var(--mantine-color-white)`
-              : `linear-gradient(to right,var(--mantine-color-cyan-7),var(--mantine-color-cyan-3)`,
+              ? `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-1),   var(--mantine-color-white)`
+              : `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-5)`,
           borderRadius: 'var(--mantine-radius-md)',
         }}
         ml="xl"
         mr="xl"
-        p="xs"
         bd="1px solid var(--mantine-color-gray-3)"
+        py="0.3rem"
       >
-        <Flex align="center" justify="flex-start">
-          <Anchor
-            variant="transparent"
-            c={
-              choosenFigureState[0] === null
-                ? 'var(--mantine-color-cyan-7)'
-                : 'var(--mantine-color-white)'
-            }
-            ml="sm"
-            href="/dashboard"
-          >
-            <Center>
-              <FaArrowLeft />
-              <Text fw="500" ml="xs">
-                See documents
-              </Text>
-            </Center>
-          </Anchor>
-        </Flex>
-        <Flex align="center" justify="center">
-          <Text
-            fz="1.2rem"
-            ml="xl"
-            mr="xl"
-            mt="0px"
-            fw="500"
-            c={
-              choosenFigureState[0] === null
-                ? 'var(--mantine-color-cyan-9)'
-                : 'var(--mantine-color-white)'
-            }
-          >
+        <Flex align="center" justify="start">
+          <Text fz="1rem" ml="xl" mr="xl" mt="0px" fw="500" c="var(--mantine-color-white)">
             Assets library
           </Text>
         </Flex>

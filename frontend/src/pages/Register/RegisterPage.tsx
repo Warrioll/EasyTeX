@@ -44,7 +44,7 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const form = useForm({
     mode: 'controlled',
-   //  onSubmitPreventDefault: 'never',
+    //  onSubmitPreventDefault: 'never',
     initialValues: { name: '', email: '', password: '', repeatedPassword: '' },
     validate: {
       name: matches(
@@ -85,12 +85,12 @@ export default function RegisterPage() {
       //...
       setDisableSignUpButton(false);
     } catch (error) {
-      switch(error.response.status){
+      switch (error.response.status) {
         case 409:
-           setErrorMessage('Provided email or username i already used!');
-           break;
+          setErrorMessage('Provided email or username i already used!');
+          break;
         default:
-           setErrorMessage('Sorry, something went wrong!');
+          setErrorMessage('Sorry, something went wrong!');
       }
       //setErrorMessage('Sorry, something went wrong!');
       await new Promise((resolve) => setTimeout(resolve, 200));
@@ -103,9 +103,9 @@ export default function RegisterPage() {
 
   return (
     <>
-      <BackgroundImage src="./bg13.png" radius="xs">
-        <Stack h="100vh" align="stretch" justify="center">
-          <Container w={840}>
+      <BackgroundImage src="./bg13.png" radius="xs" miw="max-content">
+        <Stack h="100vh" align="stretch" justify="center" miw="max-content" mih="max-content">
+          <Container w={{ base: 500, md: 840 }}>
             <Paper withBorder shadow="md" p={30} mt={40} radius="md" className={styles.paper}>
               <Title ta="center" className={styles.title}>
                 Sign up!
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                   async (values) => {
                     setDisableSignUpButton(true);
                     await register(values);
-                     setDisableSignUpButton(false);
+                    setDisableSignUpButton(false);
                   },
                   async (validationErrors, values, event) => {
                     //console.log(errorMsgOpened);
@@ -135,7 +135,15 @@ export default function RegisterPage() {
                   }
                 )}
               >
-                <SimpleGrid cols={2} spacing={100} verticalSpacing="0.3rem" p="md" pl="xl" pr="xl">
+                <SimpleGrid
+                  cols={2}
+                  spacing={100}
+                  verticalSpacing="0.3rem"
+                  p="md"
+                  pl="xl"
+                  pr="xl"
+                  visibleFrom="md"
+                >
                   <Box>
                     <Box h="5.5rem">
                       <TextInput
@@ -180,15 +188,61 @@ export default function RegisterPage() {
                   </Box>
                 </SimpleGrid>
 
+                <Stack hiddenFrom="md">
+                  <Box>
+                    <Box h="5.5rem">
+                      <TextInput
+                        {...form.getInputProps('name')}
+                        variant="filled"
+                        label="Username"
+                        placeholder="Username"
+                        required
+                        tabIndex={0}
+                      />
+                    </Box>
+                    <Box h="5.5rem">
+                      <TextInput
+                        {...form.getInputProps('email')}
+                        variant="filled"
+                        label="Email"
+                        placeholder="Email"
+                        required
+                      />
+                    </Box>
+                  </Box>
+                  <Box>
+                    <Box h="5.5rem">
+                      <PasswordInput
+                        {...form.getInputProps('password')}
+                        variant="filled"
+                        label="Password"
+                        placeholder="Your password"
+                        required
+                      />
+                    </Box>
+
+                    <Box h="5.5rem">
+                      <PasswordInput
+                        {...form.getInputProps('repeatedPassword')}
+                        variant="filled"
+                        label="Reapat Password"
+                        placeholder="Your password"
+                        required
+                      />
+                    </Box>
+                  </Box>
+                </Stack>
+
                 <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMsgOpened} />
                 <Flex justify="center" pl={210} pr={210} mt="xl">
                   <Button
                     type="submit"
+                    miw="15rem"
                     fullWidth
                     disabled={disableSignUpButton}
                     onClick={async () => {
                       //console.log('click');
-                      
+
                       errorDialogHandlers.close();
                       errorMsgHandlers.close();
 
@@ -275,13 +329,21 @@ export default function RegisterPage() {
             opened={modalOpened}
             onClose={modalHandlers.close}
             withCloseButton={false}
-            yOffset="20vh"
-            size="45%"
+            centered
+            size="auto"
             closeOnClickOutside={false}
             overlayProps={{ blur: 7 }}
             transitionProps={{ transition: 'fade-up' }}
           >
-            <Flex justify="center" align="center" direction="column" gap="xs" p="xl">
+            <Flex
+              justify="center"
+              align="center"
+              direction="column"
+              gap="xs"
+              p="xl"
+              ta="center"
+              miw={{ base: '10rem', md: '50rem' }}
+            >
               <Title mb="sm" c="var(--mantine-color-cyan-8)">
                 Congratulations!
               </Title>

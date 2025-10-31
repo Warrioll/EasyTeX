@@ -9,6 +9,7 @@ import {
   Button,
   Flex,
   Group,
+  ScrollArea,
   Text,
   Title,
   UnstyledButton,
@@ -93,28 +94,36 @@ export default function GuestLayout({ content }) {
       </AppShell.Header>
 
       <AppShell.Navbar py="md" px={4}>
-        <Button
-          onClick={() => navigate('/')}
-          variant="transparent"
-          leftSection={<TiHome />}
-          className={classes.control}
-        >
-          Home
-        </Button>
-        <Button
-          onClick={() => navigate('/login')}
-          variant="transparent"
-          className={classes.control}
-        >
-          Sign in
-        </Button>
-        <Button
-          onClick={() => navigate('/register')}
-          variant="transparent"
-          className={classes.control}
-        >
-          Sign up
-        </Button>
+        <ScrollArea>
+          <Button
+            w="100%"
+            mih="3rem"
+            onClick={() => navigate('/')}
+            variant="transparent"
+            leftSection={<TiHome />}
+            className={classes.control}
+          >
+            Home
+          </Button>
+          <Button
+            w="100%"
+            mih="3rem"
+            onClick={() => navigate('/login')}
+            variant="transparent"
+            className={classes.control}
+          >
+            Sign in
+          </Button>
+          <Button
+            w="100%"
+            mih="3rem"
+            onClick={() => navigate('/register')}
+            variant="transparent"
+            className={classes.control}
+          >
+            Sign up
+          </Button>
+        </ScrollArea>
       </AppShell.Navbar>
 
       <AppShell.Main p="0px">{content}</AppShell.Main>

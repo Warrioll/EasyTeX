@@ -527,7 +527,12 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
     let defaultPackages =['\\usepackage{ulem}',
       '\\usepackage{amsmath}', 
+      '\\usepackage{float}',
       '\\usepackage{amssymb}',
+      '\\usepackage[utf8]{inputenc}',
+      '\\usepackage[T1]{fontenc}',
+      '\\usepackage[english,polish,german,french,spanish]{babel}',
+      '\\usepackage{lmodern}'
      ]
 
      let noForBeamerPackages = [ '\\usepackage{graphicx} ',  '\\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue]{hyperref}', ]

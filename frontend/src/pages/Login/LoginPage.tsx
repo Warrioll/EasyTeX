@@ -94,7 +94,7 @@ export default function LoginPage() {
     // 14 lub 13
     <>
       <BackgroundImage src="./bg13.png" radius="xs">
-        <Stack h="100vh" align="stretch" justify="center">
+        <Stack h="100vh" align="stretch" justify="center" mih="max-content">
           <Container w={420}>
             <Paper withBorder shadow="xl" p={30} mt={40} radius="md">
               <form onSubmit={form.onSubmit((values) => login(values))}>
@@ -103,7 +103,9 @@ export default function LoginPage() {
                 </Title>
                 <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
                   Do not have an account yet?{' '}
-                  <Anchor size="sm" href="/register" //target="_blank"
+                  <Anchor
+                    size="sm"
+                    href="/register" //target="_blank"
                   >
                     Create account
                   </Anchor>

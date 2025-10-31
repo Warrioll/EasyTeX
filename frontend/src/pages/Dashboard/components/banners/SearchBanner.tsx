@@ -62,6 +62,7 @@ export default function SearchBanner({
       }}
       c="var(--mantine-color-white)"
       justify="flex-start"
+      miw="30rem"
     >
       <Text fz="4.5rem" mr="md" ml="sm" mb="-13px">
         <FaSearch />
@@ -91,7 +92,7 @@ export default function SearchBanner({
               <TextInput
                 variant="unstyled"
                 placeholder=""
-                w="40rem"
+                w={{ base: '5rem', md: '13rem', lg: '23rem', xxxl: '40rem' }}
                 value={inputValue}
                 onChange={(event) => setInputValue(event.target.value)}
               />
@@ -127,7 +128,7 @@ export default function SearchBanner({
                     rightSectionPointerEvents="none"
                     onClick={() => combobox.toggleDropdown()}
                     variant="unstyled"
-                    w="10rem"
+                    w={{ base: '6rem', sm: '10rem' }}
                   >
                     {toTabLabelConverterCombobox() || (
                       <Input.Placeholder>Pick value</Input.Placeholder>

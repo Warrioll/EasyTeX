@@ -10,8 +10,9 @@
 }
 
 .choosenCard{
-    background-color: var(--mantine-color-cyan-0);
-    border: 3px solid var(--mantine-color-cyan-3);
+    background-color: var(--mantine-color-cyan-4);
+    border: 1px solid var(--mantine-color-cyan-2);
+   
      border-radius: var(--mantine-radius-md);
     transition: all 300ms ease;
 
@@ -29,6 +30,14 @@
 
 .cardTitle{
      color:var(--mantine-color-gray-7);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 300ms;     
+}
+
+.choosenCardTitle{
+      color: var(--mantine-color-white);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

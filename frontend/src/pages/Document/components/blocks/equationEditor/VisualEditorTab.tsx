@@ -181,7 +181,7 @@ export default function VisualEditorTab({
           <Textarea
             variant="filled"
             w="100%"
-            placeholder='Expression'
+            placeholder="Expression"
             value={expressionInputContent}
             onChange={(e) => {
               setExpressionInputContent(e.currentTarget.value);
@@ -232,7 +232,7 @@ export default function VisualEditorTab({
   }, []);
 
   return (
-    <Grid w="100%" h="100%" mt="0px" pt="0">
+    <Grid w="100%" h="100%" mt="0px" pt="0" miw="60rem">
       <Grid.Col span={4} h="63vh">
         <Text fw={500} size="sm">
           Elements:

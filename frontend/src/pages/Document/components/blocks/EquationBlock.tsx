@@ -165,6 +165,7 @@ const EquationBlock = memo(
             <Text c="var(--mantine-color-gray-6)">({eqautionNumber})</Text>
           </Center>
         </MarkedBlockFrame>
+
         <Modal
           //className={RemoveScroll.classNames.fullWidth}
           className={RemoveScroll.classNames.zeroRight}
@@ -177,15 +178,15 @@ const EquationBlock = memo(
           }}
           transitionProps={{ transition: 'fade-up' }}
           yOffset="3.5%"
-          size="85vw"
+          size="auto"
           scrollAreaComponent={ScrollArea.Autosize}
           style={{ overflowY: 'hidden', maxHeight: '20vh' }}
           title={
-            <Flex>
-              <Text c="var(--mantine-color-cyan-8)">
+            <Flex justify="space-between" align="center" w="calc(85vw - 1rem)">
+              <Text c="var(--mantine-color-cyan-8)" w="8rem">
                 <b>Equation editor</b>
               </Text>
-              <Flex justify="center" w="72vw">
+              <Flex justify="center">
                 <SegmentedControl
                   value={editorTab}
                   onChange={(value) => setEditorTab(value)}
@@ -196,10 +197,18 @@ const EquationBlock = memo(
                   data={['Visual editor', 'LaTeX fromula']}
                 />
               </Flex>
+              <Text
+                visibleFrom="md"
+                style={{ opacity: '0%' }}
+                c="var(--mantine-color-cyan-8)"
+                w="8rem"
+              >
+                <b>Equation editor</b>
+              </Text>
             </Flex>
           }
         >
-          <Center h="70vh" p="xl" pt="sm">
+          <Center h="70vh" w="85vw" miw="max-content" p="xl" pt="sm">
             {editorTab === 'Visual editor' ? (
               <VisualEditorTab
                 //equationFormulaState={equationFormulaState}

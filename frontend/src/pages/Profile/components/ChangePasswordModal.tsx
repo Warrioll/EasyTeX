@@ -171,8 +171,7 @@ export default function ChangePasswordModal({
         opened={modalHandlers[0]}
         onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
-        yOffset="3.5%"
-        size="50vw"
+        size="auto"
         title={
           <Text c="var(--mantine-color-cyan-8)">
             <b> Change password</b>
@@ -206,16 +205,21 @@ export default function ChangePasswordModal({
                 </Stack>
               </Center>
               <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
-              <Flex justify="center" m="lg" mt="xl" gap="xl">
+              <Flex
+                justify="center"
+                m={{ base: '0rem', sm: 'lg' }}
+                mt="xl"
+                gap={{ base: '0.2rem', sm: 'xl' }}
+              >
                 <Button
                   type="submit"
-                  w="15vw"
                   onClick={handlePasswordVerification}
                   disabled={disableVerifyPasswdButton}
+                  fullWidth
                 >
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <> Verify current password</>}
                 </Button>
-                <Button w="15vw" variant="outline" onClick={closeModal}>
+                <Button fullWidth variant="outline" onClick={closeModal}>
                   Cancel
                 </Button>
               </Flex>
@@ -269,14 +273,14 @@ export default function ChangePasswordModal({
               <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
-                  w="15vw"
+                  fullWidth
                   onClick={handlePasswordChange}
                   disabled={disableVerifyPasswdButton}
                   type="submit"
                 >
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <> Change password</>}
                 </Button>
-                <Button w="15vw" variant="outline" onClick={closeModal}>
+                <Button fullWidth variant="outline" onClick={closeModal}>
                   Cancel
                 </Button>
               </Flex>
@@ -286,7 +290,7 @@ export default function ChangePasswordModal({
           <>
             <Center h="20rem" w="100%">
               <Flex direction="column" justify="center" h="100%" align="center">
-                <Flex gap="md" m="xl">
+                <Flex gap="md" m="xl" align="center">
                   <Text size="2rem" c="var(--mantine-color-cyan-4)">
                     <FaRegCheckCircle />
                   </Text>

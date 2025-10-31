@@ -29,7 +29,7 @@ export default function SimpleCombobox({
       <Combobox.Option
         className={classes.simpleComboboxDropdownOption}
         value={item.value.toString()}
-        key={item.value.toString()}
+        key={item.value.toString() + tooltip}
       >
         {item.label}
       </Combobox.Option>
@@ -37,7 +37,7 @@ export default function SimpleCombobox({
       <Combobox.Option
         className={classes.simpleComboboxDropdownOption}
         value={item.value}
-        key={item.value}
+        key={item.value + tooltip}
       >
         {item.label}
       </Combobox.Option>
@@ -91,7 +91,7 @@ export default function SimpleCombobox({
                 }}
                 //className={classes.zoomInput}
               >
-                {values.find((val) => val.value === value)?.label || (
+                {values.find((val) => val.value.toString() === value)?.label || (
                   <Input.Placeholder> </Input.Placeholder>
                 )}
               </InputBase>

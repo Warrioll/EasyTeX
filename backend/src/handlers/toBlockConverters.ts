@@ -59,6 +59,16 @@ export const documentclassToBlock =(line: string) : blockType=>{
             }
         }
 
+         //columns
+            if(docClass!=='beamer'){
+             if(options.includes('twocolumn')){
+                docBlockContent.columns='twocolumn'
+            }
+            else {
+                docBlockContent.columns='onecolumn'
+            }
+        }
+
             return wholeFraze
         }) 
 
@@ -607,7 +617,7 @@ export const figureToBlock =(line: string) : blockType=>{
 
     let figure:blockAbleToRef;
 
-    line.replace(/\\begin\{figure\}\[h\] \\centering \\includegraphics\[width=\\linewidth, height=\d*cm, keepaspectratio\]\{(.*)\} \\caption\{(.*)\} \\label\{(.*)\}\\end\{figure\}/, (wholeFraze, fig, label, id)=>{
+    line.replace(/\\begin\{figure\}\[H\] \\centering \\includegraphics\[width=\\linewidth, height=\d*cm, keepaspectratio\]\{(.*)\} \\caption\{(.*)\} \\label\{(.*)\}\\end\{figure\}/, (wholeFraze, fig, label, id)=>{
         const link= fig.split('/')
         const name=link[link.length-1].split('.')
         const labelFormatted = basicToBlockFontConverter(label)

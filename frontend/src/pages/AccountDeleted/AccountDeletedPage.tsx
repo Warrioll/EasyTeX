@@ -14,7 +14,7 @@ import {
 
 export default function AccountDeletedPage() {
   return (
-    <Center h="100vh" w="100vw">
+    <Center h="100vh" w="100vw" ta="center" mih="max-content">
       <Paper withBorder shadow="md" radius="md" p="xl" pl="6rem" pr="6rem">
         <Stack justify="center" align="center" h="100%">
           <Text fz="8rem" c="var(--mantine-color-cyan-4)">
@@ -29,6 +29,7 @@ export default function AccountDeletedPage() {
           <Button
             bg="var(--mantine-color-cyan-5)"
             w="15vw"
+            miw="10rem"
             mb="2rem"
             onClick={() => {
               localStorage.removeItem('accountDeleted');

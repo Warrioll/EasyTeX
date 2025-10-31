@@ -11,7 +11,9 @@ import {
   Center,
   Flex,
   Modal,
+  ScrollArea,
   SimpleGrid,
+  Stack,
   Text,
   Title,
 } from '@mantine/core';
@@ -19,6 +21,7 @@ import { useDisclosure } from '@mantine/hooks';
 import ChangePasswordModal from './components/ChangePasswordModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
 import EditAccountDetailsModal from './components/EditAccountDetailsModal';
+import classes from './profilePage.module.css';
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<{
@@ -40,6 +43,81 @@ export default function ProfilePage() {
   const [changePasswordModalOpened, changePasswordModalHandlers] = useDisclosure(false);
   const [editProfileDetailsModalOpened, editProfileDetailsModalHandlers] = useDisclosure(false);
 
+  const UserAccountData = () => {
+    return (
+      <>
+        {' '}
+        <Text fw="500" c="var(--mantine-color-gray-6)">
+          Documents:
+        </Text>
+        <Text ml="xs" fw="500" c="var(--mantine-color-cyan-7)">
+          {userData && userData.documents},
+        </Text>
+        <Text fw="500" ml="md" c="var(--mantine-color-gray-6)">
+          Assets:
+        </Text>
+        <Text fw="500" ml="xs" c="var(--mantine-color-cyan-7)">
+          {userData && userData.figures}
+        </Text>
+      </>
+    );
+  };
+
+  const EditAccountButtons = () => {
+    return (
+      <>
+        {' '}
+        <Button
+          variant="outline"
+          leftSection={<MdDriveFileRenameOutline />}
+          onClick={editProfileDetailsModalHandlers.open}
+        >
+          Edit account details
+        </Button>
+        <Button
+          variant="outline"
+          color="red"
+          leftSection={<MdLockOutline />}
+          onClick={changePasswordModalHandlers.open}
+        >
+          Change password
+        </Button>
+        <Button
+          color="red"
+          leftSection={<FaRegTrashAlt />}
+          onClick={deleteAccountModalHandlers.open}
+        >
+          Delete account
+        </Button>
+      </>
+    );
+  };
+
+  const NavLinks = () => {
+    return (
+      <>
+        <Anchor fw={500} href="/dashboard">
+          <Center>
+            <FaArrowLeft />
+            <Text fw="500" ml="xs" mr="xs">
+              See your documents
+            </Text>
+            <IoDocumentTextOutline />
+          </Center>
+        </Anchor>
+        <Anchor href="/assetsLibrary" fw={500}>
+          <Center>
+            <MdOutlineImage />
+            <Text fw="500" mr="xs" ml="xs">
+              See your assets
+            </Text>
+            <FaArrowRight />
+          </Center>
+        </Anchor>
+      </>
+    );
+  };
+
   return (
     <>
       <Center h="calc(100vh - 50px)" mb="0px">
@@ -55,7 +133,7 @@ export default function ProfilePage() {
           //     'linear-gradient(to  top, rgba(0,0,0,0),var(--mantine-color-gray-1)), url(./bg13.png) ',
           // }}
         >
-          <Center h="100%">
+          <Center h="100%" mih="max-content">
             <Flex
               bg="var(--mantine-color-white)"
               bd="1px solid var(--mantine-color-gray-5)"
@@ -64,8 +142,9 @@ export default function ProfilePage() {
               //mb="0px"
               //mt="0px"
               //h="calc(100vh - 8rem)"
-              h="70vh"
+              h={{ base: '50rem', md: '40rem' }}
               w="70vw"
+              mih="40rem"
               direction="column"
             >
               <Flex
@@ -78,7 +157,7 @@ export default function ProfilePage() {
               >
                 Your account
               </Flex>
-              <Center h="60vh">
+              <Center h="40rem">
                 <Flex
                   justify="center"
                   m="5rem"
@@ -94,72 +173,50 @@ export default function ProfilePage() {
                     <Title m="xl">{userData && userData.user.userName}</Title>
                   </Center>
                   <Box w="40vw" ta="center" m="xl" mt="md">
-                    <Text fw="500" c="var(--mantine-color-gray-6)">
-                      Email:
-                    </Text>
-                    <Title order={3}>{userData && userData.user.email}</Title>
-                    <Flex justify="center" mt="xl">
+                    <ScrollArea>
                       <Text fw="500" c="var(--mantine-color-gray-6)">
-                        Documents:
+                        Email:
                       </Text>
-                      <Text ml="xs" fw="500" c="var(--mantine-color-cyan-7)">
-                        {userData && userData.documents},
-                      </Text>
-
-                      <Text fw="500" ml="md" c="var(--mantine-color-gray-6)">
-                        Assets:
-                      </Text>
-                      <Text fw="500" ml="xs" c="var(--mantine-color-cyan-7)">
-                        {userData && userData.figures}
-                      </Text>
-                    </Flex>
+                      <Title order={3}>{userData && userData.user.email}</Title>
+                      <Flex visibleFrom="sm" justify="center" mt="xl">
+                        <UserAccountData />
+                      </Flex>
+                      <Stack hiddenFrom="sm" justify="center" mt="xl">
+                        <UserAccountData />
+                      </Stack>
+                    </ScrollArea>
                   </Box>
-                  <Flex gap="xl" m="xl">
-                    <Button
-                      variant="outline"
-                      leftSection={<MdDriveFileRenameOutline />}
-                      onClick={editProfileDetailsModalHandlers.open}
-                    >
-                      Edit account details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      color="red"
-                      leftSection={<MdLockOutline />}
-                      onClick={changePasswordModalHandlers.open}
-                    >
-                      Change password
-                    </Button>
-                    <Button
-                      color="red"
-                      leftSection={<FaRegTrashAlt />}
-                      onClick={deleteAccountModalHandlers.open}
-                    >
-                      Delete account
-                    </Button>
+                  <Flex visibleFrom="md" gap="xl" m="xl">
+                    <EditAccountButtons />
                   </Flex>
+                  <Stack hiddenFrom="md" gap="xl" m="xl">
+                    <EditAccountButtons />
+                  </Stack>
                 </Flex>
               </Center>
-              <Flex justify="space-between" align="flex-end" m="4rem" mt="xl" mb="4rem" h="39vh">
-                <Anchor fw={500} href="/dashboard">
-                  <Center>
-                    <FaArrowLeft />
-                    <Text fw="500" ml="xs" mr="xs">
-                      See your documents
-                    </Text>
-                    <IoDocumentTextOutline />
-                  </Center>
-                </Anchor>
-                <Anchor href="/assetsLibrary" fw={500}>
-                  <Center>
-                    <MdOutlineImage />
-                    <Text fw="500" mr="xs" ml="xs">
-                      See your assets
-                    </Text>
-                    <FaArrowRight />
-                  </Center>
-                </Anchor>
+              <Flex
+                justify="space-between"
+                visibleFrom="sm"
+                align="flex-end"
+                m="4rem"
+                mt="xl"
+                mb="4rem"
+                h="39vh"
+              >
+                <NavLinks />
               </Flex>
+
+              <Stack
+                justify="center"
+                hiddenFrom="sm"
+                align="center"
+                m="4rem"
+                mt="xl"
+                mb="4rem"
+                h="39vh"
+              >
+                <NavLinks />
+              </Stack>
             </Flex>
           </Center>
         </BackgroundImage>

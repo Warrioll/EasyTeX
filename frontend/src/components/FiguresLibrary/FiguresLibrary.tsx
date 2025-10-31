@@ -79,7 +79,7 @@ export default function FiguresLibrary({
               />
             </Box>
           ) : (
-            <SimpleGrid cols={5}>
+            <SimpleGrid cols={{ base: 1, xs: 2, md: 3, xl: 4, fourXl: 5 }}>
               {figures.map((figure, id) => {
                 return (
                   <>

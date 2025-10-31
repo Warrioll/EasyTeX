@@ -144,7 +144,7 @@ export default function DeleteAccountModal({
         onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
         yOffset="3.5%"
-        size="50vw"
+        size="auto"
         title={
           <Text c="var(--mantine-color-error)">
             <b> Delete account</b>
@@ -153,7 +153,7 @@ export default function DeleteAccountModal({
         centered
       >
         {modalContent === 0 ? (
-          <Box h="22rem">
+          <Box h="22rem" miw="50vw">
             <form>
               <Center p="0px" h="15rem" m="xl" mb="xs">
                 <Stack w="100%" justify="space-around" align="center">
@@ -179,7 +179,7 @@ export default function DeleteAccountModal({
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
                   type="submit"
-                  w="15vw"
+                  fullWidth
                   onClick={handlePasswordVerification}
                   disabled={disableVerifyPasswdButton}
                   color="var(--mantine-color-error)"
@@ -187,7 +187,7 @@ export default function DeleteAccountModal({
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <> Verify password</>}
                 </Button>
                 <Button
-                  w="15vw"
+                  fullWidth
                   color="var(--mantine-color-error)"
                   variant="outline"
                   onClick={closeModal}
@@ -199,9 +199,9 @@ export default function DeleteAccountModal({
           </Box>
         ) : (
           <>
-            <Box h="22rem">
-              <Box h="15rem" m="xl" mb="xs">
-                <Stack justify="center" align="center" h="100%" ta="center" m="md" gap="xs">
+            <Box mih="max-content">
+              <Box h="15rem" mih="max-content" m="xl" mb="xs">
+                <Stack justify="center" align="center" ta="center" m="md" gap="xs">
                   <Title order={3}>Are you sure you want to delete your account?</Title>
                   <Text c="var(--mantine-color-gray-6)">
                     All data and files connected with this account will be deleted.
@@ -229,9 +229,15 @@ export default function DeleteAccountModal({
                 </Stack>
               </Box>
               <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
-              <Flex justify="center" m="lg" mt="xl" gap="xl">
+              <Flex
+                justify="center"
+                m={{ base: '0rem', sm: 'lg' }}
+                mt="xl"
+                gap={{ base: '0.2rem', sm: 'xl' }}
+              >
                 <Button
-                  w="15vw"
+                  fullWidth
+                  miw="13rem"
                   onClick={handleDeleteAccount}
                   disabled={disableVerifyPasswdButton}
                   //type="submit"
@@ -241,7 +247,7 @@ export default function DeleteAccountModal({
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <>Yes, delete my account</>}
                 </Button>
                 <Button
-                  w="15vw"
+                  fullWidth
                   variant="outline"
                   color="var(--mantine-color-error)"
                   onClick={closeModal}

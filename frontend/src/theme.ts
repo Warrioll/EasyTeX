@@ -3,7 +3,9 @@ import { Button, colorsTuple, createTheme, Input } from '@mantine/core';
 import classes from './componentsGlobal.module.css'
 export const theme = createTheme({
     breakpoints:{
-      xxl: '95rem'
+      xxl: '95rem',
+      xxxl: '102rem',
+      fourXl: '110rem' 
     },
     primaryColor: 'mainCyan',
     //primaryShade: { light: 7, dark: 7 },

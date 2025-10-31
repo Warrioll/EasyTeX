@@ -9,16 +9,29 @@ import {
   Tooltip,
   useCombobox,
 } from '@mantine/core';
+import SimpleCombobox from '@/components/other/SimpleCombobox';
 import classes from './Header.module.css';
 
 type zoomToolsPropsType = {
   zoomState: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
+  tooltip: string;
 };
 
-export default function ZoomTools({ zoomState }: zoomToolsPropsType) {
+export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
   const [zoomValue, setZoomValue] = zoomState;
 
   const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+  const zoomList = [
+    { value: 0.25, label: '25%' },
+    { value: 0.5, label: '50%' },
+    { value: 0.75, label: '75%' },
+    { value: 1, label: '100%' },
+    { value: 1.25, label: '125%' },
+    { value: 1.5, label: '150%' },
+    { value: 1.75, label: '175%' },
+    { value: 2, label: '200%' },
+  ];
   const options = zoomValuesList.map((item) => (
     <Combobox.Option
       className={classes.zoomToolsDropdownOption}
@@ -59,53 +72,8 @@ export default function ZoomTools({ zoomState }: zoomToolsPropsType) {
           <FiZoomOut />
         </Button>
       </Tooltip>
-      <Combobox
-        store={combobox}
-        onOptionSubmit={(val) => {
-          setZoomValue(val);
-          combobox.closeDropdown();
-        }}
-      >
-        <Combobox.Target>
-          <Center>
-            <InputBase
-              w="4.1rem"
-              component="button"
-              type="button"
-              pointer
-              rightSection={<Combobox.Chevron />}
-              rightSectionPointerEvents="none"
-              onClick={() => combobox.toggleDropdown()}
-              variant="unstyled"
-              //bg="var(--mantine-color-cyan-4)"
-              p="0px"
-              size="xs"
-              styles={{
-                input: {
-                  paddingLeft: '10px',
-                  backgroundColor: combobox.dropdownOpened
-                    ? 'var(--mantine-color-gray-2)'
-                    : 'var(--mantine-color-gray-1)',
-                  textAlign: 'center',
-                },
-              }}
-              className={classes.zoomInput}
-            >
-              {(Number(zoomValue) * 100).toString().concat('%') || (
-                <Input.Placeholder>Pick value</Input.Placeholder>
-              )}
-            </InputBase>
-          </Center>
-        </Combobox.Target>
+      <SimpleCombobox tooltip={tooltip} valueState={zoomState} values={zoomList} width="4.1rem" />
 
-        <Combobox.Dropdown
-          bg="var(--mantine-color-gray-0)"
-          className={classes.zoomToolsDropdown}
-          bd=" 1px solid var(--mantine-color-cyan-3)"
-        >
-          <Combobox.Options>{options}</Combobox.Options>
-        </Combobox.Dropdown>
-      </Combobox>
       <Tooltip
         label="Zoom in"
         //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}

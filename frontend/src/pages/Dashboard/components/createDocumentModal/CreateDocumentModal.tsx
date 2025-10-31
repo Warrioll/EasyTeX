@@ -16,9 +16,9 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
+import NameRequirements from '@/components/ErrorInfos/NameRequirements';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
-import NameRequirements from '@/components/ErrorInfos/NameRequirements';
 
 type createDocumentModalPropsType = {
   modalOpened: boolean;
@@ -36,7 +36,7 @@ export default function CreateDocumentModal({
   );
   const [documentName, setDocumentName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
-  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_. ])$/
+  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_. ])$/;
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
 
   const createDocument = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +115,52 @@ export default function CreateDocumentModal({
                   disabled
                 />
                 <SegmentedControl
+                  visibleFrom="sm"
+                  mt="lg"
+                  value={documentType}
+                  withItemsBorders={false}
+                  onChange={(value) => {
+                    setDocumentType(value);
+                    switch (value) {
+                      case 'Article':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('article')}-5)`
+                        );
+                        break;
+                      case 'Report':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('report')}-5)`
+                        );
+                        break;
+                      case 'Book':
+                        setSegmentedControlColor(`var(--mantine-color-${documentColor('book')}-5)`);
+                        break;
+                      case 'Letter':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('letter')}-5)`
+                        );
+                        break;
+                      case 'Presentation':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('beamer')}-5)`
+                        );
+                        break;
+                      case 'Slides':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('slides')}-5)`
+                        );
+                        break;
+                    }
+                  }}
+                  fullWidth
+                  size="sm"
+                  radius="md"
+                  data={['Article', 'Report', 'Book', 'Letter', 'Presentation']} //, 'Slides']}
+                  color={segmentedControlColor}
+                />
+                <SegmentedControl
+                  hiddenFrom="sm"
+                  orientation="vertical"
                   mt="lg"
                   value={documentType}
                   withItemsBorders={false}
@@ -209,9 +255,7 @@ export default function CreateDocumentModal({
         title="Document name requirements"
         errorDialogHandlers={errorDialogHandlers}
         errorDialogOpened={errorDialogOpened}
-        content={
-               <NameRequirements thingToName='Document'/>
-        }
+        content={<NameRequirements thingToName="Document" />}
       />
     </>
   );

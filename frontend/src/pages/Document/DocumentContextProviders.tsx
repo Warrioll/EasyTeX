@@ -32,72 +32,85 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
   const [blocksContent, setBlocksContent] = useState<blockType[]>([]);
   const [isNotSaved, setIsNotSaved] = useState<boolean>(false);
 
-  let blocksContentHistory: blockType[][] = [];
-  let historyPivot: number = 0;
-  //const isNotSavedRef = useRef(isNotSaved)
-  let isBlocksLoaded = false;
+  // const setIsNotSaved = (changesHappend: boolean) => {
+  //   if (changesHappend) {
+  //     setIsNotSavedSetter((prev) => prev + 1);
+  //   } else {
+  //     setIsNotSavedSetter(0);
+  //   }
+  // };
 
-  const historyBuffer = 10;
+  // let blocksContentHistory = useRef<blockType[][]>([]);
+  // let [historyPivot, setHistoryPivot] = useState<number>(0);
+  // //const isNotSavedRef = useRef(isNotSaved)
+  // let isBlocksLoaded = false;
 
-  const undo = (): void => {
-    isBlocksLoaded = false;
-    if (historyPivot < historyBuffer) {
-      historyPivot++;
-      setBlocksContent(cloneDeep(blocksContentHistory[historyPivot]));
-    }
-  };
+  // const historyBuffer = 10;
 
-  const undoPossible = (): boolean => {
-    console.log('hisotry lht:', blocksContentHistory);
-    return blocksContentHistory.length > 1;
-  };
+  // const undo = (): void => {
+  //   isBlocksLoaded = false;
+  //   if (historyPivot < blocksContentHistory.current.length - 1) {
+  //     setHistoryPivot((prev) => prev + 1);
+  //     setBlocksContent(cloneDeep(blocksContentHistory.current[historyPivot]));
+  //   }
+  // };
 
-  const redo = (): void => {
-    isBlocksLoaded = false;
-    if (historyPivot > 0) {
-      historyPivot--;
-      setBlocksContent(cloneDeep(blocksContentHistory[historyPivot]));
-    }
-  };
+  // const undoPossible = (): boolean => {
+  //   return blocksContentHistory.current.length > 1;
+  // };
 
-  const redoPossible = (): boolean => historyPivot > 0;
+  // const redo = (): void => {
+  //   isBlocksLoaded = false;
+  //   console.log(' redo before pivot: ', historyPivot, 'before history: ', blocksContentHistory);
+  //   if (historyPivot > 0) {
+  //     setHistoryPivot((prev) => prev - 1);
+  //     setBlocksContent(cloneDeep(blocksContentHistory.current[historyPivot]));
+  //   }
+  //   console.log('redo pivot: ', historyPivot, 'history: ', blocksContentHistory);
+  // };
 
-  useEffect(() => {
-    if (isBlocksLoaded) {
-      setIsNotSaved(true);
-    } else {
-      isBlocksLoaded = true;
-      blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
-      historyPivot = 0;
-    }
-  }, [blocksContent]);
+  // const redoPossible = (): boolean => historyPivot > 0;
 
-  useEffect(() => {
-    const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
-      if (isNotSaved) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
+  // useEffect(() => {
+  //   if (isBlocksLoaded) {
+  //     setIsNotSaved(true);
+  //   } else {
+  //     isBlocksLoaded = true;
+  //     blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
+  //     //historyPivot = 0;
+  //   }
+  // }, [blocksContent]);
 
-    //console.log('isnotsaved', isNotSaved);
+  // useEffect(() => {
+  //   const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
+  //     if (isNotSaved) {
+  //       e.preventDefault();
+  //       e.returnValue = '';
+  //     }
+  //   };
 
-    if (isNotSaved) {
-      window.addEventListener('beforeunload', notSavedWaringHandler);
-      if (historyPivot === 0) {
-        blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
-      } else if (historyPivot) {
-        blocksContentHistory = blocksContentHistory.slice(historyPivot);
-        blocksContentHistory = [cloneDeep(blocksContent), ...blocksContentHistory];
-      }
+  //   //console.log('isnotsaved', isNotSaved);
 
-      if (blocksContentHistory.length > historyBuffer) {
-        blocksContentHistory.pop();
-      }
+  //   if (isNotSaved) {
+  //     window.addEventListener('beforeunload', notSavedWaringHandler);
+  //     // console.log('before pivot: ', historyPivot, 'before history: ', blocksContentHistory);
+  //     // if (historyPivot === 0) {
+  //     //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
+  //     // } else if (historyPivot) {
+  //     //   blocksContentHistory.current = blocksContentHistory.current.slice(historyPivot);
+  //     //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
+  //     // }
 
-      return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
-    }
-  }, [isNotSaved]);
+  //     // if (blocksContentHistory.current.length > historyBuffer) {
+  //     //   console.log('poppp');
+  //     //   blocksContentHistory.current.pop();
+  //     // }
+
+  //     // console.log('pivot: ', historyPivot, 'history: ', blocksContentHistory);
+
+  //     return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
+  //   }
+  // }, [isNotSaved]);
 
   return (
     <BlocksContentContext.Provider
@@ -106,10 +119,10 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
         setBlocksContent,
         isNotSaved,
         setIsNotSaved,
-        undo,
-        redo,
-        undoPossible,
-        redoPossible,
+        // undo,
+        // redo,
+        // undoPossible,
+        // redoPossible,
       }}
     >
       {children}

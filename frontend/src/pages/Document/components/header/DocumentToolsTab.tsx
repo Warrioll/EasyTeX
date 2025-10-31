@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { cloneDeep } from 'lodash';
 import { FaRedo, FaUndo } from 'react-icons/fa';
-import { Button, Flex, Tooltip } from '@mantine/core';
+import { Box, Button, Flex, Grid, Tooltip } from '@mantine/core';
 import SimpleCombobox from '@/components/other/SimpleCombobox';
 import { useBlocksContentContext } from '../../DocumentContextProviders';
 import ZoomTools from './ZoomTools';
-import { cloneDeep } from 'lodash';
 
 type DocumentToolsTabPropsType = {
   zoomState: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
@@ -30,7 +30,7 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
 
   const fontTypeState = useState<string | null>(null);
   const fontTypeValues = [
-    { value: 'sans', label: 'Sans' }, 
+    { value: 'sans', label: 'Sans' },
     { value: 'roman', label: 'Roman' },
     { value: 'typewriter', label: 'Typewriter' },
   ];
@@ -57,44 +57,45 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
     { value: 'executivepaper', label: 'Executive paper' },
   ];
 
-  let optionsLoaded:boolean = false
-
   useEffect(() => {
-    return () => {
-      console.log('opt loaded', optionsLoaded)
-      if (optionsLoaded && blocksContent[0] && blocksContent[0].blockContent) {
-        const blocksCopy = cloneDeep(blocksContent)
-         blocksCopy[0].blockContent.paperSize = paperSizeState[0];
-        blocksCopy[0].blockContent.columns= columnsState[0]
-        //blocksContent[0].blockContent.=fontTypeState[0]
-         blocksCopy[0].blockContent.fontSize = fontSizeState[0];
-         blocksCopy[0].blockContent.orientation = orientationState[0];
-        //console.log('columns:', blocksContent[0].blockContent.columns)
+    // console.log('opt loaded', optionsLoaded)
+    // if (optionsLoaded && blocksContent[0] && blocksContent[0].blockContent) {
+    //const blocksCopy = cloneDeep(blocksContent)
+    //  blocksCopy[0].blockContent.paperSize = paperSizeState[0];
+    // blocksCopy[0].blockContent.columns= columnsState[0]
+    //  blocksCopy[0].blockContent.fontSize = fontSizeState[0];
+    //  blocksCopy[0].blockContent.orientation = orientationState[0];
+
+    if (blocksContent[0] && blocksContent[0].blockContent) {
+      blocksContent[0].blockContent.paperSize = paperSizeState[0];
+      blocksContent[0].blockContent.columns = columnsState[0];
+      blocksContent[0].blockContent.fontSize = fontSizeState[0];
+      blocksContent[0].blockContent.orientation = orientationState[0];
+      //console.log('columns:', blocksContent[0].blockContent.columns)
+      return () => {
         setIsNotSaved(true);
-        setBlocksContent(blocksCopy)
-        console.log('yolo doc tab', blocksCopy)
-      }
-    };
+      };
+      //setBlocksContent(blocksCopy)
+      // console.log('yolo doc tab', blocksCopy)
+      // }
+    }
   }, [paperSizeState[0], columnsState[0], fontTypeState[0], fontSizeState[0], orientationState[0]]);
 
-
-
   useEffect(() => {
-    if ( !optionsLoaded && blocksContent[0] && blocksContent[0].blockContent) {
-      console.log(' options loaded')
+    if (blocksContent[0] && blocksContent[0].blockContent) {
+      console.log(' options loaded');
       paperSizeState[1](blocksContent[0].blockContent.paperSize);
-      columnsState[1](blocksContent[0].blockContent.columns)
+      columnsState[1](blocksContent[0].blockContent.columns);
       //fontTypeState[1](blocksContent[0].blockContent.paperSize)
       fontSizeState[1](blocksContent[0].blockContent.fontSize);
       orientationState[1](blocksContent[0].blockContent.orientation);
-      optionsLoaded=true
     }
   }, [blocksContent]);
 
   return (
-    <Flex align="center" gap="md">
+    <Flex align="center" gap="md" w="100%">
       {/* <SimpleCombobox tooltip="Default font"  width='6rem' values={fontTypeValues} valueState={fontTypeState} /> */}
-      <Flex mr="4rem">
+      {/* <Flex mx="2rem" justify="center">
         <Tooltip
           label="Undo"
           //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
@@ -129,47 +130,57 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
             <FaRedo />
           </Button>
         </Tooltip>
-      </Flex>
+      </Flex> */}
+
       <SimpleCombobox
         tooltip="Default font size"
         width="7rem"
         values={fontSizeValues}
         valueState={fontSizeState}
       />
-      <SimpleCombobox
-        tooltip="Orientation"
-        width="7rem"
-        values={orientationValues}
-        valueState={orientationState}
-        disabled={
-          blocksContent[0] &&
-          blocksContent[0].blockContent &&
-          blocksContent[0].blockContent.class === 'beamer'
-        }
-      />
-      <SimpleCombobox
-        tooltip="Columns"
-        width="7rem"
-        values={columnsValues}
-        valueState={columnsState}
-        disabled={
-          blocksContent[0] &&
-          blocksContent[0].blockContent &&
-          blocksContent[0].blockContent.class === 'beamer' &&
-          blocksContent[0].blockContent.class === 'letter'
-        }
-      />
-      <SimpleCombobox
-        tooltip="Paper size"
-        width="9rem"
-        values={paperSizeValues}
-        valueState={paperSizeState}
-        disabled={
-          blocksContent[0] &&
-          blocksContent[0].blockContent &&
-          blocksContent[0].blockContent.class === 'beamer'
-        }
-      />
+      {blocksContent[0] &&
+        blocksContent[0].blockContent &&
+        blocksContent[0].blockContent.class !== 'beamer' && (
+          <SimpleCombobox
+            tooltip="Orientation"
+            width="7rem"
+            values={orientationValues}
+            valueState={orientationState}
+            disabled={
+              blocksContent[0] &&
+              blocksContent[0].blockContent &&
+              blocksContent[0].blockContent.class === 'beamer'
+            }
+          />
+        )}
+      {blocksContent[0] &&
+        blocksContent[0].blockContent &&
+        blocksContent[0].blockContent.class !== 'beamer' &&
+        blocksContent[0].blockContent.class !== 'letter' && (
+          <SimpleCombobox
+            tooltip="Columns"
+            width="7rem"
+            values={columnsValues}
+            valueState={columnsState}
+          />
+        )}
+
+      {blocksContent[0] &&
+        blocksContent[0].blockContent &&
+        blocksContent[0].blockContent.class !== 'beamer' && (
+          <SimpleCombobox
+            tooltip="Paper size"
+            width="9rem"
+            values={paperSizeValues}
+            valueState={paperSizeState}
+            disabled={
+              blocksContent[0] &&
+              blocksContent[0].blockContent &&
+              blocksContent[0].blockContent.class === 'beamer'
+            }
+          />
+        )}
+
       {/* <ZoomTools zoomState={zoomState}/> */}
     </Flex>
   );

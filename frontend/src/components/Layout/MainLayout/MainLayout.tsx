@@ -16,6 +16,7 @@ import {
   Group,
   Link,
   Modal,
+  ScrollArea,
   SimpleGrid,
   Text,
   Title,
@@ -148,8 +149,72 @@ export default function MainLayout({ content, whiteBackground }: LayoutPropsType
       </AppShell.Header>
 
       <AppShell.Navbar py="md" px={4}>
-        <UnstyledButton className={classes.control}>Profile</UnstyledButton>
-        <UnstyledButton className={classes.control}>Log out</UnstyledButton>
+        <ScrollArea>
+          <Button
+            w="100%"
+            mih="3rem"
+            pt="0px"
+            pb="0px"
+            variant="transparent"
+            leftSection={<IoDocumentsOutline />}
+            className={classes.control}
+            onClick={() => {
+              localStorage.removeItem('401');
+              localStorage.removeItem('accountDeleted');
+              window.localStorage.removeItem('unavailableDocument');
+              window.location.href = '/dashboard';
+            }}
+          >
+            Documents
+          </Button>
+          <Button
+            w="100%"
+            mih="3rem"
+            pt="0px"
+            pb="0px"
+            variant="transparent"
+            leftSection={<IoImagesOutline />}
+            className={classes.control}
+            onClick={() => {
+              localStorage.removeItem('401');
+              localStorage.removeItem('accountDeleted');
+              window.localStorage.removeItem('unavailableDocument');
+              window.location.href = '/assetsLibrary';
+            }}
+          >
+            Assets
+          </Button>
+          <Button
+            w="100%"
+            mih="3rem"
+            pt="0px"
+            pb="0px"
+            variant="transparent"
+            leftSection={<RxAvatar />}
+            className={classes.control}
+            onClick={() => {
+              localStorage.removeItem('401');
+              localStorage.removeItem('accountDeleted');
+              window.localStorage.removeItem('unavailableDocument');
+              window.location.href = '/profile';
+            }}
+          >
+            Account
+          </Button>
+          <Button
+            w="100%"
+            mih="3rem"
+            pt="0px"
+            pb="0px"
+            variant="transparent"
+            c="var(--mantine-color-gray-7)"
+            leftSection={<MdOutlineLogin />}
+            className={classes.control}
+            onClick={logoutModalHandlers.open}
+          >
+            Log out
+          </Button>
+        </ScrollArea>
       </AppShell.Navbar>
 
       <AppShell.Main p="0px" pt={50}>
@@ -159,7 +224,7 @@ export default function MainLayout({ content, whiteBackground }: LayoutPropsType
         opened={logoutModalOpened}
         onClose={logoutModalHandlers.close}
         transitionProps={{ transition: 'fade-up' }}
-        yOffset="16%"
+        centered
         size="lg"
         title={
           <Text c="var(--mantine-color-cyan-8)">

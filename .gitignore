@@ -1,4 +1,5 @@
 backend/figureBase/*
+!backend/figureBase/noImage.png
 backend/documentBase/*
 data/*
 .devcontainer/*
