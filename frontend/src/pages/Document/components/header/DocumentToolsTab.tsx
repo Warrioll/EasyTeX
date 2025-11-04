@@ -15,10 +15,6 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
     setBlocksContent,
     isNotSaved,
     setIsNotSaved,
-    undo,
-    redo,
-    undoPossible,
-    redoPossible,
   } = useBlocksContentContext();
 
   const fontSizeState = useState<string | null>(null);
@@ -57,6 +53,16 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
     { value: 'executivepaper', label: 'Executive paper' },
   ];
 
+    const languageState = useState<string | null>(null);
+  const languageValues = [
+    { value: 'english', label: 'English' },
+    { value: 'polish', label: 'Polish' },
+    { value: 'spanish', label: 'Spanish' },
+    { value: 'german', label: 'German' },
+    { value: 'french', label: 'French' },
+
+  ];
+
   useEffect(() => {
     // console.log('opt loaded', optionsLoaded)
     // if (optionsLoaded && blocksContent[0] && blocksContent[0].blockContent) {
@@ -71,6 +77,7 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
       blocksContent[0].blockContent.columns = columnsState[0];
       blocksContent[0].blockContent.fontSize = fontSizeState[0];
       blocksContent[0].blockContent.orientation = orientationState[0];
+      blocksContent[0].blockContent.language = languageState[0];
       //console.log('columns:', blocksContent[0].blockContent.columns)
       return () => {
         setIsNotSaved(true);
@@ -79,7 +86,7 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
       // console.log('yolo doc tab', blocksCopy)
       // }
     }
-  }, [paperSizeState[0], columnsState[0], fontTypeState[0], fontSizeState[0], orientationState[0]]);
+  }, [paperSizeState[0], columnsState[0], fontTypeState[0], fontSizeState[0], orientationState[0], languageState[0]]);
 
   useEffect(() => {
     if (blocksContent[0] && blocksContent[0].blockContent) {
@@ -89,6 +96,7 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
       //fontTypeState[1](blocksContent[0].blockContent.paperSize)
       fontSizeState[1](blocksContent[0].blockContent.fontSize);
       orientationState[1](blocksContent[0].blockContent.orientation);
+      languageState[1](blocksContent[0].blockContent.language);
     }
   }, [blocksContent]);
 
@@ -132,6 +140,12 @@ export default function DocumentToolsTab({ zoomState }: DocumentToolsTabPropsTyp
         </Tooltip>
       </Flex> */}
 
+      <SimpleCombobox
+        tooltip="Main language"
+        width="7rem"
+        values={languageValues}
+        valueState={languageState}
+      />
       <SimpleCombobox
         tooltip="Default font size"
         width="7rem"

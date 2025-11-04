@@ -24,6 +24,7 @@ export type documentOptionsType = {
   paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
   orientation?: 'landscape' | '';
   columns?: 'onecolumn' | 'twocolumn';
+  language?: string
 };
   export type typeOfBlockType =
     | 'textfield'

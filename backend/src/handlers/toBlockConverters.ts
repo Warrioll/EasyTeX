@@ -1,5 +1,6 @@
 import { blockAbleToRef, blockType, referencesElementType, typeOfBlockType, documentOptionsType, documentClassType } from "../types"
 import { specialCharacters } from "../specialCharacters"
+import { listenerCount } from "process"
 //import { cloneDeep } from "lodash"
 
 export const documentclassToBlock =(line: string) : blockType=>{
@@ -80,6 +81,15 @@ export const documentclassToBlock =(line: string) : blockType=>{
     }
     console.log('doc.class:', docBlockContent.class)
     return {typeOfBlock: 'documentclass', blockContent: docBlockContent}
+}
+
+export const setLanguageToBlock =  (toConvert: string):string=>{
+
+    
+   return  toConvert.replace(/\\AtBeginDocument\{\\selectlanguage\{(.*?)\}\}/g, (wholeFraze, language)=>{
+        return language
+    })
+    //\AtBeginDocument{\selectlanguage{english}}
 }
 
 export const specialCharactersToBlockConverter = (toConvert: string):string=>{
@@ -185,6 +195,7 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
 
         //NEW VERSION
 
+        console.log('1')
          // refs to figures, tables and equations
         fontToConvert=fontToConvert.replaceAll(/\\ref\{(.*?)\}/g, (wholeFraze, insideOfFraze)=>{
         let wholeFrazeCopy=wholeFraze
@@ -197,6 +208,7 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
         return wholeFrazeCopy
          //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
     })
+      console.log('2')
 
 
         // refs to bibliography
@@ -214,14 +226,18 @@ const basicToBlockFontConverter = (fontToConvert:string): string=>{
          //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
     })
 
+      console.log('4')
      //special characters
     fontToConvert=specialCharactersToBlockConverter(fontToConvert)
+
+      console.log('5')
 
     //other
     let stack:(RegExpExecArray)[]=[]
 
 const fonts = [
     {reg: /\\textbf\{/g, tag: 'strong'},
+    //{reg: /\\textnormal\{/g, tag: 'span'},
     {reg: /\\textit\{/g, tag: 'em'},
     {reg: /\\texttt\{/g, tag: 'code'}, 
     {reg: /\\uline\{/g, tag: 'u'},
@@ -235,6 +251,7 @@ const fonts = [
 let converted =''
 
 const splitted =fontToConvert.split('}')
+  console.log('6')
 
 for (let i=0; i<splitted.length; i++){
     let tmpStack:(RegExpExecArray)[]=[]
@@ -242,17 +259,24 @@ for (let i=0; i<splitted.length; i++){
          tmpStack = [...tmpStack, ...[...splitted[i].matchAll( new RegExp(font.reg.source, 'g'))]]
        //console.log('to stack', font , ' : ', splitted[i],":",[...splitted[i].matchAll(font.reg)])
     }
-    
+      console.log('6.1')
      tmpStack.sort((a,b)=> a.index - b.index)
      stack=[...stack, ...tmpStack]
      //console.log('stack:', stack)
+      console.log('6.2')
     if (i!==splitted.length-1)
     {
          const poped = stack.pop()
        //console.log('pop',poped)
+        console.log('6.3')
        for( let font of fonts){
+        console.log('font', font)
+        console.log('splitted', splitted, 'i:', i)
+         console.log('poped', poped)
        if(( new RegExp(font.reg.source, 'g')).test(poped[0])){
+             console.log('poped2', poped)
           converted = converted+splitted[i]
+          console.log('converted', converted)
             let splittedPart = converted.split(new RegExp(font.reg.source, 'g'))
            splittedPart[splittedPart.length-1]=`<${font.tag}>`+splittedPart[splittedPart.length-1]
             let joinedPart=splittedPart.join('')+`</${font.tag}>`
@@ -262,11 +286,15 @@ for (let i=0; i<splitted.length; i++){
        }
     
        }
+        console.log('6.4')
     }else{
         converted=converted+splitted[i]
+         console.log('6.5')
     }
+
    
 }
+  console.log('7')
     fontToConvert=converted
 
     //new lines
@@ -275,7 +303,7 @@ for (let i=0; i<splitted.length; i++){
     //replacing temporary curly brackets markers
     fontToConvert=fontToConvert.replaceAll('\\tmpleftcurlybracket', '{')
     fontToConvert=fontToConvert.replaceAll( '\\tmprightcurlybracket', '}')
-
+  console.log('8')
 
  return fontToConvert
 }
@@ -316,6 +344,17 @@ export const sectionToBlock =(line: string) : blockType=>{
     return sectionBlock;
 }
 
+export const bookSectionToBlock =(line: string) : blockType=>{
+
+
+    let section = line.replace(/\\section\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+    })
+
+    const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent: basicToBlockFontConverter (section)}
+    return sectionBlock;
+}
+
 export const subsectionToBlock =(line: string) : blockType=>{
 
    // let section= basicToBlockFontConverter(line)
@@ -332,6 +371,15 @@ export const subsectionToBlock =(line: string) : blockType=>{
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
     const sectionBlock: blockType = {typeOfBlock: 'subsection', blockContent:  basicToBlockFontConverter(section)}
+    return sectionBlock;
+}
+
+export const bookSubsectionToBlock =(line: string) : blockType=>{
+
+    let section = line.replace(/\\subsection\{\\textnormal\{(.*)\}\}/, (wholeFraze, section)=>{
+        return section
+        })
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent:  basicToBlockFontConverter(section)}
     return sectionBlock;
 }
 
@@ -480,6 +528,7 @@ export const getDateFromTex =(line: string) : string=>{
 export const textfieldToBlock =(line: string) : blockType=>{
     //poza indeksami działa // ?? o co chodziło xD
 
+    console.log('textfield', line)
 
      //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //line= line.replace('\r', '')

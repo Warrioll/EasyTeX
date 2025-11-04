@@ -52,6 +52,7 @@ export default function PageBreakBlock({
         pl="0px"
         pr="0px"
         w="40vw"
+        miw='40rem'
         justify="center"
         className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
       >

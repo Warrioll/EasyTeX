@@ -183,7 +183,7 @@ export default function MarkedBlockFrame({
         setActiveBlock(idx);
       }}
     >
-      <Flex>
+      <Flex miw='max-content'>
         <Paper
           radius="0px"
           pt="0px"
@@ -191,6 +191,7 @@ export default function MarkedBlockFrame({
           pl="lg"
           pr="lg"
           w="40vw"
+          miw='40rem'
           className={
             idx === Math.floor(activeBlock) ? classes.blockFrameStyle : classes.unmarkedFramePaper
           }

@@ -14,7 +14,7 @@ RUN apt install -y texlive-latex-extra
 RUN apt install -y texlive-fonts-recommended 
 RUN apt install -y texlive-lang-all
 RUN apt install -y latexmk
-RUN  DEBIAN_FRONTEND=noninteractive apt install -y firejail
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt install -y firejail
 
 COPY . .
 

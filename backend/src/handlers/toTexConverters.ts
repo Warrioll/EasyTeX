@@ -2,8 +2,9 @@ import { figureModel } from "../models/figureModel";
 import { blockAbleToRef, blockContentType, documentOptionsType, referencesElementType, slideBreak, titleSectionType } from "../types";
 import { specialCharacters } from "../specialCharacters";
 
-export const documentclassToTex =(blockContent:documentOptionsType): string =>{
+export const documentclassToTex =(blockContent:documentOptionsType, language: {lang: string}): string =>{
     let options: string[] =[]
+    let toReturn: string;
 
     if(blockContent.fontSize){
         options=[...options, blockContent.fontSize]
@@ -22,10 +23,17 @@ export const documentclassToTex =(blockContent:documentOptionsType): string =>{
     }
 
     if(options.length>=1){
-        return(`\\documentclass[${options.join(', ')}]{${blockContent.class}}`);
+        toReturn=`\\documentclass[${options.join(', ')}]{${blockContent.class}}`;
     }else{
-        return('\\documentclass{'+blockContent.class+'}');
+        toReturn= '\\documentclass{'+blockContent.class+'}';
     }
+
+    if(blockContent.language){
+        language.lang='\\AtBeginDocument{\\selectlanguage{'+blockContent.language+'}}'
+    }else{
+        language.lang='\n\\AtBeginDocument{\\selectlanguage{english}}'
+    }
+    return toReturn
     
 }
 

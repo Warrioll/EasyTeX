@@ -34,8 +34,11 @@ import { sectionToBlock,
   addressAndDateToBlock,
   chapterToBlock, 
     bookSubsubsectionToBlock,
+    bookSubsectionToBlock,
+    bookSectionToBlock,
 tableToBlock,
 openingToBlock,
+setLanguageToBlock,
 closingToBlock} from '../handlers/toBlockConverters';
 import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
 import { blockAbleToRef, blockType, documentOptionsType, referencesElementType, slideBreak, titleSectionType} from '../types';
@@ -285,27 +288,31 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
           }
           let latexExpression:string[]=[]
           let isGettingLatexExpression:boolean = false
-
+          let documentBlock: blockType;
           let blocks: (blockType)[] = document.map((line, idx)=>{
             //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
-            
-
+          
              if(!isGettingLatexExpression){
-            if(line.includes('\\documentclass')) return  documentclassToBlock(line);
+            if(line.includes('\\documentclass'))  {documentBlock= documentclassToBlock(line); return  nullBlock}
+            if(line.includes('\\AtBeginDocument{\\selectlanguage{'))  {(documentBlock.blockContent as documentOptionsType).language= setLanguageToBlock(line); return  nullBlock}
              if(line.includes('\\address')) {  return  addressAndDateToBlock(line)}
             if(line.includes('\\title')) {titlePageData.title=getTitleFromTex(line); return  nullBlock};
             if(line.includes('\\author')) {titlePageData.author=getAuthorFromTex(line); return  nullBlock};
             if(line.includes('\\date')) {titlePageData.date=getDateFromTex(line); return  nullBlock};
             if(line.includes('\\maketitle')) return  {typeOfBlock: 'titlePage', blockContent: titlePageData};
+            if(line.includes('\\AtBeginDocument{')) return nullBlock;
+            if(line.includes('\\selectlanguage{')) return nullBlock;
            
             if(line.includes('\\tableofcontents')) return  {typeOfBlock: 'tableOfContents', blockContent: ''};
             if(line.includes('\\newpage')) return  {typeOfBlock: 'pageBreak', blockContent: ''};
             if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
             if(line.includes('\\end{frame}')) return  nullBlock;
              if(line.includes('\\chapter'))  return chapterToBlock(line)
-            if(line.includes('\\section')) {if(documentInstantion.documentClass==='book'){subsectionToBlock(line)} return sectionToBlock(line)}
-            if(line.includes('\\subsection')) {if(documentInstantion.documentClass==='book'){return subsubsectionToBlock(line)} return  subsectionToBlock(line)};
-            if(line.includes('\\subsubsection')) {if(documentInstantion.documentClass==='book'){return   bookSubsubsectionToBlock(line)} return  subsubsectionToBlock(line)};
+              console.log('dc: ', documentInstantion.documentClass, 'comp:', documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report', )
+            if(line.includes('\\section')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){ console.log('return: ',bookSectionToBlock(line) ); return bookSectionToBlock(line)} return sectionToBlock(line)}
+             
+            if(line.includes('\\subsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return bookSubsectionToBlock(line)} return  subsectionToBlock(line)};
+            if(line.includes('\\subsubsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return   bookSubsubsectionToBlock(line)} return  subsubsectionToBlock(line)};
             if(line.includes('\\begin{equation}')) return equationToBlock(line);
             if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
@@ -338,14 +345,21 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
               }
             }})
           //blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
+          if(!(documentBlock.blockContent as documentOptionsType).language){
+            (documentBlock.blockContent as documentOptionsType).language='english'
+          }
+          blocks=[documentBlock, ...blocks]
           blocks = blocks.filter(block => (block.typeOfBlock))
           //console.log(blocks)
 
     // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
     // })
           res.status(200).json(blocks);
+                    console.log('block:', blocks)
 
           }
+
+
 
   } catch(error){
     console.log("getDocumentContent error: ", error)
@@ -421,6 +435,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
    
       const blocks = req.body as blockType[]; 
+      const language: {lang:string} = {lang: ''}
       console.log(blocks);
 
    // let titlePageData = {title: '', author: '', date: ''}
@@ -428,12 +443,12 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       switch(block.typeOfBlock){
         case 'documentclass':{
           if(documentInstantion.documentClass!==(block.blockContent as documentOptionsType).class as string){
-            console.log('class from blocks: ', (block.blockContent as documentOptionsType).class)
-            console.log('class from db: ', documentInstantion.documentClass)
+            //console.log('class from blocks: ', (block.blockContent as documentOptionsType).class)
+            //console.log('class from db: ', documentInstantion.documentClass)
             //FIXME branie jednego z typów?
             throw new Error("Document types are not the same!");
           }
-          return documentclassToTex(block.blockContent as documentOptionsType);
+          return documentclassToTex(block.blockContent as documentOptionsType, language);
       } case 'titlePage':{
         if(documentInstantion.documentClass==='letter'){
           return addressAndDateToTex(block.blockContent as titleSectionType)
@@ -461,12 +476,12 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       }case 'textfield':{
        return textfieldToTex(block.blockContent as string);
        } case 'section':{ 
-         if(documentInstantion.documentClass==='book'){
+         if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){
           return bookSectionToTex(block.blockContent as string);
          }
        return sectionToTex(block.blockContent as string);
       }case 'subsection':{
-          if(documentInstantion.documentClass==='book'){
+          if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){
           return sectionToTex(block.blockContent as string);
          }else
         if(documentInstantion.documentClass==='letter'){ 
@@ -474,7 +489,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         }
        return subsectionToTex(block.blockContent as string);
         }  case 'subsubsection':{
-           if(documentInstantion.documentClass==='book'){
+           if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){
           return subsectionToTex(block.blockContent as string);
          }else
           if(documentInstantion.documentClass==='letter'){
@@ -533,6 +548,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       '\\usepackage[T1]{fontenc}',
       '\\usepackage[english,polish,german,french,spanish]{babel}',
       '\\usepackage{lmodern}'
+      
      ]
 
      let noForBeamerPackages = [ '\\usepackage{graphicx} ',  '\\usepackage[colorlinks=true, citecolor=blue, linkcolor=blue]{hyperref}', ]
@@ -548,15 +564,15 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
 
      switch (documentInstantion.documentClass){
       case 'beamer':
-        document.splice(1,0,document[1].startsWith('\\begin{frame}') ? [...defaultPackages, ...beamerSettings, '\\begin{document}'].join('\n'): [...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
+        document.splice(1,0,document[1].startsWith('\\begin{frame}') ? [...defaultPackages, ...beamerSettings, language.lang,'\\begin{document}'].join('\n'): [...defaultPackages, ...beamerSettings, '\\begin{document}', '\\begin{frame}'].join('\n'))
         document.push(['\\end{frame}', ...defaultEnding].join('\n'))
         break
       case 'letter':
-         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages, '\\begin{document}', '\\begin{letter}{}'].join('\n'))
+         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages, language.lang, '\\begin{document}', '\\begin{letter}{}'].join('\n'))
           document.push(['\\end{letter}', ...defaultEnding].join('\n'))
         break
       default:
-         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages,'\\begin{document}'].join('\n'))
+         document.splice(1,0,[...defaultPackages, ...noForBeamerPackages,language.lang,'\\begin{document}'].join('\n'))
           document.push(defaultEnding.join('\n'))
      }
     

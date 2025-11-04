@@ -32,6 +32,7 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
           pl="lg"
           pr="lg"
           w="40vw"
+          miw='40rem'
           className={
             idx === Math.floor(activeBlock) ? classes.blockFrameStyle : classes.unmarkedFramePaper
           }

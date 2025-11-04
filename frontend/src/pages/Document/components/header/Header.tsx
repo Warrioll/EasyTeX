@@ -654,14 +654,14 @@ export default function Header({
   };
 
   return (
-    <Box h="5.5rem" miw="57rem" display="block">
+    <Box h="5.5rem" miw="48rem" display="block">
       {/* <header> */}
       <Tabs
         radius="sm"
         variant="none"
         value={value}
         onChange={setValue}
-        miw="max-content"
+        miw="48rem"
         style={{ flexShrink: '0' }}
       >
         <Flex
@@ -673,10 +673,10 @@ export default function Header({
           mr="xs"
           pb="0px"
           mb="0px"
-          miw="max-content"
+          miw="48rem"
           style={{ flexShrink: '0' }}
         >
-          <Flex h="100%" w="40vw" miw="max-content" mb="0px" style={{ flexShrink: '0' }}>
+          <Flex h="100%" w="40vw" miw="24rem" mb="0px" style={{ flexShrink: '0' }}>
             <Button
               p="0px"
               mr="md"
@@ -725,14 +725,14 @@ export default function Header({
             <DocumentName />
           </Center>
 
-          <Flex miw="max-content" mb="0px" w="40vw" style={{ flexShrink: '0' }}>
+          <Flex miw="24rem" mb="0px" w="40vw" style={{ flexShrink: '0' }} >
             <Group
               justify="end"
               h="100%"
               w="100%"
               ml="xl"
               gap={0}
-              visibleFrom="sm"
+              
               mb="0px"
               p="0px"
             >
@@ -749,6 +749,7 @@ export default function Header({
                 onClick={() => {
                   window.location.href = '/dashboard';
                 }}
+               
               >
                 <span className="mantine-visible-from-md">Documents</span>
               </Button>
@@ -782,13 +783,14 @@ export default function Header({
           </Flex>
         </Flex>
 
-        <SimpleGrid cols={2} spacing="0px" visibleFrom="xl" h="3rem" mih="2.8rem" mah="5vh">
+        <SimpleGrid cols={2} spacing="0px" visibleFrom="xl" h="3rem" miw='48rem' mih="2.8rem" mah="5vh">
           <Center
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
             pr="lg"
             ml="lg"
             mr="xs"
+            miw='max-content'
             className={classes.band}
           >
             {tabs.map((tab) => (
@@ -824,11 +826,12 @@ export default function Header({
           {/* </ScrollArea> */}
         </SimpleGrid>
 
-        <SimpleGrid cols={1} spacing="0px" hiddenFrom="xl" h="3rem" mih="2.8rem" mah="5vh">
+        <SimpleGrid cols={1} spacing="0px" hiddenFrom="xl" h="3rem" mih="2.8rem"  miw='max-content' mah="5vh">
           <Flex
             w="100vw"
             justify="center"
             style={{ display: displayBarinMinSize === 'left' ? 'flex' : 'none' }}
+            miw='48rem'
           >
             <Center
               w="100%"
@@ -838,6 +841,7 @@ export default function Header({
               ml="lg"
               mr="xs"
               className={classes.band}
+              miw='max-content'
             >
               {tabs.map((tab) => (
                 <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
@@ -849,6 +853,7 @@ export default function Header({
                 borderTopLeftRadius: 'var(--mantine-radius-md)',
                 borderBottomLeftRadius: 'var(--mantine-radius-md)',
               }}
+              miw='max-content'
             >
               <Button
                 variant="format"
@@ -866,6 +871,8 @@ export default function Header({
             w="100vw"
             justify="center"
             style={{ display: displayBarinMinSize === 'left' ? 'none' : 'flex' }}
+          
+             miw='48rem'
           >
             <Center
               className={classes.band}
@@ -873,6 +880,7 @@ export default function Header({
                 borderTopRightRadius: 'var(--mantine-radius-md)',
                 borderBottomRightRadius: 'var(--mantine-radius-md)',
               }}
+              miw='max-content'
             >
               <Button
                 variant="format"
@@ -892,6 +900,7 @@ export default function Header({
               mr="lg"
               ml="xs"
               className={classes.band}
+              miw='max-content'
             >
               <PdfTools />
             </Center>

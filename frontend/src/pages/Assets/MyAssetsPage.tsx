@@ -157,6 +157,7 @@ export default function MyAssetsPage() {
               ? `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-1),   var(--mantine-color-white)`
               : `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-5)`,
           borderRadius: 'var(--mantine-radius-md)',
+          transition: 'all 300ms ease'
         }}
         ml="xl"
         mr="xl"
