@@ -436,11 +436,11 @@ export default function DocumentPage() {
         saveDocumentContent();
       }
     };
-    window.addEventListener('keydown', saveShortcutHandler);
+    //window.addEventListener('keydown', saveShortcutHandler);
     checkLogged();
     setPdfFile();
     setBlocks();
-    return () => window.removeEventListener('keydown', saveShortcutHandler);
+    // return () => window.removeEventListener('keydown', saveShortcutHandler);
   }, []);
 
   return (
@@ -451,7 +451,12 @@ export default function DocumentPage() {
             <ActiveTextfieldProvider>
               {/* <ReferencesListProvider> */}
               <EditorProvider>
-                <Box maw="100vw" mah="100vh" miw="48rem" style={{overflow: 'visible', flexShrink: '0'}}>
+                <Box
+                  maw="100vw"
+                  mah="100vh"
+                  miw="48rem"
+                  style={{ overflow: 'visible', flexShrink: '0' }}
+                >
                   <Header
                     //editFunctions={editFunctions}
                     saveDocumentContent={saveDocumentContent}
@@ -461,11 +466,16 @@ export default function DocumentPage() {
                     setPdfFile={setPdfFile}
                     pdfLoaded={pdfLoaded}
                   />
-                  <Box h="calc(100vh - 6rem)" >
+                  <Box h="calc(100vh - 5.5rem)" m="0px">
                     <Split
                       className={classes.bar}
                       lineBar
-                      style={{ width: '100vw', minWidth: '48rem', border: 'none', height: 'calc(100vh - 6rem)' }}
+                      style={{
+                        width: '100vw',
+                        minWidth: '48rem',
+                        border: 'none',
+                        height: 'calc(100vh - 5.5rem)',
+                      }}
                       renderBar={({ onMouseDown, ...props }) => {
                         return (
                           <div {...props} style={{ boxShadow: 'none' }}>
@@ -474,7 +484,7 @@ export default function DocumentPage() {
                         );
                       }}
                     >
-                      <Center w="100vw" h="calc(100vh - 6rem)" p="0px" pos="relative">
+                      <Center w="100vw" h="calc(100vh - 5.5rem)" p="0px" pos="relative">
                         <LoadingOverlay
                           visible={!workspaceLoaded}
                           zIndex={100}
@@ -484,9 +494,9 @@ export default function DocumentPage() {
                             color: 'var(--mantine-color-gray-1)',
                           }}
                           loaderProps={{ color: 'cyan' }}
-                          mr='2px'
+                          mr="2px"
                         />
-                        <ScrollArea h="100%" w="100%" >
+                        <ScrollArea h="100%" w="100%">
                           <Box
                             h="100%"
                             w="100%"
@@ -496,8 +506,7 @@ export default function DocumentPage() {
                               transformOrigin: 'top left',
                             }}
                             p="0px"
-                            miw='max-content'
-                          
+                            miw="max-content"
                           >
                             {blocksError && (
                               <Box h="80vh">
@@ -520,7 +529,7 @@ export default function DocumentPage() {
                                   pl="lg"
                                   pr="lg"
                                   w="40vw"
-                                  miw='40rem'
+                                  miw="40rem"
                                   h="50px"
                                 />
 
@@ -543,7 +552,7 @@ export default function DocumentPage() {
                                   pr="lg"
                                   w="40vw"
                                   h="50px"
-                                  miw='40rem'
+                                  miw="40rem"
                                 />
                               </Stack>
                             )}
@@ -560,7 +569,7 @@ export default function DocumentPage() {
                             color: 'var(--mantine-color-gray-1)',
                           }}
                           loaderProps={{ color: 'cyan' }}
-                            ml='2px'
+                          ml="2px"
                         />
 
                         {pdfError && (
@@ -577,8 +586,9 @@ export default function DocumentPage() {
                         )}
                         {pdf && (
                           <ScrollArea
-                            h="calc(100vh - 6rem)"
+                            h="calc(100vh - 5.5rem)"
                             //p="xs"
+                            pt="0px"
                             pb="10px"
                             pr="10px"
                             scrollbars="xy"

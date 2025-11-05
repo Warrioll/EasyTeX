@@ -81,36 +81,36 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
   //   }
   // }, [blocksContent]);
 
-  // useEffect(() => {
-  //   const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
-  //     if (isNotSaved) {
-  //       e.preventDefault();
-  //       e.returnValue = '';
-  //     }
-  //   };
+  useEffect(() => {
+    const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
+      if (isNotSaved) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
 
-  //   //console.log('isnotsaved', isNotSaved);
+    //console.log('isnotsaved', isNotSaved);
 
-  //   if (isNotSaved) {
-  //     window.addEventListener('beforeunload', notSavedWaringHandler);
-  //     // console.log('before pivot: ', historyPivot, 'before history: ', blocksContentHistory);
-  //     // if (historyPivot === 0) {
-  //     //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
-  //     // } else if (historyPivot) {
-  //     //   blocksContentHistory.current = blocksContentHistory.current.slice(historyPivot);
-  //     //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
-  //     // }
+    if (isNotSaved) {
+      window.addEventListener('beforeunload', notSavedWaringHandler);
+      // console.log('before pivot: ', historyPivot, 'before history: ', blocksContentHistory);
+      // if (historyPivot === 0) {
+      //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
+      // } else if (historyPivot) {
+      //   blocksContentHistory.current = blocksContentHistory.current.slice(historyPivot);
+      //   blocksContentHistory.current = [cloneDeep(blocksContent), ...blocksContentHistory.current];
+      // }
 
-  //     // if (blocksContentHistory.current.length > historyBuffer) {
-  //     //   console.log('poppp');
-  //     //   blocksContentHistory.current.pop();
-  //     // }
+      // if (blocksContentHistory.current.length > historyBuffer) {
+      //   console.log('poppp');
+      //   blocksContentHistory.current.pop();
+      // }
 
-  //     // console.log('pivot: ', historyPivot, 'history: ', blocksContentHistory);
+      // console.log('pivot: ', historyPivot, 'history: ', blocksContentHistory);
 
-  //     return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
-  //   }
-  // }, [isNotSaved]);
+      return () => window.removeEventListener('beforeunload', notSavedWaringHandler);
+    }
+  }, [isNotSaved]);
 
   return (
     <BlocksContentContext.Provider

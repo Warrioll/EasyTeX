@@ -74,6 +74,7 @@ import {
 } from '@mantine/core';
 //import { MantineLogo } from '@mantinex/mantine-logo';
 import { useDisclosure } from '@mantine/hooks';
+import CustomTooltip from '@/components/other/CustomTooltip';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
 import { blockType } from '@/Types';
@@ -444,13 +445,9 @@ export default function Header({
             variant="transparent"
             rightSection={
               isNotSaved ? (
-                <Flex c="var(--mantine-color-yellow-8)">
+                <Flex c="var(--mantine-color-error)">
                   <Text mt="0.4rem">
                     <FaSave />
-                  </Text>
-
-                  <Text fw="700" mt="0.15rem" ml="0.1rem" fz="lg" w="0.4rem">
-                    !
                   </Text>
                 </Flex>
               ) : null
@@ -496,7 +493,7 @@ export default function Header({
             </Text>
           </SimpleGrid>
           {isNotSaved ? (
-            <Flex justify="center" c="var(--mantine-color-yellow-8)" mt="lg">
+            <Flex justify="center" c="var(--mantine-color-error)" mt="lg">
               <Text mt="0.15rem" mr="xs">
                 <FaSave />
               </Text>
@@ -520,7 +517,7 @@ export default function Header({
       <>
         {' '}
         <Box>
-          <Tooltip
+          {/* <Tooltip
             label={
               savingPdf ? 'Saving document...' : 'Save document'
               // <>
@@ -539,27 +536,29 @@ export default function Header({
             arrowOffset={50}
             arrowSize={7}
             arrowRadius={2}
-          >
+          > */}
+          <CustomTooltip label={savingPdf ? 'Saving document...' : 'Save document'}>
             <Button
               w={{ base: '3rem', sm: '4.6rem' }}
               variant="format"
               disabled={!pdfLoaded}
               leftSection={!savingPdf && <FaRegSave />}
-              onClick={() => {
+              onMouseUp={() => {
                 setSavingPdf(true);
                 saveDocumentContent();
               }}
+              bg={savingPdf ? 'var(--mantine-color-cyan-7)' : ''}
             >
               {savingPdf ? (
-                <Loader size={16} />
+                <Loader color="var(--mantine-color-white)" size={16} />
               ) : (
                 <>
                   <span className="mantine-visible-from-sm">Save</span>
                 </>
               )}
             </Button>
-          </Tooltip>
-          <Tooltip
+          </CustomTooltip>
+          {/* <Tooltip
             label={
               reloadingPdf ? 'Reloading PDF without saving...' : ' Reload PDF without saving'
               // <>
@@ -578,31 +577,38 @@ export default function Header({
             arrowOffset={50}
             arrowSize={7}
             arrowRadius={2}
+          > */}
+          <CustomTooltip
+            label={reloadingPdf ? 'Reloading PDF without saving...' : ' Reload PDF without saving'}
           >
             <Button
+              bg={reloadingPdf ? 'var(--mantine-color-cyan-7)' : ''}
               w={{ base: '3rem', sm: '7.3rem' }}
               variant="format"
               disabled={!pdfLoaded}
               leftSection={!reloadingPdf && <LuRefreshCcw />}
-              onClick={() => {
+              onMouseUp={() => {
                 setReloadingPdf(true);
                 setPdfFile();
               }}
             >
               {reloadingPdf ? (
-                <Loader size={16} />
+                <Loader color="var(--mantine-color-white)" size={16} />
               ) : (
                 <span className="mantine-visible-from-sm">Reload PDF</span>
               )}
             </Button>
-          </Tooltip>
+          </CustomTooltip>
         </Box>
         <ZoomTools tooltip="PDF zoom" zoomState={pdfZoom} />
         <Group justify="end" gap="0px">
           {/* <Button variant="transparent">
               <RiSplitCellsHorizontal />
             </Button> */}
-          <Tooltip
+          <CustomTooltip
+            label={preparingTexToDownload ? 'Downloading .tex file...' : 'Download .tex file'}
+          >
+            {/* <Tooltip
             label={preparingTexToDownload ? 'Downloading .tex file...' : 'Download .tex file'}
             color="cyan"
             position="bottom"
@@ -611,21 +617,29 @@ export default function Header({
             arrowOffset={50}
             arrowSize={7}
             arrowRadius={2}
-          >
+          > */}
             <Button
               variant="format"
               w="4.2rem"
               disabled={preparingTexToDownload}
               leftSection={!preparingTexToDownload && <LuDownload />}
-              onClick={() => {
+              bg={preparingTexToDownload ? 'var(--mantine-color-cyan-7)' : ''}
+              onMouseUp={() => {
                 setPreparingTexToDownload(true);
                 downloadTex();
               }}
             >
-              {preparingTexToDownload ? <Loader size={16} /> : '.tex'}
+              {preparingTexToDownload ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                '.tex'
+              )}
             </Button>
-          </Tooltip>
-          <Tooltip
+          </CustomTooltip>
+          <CustomTooltip
+            label={preparingPdfToDownload ? 'Downloading .pdf file...' : 'Download .pdf file'}
+          >
+            {/* <Tooltip
             label={preparingPdfToDownload ? 'Downloading .pdf file...' : 'Download .pdf file'}
             color="cyan"
             position="bottom"
@@ -634,27 +648,32 @@ export default function Header({
             arrowOffset={50}
             arrowSize={7}
             arrowRadius={2}
-          >
+          > */}
             <Button
               w="4.2rem"
               variant="format"
               leftSection={!preparingPdfToDownload && <LuDownload />}
-              onClick={() => {
+              onMouseUp={() => {
                 setPreparingPdfToDownload(true);
                 downloadPdf();
               }}
               disabled={preparingPdfToDownload}
+              bg={preparingPdfToDownload ? 'var(--mantine-color-cyan-7)' : ''}
             >
-              {preparingPdfToDownload ? <Loader size={16} /> : '.pdf'}
+              {preparingPdfToDownload ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                '.pdf'
+              )}
             </Button>
-          </Tooltip>
+          </CustomTooltip>
         </Group>
       </>
     );
   };
 
   return (
-    <Box h="5.5rem" miw="48rem" display="block">
+    <Box h="5.3rem" miw="48rem" display="block">
       {/* <header> */}
       <Tabs
         radius="sm"
@@ -706,6 +725,7 @@ export default function Header({
                   //disabled={isDisabledtab(tab.value)}
                   leftSection={<tab.Icon />}
                   styles={{ tabSection: { marginRight: '6px' } }}
+                  style={{ zIndex: '15' }}
                 >
                   <Box visibleFrom="xxxl">{tab.label}</Box>
                 </Tabs.Tab>
@@ -725,17 +745,8 @@ export default function Header({
             <DocumentName />
           </Center>
 
-          <Flex miw="24rem" mb="0px" w="40vw" style={{ flexShrink: '0' }} >
-            <Group
-              justify="end"
-              h="100%"
-              w="100%"
-              ml="xl"
-              gap={0}
-              
-              mb="0px"
-              p="0px"
-            >
+          <Flex miw="24rem" mb="0px" w="40vw" style={{ flexShrink: '0' }}>
+            <Group justify="end" h="100%" w="100%" ml="xl" gap={0} mb="0px" p="0px">
               <Box hiddenFrom="md">
                 <DocumentName />
               </Box>
@@ -749,7 +760,6 @@ export default function Header({
                 onClick={() => {
                   window.location.href = '/dashboard';
                 }}
-               
               >
                 <span className="mantine-visible-from-md">Documents</span>
               </Button>
@@ -783,14 +793,22 @@ export default function Header({
           </Flex>
         </Flex>
 
-        <SimpleGrid cols={2} spacing="0px" visibleFrom="xl" h="3rem" miw='48rem' mih="2.8rem" mah="5vh">
+        <SimpleGrid
+          cols={2}
+          spacing="0px"
+          visibleFrom="xl"
+          h="3rem"
+          miw="48rem"
+          mih="2.8rem"
+          mah="5vh"
+        >
           <Center
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
             pr="lg"
             ml="lg"
             mr="xs"
-            miw='max-content'
+            miw="max-content"
             className={classes.band}
           >
             {tabs.map((tab) => (
@@ -826,12 +844,20 @@ export default function Header({
           {/* </ScrollArea> */}
         </SimpleGrid>
 
-        <SimpleGrid cols={1} spacing="0px" hiddenFrom="xl" h="3rem" mih="2.8rem"  miw='max-content' mah="5vh">
+        <SimpleGrid
+          cols={1}
+          spacing="0px"
+          hiddenFrom="xl"
+          h="3rem"
+          mih="2.8rem"
+          miw="max-content"
+          mah="5vh"
+        >
           <Flex
             w="100vw"
             justify="center"
             style={{ display: displayBarinMinSize === 'left' ? 'flex' : 'none' }}
-            miw='48rem'
+            miw="48rem"
           >
             <Center
               w="100%"
@@ -841,7 +867,7 @@ export default function Header({
               ml="lg"
               mr="xs"
               className={classes.band}
-              miw='max-content'
+              miw="max-content"
             >
               {tabs.map((tab) => (
                 <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
@@ -853,12 +879,12 @@ export default function Header({
                 borderTopLeftRadius: 'var(--mantine-radius-md)',
                 borderBottomLeftRadius: 'var(--mantine-radius-md)',
               }}
-              miw='max-content'
+              miw="max-content"
             >
               <Button
                 variant="format"
                 w="2rem"
-                onClick={() => {
+                onMouseUp={() => {
                   setDisplayBarinMinSize('right');
                 }}
               >
@@ -871,8 +897,7 @@ export default function Header({
             w="100vw"
             justify="center"
             style={{ display: displayBarinMinSize === 'left' ? 'none' : 'flex' }}
-          
-             miw='48rem'
+            miw="48rem"
           >
             <Center
               className={classes.band}
@@ -880,12 +905,12 @@ export default function Header({
                 borderTopRightRadius: 'var(--mantine-radius-md)',
                 borderBottomRightRadius: 'var(--mantine-radius-md)',
               }}
-              miw='max-content'
+              miw="max-content"
             >
               <Button
                 variant="format"
                 w="2rem"
-                onClick={() => {
+                onMouseUp={() => {
                   setDisplayBarinMinSize('left');
                 }}
               >
@@ -900,7 +925,7 @@ export default function Header({
               mr="lg"
               ml="xs"
               className={classes.band}
-              miw='max-content'
+              miw="max-content"
             >
               <PdfTools />
             </Center>

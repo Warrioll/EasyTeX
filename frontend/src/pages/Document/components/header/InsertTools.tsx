@@ -231,16 +231,17 @@ export const useInsertTools = (): groupedListType => {
 
   const refEquationCombobox = (
     <AddComboox
+      openedButtonColor="var(--mantine-color-cyan-7)"
       data={equationList ? equationList : []}
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
       buttonContent={
         <>
-          <Text fz="lg" c="black" mb="-0.4rem">
+          <Text fz="lg" c="var(--mantine-color-white)" mb="-0.4rem">
             <MdFunctions />
           </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
+          <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
       //expressionInputContentState,
@@ -257,16 +258,17 @@ export const useInsertTools = (): groupedListType => {
 
   const refTableCombobox = (
     <AddComboox
+      openedButtonColor="var(--mantine-color-cyan-7)"
       data={tableList ? tableList : []}
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
       buttonContent={
         <>
-          <Text fz="lg" c="black" mb="-0.4rem">
+          <Text fz="lg" c="var(--mantine-color-white)" mb="-0.4rem">
             <LuTable />
           </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
+          <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
       //expressionInputContentState,
@@ -289,10 +291,10 @@ export const useInsertTools = (): groupedListType => {
       placeholder=""
       buttonContent={
         <>
-          <Text fz="lg" c="black" mb="-0.4rem">
+          <Text fz="lg" c="var(--mantine-color-white)" mb="-0.4rem">
             <LuImage />
           </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
+          <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
       //expressionInputContentState,
@@ -303,6 +305,7 @@ export const useInsertTools = (): groupedListType => {
       }}
       iconSize="2rem"
       buttonVariant="format"
+      openedButtonColor="var(--mantine-color-cyan-7)"
       tooltip={refToImageElement.label}
     />
   );
@@ -313,12 +316,13 @@ export const useInsertTools = (): groupedListType => {
       withGroups={false}
       floatingStrategy="fixed"
       placeholder=""
+      openedButtonColor="var(--mantine-color-cyan-7)"
       buttonContent={
         <>
-          <Text fz="lg" c="black" mb="-0.4rem">
+          <Text fz="lg" c="var(--mantine-color-white)" mb="-0.4rem">
             <MdOutlineLibraryBooks />
           </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
+          <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
       //expressionInputContentState,
@@ -353,10 +357,11 @@ export const useInsertTools = (): groupedListType => {
       }}
       placeholder="elements"
       buttonContent={
-        <Text fz="lg" c="black" mb="-0.4rem">
+        <Text fz="lg" c="var(--mantine-color-white)" mb="-0.4rem">
           <TbOmega />
         </Text>
       }
+      openedButtonColor="var(--mantine-color-cyan-7)"
       data={specialCharacersForCombobox}
       iconSize="0.8rem"
       floatingStrategy="fixed"

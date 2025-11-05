@@ -9,6 +9,7 @@ import {
   Tooltip,
   useCombobox,
 } from '@mantine/core';
+import CustomTooltip from '@/components/other/CustomTooltip';
 import SimpleCombobox from '@/components/other/SimpleCombobox';
 import classes from './Header.module.css';
 
@@ -48,7 +49,8 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
 
   return (
     <Flex ml="2rem" mr="2rem">
-      <Tooltip
+      <CustomTooltip label="Zoom out">
+        {/* <Tooltip
         label="Zoom out"
         //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
         color="cyan"
@@ -58,11 +60,12 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
         arrowOffset={50}
         arrowSize={7}
         arrowRadius={2}
-      >
+      > */}
+
         <Button
           variant="format"
           fz="var(--mantine-font-size-lg)"
-          onClick={() => {
+          onMouseUp={() => {
             const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) - 1;
             if (zoomIdx >= 0) {
               setZoomValue(zoomValuesList[zoomIdx].toString());
@@ -71,10 +74,10 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
         >
           <FiZoomOut />
         </Button>
-      </Tooltip>
+      </CustomTooltip>
       <SimpleCombobox tooltip={tooltip} valueState={zoomState} values={zoomList} width="4.1rem" />
 
-      <Tooltip
+      {/* <Tooltip
         label="Zoom in"
         //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
         color="cyan"
@@ -84,11 +87,12 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
         arrowOffset={50}
         arrowSize={7}
         arrowRadius={2}
-      >
+      > */}
+      <CustomTooltip label="Zoom in">
         <Button
           variant="format"
           fz="var(--mantine-font-size-lg)"
-          onClick={() => {
+          onMouseUp={() => {
             const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) + 1;
             if (zoomIdx < zoomValuesList.length) {
               setZoomValue(zoomValuesList[zoomIdx].toString());
@@ -97,7 +101,7 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
         >
           <FiZoomIn />
         </Button>
-      </Tooltip>
+      </CustomTooltip>
     </Flex>
   );
 }

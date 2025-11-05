@@ -9,6 +9,7 @@ import { TbForbid2 } from 'react-icons/tb';
 import { Badge, Box, Button, Center, Flex, Menu, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AddComboox } from '@/components/other/AddCombobox';
+import CustomTooltip from '@/components/other/CustomTooltip';
 //import { blocksList } from '../oldBlocksList';
 import { useBlocksList } from '@/pages/Document/components/blocksListAndPrototypes';
 import { useAddBlock } from '@/pages/Document/hooksAndUtils/documentHooks';
@@ -140,7 +141,8 @@ export default function ButtonsOfMarkedBlock({
                 styles={{ arrow: { border: ' 1px solid var(--mantine-color-cyan-2)' } }}
               >
                 <Menu.Target>
-                  <Tooltip
+                  <CustomTooltip label="More">
+                    {/* <Tooltip
                     label="More"
                     //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
                     color="cyan"
@@ -150,7 +152,7 @@ export default function ButtonsOfMarkedBlock({
                     arrowOffset={50}
                     arrowSize={7}
                     arrowRadius={2}
-                  >
+                  > */}
                     <Button
                       variant="transparent"
                       //mt="xs"
@@ -161,6 +163,9 @@ export default function ButtonsOfMarkedBlock({
                       //h="1.5rem"
                       m="0px"
                       bg={openedMenu ? 'var(--mantine-color-gray-2)' : ''}
+                      onClick={() => {
+                        setOpenedMenu((prev) => !prev);
+                      }}
                     >
                       <Text
                         w="100%"
@@ -175,16 +180,18 @@ export default function ButtonsOfMarkedBlock({
                         <IoMdMore />
                       </Text>
                     </Button>
-                  </Tooltip>
+                    {/* </Tooltip> */}
+                  </CustomTooltip>
                 </Menu.Target>
                 <Menu.Dropdown
-                  bg="var(--mantine-color-gray-0)"
+                  bg="var(--mantine-color-cyan-0)"
                   bd=" 1px solid var(--mantine-color-cyan-3)"
                 >
                   <Menu.Item
                     leftSection={<FaArrowUp />}
                     disabled={activeBlock === 1}
                     onClick={moveBlockUp}
+                    className={classes.markedBlockFrameMoreButton}
                   >
                     Move up
                   </Menu.Item>
@@ -192,6 +199,7 @@ export default function ButtonsOfMarkedBlock({
                     leftSection={<FaArrowDown />}
                     disabled={activeBlock === blocksContent.length - 1}
                     onClick={moveBlockDown}
+                    className={classes.markedBlockFrameMoreButton}
                   >
                     Move down
                   </Menu.Item>
@@ -205,7 +213,7 @@ export default function ButtonsOfMarkedBlock({
                 </Menu.Dropdown>
               </Menu>
 
-              <Tooltip
+              {/* <Tooltip
                 label="Unmark block"
                 //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
                 color="cyan"
@@ -215,7 +223,8 @@ export default function ButtonsOfMarkedBlock({
                 arrowOffset={50}
                 arrowSize={7}
                 arrowRadius={2}
-              >
+              > */}
+              <CustomTooltip label="Unmark block">
                 <Button
                   variant="transparent"
                   //size="compact-sm"
@@ -245,7 +254,8 @@ export default function ButtonsOfMarkedBlock({
                     <TbForbid2 />
                   </Text>
                 </Button>
-              </Tooltip>
+              </CustomTooltip>
+              {/* </Tooltip> */}
             </Flex>
           </Flex>
         </Flex>

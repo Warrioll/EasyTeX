@@ -49,7 +49,7 @@ export default function DeleteReferencePopover({
           w="2rem"
           p="0px"
           variant="transparent"
-          c="var(--mantine-color-gray-6)"
+          c="var(--mantine-color-cyan-7)"
           onClick={() => setOpenedDeleteConfirmation((o) => !o)}
           bg={openedDeleteConfirmation ? 'var(--mantine-color-gray-2)' : ''}
           ml="xs"
@@ -59,14 +59,15 @@ export default function DeleteReferencePopover({
       </Popover.Target>
       <Popover.Dropdown
         w="28vw"
-        bg="var(--mantine-color-gray-0)"
+        miw="20rem"
+        bg="var(--mantine-color-cyan-0)"
         bd=" 1px solid var(--mantine-color-cyan-3)"
       >
         <Stack align="center" p="md" gap="xs">
           <Text fw="700" ta="center">
             Are you sure you want to delete this entry?
           </Text>
-          <Text fz="sm" c="var(--mantine-color-gray-7)">
+          <Text fz="sm" c="var(--mantine-color-gray-7)" ta="center">
             All references to this entry will be also deleted.
           </Text>
 
@@ -74,8 +75,12 @@ export default function DeleteReferencePopover({
             <Text fw="500" mr="md">
               Entry:
             </Text>
+
             <Box h="1.4rem" mr="xs" mt="0.2rem">
-              <BlockReferenceId referenceId={blocksContent[idx].blockContent[referenceId].id} />
+              <BlockReferenceId
+                marked
+                referenceId={blocksContent[idx].blockContent[referenceId].id}
+              />
             </Box>
             <Text className={classes.trunckedText}>
               [{referenceId + 1}]{' '}
@@ -85,19 +90,20 @@ export default function DeleteReferencePopover({
               })}
             </Text>
           </Flex>
-          <Flex justify="center">
+
+          <Flex justify="center" w="100%">
             <Button
               color="red"
               onClick={() => {
                 deleteReference(referenceId);
               }}
               mx="xs"
-              w="10rem"
+              fullWidth
             >
               Delete
             </Button>
             <Button
-              w="10rem"
+              fullWidth
               color="cyan"
               variant="outline"
               mx="xs"

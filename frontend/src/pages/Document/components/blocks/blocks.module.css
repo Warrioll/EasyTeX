@@ -8,6 +8,14 @@
 
 }
 
+.markedBlockFrameMoreButton:hover{
+    background-color: var(--mantine-color-cyan-1);
+}
+
+.buttonWhiteHover:hover{
+    background-color: var(--mantine-color-gray-1);
+}
+
 .unmarkedFrame{
     margin-left: 3px;
     margin-right: 3px;

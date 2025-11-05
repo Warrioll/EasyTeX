@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { cloneDeep } from 'lodash';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Flex, Popover, Stack, Text, Title } from '@mantine/core';
+import { Box, Button, Center, Flex, Menu, Popover, Stack, Text, Title } from '@mantine/core';
 import { referencesElementType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import { useEditTextfields } from '../../hooksAndUtils/documentHooks';
@@ -11,6 +11,8 @@ import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import DeleteReferencePopover from './refrencesBlockComponents/DeleteReferencePopover';
+import ReferenceItemMenu from './refrencesBlockComponents/ReferenceitemMenu';
+import classes from './blocks.module.css';
 
 type ReferencesBlockPropsType = {
   idx: number;
@@ -89,23 +91,25 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
               ? blocksContent[idx].blockContent.map((item: referencesElementType, referenceId) => {
                   //console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
                   return (
-                    <Flex>
+                    <Flex justify="space-between">
                       <Box h="1.4rem" mr="xs" mt="0.7rem">
                         <BlockReferenceId referenceId={item.id} />
                       </Box>
                       <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
                         [{referenceId + 1}]
                       </Box>
-                      <Box maw="29vw" w="100%">
+                      <Box w="100%">
                         <BasicTexfield
                           idx={idx}
-                          //FIXME - te toString coś nie tak
                           idxInput={idx.toString() + item.id}
                           contentToRead={item.label}
                         />
                       </Box>
                       {activeBlock === idx ? (
-                        <DeleteReferencePopover idx={idx} referenceId={referenceId} />
+                        <>
+                          {/* <ReferenceItemMenu idx={idx} referenceId={referenceId} /> */}
+                          <DeleteReferencePopover idx={idx} referenceId={referenceId} />
+                        </>
                       ) : (
                         <Box w="2rem" />
                       )}
@@ -115,16 +119,21 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
               : null}
 
             {activeBlock === idx ? (
-              <Button
-                bg="var(--mantine-color-gray-1)"
-                c="var(--mantine-color-gray-6)"
-                leftSection={<MdOutlineAdd />}
-                onClick={addReference}
-                m="0px"
-                h="2rem"
-              >
-                Add entry
-              </Button>
+              <Center w="100%">
+                <Button
+                  className={classes.buttonWhiteHover}
+                  bg="transparent"
+                  c="var(--mantine-color-cyan-7)"
+                  leftSection={<MdOutlineAdd />}
+                  onClick={addReference}
+                  //bd="1px solid var(--mantine-color-cyan-5)"
+                  m="0px"
+                  h="2rem"
+                  w="8rem"
+                >
+                  Add entry
+                </Button>
+              </Center>
             ) : (
               <Box h="2rem" />
             )}

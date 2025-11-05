@@ -12,6 +12,7 @@ import {
   useCombobox,
 } from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
+import CustomTooltip from './CustomTooltip';
 import classes from './other.module.css';
 
 type addSpecialCharacterComboboxPropsType = {
@@ -27,6 +28,7 @@ type addSpecialCharacterComboboxPropsType = {
   tooltip?: string;
   belongingValidator?: string;
   position?: FloatingPosition;
+  openedButtonColor?: string;
 };
 
 export function AddComboox({
@@ -42,6 +44,7 @@ export function AddComboox({
   tooltip,
   belongingValidator,
   position,
+  openedButtonColor,
 }: addSpecialCharacterComboboxPropsType) {
   //const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [search, setSearch] = useState('');
@@ -88,6 +91,7 @@ export function AddComboox({
                   onMouseUp={() => {
                     insertFunction(item.value);
                   }}
+                  className={classes.hoverButton}
                   disabled={item.disabledFunction ? item.disabledFunction() : false}
                 >
                   <Flex align="center">
@@ -131,7 +135,7 @@ export function AddComboox({
                 p="0px"
                 m="2px"
                 bg="white"
-                bd="1px solid var(--mantine-color-gray-1)"
+                bd="1px solid var(--mantine-color-cyan-1)"
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               >
                 {/* jeśli Icon to funkcja-komponent */}
@@ -164,28 +168,30 @@ export function AddComboox({
         floatingStrategy={floatingStrategy}
         shadow="md"
         styles={{
-          search: { backgroundColor: 'var(--mantine-color-gray-1)' },
+          search: { backgroundColor: 'var(--mantine-color-cyan-1)' },
           dropdown: {
             arrow: { borderColor: 'var(--mantine-color-cyan-2)' },
             border: '1px solid var(--mantine-color-cyan-3)',
-            backgroundColor: 'var(--mantine-color-gray-0)',
+            backgroundColor: 'var(--mantine-color-cyan-0)',
           },
           groupLabel: { color: 'var(--mantine-color-cyan-7)' },
         }}
       >
         <Combobox.Target withAriaAttributes={false}>
           {tooltip ? (
-            <Tooltip
+            <CustomTooltip label={tooltip}>
+              {/* <Tooltip
               label={tooltip}
               //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-              color="cyan"
+              bg="var(--mantine-color-cyan-9)"
+              c="var(--mantine-color-white)"
               position="bottom"
               offset={5}
               withArrow
               arrowOffset={50}
               arrowSize={7}
               arrowRadius={2}
-            >
+            > */}
               <Button
                 onClick={() => {
                   //e.stopPropagation();
@@ -197,11 +203,18 @@ export function AddComboox({
                 m="0px"
                 px="0.45rem"
                 mx="3px"
-                bg={combobox.dropdownOpened ? 'var(--mantine-color-gray-2)' : ''}
+                bg={
+                  combobox.dropdownOpened
+                    ? openedButtonColor
+                      ? openedButtonColor
+                      : 'var(--mantine-color-gray-2)'
+                    : ''
+                }
               >
                 {buttonContent}
               </Button>
-            </Tooltip>
+              {/* </Tooltip> */}
+            </CustomTooltip>
           ) : (
             <Button
               onClick={() => {

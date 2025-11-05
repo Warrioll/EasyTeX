@@ -2,8 +2,8 @@ import { AiOutlineSignature } from 'react-icons/ai';
 import { BiFont } from 'react-icons/bi';
 import { FaFileSignature } from 'react-icons/fa';
 import { FaHeading } from 'react-icons/fa6';
-import { LiaFileSignatureSolid } from 'react-icons/lia';
 import { HiOutlineCodeBracketSquare } from 'react-icons/hi2';
+import { LiaFileSignatureSolid } from 'react-icons/lia';
 import {
   LuDoorClosed,
   LuDoorOpen,
@@ -26,6 +26,7 @@ import {
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiSignature } from 'react-icons/pi';
+import { RiFileCodeLine } from 'react-icons/ri';
 import {
   blockAbleToRef,
   blockType,
@@ -111,7 +112,7 @@ const pageBreakValue: blockType = {
   blockContent: { title: 'Slide title', subtitle: 'Slide subtitle' },
 };
 
-const latexExpressionValue: blockType={ typeOfBlock: 'latex', blockContent: '' }
+const latexExpressionValue: blockType = { typeOfBlock: 'latex', blockContent: '' };
 // const pageBreakBeamerValue: blockType = {
 //   typeOfBlock: 'pageBreak',
 //   blockContent: { title: 'Title', subtitle: 'Subtitle' },
@@ -346,7 +347,7 @@ export const useBlocksList = (): groupedListType => {
         },
         {
           label: 'LaTeX expression',
-          Icon: () => <HiOutlineCodeBracketSquare  />,
+          Icon: () => <RiFileCodeLine />,
           function: () => {
             addBlock(latexExpressionValue, 1);
           },

@@ -1,6 +1,7 @@
 import { FaAngleDown } from 'react-icons/fa';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
-import { Center, Combobox, Input, InputBase, Tooltip, useCombobox } from '@mantine/core';
+import { Box, Center, Combobox, Input, InputBase, Tooltip, useCombobox } from '@mantine/core';
+import CustomTooltip from './CustomTooltip';
 import classes from './other.module.css';
 
 type SimpleComboboxPropsType = {
@@ -56,7 +57,8 @@ export default function SimpleCombobox({
       >
         <Combobox.Target>
           <Center>
-            <Tooltip
+            <CustomTooltip label={tooltip}>
+              {/* <Tooltip
               label={tooltip}
               //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
               color="cyan"
@@ -66,14 +68,18 @@ export default function SimpleCombobox({
               arrowOffset={50}
               arrowSize={7}
               arrowRadius={2}
-            >
+            > */}
               <InputBase
                 disabled={disabled}
                 w={width}
                 component="button"
                 type="button"
                 pointer
-                rightSection={<MdOutlineKeyboardArrowDown style={{ marginTop: '2px' }} />}
+                rightSection={
+                  <Center c="var(--mantine-color-white)">
+                    <MdOutlineKeyboardArrowDown style={{ marginTop: '2px' }} />
+                  </Center>
+                }
                 rightSectionPointerEvents="none"
                 onClick={() => combobox.toggleDropdown()}
                 variant="unstyled"
@@ -82,10 +88,12 @@ export default function SimpleCombobox({
                 size="xs"
                 styles={{
                   input: {
+                    fontWeight: '500',
                     paddingLeft: '10px',
+                    color: 'var(--mantine-color-white)',
                     backgroundColor: combobox.dropdownOpened
-                      ? 'var(--mantine-color-gray-2)'
-                      : 'var(--mantine-color-gray-1)',
+                      ? 'var(--mantine-color-cyan-7)'
+                      : 'var(--mantine-color-cyan-5)',
                     //textAlign: 'center',
                   },
                 }}
@@ -95,12 +103,14 @@ export default function SimpleCombobox({
                   <Input.Placeholder> </Input.Placeholder>
                 )}
               </InputBase>
-            </Tooltip>
+              {/* </Tooltip> */}
+            </CustomTooltip>
           </Center>
         </Combobox.Target>
 
         <Combobox.Dropdown
-          bg="var(--mantine-color-gray-0)"
+          bg="var(--mantine-color-cyan-0)"
+          //c="var(--mantine-color-white)"
           className={classes.simpleComboboxDropdownOption}
           bd=" 1px solid var(--mantine-color-cyan-3)"
         >

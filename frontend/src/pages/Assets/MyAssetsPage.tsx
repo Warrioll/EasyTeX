@@ -21,6 +21,7 @@ import { useDisclosure } from '@mantine/hooks';
 import FiguresLibrary from '@/components/FiguresLibrary/FiguresLibrary';
 import DeleteModal from '@/components/Modals/DeleteModal';
 import RenameModal from '@/components/Modals/RenameModal';
+import CustomTooltip from '@/components/other/CustomTooltip';
 import classes from './myAssetsPage.module.css';
 
 export default function MyAssetsPage() {
@@ -157,7 +158,7 @@ export default function MyAssetsPage() {
               ? `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-1),   var(--mantine-color-white)`
               : `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-5)`,
           borderRadius: 'var(--mantine-radius-md)',
-          transition: 'all 300ms ease'
+          transition: 'all 300ms ease',
         }}
         ml="xl"
         mr="xl"
@@ -170,7 +171,8 @@ export default function MyAssetsPage() {
           </Text>
         </Flex>
         <Flex c="var(--mantine-color-gray-7)" justify="flex-end" align="center">
-          <Tooltip
+          <CustomTooltip label="Preview">
+            {/* <Tooltip
             label="Preview"
             color="cyan"
             position="bottom"
@@ -180,7 +182,7 @@ export default function MyAssetsPage() {
             arrowSize={7}
             arrowRadius={2}
             disabled={choosenFigureState[0] === null}
-          >
+          > */}
             <Button
               p="0px"
               pr="xs"
@@ -202,18 +204,8 @@ export default function MyAssetsPage() {
             >
               <MdOutlineZoomOutMap />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Rename"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Rename">
             <Button
               pr="xs"
               p="0px"
@@ -239,18 +231,8 @@ export default function MyAssetsPage() {
             >
               <MdDriveFileRenameOutline />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Unmark"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Unmark">
             <Button
               pr="xs"
               fz="1.3rem"
@@ -270,18 +252,8 @@ export default function MyAssetsPage() {
             >
               <TbForbid2 />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Delete"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Delete">
             <Button
               pr="xs"
               fz="1.3rem"
@@ -303,7 +275,7 @@ export default function MyAssetsPage() {
             >
               <FaRegTrashAlt />
             </Button>
-          </Tooltip>
+          </CustomTooltip>
         </Flex>
       </SimpleGrid>
       <Center

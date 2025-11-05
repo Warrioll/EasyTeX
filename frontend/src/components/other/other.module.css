@@ -1,7 +1,7 @@
 .hoverButton:hover{
-    background-color: var(--mantine-color-gray-1);
+    background-color: var(--mantine-color-cyan-1);
 }
 
   .simpleComboboxDropdownOption:hover{
-background-color: var(--mantine-color-gray-1);
+background-color: var(--mantine-color-cyan-1);
   }

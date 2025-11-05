@@ -2,9 +2,10 @@ import { Flex, Text } from '@mantine/core';
 
 type BlockReferenceIdPropsType = {
   referenceId: string;
+  marked?: boolean;
 };
 
-export default function BlockReferenceId({ referenceId }: BlockReferenceIdPropsType) {
+export default function BlockReferenceId({ referenceId, marked }: BlockReferenceIdPropsType) {
   return (
     <>
       {/* <Tooltip
@@ -29,8 +30,8 @@ export default function BlockReferenceId({ referenceId }: BlockReferenceIdPropsT
         // bg={
         //   idx === activeBlock ? 'var(--mantine-color-cyan-4)' : 'var(--mantine-color-cyan-0)'
         // }
-        c="var(--mantine-color-cyan-9)"
-        bg="var(--mantine-color-cyan-0)"
+        c={marked ? 'var(--mantine-color-white)' : 'var(--mantine-color-cyan-9)'}
+        bg={marked ? 'var(--mantine-color-cyan-4)' : 'var(--mantine-color-cyan-0)'}
         fw="500"
         fz="sm"
         pl="5px"

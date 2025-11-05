@@ -218,7 +218,7 @@ export default function DashboardPage() {
                   documentData.length !== 0 ? (
                     <SimpleGrid cols={{ base: 1, lg: 2, xl: 3 }} spacing="xs" mt={50}>
                       {documentData.map((doc) => (
-                        <Box m="sm">
+                        <Box m="sm" className={classes.docCard}>
                           <DocumentCard
                             documentId={doc._id}
                             title={doc.name}

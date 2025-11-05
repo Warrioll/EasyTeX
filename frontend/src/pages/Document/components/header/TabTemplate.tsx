@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import { includes } from 'lodash';
 import { Box, Button, Center, Flex, Stack, Text, Tooltip } from '@mantine/core';
+import CustomTooltip from '@/components/other/CustomTooltip';
 import { groupedListType } from '@/Types';
 import { useBlocksContentContext } from '../../DocumentContextProviders';
 
@@ -43,7 +44,7 @@ export default function TabTemplate({
                   return null;
                 }
                 return (
-                  <Tooltip
+                  <CustomTooltip
                     label={
                       <>
                         <Text fz="sm" w="100%" ta="center">
@@ -58,15 +59,31 @@ export default function TabTemplate({
                         </Text>
                       </>
                     }
-                    //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-                    color="cyan"
-                    position="bottom"
-                    offset={5}
-                    withArrow
-                    arrowOffset={50}
-                    arrowSize={7}
-                    arrowRadius={2}
                   >
+                    {/* // <Tooltip
+                  //   label={
+                  //     <>
+                  //       <Text fz="sm" w="100%" ta="center">
+                  //         {getToottipText ? getToottipText(button.label) : button.label}
+                  //       </Text>
+                  //       <Text fz="sm" w="100%" ta="center">
+                  //         {button.disabledFunction
+                  //           ? button.disabledFunction()
+                  //             ? '(Maximum quantity is already used)'
+                  //             : ''
+                  //           : ''}
+                  //       </Text>
+                  //     </>
+                  //   }
+                  //   //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
+                  //   color="cyan"
+                  //   position="bottom"
+                  //   offset={5}
+                  //   withArrow
+                  //   arrowOffset={50}
+                  //   arrowSize={7}
+                  //   arrowRadius={2}
+                  // > */}
                     {buttonsNotToRender.includes(amountOFButtons) ? (
                       <button.Icon />
                     ) : (
@@ -80,7 +97,8 @@ export default function TabTemplate({
                         <button.Icon />
                       </Button>
                     )}
-                  </Tooltip>
+                  </CustomTooltip>
+                  // </Tooltip>
                 );
               })}
             </Flex>
