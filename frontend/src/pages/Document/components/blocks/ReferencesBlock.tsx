@@ -88,34 +88,36 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
           </Text>
           <Stack m="md">
             {amountOfReferences >= 0
-              ? blocksContent[idx].blockContent.map((item: referencesElementType, referenceId) => {
-                  //console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
-                  return (
-                    <Flex justify="space-between">
-                      <Box h="1.4rem" mr="xs" mt="0.7rem">
-                        <BlockReferenceId referenceId={item.id} />
-                      </Box>
-                      <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
-                        [{referenceId + 1}]
-                      </Box>
-                      <Box w="100%">
-                        <BasicTexfield
-                          idx={idx}
-                          idxInput={idx.toString() + item.id}
-                          contentToRead={item.label}
-                        />
-                      </Box>
-                      {activeBlock === idx ? (
-                        <>
-                          {/* <ReferenceItemMenu idx={idx} referenceId={referenceId} /> */}
-                          <DeleteReferencePopover idx={idx} referenceId={referenceId} />
-                        </>
-                      ) : (
-                        <Box w="2rem" />
-                      )}
-                    </Flex>
-                  );
-                })
+              ? blocksContent[idx].blockContent.map(
+                  (item: referencesElementType, referenceId: number) => {
+                    //console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
+                    return (
+                      <Flex justify="space-between">
+                        <Box h="1.4rem" mr="xs" mt="0.7rem">
+                          <BlockReferenceId referenceId={item.id} />
+                        </Box>
+                        <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
+                          [{referenceId + 1}]
+                        </Box>
+                        <Box w="100%" mr="xs">
+                          <BasicTexfield
+                            idx={idx}
+                            idxInput={idx.toString() + item.id}
+                            contentToRead={item.label}
+                          />
+                        </Box>
+                        {activeBlock === idx ? (
+                          <>
+                            <ReferenceItemMenu idx={idx} referenceId={referenceId} />
+                            <DeleteReferencePopover idx={idx} referenceId={referenceId} />
+                          </>
+                        ) : (
+                          <Box w="2rem" />
+                        )}
+                      </Flex>
+                    );
+                  }
+                )
               : null}
 
             {activeBlock === idx ? (

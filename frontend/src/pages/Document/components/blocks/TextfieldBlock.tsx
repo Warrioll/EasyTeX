@@ -40,22 +40,22 @@ export default function TextfieldBlock({
   //editorContent,
 }: TextfieldBlockProps) {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
-  console.log('render textfield', idx);
-  const thisBlockContent = useMemo(() => {
-    console.log('useMemo', idx);
-    return (
-      <BasicTexfield
-        idx={idx}
-        //activeBlockState={activeBlockState}
-        contentToRead={blocksContent[idx].blockContent as string}
-        //editor={editor}
-        //activeTextInputState={activeTextInputState}
-        idxInput={idx.toString()}
-        //sectionsContent={sectionsContent}
-        //setSectionsContent={setSectionsContent}
-      />
-    );
-  }, [blocksContent[idx], blocksContent[idx].blockContent]);
+  //console.log('render textfield', idx);
+  // const thisBlockContent = useMemo(() => {
+  //   //console.log('useMemo', idx);
+  //   return (
+  //     <BasicTexfield
+  //       idx={idx}
+  //       //activeBlockState={activeBlockState}
+  //       contentToRead={blocksContent[idx].blockContent as string}
+  //       //editor={editor}
+  //       //activeTextInputState={activeTextInputState}
+  //       idxInput={idx.toString()}
+  //       //sectionsContent={sectionsContent}
+  //       //setSectionsContent={setSectionsContent}
+  //     />
+  //   );
+  // }, [blocksContent[idx], blocksContent[idx].blockContent]);
 
   //const [focusTrap, { toggle }] = useDisclosure(false);
   //const [activeBlock, setActiveBlock] = activeBlockState;

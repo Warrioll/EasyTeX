@@ -13,6 +13,7 @@ import {
   useBlocksContentContext,
   useEditorContext,
 } from '../../../DocumentContextProviders';
+//import TiptapEditor from './TiptapEditor';
 import styles from '../blocks.module.css';
 
 type BasicTextfieldProps = {
@@ -110,6 +111,7 @@ export default function BasicTexfield({
   //   setUpdateReleaser((prev) => !prev);
   //   console.log('updateReleaser!');
   // }, [activeTextfield]);
+  //console.count('basic textfield render');
 
   return (
     <div
@@ -131,7 +133,7 @@ export default function BasicTexfield({
         }
 
         //: null;
-        //console.log('onFocus', block);
+        // console.log('onFocus', contentToRead);
       }}
     >
       <Box mih="2rem">
@@ -143,21 +145,15 @@ export default function BasicTexfield({
           //<FocusTrap active={focusTrap}>
           <EditorContent
             editor={editor}
-            ref={basicTextfieldRef}
+            //ref={basicTextfieldRef}
             // style={{
             //   backgroundColor: activeTextfield === idxInput ? '#ebffff;' : '',
             // }}
           />
         ) : // </FocusTrap>
         contentToRead ? (
-          <Flex
-            // ml="3px"
-            // mr="3px"
-            //align="center"
-            className="tiptap nonEditor"
-            bg="var(--mantine-color-white)"
-          >
-            <div className="nonEditor">{parse(sanitizeBlocksContent(contentToRead))}</div>
+          <Flex m="0px" className="tiptap nonEditor" bg="var(--mantine-color-white)">
+            <div>{parse(sanitizeBlocksContent(contentToRead))}</div>
           </Flex>
         ) : null}
       </Box>

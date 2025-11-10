@@ -15,7 +15,7 @@ export type blockContentType =  string
     | null
     | undefined;
 
-    export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides';
+export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer'
 
 export type documentOptionsType = {
   class: documentClassType;

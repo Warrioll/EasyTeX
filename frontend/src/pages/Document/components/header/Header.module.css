@@ -1,8 +1,6 @@
   .band{
     background-color: light-dark(var(--mantine-color-cyan-6), var(--mantine-color-dark-9));
     border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-6));
-        /* background-color: light-dark(var(--mantine-color-cyan-0), var(--mantine-color-dark-9));
-    border: 1px solid light-dark(var(--mantine-color-cyan-2), var(--mantine-color-dark-6)); */
     z-index: 2;
 
    
@@ -45,6 +43,7 @@
   .indicator {
    
     background-color: var(--mantine-color-cyan-6);
+    
     border-radius: var(--mantine-radius-md);
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;

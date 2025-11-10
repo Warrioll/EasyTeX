@@ -32,6 +32,7 @@ import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import PasswarodRequirements from '@/components/ErrorInfos/PasswordRequirements';
 import UsernameEmailRequirements from '@/components/ErrorInfos/UsernameRequirements';
+import Logo from '@/svg/Logo';
 import styles from './registerPage.module.css';
 
 export default function RegisterPage() {
@@ -47,17 +48,17 @@ export default function RegisterPage() {
     //  onSubmitPreventDefault: 'never',
     initialValues: { name: '', email: '', password: '', repeatedPassword: '' },
     validate: {
-      name: matches(
-        /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$%^&*?\-]{3,30}(?<![_.])$/,
-        'Invalid username'
-      ),
+      name: matches(/^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$^&*?\-]+(?<![_.])$/, 'Invalid username'),
       // email: matches(
       //   /^(?=.{1,320}$)\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})$/g,
       //   'Invalid email address'
       // ),
-      email: isEmail('Invalid email address'),
+      email: matches(
+        /^(?=.{5,320}$)\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/,
+        'Invalid email address'
+      ),
       password: matches(
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,64}$/,
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!*#?&])[A-Za-z\d@$!*#?&]{8,}$/,
         'Invalid password'
       ),
       repeatedPassword: matchesField('password', 'Passwords are not the same'),
@@ -67,7 +68,6 @@ export default function RegisterPage() {
 
   const register = async (registerData) => {
     try {
-      console.log('registerrrrrrr');
       const response = await axios.post(
         'http://localhost:8100/user/createNewAccount',
         {
@@ -86,8 +86,20 @@ export default function RegisterPage() {
       setDisableSignUpButton(false);
     } catch (error) {
       switch (error.response.status) {
+        case 406:
+          setErrorMessage('Invalid sign up data!');
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          errorDialogHandlers.open();
+          errorMsgHandlers.open();
+          break;
         case 409:
           setErrorMessage('Provided email or username i already used!');
+          break;
+        case 411:
+          setErrorMessage('Invalid sign up data!');
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          errorDialogHandlers.open();
+          errorMsgHandlers.open();
           break;
         default:
           setErrorMessage('Sorry, something went wrong!');
@@ -103,12 +115,21 @@ export default function RegisterPage() {
 
   return (
     <>
-      <BackgroundImage src="./bg13.png" radius="xs" miw="max-content">
+      <BackgroundImage src="./bg.png" radius="xs" miw="max-content">
         <Stack h="100vh" align="stretch" justify="center" miw="max-content" mih="max-content">
-          <Container w={{ base: 500, md: 840 }}>
+          <Container w={{ base: 500, md: 900 }}>
             <Paper withBorder shadow="md" p={30} mt={40} radius="md" className={styles.paper}>
+              <Flex mb="md" mt="-0.5rem" justify="center" align="center">
+                <Logo width="1.5rem" />
+                <Text mt="0.1rem" c="var(--mantine-color-yellow-8)" fz="xl" fw="700" ml="sm">
+                  Easy
+                </Text>
+                <Text mt="0.1rem" fz="xl" fw="700" c="var(--mantine-color-cyan-9)">
+                  TeX
+                </Text>
+              </Flex>
               <Title ta="center" className={styles.title}>
-                Sign up!
+                Create account!
                 {/* Sign up to <span style={{color: 'var(--mantine-color-yellow-8)'}}>Easy</span><span style={{color: 'var(--mantine-color-cyan-8)'}}>Tex</span>! */}
               </Title>
               <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
@@ -264,12 +285,6 @@ export default function RegisterPage() {
                   </Button>
                 </Flex>
               </form>
-              <Group justify="space-between" mt="lg">
-                {/* <Checkbox label="Remember me" />
-            <Anchor component="button" size="sm">
-              Forgot password?
-            </Anchor> */}
-              </Group>
             </Paper>
           </Container>
           <InfoErrorDialog

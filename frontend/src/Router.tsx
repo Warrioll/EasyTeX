@@ -4,7 +4,7 @@ import MainLayout from './components/Layout/MainLayout/MainLayout';
 import AccountDeletedPage from './pages/AccountDeleted/AccountDeletedPage';
 import MyAssetsPage from './pages/Assets/MyAssetsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
-import { BlocksContentProvider } from './pages/Document/DocumentContextProviders';
+import { BlocksContentProvider, ZoomsProvider } from './pages/Document/DocumentContextProviders';
 import DocumentPage from './pages/Document/DocumentPage';
 import Homepage from './pages/Homepage/Homepage';
 import LoginPage from './pages/Login/LoginPage';
@@ -22,7 +22,9 @@ const router = createBrowserRouter([
     path: '/document/:id',
     element: (
       <BlocksContentProvider>
-        <DocumentPage />
+        <ZoomsProvider>
+          <DocumentPage />
+        </ZoomsProvider>
       </BlocksContentProvider>
     ),
   },

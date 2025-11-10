@@ -118,47 +118,52 @@ export default function TitlePageBlock({ idx }: SectionBlockProps) {
               <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
                 Title:
               </Text>
-
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.title as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('title')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
+              <Box w="calc(100% - 3rem)">
+                <BasicTexfield
+                  idx={idx}
+                  //activeBlockState={activeBlockState}
+                  contentToRead={blocksContent[idx].blockContent.title as string}
+                  //editor={editor}
+                  //activeTextInputState={activeTextInputState}
+                  idxInput={idx.toString().concat('title')}
+                  //sectionsContent={sectionsContent}
+                  //setSectionsContent={setSectionsContent}
+                />
+              </Box>
             </Flex>
             <Flex ta="left" w="100%">
               <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
                 Author:
               </Text>
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.author as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('author')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
+              <Box w="calc(100% - 3rem)">
+                <BasicTexfield
+                  idx={idx}
+                  //activeBlockState={activeBlockState}
+                  contentToRead={blocksContent[idx].blockContent.author as string}
+                  //editor={editor}
+                  //activeTextInputState={activeTextInputState}
+                  idxInput={idx.toString().concat('author')}
+                  //sectionsContent={sectionsContent}
+                  //setSectionsContent={setSectionsContent}
+                />
+              </Box>
             </Flex>
             <Flex ta="left" w="100%">
               <Text miw="3rem" mr="xs" mt="xs" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
                 Date:
               </Text>
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.date as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('date')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
+              <Box w="calc(100% - 3rem)">
+                <BasicTexfield
+                  idx={idx}
+                  //activeBlockState={activeBlockState}
+                  contentToRead={blocksContent[idx].blockContent.date as string}
+                  //editor={editor}
+                  //activeTextInputState={activeTextInputState}
+                  idxInput={idx.toString().concat('date')}
+                  //sectionsContent={sectionsContent}
+                  //setSectionsContent={setSectionsContent}
+                />
+              </Box>
             </Flex>
           </Stack>
         </MarkedBlockFrame>

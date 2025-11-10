@@ -123,7 +123,7 @@ export default function ProfilePage() {
       <Center h="calc(100vh - 50px)" mb="0px">
         <BackgroundImage
           h="100%"
-          src="./bg13.png"
+          src="./bg.png"
           //radius="md"
           //m="md"
           mt="0px"

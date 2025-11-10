@@ -203,7 +203,6 @@ export default function DocumentCard({
           <Menu
             position="right-start"
             offset={-20}
-            withArrow
             arrowOffset={15}
             arrowSize={8}
             styles={{ arrow: { border: ' 1px solid var(--mantine-color-gray-4)' } }}

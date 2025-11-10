@@ -36,7 +36,7 @@ export default function CreateDocumentModal({
   );
   const [documentName, setDocumentName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
-  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_. ])$/;
+  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$^&-]{3,255}(?<![_. ])$/;
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
 
   const createDocument = async (e: React.FormEvent<HTMLFormElement>) => {

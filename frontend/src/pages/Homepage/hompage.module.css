@@ -5,7 +5,7 @@
     top: 0px;
    
     transition: all 0.3s ease-out;
-    filter: blur(7px) brightness(140%) saturate(0.5);
+    filter: blur(6px) brightness(140%) saturate(0.9);
      z-index: 0;
 
      clip-path: inset(0 0 0 0);

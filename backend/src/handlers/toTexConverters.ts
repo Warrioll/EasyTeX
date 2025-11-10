@@ -283,6 +283,9 @@ export const closingToTeX =(blockContent:string): string =>{
    
     blockContent=basicToTexFontConverter(blockContent);
     blockContent=erasePTags(blockContent)
+    if(/^ *$/.test(blockContent)){
+        blockContent='\\ '+blockContent
+    }
     return('\\closing{'+blockContent+'}');
 }
 

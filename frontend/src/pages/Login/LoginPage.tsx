@@ -28,6 +28,7 @@ import { isEmail, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn, checkIfNotLoggedIn } from '@/ApiHandlers/AuthHandler';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
+import Logo from '@/svg/Logo';
 import styles from './loginPage.module.css';
 
 export default function LoginPage() {
@@ -81,6 +82,7 @@ export default function LoginPage() {
       // if (authCookie !== undefined || authCookie != null) {
       //   navigate('/dashboard');
       // }
+
       await checkIfNotLoggedIn();
       // console.log('userId:', userId);
       // if (userId !== null || userId !== undefined) {
@@ -93,11 +95,20 @@ export default function LoginPage() {
   return (
     // 14 lub 13
     <>
-      <BackgroundImage src="./bg13.png" radius="xs">
+      <BackgroundImage src="./bg.png" radius="xs">
         <Stack h="100vh" align="stretch" justify="center" mih="max-content">
           <Container w={420}>
             <Paper withBorder shadow="xl" p={30} mt={40} radius="md">
               <form onSubmit={form.onSubmit((values) => login(values))}>
+                <Flex mb="md" mt="-0.5rem" justify="center" align="center">
+                  <Logo width="1.5rem" />
+                  <Text mt="0.1rem" c="var(--mantine-color-yellow-8)" fz="xl" fw="700" ml="sm">
+                    Easy
+                  </Text>
+                  <Text mt="0.1rem" fz="xl" fw="700" c="var(--mantine-color-cyan-9)">
+                    TeX
+                  </Text>
+                </Flex>
                 <Title ta="center" className={styles.title}>
                   Welcome back!
                 </Title>

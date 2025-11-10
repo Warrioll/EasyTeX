@@ -251,7 +251,7 @@ const fonts = [
 let converted =''
 
 const splitted =fontToConvert.split('}')
-  console.log('6')
+
 
 for (let i=0; i<splitted.length; i++){
     let tmpStack:(RegExpExecArray)[]=[]
@@ -259,20 +259,16 @@ for (let i=0; i<splitted.length; i++){
          tmpStack = [...tmpStack, ...[...splitted[i].matchAll( new RegExp(font.reg.source, 'g'))]]
        //console.log('to stack', font , ' : ', splitted[i],":",[...splitted[i].matchAll(font.reg)])
     }
-      console.log('6.1')
      tmpStack.sort((a,b)=> a.index - b.index)
      stack=[...stack, ...tmpStack]
-     //console.log('stack:', stack)
-      console.log('6.2')
+
     if (i!==splitted.length-1)
     {
          const poped = stack.pop()
        //console.log('pop',poped)
-        console.log('6.3')
+ 
        for( let font of fonts){
-        console.log('font', font)
-        console.log('splitted', splitted, 'i:', i)
-         console.log('poped', poped)
+
        if(( new RegExp(font.reg.source, 'g')).test(poped[0])){
              console.log('poped2', poped)
           converted = converted+splitted[i]
@@ -286,10 +282,10 @@ for (let i=0; i<splitted.length; i++){
        }
     
        }
-        console.log('6.4')
+       
     }else{
         converted=converted+splitted[i]
-         console.log('6.5')
+     
     }
 
    
@@ -474,10 +470,13 @@ export const closingToBlock =(line: string) : blockType=>{
         return section
         })
 
+         
     
+    
+
     //to poniżej trochę niebezpieczne więc najpeliejm jakiś regex usuwajacy to \r
     //section= section.replace('\r', '')
-    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: basicToBlockFontConverter(section )}
+    const sectionBlock: blockType = {typeOfBlock: 'subsubsection', blockContent: basicToBlockFontConverter(section ).replace('\\ ', '')}
     return sectionBlock;
 }
 

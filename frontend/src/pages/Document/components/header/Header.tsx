@@ -1,94 +1,42 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Extension } from '@tiptap/core';
-import { Editor } from '@tiptap/react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
 import { BiFont, BiFontFamily } from 'react-icons/bi';
 import { BsPersonWorkspace } from 'react-icons/bs';
 import { FaChevronLeft, FaChevronRight, FaRegSave, FaSave } from 'react-icons/fa';
-import { FaListOl, FaRegFileLines } from 'react-icons/fa6';
-import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import { GrDocumentText } from 'react-icons/gr';
-import { HiDocumentDownload, HiOutlineDocumentDownload } from 'react-icons/hi';
-import { HiMiniWindow, HiOutlineDocumentText } from 'react-icons/hi2';
-import {
-  IoDocumentsOutline,
-  IoDocumentTextOutline,
-  IoImagesOutline,
-  IoLogInOutline,
-  IoSettingsOutline,
-} from 'react-icons/io5';
-import {
-  LuDownload,
-  LuHeading1,
-  LuHeading2,
-  LuHeading3,
-  LuImage,
-  LuRefreshCcw,
-  LuTable,
-  //LuTableOfContents,
-} from 'react-icons/lu';
-import {
-  MdFormatListNumberedRtl,
-  MdFunctions,
-  MdOutlineAdd,
-  MdOutlineInsertPageBreak,
-  MdOutlineLibraryAdd,
-  MdOutlineLibraryBooks,
-  MdOutlineLogin,
-  MdOutlineTitle,
-} from 'react-icons/md';
-import { PiTextTBold } from 'react-icons/pi';
-import { RiFileDownloadFill, RiFileDownloadLine, RiSplitCellsHorizontal } from 'react-icons/ri';
+import { FaRegFileLines } from 'react-icons/fa6';
+import { IoDocumentsOutline, IoImagesOutline } from 'react-icons/io5';
+import { LuDownload, LuRefreshCcw, LuTable } from 'react-icons/lu';
+import { MdOutlineLibraryAdd } from 'react-icons/md';
 import { RxAvatar } from 'react-icons/rx';
-import { TbAppWindow, TbBlocks, TbEye } from 'react-icons/tb';
-import { useNavigate, useParams } from 'react-router-dom';
+import { TbBlocks } from 'react-icons/tb';
+import { useParams } from 'react-router-dom';
 import {
-  Anchor,
   Box,
-  Burger,
   Button,
   Center,
-  Collapse,
-  Combobox,
-  Divider,
-  Drawer,
   Flex,
   FloatingIndicator,
-  Grid,
   Group,
   HoverCard,
-  Input,
-  InputBase,
   Loader,
-  LoadingOverlay,
-  rem,
-  ScrollArea,
   SimpleGrid,
   Tabs,
   Text,
-  ThemeIcon,
-  Tooltip,
-  UnstyledButton,
-  useCombobox,
-  useMantineTheme,
 } from '@mantine/core';
-//import { MantineLogo } from '@mantinex/mantine-logo';
-import { useDisclosure } from '@mantine/hooks';
 import CustomTooltip from '@/components/other/CustomTooltip';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
-import { blockType } from '@/Types';
+import { documentClassType } from '@/Types';
 import { dateFormatter } from '@/utils/formatters';
 import {
   useActiveBlockContext,
   useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
+  useZoomsContext,
 } from '../../DocumentContextProviders';
-import { useAddBlock } from '../../hooksAndUtils/documentHooks';
 import { useBlocksList } from '../blocksListAndPrototypes';
 import DocumentToolsTab from './DocumentToolsTab';
-import FontTab from './FontTab';
 import { useInsertTools } from './InsertTools';
 import { useTableTools } from './TableTools';
 import TabTemplate from './TabTemplate';
@@ -102,21 +50,18 @@ type headerPropsType = {
   pdfLoaded: boolean;
   saveDocumentContent: () => void;
   setPdfFile: () => void;
-  pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
-  workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
 };
 
 export default function Header({
   saveDocumentContent,
   pdfLoaded,
-  pdfZoom,
-  workspaceZoom,
+
   setPdfFile,
 }: headerPropsType) {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
-  const { editor } = useEditorContext();
+  const { editor, currentCoursor } = useEditorContext();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('blocks');
   const [displayBarinMinSize, setDisplayBarinMinSize] = useState<'left' | 'right'>('left');
@@ -125,9 +70,16 @@ export default function Header({
     controlsRefs[val] = node;
     setControlsRefs(controlsRefs);
   };
+
+  const { pdfZoom, setPdfZoom, workspaceZoom, setWorkspaceZoom } = useZoomsContext();
+  const pdfZoomState: [string | null, Dispatch<SetStateAction<string | null>>] = [
+    pdfZoom,
+    setPdfZoom,
+  ];
+
   const [documentName, setDocumentName] = useState<{
     name: string;
-    documentClass: string;
+    documentClass: documentClassType | '';
     lastUpdate: string;
     creationDate: string;
   }>({
@@ -146,7 +98,6 @@ export default function Header({
   const { id } = useParams();
 
   const blocksList = useBlocksList();
-
   const blocksTools = () => (
     <TabTemplate
       buttons={blocksList}
@@ -163,7 +114,6 @@ export default function Header({
     <TabTemplate
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
-      //dontRenderButtons={[6, 7, 8, 9]}
       belongingValidator={
         blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
       }
@@ -197,54 +147,11 @@ export default function Header({
 
   const viewTools = () => (
     <>
-      {/* <ZoomTools zoomState={workspaceZoom} /> */}
-      <WorkspaceToolsTab workspaceZoom={workspaceZoom} />
+      <WorkspaceToolsTab />
     </>
   );
 
   const docTools = () => <DocumentToolsTab zoomState={workspaceZoom} />;
-
-  const chooseModifyTabName = (): string => {
-    if (activeBlock !== 0) {
-      switch (blocksContent[activeBlock].typeOfBlock) {
-        case 'textfield':
-          return 'Textfield ';
-        case 'table':
-          return 'Table ';
-        default:
-          return '';
-      }
-    }
-    return '';
-  };
-
-  const chooseModifyTabIcon = (): React.FC => {
-    if (activeBlock !== 0) {
-      switch (blocksContent[activeBlock].typeOfBlock) {
-        case 'textfield':
-          return () => <BiFont />;
-        case 'table':
-          return () => <LuTable />;
-        default:
-          return () => <></>;
-      }
-    }
-    return () => <></>;
-  };
-
-  const chooseModifyTabTools = (): React.FC => {
-    if (activeBlock !== 0) {
-      switch (blocksContent[activeBlock].typeOfBlock) {
-        case 'textfield':
-          return textFieldTools;
-        case 'table':
-          return tableToolsTab;
-        default:
-          return () => '';
-      }
-    }
-    return () => '';
-  };
 
   const basicTabs = [
     {
@@ -267,6 +174,7 @@ export default function Header({
       Icon: () => <TbBlocks />,
     },
   ];
+
   const basicTextfieldTabs = [
     {
       value: 'font',
@@ -296,20 +204,6 @@ export default function Header({
     label: 'Textfield',
     tools: () => textFieldTools,
     Icon: () => <BiFont />,
-  };
-
-  const isDisabledtab = (tab: string): boolean => {
-    if (
-      tab === 'modify' &&
-      (activeBlock === 0 ||
-        blocksContent[activeBlock].typeOfBlock === 'section' ||
-        blocksContent[activeBlock].typeOfBlock === 'subsection' ||
-        blocksContent[activeBlock].typeOfBlock === 'subsubsection')
-    ) {
-      //setValue('insert');
-      return true;
-    }
-    return false;
   };
 
   const downloadTex = async () => {
@@ -344,9 +238,8 @@ export default function Header({
     setPreparingPdfToDownload(false);
   };
 
-  //let optionsLoaded: boolean=false
-
   useEffect(() => {
+    console.log('editor head: ', editor.state.selection.head);
     if (blocksContent[activeBlock]) {
       switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
@@ -369,35 +262,13 @@ export default function Header({
     } else {
       setValue('blocks');
     }
-    //console.log('traning to cvhamge');
   }, [
     activeBlock,
-    workspaceZoom[0],
+    // workspaceZoom[0],
     blocksContent,
-    editor.state.selection.head,
+    //editor.state.selection.$head,
     activeTextfield, //, blocksContent
   ]);
-
-  // const getTabs = (): any[] => {
-  //   if (blocksContent[activeBlock]) {
-  //     switch (blocksContent[activeBlock].typeOfBlock) {
-  //       case 'textfield':
-  //         return [...basicTabs, textfieldTab];
-
-  //       case 'table':
-  //         return [...basicTabs, tableTab];
-
-  //       default:
-  //         if (value === 'modify') {
-  //           //setValue('font');
-  //         }
-  //         return basicTabs;
-  //     }
-  //   } else {
-  //     //setValue('font');
-  //     return basicTabs;
-  //   }
-  // };
 
   useEffect(() => {
     const getTitle = async () => {
@@ -427,16 +298,16 @@ export default function Header({
   const DocumentName = () => {
     return (
       <HoverCard
-        //color="cyan"
         position="bottom"
         offset={5}
-        withArrow
         arrowOffset={50}
         arrowSize={7}
         arrowRadius={2}
         shadow="sm"
         styles={{
-          arrow: { border: `1px solid ${documentColor(documentName.documentClass)}` },
+          arrow: {
+            border: `1px solid ${documentColor(documentName.documentClass as documentClassType)}`,
+          },
         }}
       >
         <HoverCard.Target>
@@ -456,19 +327,21 @@ export default function Header({
             <Text
               maw="10rem"
               className={classes.documentName}
-              c={documentColor(documentName.documentClass)}
+              c={documentColor(documentName.documentClass as documentClassType)}
             >
               <b> {documentName.name}</b>
             </Text>
           </Button>
         </HoverCard.Target>
-        <HoverCard.Dropdown bd={`1px solid ${documentColor(documentName.documentClass)}`}>
+        <HoverCard.Dropdown
+          bd={`1px solid ${documentColor(documentName.documentClass as documentClassType)}`}
+        >
           <SimpleGrid maw="20vw" cols={2} verticalSpacing="0.3rem">
             <Text ml="xs" fw="700">
               Document type:
             </Text>
-            <Text ml="xs" c={documentColor(documentName.documentClass)}>
-              {documentMainLabels(documentName.documentClass)}
+            <Text ml="xs" c={documentColor(documentName.documentClass as documentClassType)}>
+              {documentMainLabels(documentName.documentClass as documentClassType)}
             </Text>
 
             <Text ml="xs" fw="700">
@@ -515,28 +388,7 @@ export default function Header({
   const PdfTools = () => {
     return (
       <>
-        {' '}
         <Box>
-          {/* <Tooltip
-            label={
-              savingPdf ? 'Saving document...' : 'Save document'
-              // <>
-              //   <Text fz="sm" ta="center">
-              //     Save document
-              //   </Text>
-              //   <Text fz="sm" ta="center">
-              //     {!pdfLoaded ? '(Loading...)' : ''}
-              //   </Text>
-              // </>
-            }
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          > */}
           <CustomTooltip label={savingPdf ? 'Saving document...' : 'Save document'}>
             <Button
               w={{ base: '3rem', sm: '4.6rem' }}
@@ -558,26 +410,7 @@ export default function Header({
               )}
             </Button>
           </CustomTooltip>
-          {/* <Tooltip
-            label={
-              reloadingPdf ? 'Reloading PDF without saving...' : ' Reload PDF without saving'
-              // <>
-              //   <Text fz="sm" ta="center">
-              //     Reload PDF without saving
-              //   </Text>
-              //   <Text fz="sm" ta="center">
-              //     {!pdfLoaded ? '(Loading...)' : ''}
-              //   </Text>
-              // </>
-            }
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          > */}
+
           <CustomTooltip
             label={reloadingPdf ? 'Reloading PDF without saving...' : ' Reload PDF without saving'}
           >
@@ -600,24 +433,11 @@ export default function Header({
             </Button>
           </CustomTooltip>
         </Box>
-        <ZoomTools tooltip="PDF zoom" zoomState={pdfZoom} />
+        <ZoomTools tooltip="PDF zoom" zoomState={pdfZoomState} />
         <Group justify="end" gap="0px">
-          {/* <Button variant="transparent">
-              <RiSplitCellsHorizontal />
-            </Button> */}
           <CustomTooltip
             label={preparingTexToDownload ? 'Downloading .tex file...' : 'Download .tex file'}
           >
-            {/* <Tooltip
-            label={preparingTexToDownload ? 'Downloading .tex file...' : 'Download .tex file'}
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          > */}
             <Button
               variant="format"
               w="4.2rem"
@@ -639,16 +459,6 @@ export default function Header({
           <CustomTooltip
             label={preparingPdfToDownload ? 'Downloading .pdf file...' : 'Download .pdf file'}
           >
-            {/* <Tooltip
-            label={preparingPdfToDownload ? 'Downloading .pdf file...' : 'Download .pdf file'}
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          > */}
             <Button
               w="4.2rem"
               variant="format"
@@ -674,7 +484,6 @@ export default function Header({
 
   return (
     <Box h="5.3rem" miw="48rem" display="block">
-      {/* <header> */}
       <Tabs
         radius="sm"
         variant="none"
@@ -702,27 +511,18 @@ export default function Header({
               variant="transparent"
               onClick={() => {
                 window.location.href = '/dashboard';
-                //navigate('/dashboard');
               }}
               fz="md"
               pt="7px"
             >
               <Logo width="1.4rem" />
-              {/* <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fw="700" ml="sm">
-                Easy
-              </Text>
-              <Text mt="0.2rem" fw="700" c="var(--mantine-color-cyan-9)">
-                TeX
-              </Text> */}
             </Button>
             <Tabs.List ref={setRootRef} className={classes.list} mb="0px" mt="5px" w="max-content">
               {tabs.map((tab) => (
                 <Tabs.Tab
-                  //mr="xs"
                   value={tab.value}
                   ref={setControlRef(tab.value)}
                   className={classes.tab}
-                  //disabled={isDisabledtab(tab.value)}
                   leftSection={<tab.Icon />}
                   styles={{ tabSection: { marginRight: '6px' } }}
                   style={{ zIndex: '15' }}
@@ -737,9 +537,6 @@ export default function Header({
               />
             </Tabs.List>
           </Flex>
-          {/* <Group h="100%">
-            
-          </Group> */}
 
           <Center visibleFrom="md" mb="0px" p="0px" w="10vw">
             <DocumentName />
@@ -816,17 +613,7 @@ export default function Header({
             ))}
           </Center>
 
-          {/* <ScrollArea
-            scrollbars="x"
-            h="100%"
-            offsetScrollbars="x"
-            //type="never"
-
-            //justify="center"
-          > */}
           <Flex
-            //w="100%"
-            //h="2.5rem"
             justify="center"
             align="center"
             pl="lg"
@@ -836,12 +623,10 @@ export default function Header({
             ml="xs"
             mr="lg"
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            //gap="xl"
             className={classes.band}
           >
             <PdfTools />
           </Flex>
-          {/* </ScrollArea> */}
         </SimpleGrid>
 
         <SimpleGrid
@@ -931,59 +716,7 @@ export default function Header({
             </Center>
           </Flex>
         </SimpleGrid>
-
-        {/* <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" /> */}
       </Tabs>
-
-      {/* //do Burgera
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        hiddenFrom="sm"
-        zIndex={1000000}
-      >
-        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
-          <Divider my="sm" />
-
-          <a href="#" className={classes.link}>
-            Home
-          </a>
-          <UnstyledButton className={classes.link} onClick={toggleLinks}>
-            <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown
-                style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
-              />
-            </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>
-            {
-              //links
-            }
-          </Collapse>
-          <a href="#" className={classes.link}>
-            Learn
-          </a>
-          <a href="#" className={classes.link}>
-            Academy
-          </a>
-
-          <Divider my="sm" />
-
-          <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
-        </ScrollArea>
-      </Drawer> */}
     </Box>
   );
 }
-
-//export default Header;

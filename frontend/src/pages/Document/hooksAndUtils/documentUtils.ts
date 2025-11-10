@@ -17,38 +17,38 @@ export const sanitizeBlocksContent = (toSanitize:string):string=>{
                       'li',
                       'ul',
                       'ol',
+                      'br'
                     ],
                     ALLOWED_ATTR: ['class', 'data-type', 'data-id'],
                   })
 }
 
-export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
-  //console.log('ifContentEmpty: ', content)
-  let content=contentToCheck
-    content=content.replaceAll('<p>', '')
-    content=content.replaceAll('</p>', '')
+// export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
+//   let content=contentToCheck
+//     content=content.replaceAll('<p>', '')
+//     content=content.replaceAll('</p>', '')
 
-    content=content.replaceAll('<strong>', '')
-    content=content.replaceAll('</strong>', '')
+//     content=content.replaceAll('<strong>', '')
+//     content=content.replaceAll('</strong>', '')
 
-    content=content.replaceAll('<code>', '')
-    content=content.replaceAll('</code>', '')
+//     content=content.replaceAll('<code>', '')
+//     content=content.replaceAll('</code>', '')
 
-    content=content.replaceAll('<u>', '')
-    content=content.replaceAll('</u>', '')
+//     content=content.replaceAll('<u>', '')
+//     content=content.replaceAll('</u>', '')
 
-    content=content.replaceAll('<em>', '')
-    content=content.replaceAll('</em>', '')
+//     content=content.replaceAll('<em>', '')
+//     content=content.replaceAll('</em>', '')
 
-    content=content.replaceAll('<s>', '')
-    content=content.replaceAll('</s>', '')
+//     content=content.replaceAll('<s>', '')
+//     content=content.replaceAll('</s>', '')
 
-    // TODO tu jescze wyliczenia i linki itp od textfielda
-    if(content===''){
-      return true;
-    }
-    return false;
-  }
+//     // TODO tu jescze wyliczenia i linki itp od textfielda
+//     if(content===''){
+//       return true;
+//     }
+//     return false;
+//   }
 
 
     export const getReferenceForEditor = (referenceId:string):string =>{

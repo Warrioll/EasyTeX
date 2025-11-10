@@ -17,7 +17,10 @@
   bottom: 0;
   z-index: 2; /* Zapewnia, że warstwa tekstowa znajduje się nad stroną */
   /*pointer-events: none; Zapobiega problemom z klikaniem */
+  margin-top: 0rem;
+  margin-bottom: 1rem;
   margin: 0.5rem;
+
    
   }
 

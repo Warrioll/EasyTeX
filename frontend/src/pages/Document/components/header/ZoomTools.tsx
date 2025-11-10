@@ -1,17 +1,7 @@
 import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import {
-  Button,
-  Center,
-  Combobox,
-  Flex,
-  Input,
-  InputBase,
-  Tooltip,
-  useCombobox,
-} from '@mantine/core';
+import { Button, Flex } from '@mantine/core';
 import CustomTooltip from '@/components/other/CustomTooltip';
 import SimpleCombobox from '@/components/other/SimpleCombobox';
-import classes from './Header.module.css';
 
 type zoomToolsPropsType = {
   zoomState: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
@@ -33,35 +23,10 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
     { value: 1.75, label: '175%' },
     { value: 2, label: '200%' },
   ];
-  const options = zoomValuesList.map((item) => (
-    <Combobox.Option
-      className={classes.zoomToolsDropdownOption}
-      value={item.toString()}
-      key={item.toString()}
-    >
-      {item * 100}%
-    </Combobox.Option>
-  ));
-
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
 
   return (
     <Flex ml="2rem" mr="2rem">
       <CustomTooltip label="Zoom out">
-        {/* <Tooltip
-        label="Zoom out"
-        //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-        color="cyan"
-        position="bottom"
-        offset={5}
-        withArrow
-        arrowOffset={50}
-        arrowSize={7}
-        arrowRadius={2}
-      > */}
-
         <Button
           variant="format"
           fz="var(--mantine-font-size-lg)"
@@ -71,25 +36,16 @@ export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
               setZoomValue(zoomValuesList[zoomIdx].toString());
             }
           }}
+          disabled={zoomValue === '0.25'}
         >
           <FiZoomOut />
         </Button>
       </CustomTooltip>
       <SimpleCombobox tooltip={tooltip} valueState={zoomState} values={zoomList} width="4.1rem" />
 
-      {/* <Tooltip
-        label="Zoom in"
-        //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-        color="cyan"
-        position="bottom"
-        offset={5}
-        withArrow
-        arrowOffset={50}
-        arrowSize={7}
-        arrowRadius={2}
-      > */}
       <CustomTooltip label="Zoom in">
         <Button
+          disabled={zoomValue === '2'}
           variant="format"
           fz="var(--mantine-font-size-lg)"
           onMouseUp={() => {

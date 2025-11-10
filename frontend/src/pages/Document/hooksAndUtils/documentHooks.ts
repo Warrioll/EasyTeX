@@ -1,11 +1,8 @@
-import { useState } from "react"
-import { blockAbleToRef, blockType, documentClassType } from "@/Types"
+import { blockAbleToRef, blockType, typeOfBlockType } from "@/Types"
 import { cloneDeep } from "lodash"
 import { useActiveBlockContext, useBlocksContentContext } from "../DocumentContextProviders"
-import { typeOfBlockType } from "@/Types"
-import { chceckIfBlockContentEmpty } from "./documentUtils"
-import axios from "axios"
-import { AxiosResponse } from "axios"
+
+
 
 
   export const useAddBlock = (): {addBlock: (block: blockType, distanceFromMarkedBlock:number)=>void} => {

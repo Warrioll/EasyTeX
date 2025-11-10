@@ -1,328 +1,255 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { BiFont } from 'react-icons/bi';
 import {
   FaBold,
   FaCode,
   FaItalic,
-  FaLink,
-  FaList,
   FaStrikethrough,
   FaSubscript,
   FaSuperscript,
   FaUnderline,
 } from 'react-icons/fa';
-import { FaArrowTurnUp } from 'react-icons/fa6';
-import {
-  LuHeading1,
-  LuHeading2,
-  LuHeading3,
-  LuImage,
-  LuRefreshCcw,
-  LuTable,
-  //LuTableOfContents,
-} from 'react-icons/lu';
-import {
-  MdFormatListNumberedRtl,
-  MdFunctions,
-  MdOutlineAdd,
-  MdOutlineInsertPageBreak,
-  MdOutlineLibraryBooks,
-  MdOutlineTitle,
-} from 'react-icons/md';
-import Latex from 'react-latex-next';
-import { Box, Center, Flex, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { LuImage, LuTable } from 'react-icons/lu';
+import { MdFunctions, MdOutlineLibraryBooks } from 'react-icons/md';
+import { Center, Text } from '@mantine/core';
 import { AddComboox } from '@/components/other/AddCombobox';
-import {
-  blockAbleToRef,
-  blockType,
-  documentClassType,
-  groupedListType,
-  listElementType,
-  listType,
-  referencesElementType,
-} from '@/Types';
+import { blockAbleToRef, blockType, groupedListType, listElementType, listType } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
 import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
-
-// type blockListType = {
-//   blockName: string;
-//   Icon: React.FC;
-//   blockToAdd: blockType;
-//   documentClasses: documentClassType[];
-// };
 
 export const useTextTools = (): groupedListType => {
   const { editor } = useEditorContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
-  const [equationList, setEquationList] = useState<listType>([]);
-  const [bibList, setBibList] = useState<listType>([]);
-  const [imageList, setImageList] = useState<listType>([]);
-  const [tableList, setTableList] = useState<listType>([]);
+  // const [equationList, setEquationList] = useState<listType>([]);
+  // const [bibList, setBibList] = useState<listType>([]);
+  // const [imageList, setImageList] = useState<listType>([]);
+  // const [tableList, setTableList] = useState<listType>([]);
 
-  const refToEquationElement = {
-    label: 'Reference to equation',
-    Icon: () => <>{refEquationCombobox}</>,
-    function: () => {
-      //refEquationHandlers.toggle();
-    },
-    value: null,
-    belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-  };
+  // const refToEquationElement = {
+  //   label: 'Reference to equation',
+  //   Icon: () => <>{refEquationCombobox}</>,
+  //   function: () => {},
+  //   value: null,
+  //   belonging: ['article', 'beamer', 'book', 'letter', 'report'],
+  // };
 
-  const refToTableElement = {
-    label: 'Reference to table',
-    Icon: () => <>{refTableCombobox}</>,
-    function: () => {
-      //refTableHandlers.toggle();
-    },
-    value: null,
-    belonging: ['article', 'beamer', 'book', 'report'],
-  };
-  const refToImageElement = {
-    label: 'Reference to image',
-    Icon: () => <>{refFigureCombobox}</>,
-    function: () => {
-      //refFigureHandlers.toggle();
-    },
-    value: null,
-    belonging: ['article', 'beamer', 'book', 'report'],
-  };
-  const refToBibElement = {
-    label: 'Bibliography reference',
-    Icon: () => <>{refBibCombobox}</>,
-    function: () => {
-      //refBibHandlers.toggle();
-    },
-    value: null,
-    belonging: ['article', 'beamer', 'book', 'report'],
-  };
+  // const refToTableElement = {
+  //   label: 'Reference to table',
+  //   Icon: () => <>{refTableCombobox}</>,
+  //   function: () => {},
+  //   value: null,
+  //   belonging: ['article', 'beamer', 'book', 'report'],
+  // };
+  // const refToImageElement = {
+  //   label: 'Reference to image',
+  //   Icon: () => <>{refFigureCombobox}</>,
+  //   function: () => {},
+  //   value: null,
+  //   belonging: ['article', 'beamer', 'book', 'report'],
+  // };
+  // const refToBibElement = {
+  //   label: 'Bibliography reference',
+  //   Icon: () => <>{refBibCombobox}</>,
+  //   function: () => {},
+  //   value: null,
+  //   belonging: ['article', 'beamer', 'book', 'report'],
+  // };
 
-  const getRefsElement = (item: blockType, label: string): listElementType => {
-    // const num = counter;
-    //console.log('bc', item.blockContent);
-    //console.log('equations', blockCounter);
-    return {
-      Icon: () => (
-        <Center m="xs">
-          <Text
-            style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            //p="0.1rem"
-            p="0.3rem"
-            pt="0px"
-            pb="0px"
-            bg="var(--mantine-color-cyan-0)"
-            c="var(--mantine-color-cyan-9)"
-            fw="500"
-            // ml="xs"
-            fz="sm"
-          >
-            {(item.blockContent as blockAbleToRef).id}
-          </Text>
-        </Center>
-      ),
-      label: label ? DOMPurify.sanitize(label, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }) : '',
-      value: (item.blockContent as blockAbleToRef).id,
-    };
-  };
+  // const getRefsElement = (item: blockType, label: string): listElementType => {
+  //   return {
+  //     Icon: () => (
+  //       <Center m="xs">
+  //         <Text
+  //           style={{ borderRadius: 'var(--mantine-radius-md)' }}
+  //           //p="0.1rem"
+  //           p="0.3rem"
+  //           pt="0px"
+  //           pb="0px"
+  //           bg="var(--mantine-color-cyan-0)"
+  //           c="var(--mantine-color-cyan-9)"
+  //           fw="500"
+  //           fz="sm"
+  //         >
+  //           {(item.blockContent as blockAbleToRef).id}
+  //         </Text>
+  //       </Center>
+  //     ),
+  //     label: label ? DOMPurify.sanitize(label, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }) : '',
+  //     value: (item.blockContent as blockAbleToRef).id,
+  //   };
+  // };
 
-  useEffect(() => {
-    if (blocksContent !== undefined && blocksContent !== null && blocksContent.length > 0) {
-      let equationCounter = 0;
-      let figureCounter = 0;
-      let tableCounter = 0;
+  // useEffect(() => {
+  //   if (blocksContent !== undefined && blocksContent !== null && blocksContent.length > 0) {
+  //     let equationCounter = 0;
 
-      let eqList = [];
-      let figList = [];
-      let tabList = [];
-      for (let i = 0; i < blocksContent.length; i++) {
-        const item = blocksContent[i];
-        switch (item.typeOfBlock) {
-          case 'equation':
-            equationCounter++;
-            //return getRefsElement(item); //, equationCounter);
+  //     let eqList = [];
+  //     let figList = [];
+  //     let tabList = [];
+  //     for (let i = 0; i < blocksContent.length; i++) {
+  //       const item = blocksContent[i];
+  //       switch (item.typeOfBlock) {
+  //         case 'equation':
+  //           equationCounter++;
 
-            eqList = [
-              ...eqList,
-              getRefsElement(
-                item,
-                `Equation (${equationCounter}): ${((item.blockContent as blockAbleToRef).content as string).length < 30 ? (item.blockContent as blockAbleToRef).content : ((item.blockContent as blockAbleToRef).content as string).substring(0, 30).concat('...')}`
-              ),
-            ];
-            break;
-          case 'figure':
-            figureCounter++;
-            figList = [
-              ...figList,
-              getRefsElement(item, (item.blockContent as blockAbleToRef).label),
-            ]; //, figureCounter);
-            break;
-          case 'table':
-            tableCounter++;
-            tabList = [
-              ...tabList,
-              getRefsElement(item, (item.blockContent as blockAbleToRef).label),
-            ];
-            break;
-          case 'references':
-            setBibList(
-              item.blockContent.map((ref, idx) => {
-                return {
-                  Icon: () => (
-                    <Center m="xs">
-                      <Text
-                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                        //p="0.1rem"
-                        p="0.3rem"
-                        pt="0px"
-                        pb="0px"
-                        bg="var(--mantine-color-cyan-0)"
-                        c="var(--mantine-color-cyan-9)"
-                        fw="500"
-                        // ml="xs"
-                        fz="sm"
-                      >
-                        {ref.id}
-                      </Text>
-                    </Center>
-                  ),
-                  label: ref.label
-                    ? `[${idx + 1}] ${DOMPurify.sanitize(ref.label, {
-                        ALLOWED_TAGS: [],
-                        ALLOWED_ATTR: [],
-                      })}`
-                    : `[${idx + 1}]`,
-                  value: ref.id,
-                };
-              })
-            );
-            break;
-          default:
-            break;
-        }
-      }
+  //           eqList = [
+  //             ...eqList,
+  //             getRefsElement(
+  //               item,
+  //               `Equation (${equationCounter}): ${((item.blockContent as blockAbleToRef).content as string).length < 30 ? (item.blockContent as blockAbleToRef).content : ((item.blockContent as blockAbleToRef).content as string).substring(0, 30).concat('...')}`
+  //             ),
+  //           ];
+  //           break;
+  //         case 'figure':
+  //           figList = [
+  //             ...figList,
+  //             getRefsElement(item, (item.blockContent as blockAbleToRef).label),
+  //           ];
+  //           break;
+  //         case 'table':
+  //           tabList = [
+  //             ...tabList,
+  //             getRefsElement(item, (item.blockContent as blockAbleToRef).label),
+  //           ];
+  //           break;
+  //         case 'references':
+  //           setBibList(
+  //             item.blockContent.map((ref, idx) => {
+  //               return {
+  //                 Icon: () => (
+  //                   <Center m="xs">
+  //                     <Text
+  //                       style={{ borderRadius: 'var(--mantine-radius-md)' }}
+  //                       p="0.3rem"
+  //                       pt="0px"
+  //                       pb="0px"
+  //                       bg="var(--mantine-color-cyan-0)"
+  //                       c="var(--mantine-color-cyan-9)"
+  //                       fw="500"
+  //                       fz="sm"
+  //                     >
+  //                       {ref.id}
+  //                     </Text>
+  //                   </Center>
+  //                 ),
+  //                 label: ref.label
+  //                   ? `[${idx + 1}] ${DOMPurify.sanitize(ref.label, {
+  //                       ALLOWED_TAGS: [],
+  //                       ALLOWED_ATTR: [],
+  //                     })}`
+  //                   : `[${idx + 1}]`,
+  //                 value: ref.id,
+  //               };
+  //             })
+  //           );
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     }
 
-      setEquationList([...eqList]);
-      setImageList([...figList]);
-      setTableList([...tabList]);
+  //     setEquationList([...eqList]);
+  //     setImageList([...figList]);
+  //     setTableList([...tabList]);
+  //   }
+  // }, [blocksContent]);
 
-      // if (temp !== null && temp !== undefined) {
-      //   temp = temp.filter((item) => item !== null);
-      // }
-      //console.log('yolo3', temp);
+  // const refEquationCombobox = (
+  //   <AddComboox
+  //     data={equationList ? equationList : []}
+  //     withGroups={false}
+  //     floatingStrategy="fixed"
+  //     placeholder=""
+  //     buttonContent={
+  //       <>
+  //         <Text fz="lg" c="black" mb="-0.4rem">
+  //           <MdFunctions />
+  //         </Text>
+  //         <sub style={{ color: 'black' }}>ref</sub>
+  //       </>
+  //     }
+  //     insertFunction={(value) => {
+  //       editor?.commands.insertContent(getReferenceForEditor(value));
+  //     }}
+  //     iconSize="0.8rem"
+  //     buttonVariant="format"
+  //     tooltip={refToEquationElement.label}
+  //   />
+  // );
 
-      //setEquationList(temp);
-    }
-  }, [blocksContent]);
+  // const refTableCombobox = (
+  //   <AddComboox
+  //     data={tableList ? tableList : []}
+  //     withGroups={false}
+  //     floatingStrategy="fixed"
+  //     placeholder=""
+  //     buttonContent={
+  //       <>
+  //         <Text fz="lg" c="black" mb="-0.4rem">
+  //           <LuTable />
+  //         </Text>
+  //         <sub style={{ color: 'black' }}>ref</sub>
+  //       </>
+  //     }
+  //     insertFunction={(value) => {
+  //       editor?.commands.insertContent(getReferenceForEditor(value));
+  //     }}
+  //     iconSize="2rem"
+  //     buttonVariant="format"
+  //     tooltip={refToTableElement.label}
+  //   />
+  // );
 
-  const refEquationCombobox = (
-    <AddComboox
-      data={equationList ? equationList : []}
-      withGroups={false}
-      floatingStrategy="fixed"
-      placeholder=""
-      buttonContent={
-        <>
-          <Text fz="lg" c="black" mb="-0.4rem">
-            <MdFunctions />
-          </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
-        </>
-      }
-      //expressionInputContentState,
-      insertFunction={(value) => {
-        editor?.commands.insertContent(getReferenceForEditor(value));
+  // const refFigureCombobox = (
+  //   <AddComboox
+  //     data={imageList ? imageList : []}
+  //     withGroups={false}
+  //     floatingStrategy="fixed"
+  //     placeholder=""
+  //     buttonContent={
+  //       <>
+  //         <Text fz="lg" c="black" mb="-0.4rem">
+  //           <LuImage />
+  //         </Text>
+  //         <sub style={{ color: 'black' }}>ref</sub>
+  //       </>
+  //     }
+  //     insertFunction={(value) => {
+  //       editor?.commands.insertContent(getReferenceForEditor(value));
+  //     }}
+  //     iconSize="2rem"
+  //     buttonVariant="format"
+  //     tooltip={refToImageElement.label}
+  //   />
+  // );
 
-        console.log(editor?.getHTML());
-      }}
-      iconSize="0.8rem"
-      buttonVariant="format"
-      tooltip={refToEquationElement.label}
-    />
-  );
+  // const refBibCombobox = (
+  //   <AddComboox
+  //     data={bibList ? bibList : []}
+  //     withGroups={false}
+  //     floatingStrategy="fixed"
+  //     placeholder=""
+  //     buttonContent={
+  //       <>
+  //         <Text fz="lg" c="black" mb="-0.4rem">
+  //           <MdOutlineLibraryBooks />
+  //         </Text>
+  //         <sub style={{ color: 'black' }}>ref</sub>
+  //       </>
+  //     }
+  //     insertFunction={(value) => {
+  //       editor?.commands.insertContent(getReferenceForEditor(value));
+  //     }}
+  //     iconSize="2rem"
+  //     buttonVariant="format"
+  //     tooltip={refToBibElement.label}
+  //   />
+  // );
 
-  const refTableCombobox = (
-    <AddComboox
-      data={tableList ? tableList : []}
-      withGroups={false}
-      floatingStrategy="fixed"
-      placeholder=""
-      buttonContent={
-        <>
-          <Text fz="lg" c="black" mb="-0.4rem">
-            <LuTable />
-          </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
-        </>
-      }
-      //expressionInputContentState,
-      insertFunction={(value) => {
-        editor?.commands.insertContent(getReferenceForEditor(value));
-
-        console.log(editor?.getHTML());
-      }}
-      iconSize="2rem"
-      buttonVariant="format"
-      tooltip={refToTableElement.label}
-    />
-  );
-
-  const refFigureCombobox = (
-    <AddComboox
-      data={imageList ? imageList : []}
-      withGroups={false}
-      floatingStrategy="fixed"
-      placeholder=""
-      buttonContent={
-        <>
-          <Text fz="lg" c="black" mb="-0.4rem">
-            <LuImage />
-          </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
-        </>
-      }
-      //expressionInputContentState,
-      insertFunction={(value) => {
-        editor?.commands.insertContent(getReferenceForEditor(value));
-
-        console.log(editor?.getHTML());
-      }}
-      iconSize="2rem"
-      buttonVariant="format"
-      tooltip={refToImageElement.label}
-    />
-  );
-
-  const refBibCombobox = (
-    <AddComboox
-      data={bibList ? bibList : []}
-      withGroups={false}
-      floatingStrategy="fixed"
-      placeholder=""
-      buttonContent={
-        <>
-          <Text fz="lg" c="black" mb="-0.4rem">
-            <MdOutlineLibraryBooks />
-          </Text>
-          <sub style={{ color: 'black' }}>ref</sub>
-        </>
-      }
-      //expressionInputContentState,
-      insertFunction={(value) => {
-        editor?.commands.insertContent(getReferenceForEditor(value));
-      }}
-      iconSize="2rem"
-      buttonVariant="format"
-      tooltip={refToBibElement.label}
-    />
-  );
-
-  const isActiveBgColorSelector = (mark: string): string => {
-    //console.log('isActive:', mark, ' - ', editor?.isActive(mark));
-    return editor?.isActive(mark) ? 'var(--mantine-color-gray-2)' : '';
-  };
+  // const isActiveBgColorSelector = (mark: string): string => {
+  //   return editor?.isActive(mark) ? 'var(--mantine-color-cyan-7)' : '';
+  // };
 
   return [
     {
@@ -336,7 +263,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('bold'),
+          //backgroundColor: isActiveBgColorSelector('bold'),
         },
         {
           label: 'Italic',
@@ -346,7 +273,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('italic'),
+          //backgroundColor: isActiveBgColorSelector('italic'),
         },
 
         {
@@ -357,7 +284,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('underline'),
+          //backgroundColor: isActiveBgColorSelector('underline'),
         },
         {
           label: 'Strikethrough',
@@ -367,7 +294,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('strike'),
+          //backgroundColor: isActiveBgColorSelector('strike'),
         },
       ],
     },
@@ -382,7 +309,7 @@ export const useTextTools = (): groupedListType => {
           },
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
-          backgroundColor: isActiveBgColorSelector('code'),
+          //backgroundColor: isActiveBgColorSelector('code'),
         },
       ],
     },

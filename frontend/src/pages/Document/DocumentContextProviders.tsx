@@ -4,17 +4,19 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import LinkTiptap from '@tiptap/extension-link';
 import Mention from '@tiptap/extension-mention';
+import Placeholder from '@tiptap/extension-placeholder';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
-import { mergeAttributes, ReactRenderer, useEditor } from '@tiptap/react';
+import { Editor, EditorContent, mergeAttributes, ReactRenderer, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, debounce } from 'lodash';
 import { blockType, referencesElementType } from '@/Types';
 
 type DocumentProvidersPropsType = {
@@ -27,6 +29,7 @@ export const ActiveTextfieldContext = createContext<any>(null);
 export const ActiveTableCellContext = createContext<any>(null);
 export const ReferencesListContext = createContext<any>(null);
 export const EditorContext = createContext<any>(null);
+export const ZoomsContext = createContext<any>(null);
 
 export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) => {
   const [blocksContent, setBlocksContent] = useState<blockType[]>([]);
@@ -201,10 +204,11 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+
   //const { referencesList, setReferencesList } = useReferencesListContext();
   // const activeBlockContainer = { activeBlock };
 
-  const saveEditorContent = (idx: string, idxInput: string, toSave: string) => {
+  const saveEditorContent = (toSave: string) => {
     //const blocksContentCopy = cloneDeep(blocksContent);
     //console.log(activeBlock, blocksContent[activeBlock]);
     // console.log('saveEditorContent', toSave);
@@ -282,6 +286,15 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
     setIsNotSaved(true);
   };
 
+  // const debouncedSaveEditorContent = useMemo(
+  //   () => debounce(saveEditorContent, 300),
+  //   [saveEditorContent]
+  // );
+
+  // useEffect(() => {
+  //   saveEditorContent(activeBlock, activeTextfield, editorContent);
+  // }, [editorContent]);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -312,27 +325,41 @@ export const EditorProvider = ({ children }: DocumentProvidersPropsType) => {
           allowedPrefixes: null,
         },
       }),
-
-      //, Placeholder.configure({ placeholder: 'This is placeholder' })
+      //Placeholder.configure({ placeholder: 'Enter your text...' }),
     ],
+
     //content: editorContent,
     onUpdate: ({ editor }) => {
-      saveEditorContent(activeBlock, activeTextfield, editor.getHTML());
+      saveEditorContent(editor.getHTML());
+      //setEditorContent(editor.getHTML());
       //console.log(editor.getHTML());
     },
+    shouldRerenderOnTransaction: false,
+    //immediatelyRender: true,
+
     // onSelectionUpdate({ editor }) {
     //   console.log('onSelectionUpdate: ', editor.state.selection.head);
     // },
   });
 
+  return <EditorContext.Provider value={{ editor }}>{children}</EditorContext.Provider>;
+};
+
+export const ZoomsProvider = ({ children }: DocumentProvidersPropsType) => {
+  const [pdfZoom, setPdfZoom] = useState<string>('1');
+  const [workspaceZoom, setWorkspaceZoom] = useState<string>('1');
+
   return (
-    <EditorContext.Provider
+    <ZoomsContext.Provider
       value={{
-        editor,
+        pdfZoom,
+        setPdfZoom,
+        workspaceZoom,
+        setWorkspaceZoom,
       }}
     >
       {children}
-    </EditorContext.Provider>
+    </ZoomsContext.Provider>
   );
 };
 
@@ -342,3 +369,4 @@ export const useActiveTextfieldContext = () => useContext(ActiveTextfieldContext
 export const useActiveTableCellContext = () => useContext(ActiveTableCellContext);
 //export const useReferencesListContext = () => useContext(ReferencesListContext);
 export const useEditorContext = () => useContext(EditorContext);
+export const useZoomsContext = () => useContext(ZoomsContext);

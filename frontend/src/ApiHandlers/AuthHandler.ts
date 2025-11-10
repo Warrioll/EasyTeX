@@ -20,7 +20,7 @@ export const checkIfLoggedIn =async ()=>{
               // if (authCookie === undefined || authCookie === null) {
               //   window.location.href = notAuthPath;
               // }else{
-                console.log('Is that you?')
+              
                 const response = await axios.get(`http://localhost:8100/auth/verifySession`, {
                     withCredentials: true,
                     headers: {
@@ -47,6 +47,7 @@ export const checkIfNotLoggedIn =async ()=>{
 
 
   try{
+
               const response = await axios.get(`http://localhost:8100/auth/verifySession`, {
                   withCredentials: true,
                   headers: {
@@ -54,6 +55,7 @@ export const checkIfNotLoggedIn =async ()=>{
                   }
                 })
                 //console.log("status dashboard: ", 200)
+                console.log('checkIfnot logged in', response.status)
               if(response.status===200){
                   window.location.href = authPath;
                }//else{

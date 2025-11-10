@@ -108,17 +108,18 @@ export default function AddressAndDateBlock({ idx }: AddressAndDateBlockPropsTyp
               >
                 Address:
               </Text>
-
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.author as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('author')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
+              <Box w="calc(100% - 3rem)">
+                <BasicTexfield
+                  idx={idx}
+                  //activeBlockState={activeBlockState}
+                  contentToRead={blocksContent[idx].blockContent.author as string}
+                  //editor={editor}
+                  //activeTextInputState={activeTextInputState}
+                  idxInput={idx.toString().concat('author')}
+                  //sectionsContent={sectionsContent}
+                  //setSectionsContent={setSectionsContent}
+                />
+              </Box>
             </Flex>
             <Flex w="100%">
               <Text
@@ -132,17 +133,18 @@ export default function AddressAndDateBlock({ idx }: AddressAndDateBlockPropsTyp
               >
                 Date:
               </Text>
-
-              <BasicTexfield
-                idx={idx}
-                //activeBlockState={activeBlockState}
-                contentToRead={blocksContent[idx].blockContent.date as string}
-                //editor={editor}
-                //activeTextInputState={activeTextInputState}
-                idxInput={idx.toString().concat('date')}
-                //sectionsContent={sectionsContent}
-                //setSectionsContent={setSectionsContent}
-              />
+              <Box w="calc(100% - 3rem)">
+                <BasicTexfield
+                  idx={idx}
+                  //activeBlockState={activeBlockState}
+                  contentToRead={blocksContent[idx].blockContent.date as string}
+                  //editor={editor}
+                  //activeTextInputState={activeTextInputState}
+                  idxInput={idx.toString().concat('date')}
+                  //sectionsContent={sectionsContent}
+                  //setSectionsContent={setSectionsContent}
+                />
+              </Box>
             </Flex>
           </Stack>
         </MarkedBlockFrame>

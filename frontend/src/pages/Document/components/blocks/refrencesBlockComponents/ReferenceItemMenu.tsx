@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { cloneDeep } from 'lodash';
 import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
 import { IoMdMore } from 'react-icons/io';
 import { MdOutlineAdd } from 'react-icons/md';
@@ -20,6 +21,38 @@ export default function ReferenceItemMenu({ idx, referenceId }: DeleteReferenceP
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
   const [openedMenu, setOpenedMenu] = useState<boolean>(false);
+
+  // const addReference = () => {
+  //   const assignedNumbers: number[] = [];
+  //   for (const reference of blocksContent[idx].blockContent) {
+  //     assignedNumbers.push(Number(reference.id.replace('bib', '')));
+  //   }
+  //   //assignedNumbers.sort();
+  //   let counter = 1;
+  //   while (assignedNumbers.includes(counter)) {
+  //     counter++;
+  //   }
+  //   const referencesList = cloneDeep(blocksContent[idx].blockContent);
+  //   blocksContent[idx].blockContent = [
+  //     ...referencesList,
+  //     {
+  //       id: 'bib'.concat(counter.toString()),
+  //       label: 'New entry',
+  //     },
+  //   ];
+  //   setIsNotSaved(true);
+  //   setAmoutOfReferences((prev) => prev + 1);
+  // };
+
+  const moveReference = (amount: number) => {
+    const copy = cloneDeep(blocksContent);
+    const toMove = copy[idx].blockContent.splice(referenceId, 1);
+    console.log('to move', toMove);
+    if (referenceId + amount >= 0 && referenceId + amount <= copy[idx].blockContent.length) {
+      copy[idx].blockContent.splice(referenceId + amount, 0, ...toMove);
+      setBlocksContent(copy);
+    }
+  };
 
   return (
     <Menu
@@ -75,26 +108,24 @@ export default function ReferenceItemMenu({ idx, referenceId }: DeleteReferenceP
       </Menu.Target>
       <Menu.Dropdown bg="var(--mantine-color-cyan-0)" bd=" 1px solid var(--mantine-color-cyan-3)">
         <Menu.Item
-          leftSection={<MdOutlineAdd />}
-          disabled={activeBlock === blocksContent.length - 1}
-          //onClick={moveBlockDown}
-          className={classes.markedBlockFrameMoreButton}
-        >
-          Add entry
-        </Menu.Item>
-        <Menu.Item
           leftSection={<FaArrowUp />}
-          disabled={activeBlock === 1}
+          disabled={referenceId === 0}
           //onClick={moveBlockUp}
           className={classes.markedBlockFrameMoreButton}
+          onClick={() => {
+            moveReference(-1);
+          }}
         >
           Move up
         </Menu.Item>
         <Menu.Item
           leftSection={<FaArrowDown />}
-          disabled={activeBlock === blocksContent.length - 1}
+          disabled={blocksContent[idx].blockContent.length - 1 === referenceId}
           //onClick={moveBlockDown}
           className={classes.markedBlockFrameMoreButton}
+          onClick={() => {
+            moveReference(1);
+          }}
         >
           Move down
         </Menu.Item>

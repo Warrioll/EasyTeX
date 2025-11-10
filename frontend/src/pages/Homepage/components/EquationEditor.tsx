@@ -11,8 +11,8 @@ export default function EquationEditor() {
   const Images = () => {
     return (
       <Center h="100%" className={classes.imgs}>
-        <Image src="eqEditor1.png" radius="lg" className={classes.editorImg1} />
-        <Image src="eq2.png" radius="lg" className={classes.editorImg2} />
+        <Image src="equationEditor.png" radius="lg" className={classes.editorImg1} />
+        <Image src="equation.png" radius="lg" className={classes.editorImg2} />
       </Center>
     );
   };
