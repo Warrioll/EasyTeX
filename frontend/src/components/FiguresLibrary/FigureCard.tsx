@@ -59,6 +59,7 @@ export default function FigureCard({ idx, figureData, choosenFigureState }: Figu
           //fit={fitImg}
           fit="cover"
           bd="1px solid var(--mantine-color-gray-3)"
+          bg="var(--mantine-color-white)"
           // onMouseEnter={() => {
           //   setFitImg('contain');
           // }}

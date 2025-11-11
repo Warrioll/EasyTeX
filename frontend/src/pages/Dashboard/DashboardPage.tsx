@@ -58,33 +58,22 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const checkLogged = async () => {
-      //console.log(userId);
       try {
         setDataLoaded(false);
         if (activeTab[0] !== 'search') {
-          const response = await axios.get(
-            //`http://localhost:8100/document/user/${userId}/${activeTab[0]}`,
-            `http://localhost:8100/document/user/${activeTab[0]}`,
-            {
-              withCredentials: true,
-            }
-          );
-          //console.log('data ', response.data);
-          //console.log('other resp:', response.data);
+          const response = await axios.get(`http://localhost:8100/document/user/${activeTab[0]}`, {
+            withCredentials: true,
+          });
+
           if (response.data === null || response.data === undefined) {
             setDocumentData(null);
           } else {
             setDocumentData(response.data);
           }
         } else {
-          const response = await axios.get(
-            //`http://localhost:8100/document/user/${userId}/${searchType[0]}`,
-            `http://localhost:8100/document/user/${searchType[0]}`,
-            {
-              withCredentials: true,
-            }
-          );
-          console.log('search resp:', response.data);
+          const response = await axios.get(`http://localhost:8100/document/user/${searchType[0]}`, {
+            withCredentials: true,
+          });
           if (response.data === null || response.data === undefined) {
             setDocumentData(null);
           } else {
@@ -96,7 +85,6 @@ export default function DashboardPage() {
           }
         }
       } catch (error) {
-        //console.log('getUserDocuemnts error: ', error);
         setDocumentData(null);
       }
       setDataLoaded(true);
@@ -115,60 +103,7 @@ export default function DashboardPage() {
             createDocumentModal={createDocumentModal}
           />
         );
-      // case 'article':
-      //   return (
-      //     <BasicBanner
-      //       color="blue"
-      //       icon={<RiArticleFill />}
-      //       documentClassName="articles"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   );
-      // case 'report':
-      //   return (
-      //     <BasicBanner
-      //       color="grape"
-      //       icon={<BiSolidReport />}
-      //       documentClassName="reports"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   ); //basicBanner('grape', <BiSolidReport />, 'reports');
-      // case 'book':
-      //   return (
-      //     <BasicBanner
-      //       color="teal"
-      //       icon={<RiBook2Fill />}
-      //       documentClassName="books"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   ); //basicBanner('teal', <RiBook2Fill />, 'books');
-      // case 'letter':
-      //   return (
-      //     <BasicBanner
-      //       color="lime"
-      //       icon={<MdEmail />}
-      //       documentClassName="letters"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   ); //basicBanner('lime', <MdEmail />, 'letters');
-      // case 'beamer':
-      //   return (
-      //     <BasicBanner
-      //       color="orange"
-      //       icon={<PiPresentationChartFill />}
-      //       documentClassName="presentations"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   ); //basicBanner('orange', <PiPresentationChartFill />, 'presentations');
-      // case 'slides':
-      //   return (
-      //     <BasicBanner
-      //       color="pink"
-      //       icon={<RiSlideshow2Fill />}
-      //       documentClassName="slides"
-      //       createDocumentModal={createDocumentModal}
-      //     />
-      //   ); //basicBanner('pink', <RiSlideshow2Fill />, 'slides');
+
       case 'search':
         return (
           <SearchBanner

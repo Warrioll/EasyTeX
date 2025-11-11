@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import DOMPurify from 'dompurify';
 import { cloneDeep } from 'lodash';
 import { FaRegTrashAlt } from 'react-icons/fa';
@@ -18,18 +17,14 @@ import classes from '../blocks.module.css';
 type DeleteBlockModalPropsType = {
   deleteModalOpened: boolean;
   deleteModalHandlers: any;
-  //blockContentState:[blockType[], Dispatch<SetStateAction<blockType[]>>],
-  //activeBlock: number
 };
 
 export default function DeleteBlockModal({
   deleteModalOpened,
-  deleteModalHandlers, //blockContentState, activeBlock
+  deleteModalHandlers,
 }: DeleteBlockModalPropsType) {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-
-  //const [sectionsContent, setSectionsContent] = blockContentState;
 
   const { editTextfields } = useEditTextfields();
 
@@ -38,23 +33,17 @@ export default function DeleteBlockModal({
     setActiveBlock(0);
     let blocks: blockType[];
     if (
-      blocksContent[activeBlock].typeOfBlock === 'figure' ||
-      blocksContent[activeBlock].typeOfBlock === 'table' ||
-      blocksContent[activeBlock].typeOfBlock === 'equation'
+      blocksContent[activeBlock]?.typeOfBlock === 'figure' ||
+      blocksContent[activeBlock]?.typeOfBlock === 'table' ||
+      blocksContent[activeBlock]?.typeOfBlock === 'equation'
     ) {
       blocks = editTextfields(
         getReferenceForEditor(blocksContent[activeBlock].blockContent.id),
         ''
       );
-      // console.log(
-      //   'deleteModal, fig, tab, eq - mention ',
-      //   getReferenceForEditor(blocksContent[activeBlock].blockContent.id),
-      //   '-blocks:',
-      //   blocksContent
-      // );
     } else if (
-      blocksContent[activeBlock].typeOfBlock === 'references' &&
-      blocksContent[activeBlock].blockContent.length > 0
+      blocksContent[activeBlock]?.typeOfBlock === 'references' &&
+      blocksContent[activeBlock]?.blockContent.length > 0
     ) {
       for (const i of blocksContent[activeBlock].blockContent) {
         blocks = editTextfields(getReferenceForEditor(i.id), '');
@@ -63,14 +52,13 @@ export default function DeleteBlockModal({
       blocks = cloneDeep(blocksContent);
     }
 
-    //console.log('deleteModal, copy blocks: ', blocks);
     blocks.splice(activeBlock, 1);
     setBlocksContent(blocks);
     setIsNotSaved(true);
   };
 
   const getDeleteBlockContent = () => {
-    const blockType = blocksContent[activeBlock].typeOfBlock;
+    const blockType = blocksContent[activeBlock]?.typeOfBlock;
     const docuimentclass = blocksContent[0].blockContent.class;
     switch (blockType as unknown as string) {
       case 'documentclass':
@@ -245,10 +233,10 @@ export default function DeleteBlockModal({
           <Text fz="1.3rem" m="lg" mb="0px">
             Are you sure you want to remove this block?
           </Text>
-          {blocksContent[activeBlock].typeOfBlock === 'figure' ||
-          blocksContent[activeBlock].typeOfBlock === 'table' ||
-          blocksContent[activeBlock].typeOfBlock === 'equation' ||
-          blocksContent[activeBlock].typeOfBlock === 'references' ? (
+          {blocksContent[activeBlock]?.typeOfBlock === 'figure' ||
+          blocksContent[activeBlock]?.typeOfBlock === 'table' ||
+          blocksContent[activeBlock]?.typeOfBlock === 'equation' ||
+          blocksContent[activeBlock]?.typeOfBlock === 'references' ? (
             <Text m="xs" c="var(--mantine-color-gray-7)">
               All references to this block will be also removed.
             </Text>
@@ -269,20 +257,13 @@ export default function DeleteBlockModal({
             spacing="xl"
           >
             <b>Type:</b>
-            {
-              //blocksContent[activeBlock] ? blocksContent[activeBlock].typeOfBlock : ' '
-
-              blockTypeToOfficialName(
-                blocksContent[activeBlock].typeOfBlock,
-                blocksContent[0].blockContent.class
-              )
-            }
+            {blockTypeToOfficialName(
+              blocksContent[activeBlock]?.typeOfBlock,
+              blocksContent[0]?.blockContent.class
+            )}
             <b>Content: </b>
 
-            {
-              getDeleteBlockContent()
-              //sanitizeHtml(sectionsContent[activeSection].blockContent, { allowedTags: [] })
-            }
+            {getDeleteBlockContent()}
           </SimpleGrid>
         </Group>
         <SimpleGrid cols={2} spacing="xl" mt="md">

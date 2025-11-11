@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
 import { BiFont, BiFontFamily } from 'react-icons/bi';
 import { BsPersonWorkspace } from 'react-icons/bs';
@@ -61,7 +61,7 @@ export default function Header({
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
-  const { editor, currentCoursor } = useEditorContext();
+  const { editor } = useEditorContext();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('blocks');
   const [displayBarinMinSize, setDisplayBarinMinSize] = useState<'left' | 'right'>('left');
@@ -239,7 +239,6 @@ export default function Header({
   };
 
   useEffect(() => {
-    console.log('editor head: ', editor.state.selection.head);
     if (blocksContent[activeBlock]) {
       switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
@@ -262,13 +261,7 @@ export default function Header({
     } else {
       setValue('blocks');
     }
-  }, [
-    activeBlock,
-    // workspaceZoom[0],
-    blocksContent,
-    //editor.state.selection.$head,
-    activeTextfield, //, blocksContent
-  ]);
+  }, [activeBlock, blocksContent, activeTextfield]);
 
   useEffect(() => {
     const getTitle = async () => {
@@ -276,10 +269,9 @@ export default function Header({
         const response = await axios.get(`http://localhost:8100/document/${id}`, {
           withCredentials: true,
         });
-        //console.log(response.data);
         setDocumentName(response.data);
       } catch (error) {
-        console.log('doc page get doc Name error:', error);
+        console.error('get document name error:', error);
       }
     };
 
@@ -603,7 +595,7 @@ export default function Header({
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
             pr="lg"
-            ml="lg"
+            ml="12px"
             mr="xs"
             miw="max-content"
             className={classes.band}
@@ -621,7 +613,7 @@ export default function Header({
             gap="xl"
             miw="max-content"
             ml="xs"
-            mr="lg"
+            mr="12px"
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             className={classes.band}
           >
@@ -649,7 +641,7 @@ export default function Header({
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
               pl="lg"
               pr="lg"
-              ml="lg"
+              ml="12px"
               mr="xs"
               className={classes.band}
               miw="max-content"
@@ -707,7 +699,7 @@ export default function Header({
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
               pl="lg"
               pr="lg"
-              mr="lg"
+              mr="12px"
               ml="xs"
               className={classes.band}
               miw="max-content"

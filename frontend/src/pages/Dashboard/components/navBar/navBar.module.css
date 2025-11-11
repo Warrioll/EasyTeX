@@ -4,8 +4,6 @@
     padding: var(--mantine-spacing-md);
     display: flex;
     flex-direction: column;
-    /* border-right: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4)); */
-    /* background-color: var(--mantine-color-white); */
   }
   
   .navbarMain {
@@ -61,14 +59,3 @@
     margin-right: var(--mantine-spacing-sm);
  
   }
-
-  /* .typePicker{
-    width: 0px;
-    height: 0px;
-    margin: 0px;
-    padding: 0px;
-    border: none;
-    opacity: 0px;
-
-    margin-bottom: -55px;
-  } */

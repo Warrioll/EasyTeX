@@ -1,20 +1,8 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Editor, EditorContent } from '@tiptap/react';
-import parse from 'html-react-parser';
-import { cloneDeep } from 'lodash';
-import { Badge, Button, Flex, FocusTrap, Group, Input, Menu, Text } from '@mantine/core';
-import { useDisclosure, useFocusWithin } from '@mantine/hooks';
-import { RichTextEditor } from '@mantine/tiptap';
-import { blockType } from '@/Types';
-import {
-  useActiveBlockContext,
-  useActiveTextfieldContext,
-  useBlocksContentContext,
-  useEditorContext,
-} from '../../DocumentContextProviders';
+import { useEffect, useState } from 'react';
+import { Flex, Text } from '@mantine/core';
+import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
-import styles from './blocks.module.css';
 
 type ClosingBlockPropsType = {
   idx: number;
@@ -24,19 +12,6 @@ export default function ClosingBlock({ idx }: ClosingBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const [sectionNumber, setSectionNumber] = useState<string>('');
-
-  const updateSectionContent = (event) => {
-    console.log('section event', event);
-    let content = cloneDeep(blocksContent);
-    console.log('section  event.target.value', event.target.value);
-
-    content[idx] = {
-      ...content[idx],
-      blockContent: event.target.value,
-    };
-    console.log('section content[idx].blockContent', content[idx].blockContent);
-    setBlocksContent(content);
-  };
 
   useEffect(() => {
     let sectionCounter = 0;

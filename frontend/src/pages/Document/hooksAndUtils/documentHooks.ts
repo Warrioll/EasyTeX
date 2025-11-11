@@ -22,7 +22,6 @@ import { useActiveBlockContext, useBlocksContentContext } from "../DocumentConte
           assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
         }
       }
-      //assignedNumbers.sort();
       let counter = 1;
       while (assignedNumbers.includes(counter)) {
         counter++;
@@ -67,8 +66,6 @@ import { useActiveBlockContext, useBlocksContentContext } from "../DocumentConte
 
     const editTextfields = (toReplace:string, replacement: string) => {
     const blocksContentCopy = cloneDeep(blocksContent);
-    //console.log(activeBlock, blocksContent[activeBlock]);
-    //console.log('container', activeBlockContainer);
     for( const block of blocksContentCopy){
         switch (block.typeOfBlock) {
       case 'documentclass':
@@ -80,7 +77,6 @@ import { useActiveBlockContext, useBlocksContentContext } from "../DocumentConte
       case 'pageBreak':
         break
       case 'figure':
-        //block.blockContent.label=block.blockContent.label.replaceAll(toReplace, replacement)
         break
       case 'titlePage':
           block.blockContent.title=block.blockContent.title.replaceAll(toReplace, replacement)
@@ -89,23 +85,15 @@ import { useActiveBlockContext, useBlocksContentContext } from "../DocumentConte
         break;
       case 'table':
         block.blockContent.label=block.blockContent.label.replaceAll(toReplace, replacement)
-        //console.log('tab', block.blockContent.content)
         for (const r of block.blockContent.content){
-          //console.log('editTextfields r', r)
           for(let i=0; i<r.length ; i++){
-            //console.log('editTextfields c before', r[i])
             r[i]=r[i].replaceAll(toReplace, replacement)
-            //console.log('editTextfields cafter', r[i])
           }
         }
         break;
       case 'references':
-       /// console.log(' editing references')
          for (const r of block.blockContent){
-            //console.log(r)
-            r.label=r.label.replaceAll(toReplace, replacement)
-            //console.log(' replaceeee: ', r.label.replaceAll(toReplace, replacement))
-          
+            r.label=r.label.replaceAll(toReplace, replacement)          
         }
         break;
       default:
@@ -114,97 +102,34 @@ import { useActiveBlockContext, useBlocksContentContext } from "../DocumentConte
     }
     }
     return blocksContentCopy;
-    //console.log('textfield edited')
   };
 
   return {editTextfields}
   }
 
-  export const useGetAvailableIdNumberForBlockRefId = (): {getAvailableIdNumberForBlockRefId: ( typeOfBlock: typeOfBlockType,
-      idPrefix: string
-    ) =>number } => {
+  // export const useGetAvailableIdNumberForBlockRefId = (): {getAvailableIdNumberForBlockRefId: ( typeOfBlock: typeOfBlockType,
+  //     idPrefix: string
+  //   ) =>number } => {
 
-       const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
-   const getAvailableIdNumberForBlockRefId = (
-      typeOfBlock: typeOfBlockType,
-      idPrefix: string
-    ): number => {
-      const assignedNumbers: number[] = [];
-      for (const block of blocksContent) {
-        if (block.typeOfBlock === typeOfBlock) {
-          assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
-        }
-      }
-      //assignedNumbers.sort();
-      let counter = 1;
-      while (assignedNumbers.includes(counter)) {
-        counter++;
-      }
-      return counter;
-    };
-  return {getAvailableIdNumberForBlockRefId}
-  }
+  //      const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
+  //  const getAvailableIdNumberForBlockRefId = (
+  //     typeOfBlock: typeOfBlockType,
+  //     idPrefix: string
+  //   ): number => {
+  //     const assignedNumbers: number[] = [];
+  //     for (const block of blocksContent) {
+  //       if (block.typeOfBlock === typeOfBlock) {
+  //         assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
+  //       }
+  //     }
+  //     //assignedNumbers.sort();
+  //     let counter = 1;
+  //     while (assignedNumbers.includes(counter)) {
+  //       counter++;
+  //     }
+  //     return counter;
+  //   };
+  // return {getAvailableIdNumberForBlockRefId}
+  // }
 
-//   export const useSaveDocumentContent = (): {saveDocumentContent: ()=>AxiosResponse<any, any>} =>{
-
-//  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
-
-//   const saveDocumentContent = async () => {
-//       try {
-//         const blocks = blocksContent.filter((block) => {
-//           switch (block.typeOfBlock) {
-//             case 'titlePage':
-//               if (
-//                 chceckIfBlockContentEmpty(block.blockContent.title as string) &&
-//                 chceckIfBlockContentEmpty(block.blockContent.author as string) &&
-//                 chceckIfBlockContentEmpty(block.blockContent.date as string)
-//               ) {
-//                 return false;
-//               }
-//               return true;
-//             case 'equation':
-//               //return chceckIfBlockContentEmpty(block.blockContent.label as string);
-//               return true;
-//             // case 'figure':
-//             //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
-//             //   case 'equation':
-//             //   return chceckIfBlockContentEmpty(block.blockContent.label as string);
-//             case 'references':
-//               //FIXME - sprawdzanie czy nie są puste
-//               return true;
-//             case 'tableOfContents':
-//               return true;
-//             case 'pageBreak':
-//               return true;
-//             case 'figure':
-//               //TODO
-//               return true;
-//             case 'table':
-//               //FIXME - sprawdzanie czy nie są puste
-//               //return chceckIfBlockContentEmpty(block.blockContent.label as string);
-//               return true;
-//             default:
-//               return !chceckIfBlockContentEmpty(block.blockContent);
-//           }
-//         });
-  
-//         const response = await axios.put(
-//           `http://localhost:8100/document/documentContent/${id}`,
-//           blocks,
-//           { withCredentials: true }
-//         );
-//         return response
-//         // if (response.status === 200) {
-//         //   const reload = await setPdfFile();
-//         //   setIsNotSaved(false);
-//         // }
-
-//       } catch (error) {
-//         throw error
-//         //return null
-//         console.log('save and reaload error:', error, 'blocks: ', blocksContent);
-//       }
-//     };
-//     return {saveDocumentContent}
-//   }
 

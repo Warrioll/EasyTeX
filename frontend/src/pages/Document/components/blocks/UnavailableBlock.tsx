@@ -1,4 +1,4 @@
-import { RiErrorWarningFill, RiErrorWarningLine } from 'react-icons/ri';
+import { RiErrorWarningFill } from 'react-icons/ri';
 import { Box, Button, Flex, Paper, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
@@ -20,7 +20,6 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
-        //toggle();
         setActiveBlock(idx);
       }}
     >
@@ -32,7 +31,7 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
           pl="lg"
           pr="lg"
           w="40vw"
-          miw='40rem'
+          miw="40rem"
           className={
             idx === Math.floor(activeBlock) ? classes.blockFrameStyle : classes.unmarkedFramePaper
           }
@@ -76,10 +75,6 @@ export default function UnavailableBlock({ idx }: UnavailableBlockPropsType) {
             <Text ta="center" fz="sm">
               Delete it or try reloading the page.
             </Text>
-
-            {
-              // or coś tak że nie nie dostępny w typ typie dokumentu
-            }
             <Flex justify="center" mt="sm">
               <Button
                 m="xs"

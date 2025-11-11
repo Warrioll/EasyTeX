@@ -1,15 +1,4 @@
-import { useRef } from 'react';
-import {
-  BackgroundImage,
-  Box,
-  Button,
-  Center,
-  Flex,
-  Image,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { BackgroundImage, Box, Button, Center, Image, Stack, Text } from '@mantine/core';
 import Logo from '@/svg/Logo';
 import classes from '../hompage.module.css';
 
@@ -89,10 +78,6 @@ export default function HeroHeader() {
               size="md"
               w="10rem"
               m="xl"
-              //bg="transparent"
-              //bd="1px solid var(--mantine-color-cyan-4)"
-              //c="var(--mantine-color-cyan-9)"
-              //variant="outline"
               onClick={() => {
                 window.location = '/register';
               }}

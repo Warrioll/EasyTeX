@@ -192,7 +192,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
   await  verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
         try{  
           
-          if(!doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
+          if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
           }else{
             
@@ -243,7 +243,7 @@ export const  getTexFile= async (req: express.Request, res: express.Response)=>{
 
     //await compileTex(documentInstantion.path, id+'.tex')
     //clearCompilationFiles(documentInstantion.path, id+'.tex')
-    if(!doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
+    if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
           }else{
     res.setHeader('Content-type', 'text/x-tex')
@@ -273,7 +273,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
  
   try{
 
-        if(!doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
+        if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
           }else{
 
@@ -354,8 +354,13 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
     // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
     // })
-          res.status(200).json(blocks);
-                    console.log('block:', blocks)
+    if((documentBlock.blockContent as documentOptionsType).class ===documentInstantion.documentClass){
+      res.status(200).json(blocks);
+    }else{
+             res.sendStatus(500);
+          }
+          
+                 
 
           }
 
@@ -399,7 +404,7 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
 
 
         const content: (string |undefined)[] = [`\\documentclass[10pt, a4paper, onecolumn]{${savedDocument.documentClass}}`, , 
-          "\\begin{document}",'New document', "\\end{document}"];
+          "\\begin{document}", savedDocument.documentClass==='beamer' ? '\\begin{frame}' : '' ,'New document',  savedDocument.documentClass==='beamer' ? '\\end{frame}' : '', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
         
         await saveFileWithContent(savedDocument.path, savedDocument.id, 'tex', content.join("\n"))

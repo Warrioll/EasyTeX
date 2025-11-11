@@ -1,19 +1,12 @@
 import { useRef, useState } from 'react';
 import axios from 'axios';
 import { FaRegCheckCircle } from 'react-icons/fa';
-import { RiErrorWarningFill, RiErrorWarningLine } from 'react-icons/ri';
 import {
-  Alert,
-  Anchor,
   BackgroundImage,
   Box,
   Button,
-  Center,
-  Checkbox,
   Container,
-  Dialog,
   Flex,
-  Group,
   Loader,
   Modal,
   Paper,
@@ -23,10 +16,8 @@ import {
   Text,
   TextInput,
   Title,
-  Transition,
 } from '@mantine/core';
-import { transitions } from '@mantine/core/lib/components/Transition/transitions';
-import { hasLength, isEmail, matches, matchesField, useForm } from '@mantine/form';
+import { matches, matchesField, useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
@@ -36,7 +27,6 @@ import Logo from '@/svg/Logo';
 import styles from './registerPage.module.css';
 
 export default function RegisterPage() {
-  //const [opened1, { toggle, open, close }] = useDisclosure(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [errorMsgOpened, errorMsgHandlers] = useDisclosure(false);
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
@@ -45,14 +35,11 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const form = useForm({
     mode: 'controlled',
-    //  onSubmitPreventDefault: 'never',
+
     initialValues: { name: '', email: '', password: '', repeatedPassword: '' },
     validate: {
       name: matches(/^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$^&*?\-]+(?<![_.])$/, 'Invalid username'),
-      // email: matches(
-      //   /^(?=.{1,320}$)\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})$/g,
-      //   'Invalid email address'
-      // ),
+
       email: matches(
         /^(?=.{5,320}$)\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/,
         'Invalid email address'
@@ -62,7 +49,6 @@ export default function RegisterPage() {
         'Invalid password'
       ),
       repeatedPassword: matchesField('password', 'Passwords are not the same'),
-      //password: matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, 'Invalid password')
     },
   });
 
@@ -78,11 +64,6 @@ export default function RegisterPage() {
         { headers: { 'Content-Type': 'application/json' } }
       );
       modalHandlers.open();
-      // setTimeout(() => {
-      //   open();
-      // }, 150);
-      //open();
-      //...
       setDisableSignUpButton(false);
     } catch (error) {
       switch (error.response.status) {
@@ -104,13 +85,11 @@ export default function RegisterPage() {
         default:
           setErrorMessage('Sorry, something went wrong!');
       }
-      //setErrorMessage('Sorry, something went wrong!');
       await new Promise((resolve) => setTimeout(resolve, 200));
       errorMsgHandlers.open();
-      console.log('register error: ', error);
+      console.error('register error: ', error);
       setDisableSignUpButton(false);
     }
-    //open();
   };
 
   return (
@@ -130,7 +109,6 @@ export default function RegisterPage() {
               </Flex>
               <Title ta="center" className={styles.title}>
                 Create account!
-                {/* Sign up to <span style={{color: 'var(--mantine-color-yellow-8)'}}>Easy</span><span style={{color: 'var(--mantine-color-cyan-8)'}}>Tex</span>! */}
               </Title>
               <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
                 Create your EasyTeX Account!
@@ -144,10 +122,9 @@ export default function RegisterPage() {
                     setDisableSignUpButton(false);
                   },
                   async (validationErrors, values, event) => {
-                    //console.log(errorMsgOpened);
                     errorMsgHandlers.close();
                     setErrorMessage('Invalid sign up data!');
-                    //console.log('uu', validationErrors);
+
                     await new Promise((resolve) => setTimeout(resolve, 200));
                     errorDialogHandlers.open();
                     errorMsgHandlers.open();
@@ -262,23 +239,10 @@ export default function RegisterPage() {
                     fullWidth
                     disabled={disableSignUpButton}
                     onClick={async () => {
-                      //console.log('click');
-
                       errorDialogHandlers.close();
                       errorMsgHandlers.close();
 
                       formRef.current?.requestSubmit();
-                      //setTimeout(() => {
-
-                      //errorMsgHandlers.open();
-                      // if (!form.isValid('password') || !form.isValid('name')) {
-                      //   errorDialogHandlers.open();
-                      //   setErrorMessage('Invalid sign up data!');
-                      //   setDisableSignUpButton(false);
-                      //} //else {
-                      //   errorDialogHandlers.close();
-                      // }
-                      // }, 150);
                     }}
                   >
                     {disableSignUpButton ? <Loader size={20} /> : <> Sign up</>}
@@ -298,48 +262,6 @@ export default function RegisterPage() {
               </>
             }
           />
-          {/* <Dialog
-            opened={errorDialogOpened}
-            size="md"
-            radius="md"
-            p="0px"
-            bg="light-dark(rgba(255,255,255,0.7),rgba(50,0,0,0.7))"
-            style={{ top: 5 }}
-            transitionProps={{ transition: 'pop-bottom-right', duration: 200 }}
-          >
-            <Alert
-              variant="light"
-              withCloseButton
-              onClose={errorDialogHandlers.close}
-              color="red"
-              radius="xs"
-              title="Form requirements"
-              icon={
-                <span style={{ fontSize: '1.2rem' }}>
-                  <RiErrorWarningFill />
-                </span>
-              }
-            >
-              <Box mb="sm">
-                <b>Username</b> must:
-                <li> be 3-30 characters long</li>
-                <li>
-                  not contain any other special{' '}
-                  <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&*?-</span>
-                </li>
-              </Box>
-              <Box mb="sm">
-                <b>Password</b> must:
-                <li>be 8-64 characters long</li>
-                <li>contain min. one letter</li>
-                <li>contain min. one number</li>
-                <li>
-                  contain min. one of @$!%*#?&{' '}
-                  <span style={{ marginLeft: '1.25rem' }}>special character</span>
-                </li>
-              </Box>
-            </Alert>
-          </Dialog> */}
           <Modal
             opened={modalOpened}
             onClose={modalHandlers.close}
@@ -368,7 +290,6 @@ export default function RegisterPage() {
               <Text mt="0px" mb="0px">
                 Now you can sign in.
               </Text>
-              {/* <Text size="8rem" c="#00973c"> */}
               <Text size="6rem" c="var(--mantine-color-cyan-4)" mt="lg" mb="lg">
                 <FaRegCheckCircle />
               </Text>

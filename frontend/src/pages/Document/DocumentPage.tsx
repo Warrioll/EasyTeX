@@ -10,7 +10,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 import Split from '@uiw/react-split';
 import { useParams } from 'react-router-dom';
-import { Box, Center, Flex, Loader, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
+import { Box, Center, Loader, LoadingOverlay, Paper, ScrollArea, Stack } from '@mantine/core';
 import { blockType } from '@/Types';
 import EquationBlock from './components/blocks/EquationBlock';
 import FigureBlock from './components/blocks/FigureBlock';
@@ -414,7 +414,8 @@ export default function DocumentPage() {
                   maw="100vw"
                   mah="100vh"
                   miw="48rem"
-                  style={{ overflow: 'visible', flexShrink: '0' }}
+                  style={{ overflow: 'visible', overflowX: 'hidden', flexShrink: '0' }}
+                  bg="var(--mantine-color-gray-0)"
                 >
                   <Header
                     saveDocumentContent={saveDocumentContent}
@@ -426,7 +427,6 @@ export default function DocumentPage() {
                     m="0px"
                   >
                     <Split
-                      className={classes.bar}
                       lineBar
                       style={{
                         width: '100vw',
@@ -453,12 +453,24 @@ export default function DocumentPage() {
                           overlayProps={{
                             radius: 'sm',
                             blur: 1,
-                            color: 'var(--mantine-color-gray-1)',
+                            color: 'var(--mantine-color-gray-0)',
                           }}
                           loaderProps={{ color: 'cyan' }}
                           mr="2px"
                         />
-                        <ScrollArea h="100%" w="100%" pt="0px">
+                        <ScrollArea
+                          h="100%"
+                          w="100%"
+                          styles={{
+                            viewport: {
+                              backgroundColor: 'var(--mantine-color-gray-2)',
+                              borderRadius: 'var(--mantine-radius-md)',
+                              border: '1px solid var(--mantine-color-gray-3)',
+                            },
+                          }}
+                          pt="5px"
+                          p="12px"
+                        >
                           <Box
                             h="100%"
                             w="100%"
@@ -528,7 +540,7 @@ export default function DocumentPage() {
                           overlayProps={{
                             radius: 'sm',
                             blur: 1,
-                            color: 'var(--mantine-color-gray-1)',
+                            color: 'var(--mantine-color-gray-0)',
                           }}
                           loaderProps={{ color: 'cyan' }}
                           ml="2px"
@@ -548,11 +560,16 @@ export default function DocumentPage() {
                         )}
                         {pdf && (
                           <ScrollArea
+                            styles={{
+                              viewport: {
+                                backgroundColor: 'var(--mantine-color-gray-2)',
+                                borderRadius: 'var(--mantine-radius-md)',
+                                border: '1px solid var(--mantine-color-gray-3)',
+                              },
+                            }}
+                            pt="5px"
+                            p="12px"
                             h={{ base: 'calc(100vh - 5.3rem - 15px)', sm: 'calc(100vh - 5.3rem)' }}
-                            pt="0px"
-                            mt="0px"
-                            pb="8px"
-                            pr="8px"
                             scrollbars="xy"
                             w="100%"
                             miw="100%"

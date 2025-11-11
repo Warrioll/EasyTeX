@@ -88,7 +88,7 @@ export function AddComboox({
                 <Combobox.Option
                   value={item.label}
                   key={item.label}
-                  onMouseUp={() => {
+                  onClick={() => {
                     insertFunction(item.value);
                   }}
                   className={classes.hoverButton}

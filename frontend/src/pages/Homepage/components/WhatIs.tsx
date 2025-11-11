@@ -1,8 +1,4 @@
-import { FaLongArrowAltRight } from 'react-icons/fa';
-import { ImArrowDownRight, ImArrowDownRight2 } from 'react-icons/im';
 import { PiArrowBendDownRightFill } from 'react-icons/pi';
-import { TbArrowBigRight, TbArrowBigRightFilled } from 'react-icons/tb';
-import { WiStars } from 'react-icons/wi';
 import { Box, Center, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import Logo from '@/svg/Logo';
 import FileWithTextIcon from './FileWithTextIcon';
@@ -105,7 +101,6 @@ export default function WhatIs() {
       <Box
         h="90vh"
         mih="70rem"
-        //h="90vh"
         bg="var(--mantine-color-white)"
         hiddenFrom="md"
         className={classes.whatIsBg}

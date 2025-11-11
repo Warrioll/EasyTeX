@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaArrowLeft, FaArrowRight, FaLock, FaRegTrashAlt, FaRegUser } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaRegTrashAlt, FaRegUser } from 'react-icons/fa';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { MdDriveFileRenameOutline, MdLockOutline, MdOutlineImage } from 'react-icons/md';
 import {
@@ -10,9 +10,7 @@ import {
   Button,
   Center,
   Flex,
-  Modal,
   ScrollArea,
-  SimpleGrid,
   Stack,
   Text,
   Title,
@@ -21,7 +19,6 @@ import { useDisclosure } from '@mantine/hooks';
 import ChangePasswordModal from './components/ChangePasswordModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
 import EditAccountDetailsModal from './components/EditAccountDetailsModal';
-import classes from './profilePage.module.css';
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<{
@@ -34,7 +31,6 @@ export default function ProfilePage() {
     const getUserData = async () => {
       const response = await axios.get('http://localhost:8100/user', { withCredentials: true });
       setUserData(response.data);
-      console.log(response.data);
     };
     getUserData();
   }, []);
@@ -121,27 +117,12 @@ export default function ProfilePage() {
   return (
     <>
       <Center h="calc(100vh - 50px)" mb="0px">
-        <BackgroundImage
-          h="100%"
-          src="./bg.png"
-          //radius="md"
-          //m="md"
-          mt="0px"
-          //style={{ borderTop: '1px solid var(--mantine-color-cyan-6)' }}
-          // style={{
-          //   background:
-          //     'linear-gradient(to  top, rgba(0,0,0,0),var(--mantine-color-gray-1)), url(./bg13.png) ',
-          // }}
-        >
+        <BackgroundImage h="100%" src="./bg.png" mt="0px">
           <Center h="100%" mih="max-content">
             <Flex
               bg="var(--mantine-color-white)"
               bd="1px solid var(--mantine-color-gray-5)"
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
-              //m="xl"
-              //mb="0px"
-              //mt="0px"
-              //h="calc(100vh - 8rem)"
               h={{ base: '50rem', md: '40rem' }}
               w="70vw"
               mih="40rem"
@@ -223,14 +204,10 @@ export default function ProfilePage() {
       </Center>
 
       <ChangePasswordModal
-        userData={userData}
         modalHandlers={[changePasswordModalOpened, changePasswordModalHandlers]}
       />
 
-      <DeleteAccountModal
-        userData={userData}
-        modalHandlers={[deleteAccountModalOpened, deleteAccountModalHandlers]}
-      />
+      <DeleteAccountModal modalHandlers={[deleteAccountModalOpened, deleteAccountModalHandlers]} />
       <EditAccountDetailsModal
         userData={userData}
         modalHandlers={[editProfileDetailsModalOpened, editProfileDetailsModalHandlers]}

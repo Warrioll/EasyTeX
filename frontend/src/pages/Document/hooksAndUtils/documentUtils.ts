@@ -23,42 +23,9 @@ export const sanitizeBlocksContent = (toSanitize:string):string=>{
                   })
 }
 
-// export const chceckIfBlockContentEmpty = (contentToCheck:string):boolean=>{
-//   let content=contentToCheck
-//     content=content.replaceAll('<p>', '')
-//     content=content.replaceAll('</p>', '')
-
-//     content=content.replaceAll('<strong>', '')
-//     content=content.replaceAll('</strong>', '')
-
-//     content=content.replaceAll('<code>', '')
-//     content=content.replaceAll('</code>', '')
-
-//     content=content.replaceAll('<u>', '')
-//     content=content.replaceAll('</u>', '')
-
-//     content=content.replaceAll('<em>', '')
-//     content=content.replaceAll('</em>', '')
-
-//     content=content.replaceAll('<s>', '')
-//     content=content.replaceAll('</s>', '')
-
-//     // TODO tu jescze wyliczenia i linki itp od textfielda
-//     if(content===''){
-//       return true;
-//     }
-//     return false;
-//   }
-
-
     export const getReferenceForEditor = (referenceId:string):string =>{
-      //return "<span class=\"mention\" data-type=\"mention\" data-id=\"" + referenceId+ "\">"+referenceId+"</span>"
       return ` <span class="mention" data-type="mention" data-id="${referenceId}">${referenceId}</span> `
-      //       <span class="mention" data-type="mention" data-id="img1">img1</span>
-      //<span class=\"mention\" data-type=\"mention\" data-id=\"img1\" data-mention-suggestion-char=\"@\">img1</span>
-      
     }
-
 
     export const blockTypeToOfficialName=(blockType: blockType, docuimentclass: documentClassType):string=>{
     switch (blockType as unknown as string){

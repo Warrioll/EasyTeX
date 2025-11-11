@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RiErrorWarningFill } from 'react-icons/ri';
 import { Box, Button, Flex, Loader, Modal, Text, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
@@ -49,7 +48,6 @@ export default function EditAccountDetailsModal({
         withCredentials: true,
       }
     );
-    console.log(response);
   };
 
   const closeModal = () => {
@@ -63,8 +61,6 @@ export default function EditAccountDetailsModal({
   const saveChanges = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-
-      //setErrorMessage('');
       setDisableRenameButton(true);
       setEmailErrorInfo(null);
       setUsernameErrorInfo(null);
@@ -73,14 +69,12 @@ export default function EditAccountDetailsModal({
       await errorMessageHandlers.close();
       await new Promise((resolve) => setTimeout(resolve, 200));
       await editAccountDetails();
-      //setUsernameErrorInfo(null);
-      //setEmailErrorInfo(null);
       modalHandlers[1].close();
       errorDialogHandlers.close();
       setDisableRenameButton(false);
       location.reload();
     } catch (e) {
-      console.log(`Edit account details error:`, e);
+      console.log(`Edit account error:`, e);
       if (e.status === 400) {
         setErrorMessage('Invalid account data!');
         if (!emailRegex.test(email as string)) {
@@ -111,7 +105,6 @@ export default function EditAccountDetailsModal({
         onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
         centered
-        //yOffset="13%"
         size="auto"
         title={
           <Text c="var(--mantine-color-cyan-8)">

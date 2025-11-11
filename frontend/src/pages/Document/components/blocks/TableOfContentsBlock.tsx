@@ -11,22 +11,11 @@ import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 
 type TableOfContentsBlockPropsType = {
   idx: number;
-  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  //blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  // activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
-export default function TableOfContentsBlock({
-  idx,
-  //activeBlockState,
-  //blocksContentState,
-  //activeTextInputState
-}: TableOfContentsBlockPropsType) {
+export default function TableOfContentsBlock({ idx }: TableOfContentsBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
-
-  // const [activeBlock, setActiveBlock] = activeBlockState;
-  // const [blocksContent, setBlocksContent] = blocksContentState;
 
   const [tableOfContentsContent, setTableOfContentsContent] = useState<
     | { typeOfBlock: typeOfBlockType; blockContent: string; number: ReactElement }[]
@@ -98,18 +87,10 @@ export default function TableOfContentsBlock({
       return null;
     });
     setTableOfContentsContent(tableOfContentsData);
-    //setTableOfContentsContent(blocksContent.filter(block => (block!==undefined && block!==null) ))
   }, [blocksContent, activeBlock]);
 
   return (
-    <MarkedBlockFrame
-      idx={idx}
-      //activeBlockState={activeBlockState}
-      blockName="Table of contents"
-      //sectionsContent={blocksContentState[0]}
-      //setSectionsContent={blocksContentState[1]}
-      //activeTextInputState={activeTextInputState}
-    >
+    <MarkedBlockFrame idx={idx} blockName="Table of contents">
       <Box p="xl" c="var(--mantine-color-gray-6)">
         <Text mb="md" fw="bold" fz="xl">
           Contents

@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { cloneDeep } from 'lodash';
-import Latex from 'react-latex-next';
 import { Box, Flex, Text, Textarea } from '@mantine/core';
-import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
+import { useBlocksContentContext } from '../../DocumentContextProviders';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
-//import CodeEditor from '@uiw/react-textarea-code-editor';
 import classes from './blocks.module.css';
 
 type LatexExpressionBlockProps = {
@@ -12,20 +10,15 @@ type LatexExpressionBlockProps = {
 };
 
 export default function LatexExpressionBlock({ idx }: LatexExpressionBlockProps) {
-  const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
   const [lines, setLines] = useState<string[]>(['']);
 
   useEffect(() => {
-    //console.log('lines:',  blocksContent[idx].blockContent)
     setLines(
       blocksContent[idx].blockContent ? blocksContent[idx].blockContent.split('\n').length : 1
     );
-    //console.log('updatelines')
   }, [blocksContent]);
-
-  //const lines = blocksContent[idx].blockcontent ? blocksContent[idx].blockcontent.split('\n') : ['']
 
   const updateContent = (e) => {
     const blocksCopy = cloneDeep(blocksContent);
@@ -56,19 +49,7 @@ export default function LatexExpressionBlock({ idx }: LatexExpressionBlockProps)
             );
           })}
         </Box>
-        {/* <CodeEditor
-        value={blocksContent[idx].blockContent}
-        language="js"
-        placeholder="Enter LaTeX expression"
-        onChange={updateContent}
-        padding={15}
-        style={{
-          fontSize: 12,
-          backgroundColor: "red",
-          fontFamily:
-            "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace"
-        }}
-      /> */}
+
         <Textarea
           bg="var(--mantine-color-gray-2)"
           bd="solid 2px var(--mantine-color-gray-2)"

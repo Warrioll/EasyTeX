@@ -1,16 +1,5 @@
 import { FaRegTimesCircle } from 'react-icons/fa';
-import {
-  Anchor,
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Button, Center, Paper, Stack, Text, Title } from '@mantine/core';
 
 export default function SessionExpiredPage() {
   return (
@@ -37,9 +26,6 @@ export default function SessionExpiredPage() {
           >
             Sign in here
           </Button>
-          {/* <Text c="var(--mantine-color-gray-6)" m="5rem" mb="0px">
-            Error code: 401
-          </Text> */}
         </Stack>
       </Paper>
     </Center>

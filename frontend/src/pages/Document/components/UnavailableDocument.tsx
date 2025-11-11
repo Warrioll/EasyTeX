@@ -1,17 +1,5 @@
-import { TbFileNeutral, TbFileSad } from 'react-icons/tb';
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Group,
-  Image,
-  Paper,
-  Text,
-  Title,
-} from '@mantine/core';
-import classes from './UnavailableDocument.module.css';
+import { TbFileNeutral } from 'react-icons/tb';
+import { Box, Button, Center, Text, Title } from '@mantine/core';
 
 export default function UnavailableDocument() {
   return (

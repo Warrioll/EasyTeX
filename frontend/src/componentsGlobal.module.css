@@ -16,7 +16,6 @@ button{
     
         &:hover{
              background-color: light-dark(var(--mantine-color-cyan-5), var(--mantine-color-dark-8)) !important; 
-           /* color:var(--mantine-color-cyan-7) */
         }
 
         &:disabled{
@@ -42,7 +41,5 @@ input{
             color: var(--mantine-color-gray-white)
         }
     
-        &:hover{
-        }
 }
 }

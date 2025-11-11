@@ -1,82 +1,29 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import cloneDeep from 'lodash/cloneDeep';
-import { FaArrowDown, FaArrowUp, FaRegTrashAlt, FaTrashAlt } from 'react-icons/fa';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { TbOmega } from 'react-icons/tb';
 import Latex from 'react-latex-next';
-import {
-  Box,
-  Button,
-  Center,
-  CloseButton,
-  Combobox,
-  Flex,
-  Grid,
-  Group,
-  Highlight,
-  Input,
-  Menu,
-  Pill,
-  RenderTreeNodePayload,
-  ScrollArea,
-  Stack,
-  Text,
-  Textarea,
-  TextInput,
-  Tree,
-  TreeNodeData,
-  useCombobox,
-} from '@mantine/core';
+import { Box, Center, Flex, Grid, ScrollArea, Stack, Text, Textarea } from '@mantine/core';
 import { AddComboox } from '../../../../../components/other/AddCombobox';
 import { specialCharacters } from '../../SpecialCharacters';
-//import { AddSpecialCharacterComboox } from './AddSpecialCharacterCombobox';
 import ElementsTree from './ElementsTree';
-import { elementsToTex, texToElements } from './equationConverters';
-import { elementsPrototypes } from './equationsElementsPrototypes';
-import classes from './equationEditor.module.css';
-
-type elementType = {
-  label: 'Expression' | 'Integral' | 'Fraction' | 'Numerator' | 'Denominator';
-  value: string;
-  belonging?: string;
-  content?: string;
-  nodeProps?: Record<string, any>;
-  children?: elementType[];
-};
+import { elementsToTex } from './equationConverters';
 
 type VisualEditorTabTabPropsType = {
-  //  equationFormulaState: [string, Dispatch<SetStateAction<string>>];
   elementsContentState: [Array<any>, Dispatch<SetStateAction<Array<any>>>];
 };
 
-export default function VisualEditorTab({
-  //equationFormulaState,
-  elementsContentState,
-}: VisualEditorTabTabPropsType) {
-  // const elementsContentState = useState<any[]>([
-  //   { ...elementsPrototypes.expression.elementPrototype },
-  // ]);
+export default function VisualEditorTab({ elementsContentState }: VisualEditorTabTabPropsType) {
   const [elementsContent, setElementsContent] = elementsContentState;
-  //const [latexFormula, setLatexFormula] = equationFormulaState; //useState<string>('yolo');
+
   const [expressionInputContent, setExpressionInputContent] = useState<string>('');
 
   const activeTreeElementState = useState<string>('');
   const [activeTreeElement, setActiveTreeElement] = activeTreeElementState;
 
   const getElementByIdx = (idx, array) => {
-    console.log('getelementByIdx array: ', array);
     const idxs = idx.split('.').map(Number);
-    console.log('idxs: ', idxs);
 
     let element = array;
     for (let i of idxs) {
-      console.log('i: ', i, 'element: ', element);
-      // try {
-      //   Array.isArray(element) ? (element = element[i]) : (element = element.children[i]);
-      // } catch (e) {
-      //   console.log('Too deep or sth wrong: ', e);
-      //   break;
-      // }
-
       if (Array.isArray(element)) {
         if (element[i] === undefined) {
           break;
@@ -89,7 +36,6 @@ export default function VisualEditorTab({
         } else {
           element = element.children[i];
         }
-        //Array.isArray(element) ? (element = element[i]) : (element = element.children[i]);
       }
     }
     return element;
@@ -107,7 +53,7 @@ export default function VisualEditorTab({
         array[i].children = updateIdx(array[i].children, idxs);
       }
     }
-    console.log('updateX:', array);
+
     return array;
   };
 
@@ -202,13 +148,6 @@ export default function VisualEditorTab({
             floatingStrategy="fixed"
             withGroups
           />
-
-          {/* <AddSpecialCharacterComboox
-            expressionInputContentState={[expressionInputContent, setExpressionInputContent]}
-            insertElement={(withSpecialCharacter) =>
-              insertElement(element.value, withSpecialCharacter, element, 1)
-            }
-          /> */}
         </Flex>
       );
     }
@@ -219,17 +158,6 @@ export default function VisualEditorTab({
       </Text>
     );
   };
-
-  // useEffect(() => {
-  //   setLatexFormula(elementsToTex(elementsContent));
-  //   console.log('useEffect');
-  // }, [elementsContent, expressionInputContent]);
-
-  useEffect(() => {
-    //console.log('texToElements: ', texToElements(latexFormula));
-    //setElementsContent(updateIdx(cloneDeep(texToElements(latexFormula)), []));
-    //setElementsContent(updateIdx(cloneDeep(texToElements(texToElementsSpecialCHaractersConvertion(latexFormula))), []));
-  }, []);
 
   return (
     <Grid w="100%" h="100%" mt="0px" pt="0" miw="60rem">

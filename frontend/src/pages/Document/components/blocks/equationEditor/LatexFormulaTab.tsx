@@ -1,17 +1,6 @@
-import { Dispatch, Input, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import Latex from 'react-latex-next';
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Modal,
-  ScrollArea,
-  SegmentedControl,
-  SimpleGrid,
-  Text,
-  Textarea,
-} from '@mantine/core';
+import { Box, Center, ScrollArea, SimpleGrid, Text, Textarea } from '@mantine/core';
 import classes from './equationEditor.module.css';
 
 type LatexFormulaTabPropsType = {
@@ -32,18 +21,19 @@ export default function LatexFormulaTab({ equationFormulaState }: LatexFormulaTa
         value={equationFormula}
         onChange={(event) => {
           setEquationFormula(event.currentTarget.value);
-          console.log('equation:', event.currentTarget.value);
         }}
       />
       <Box h="40vh">
         <Text fw={500} size="sm">
           Preview:
         </Text>
-        <ScrollArea h="100%">
-          <Center mih="40vh" w="100%">
-            <Latex>{'$$' + equationFormula + '$$'}</Latex>
-          </Center>
-        </ScrollArea>
+        <Center w="100%" h="100%">
+          <ScrollArea h="100%" miw="40rem" w="100%" maw="78vw">
+            <Center mih="40vh" w="100%" miw="max-content">
+              <Latex>{'$$' + equationFormula + '$$'}</Latex>
+            </Center>
+          </ScrollArea>
+        </Center>
       </Box>
     </SimpleGrid>
   );

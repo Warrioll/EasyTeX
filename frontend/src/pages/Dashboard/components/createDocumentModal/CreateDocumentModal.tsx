@@ -30,7 +30,6 @@ export default function CreateDocumentModal({
   modalHandlers,
 }: createDocumentModalPropsType) {
   const [documentType, setDocumentType] = useState('Article');
-  //const [createModalOpened, createModalHandlers] = useDisclosure(false);
   const [segmentedControlColor, setSegmentedControlColor] = useState<string>(
     'var(--mantine-color-blue-5)'
   );
@@ -59,9 +58,6 @@ export default function CreateDocumentModal({
         case 'Presentation':
           documentClass = 'beamer';
           break;
-        case 'Slides':
-          documentClass = 'slides';
-          break;
       }
 
       const response = await axios.post(
@@ -80,7 +76,7 @@ export default function CreateDocumentModal({
       }
     } catch (error) {
       errorDialogHandlers.open();
-      console.log('create dopcument error: ', error);
+      console.error('create document error: ', error);
     }
   };
 
@@ -145,17 +141,12 @@ export default function CreateDocumentModal({
                           `var(--mantine-color-${documentColor('beamer')}-5)`
                         );
                         break;
-                      case 'Slides':
-                        setSegmentedControlColor(
-                          `var(--mantine-color-${documentColor('slides')}-5)`
-                        );
-                        break;
                     }
                   }}
                   fullWidth
                   size="sm"
                   radius="md"
-                  data={['Article', 'Report', 'Book', 'Letter', 'Presentation']} //, 'Slides']}
+                  data={['Article', 'Report', 'Book', 'Letter', 'Presentation']}
                   color={segmentedControlColor}
                 />
                 <SegmentedControl
@@ -190,11 +181,6 @@ export default function CreateDocumentModal({
                           `var(--mantine-color-${documentColor('beamer')}-5)`
                         );
                         break;
-                      case 'Slides':
-                        setSegmentedControlColor(
-                          `var(--mantine-color-${documentColor('slides')}-5)`
-                        );
-                        break;
                     }
                   }}
                   fullWidth
@@ -221,17 +207,8 @@ export default function CreateDocumentModal({
                       setNameError('Invalid name');
                     }
                   }}
-                  // key={form.key('email')}
-                  // {...form.getInputProps('email')}
                 />
               </Box>
-              {/* <NativeSelect
-              variant="filled"
-              radius="md"
-              label="Input label"
-              withAsterisk
-              data={['Article', 'Report', 'Book', 'Letter', 'Presentation', 'Slides']}
-            /> */}
             </SimpleGrid>
 
             <SimpleGrid cols={2} spacing="xl" mt="md">

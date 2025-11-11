@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoIosClose } from 'react-icons/io';
 import {
@@ -11,7 +10,6 @@ import {
   InputBase,
   Text,
   TextInput,
-  Title,
   useCombobox,
 } from '@mantine/core';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
@@ -156,9 +154,6 @@ export default function SearchBanner({
                     <Combobox.Option value="beamer" key="beamer">
                       Presentation
                     </Combobox.Option>
-                    {/* <Combobox.Option value="slides" key="slides">
-                      Slides
-                    </Combobox.Option> */}
                   </Combobox.Options>
                 </Combobox.Dropdown>
               </Combobox>

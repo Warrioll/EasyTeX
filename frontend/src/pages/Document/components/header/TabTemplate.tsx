@@ -1,9 +1,6 @@
-import { ReactElement } from 'react';
-import { includes } from 'lodash';
-import { Box, Button, Center, Flex, Stack, Text, Tooltip } from '@mantine/core';
+import { Button, Flex, Text, Tooltip } from '@mantine/core';
 import CustomTooltip from '@/components/other/CustomTooltip';
 import { groupedListType } from '@/Types';
-import { useBlocksContentContext } from '../../DocumentContextProviders';
 
 type TabTemplatePropsType = {
   buttons: groupedListType;
@@ -24,8 +21,6 @@ export default function TabTemplate({
     dontRenderButtons !== undefined && dontRenderButtons !== null && dontRenderButtons.length > 0
       ? dontRenderButtons
       : [];
-
-  //  const { blocksContent, setBlocksContent } = useBlocksContentContext();
 
   let amountOFButtons = 0;
 
@@ -60,30 +55,6 @@ export default function TabTemplate({
                       </>
                     }
                   >
-                    {/* // <Tooltip
-                  //   label={
-                  //     <>
-                  //       <Text fz="sm" w="100%" ta="center">
-                  //         {getToottipText ? getToottipText(button.label) : button.label}
-                  //       </Text>
-                  //       <Text fz="sm" w="100%" ta="center">
-                  //         {button.disabledFunction
-                  //           ? button.disabledFunction()
-                  //             ? '(Maximum quantity is already used)'
-                  //             : ''
-                  //           : ''}
-                  //       </Text>
-                  //     </>
-                  //   }
-                  //   //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-                  //   color="cyan"
-                  //   position="bottom"
-                  //   offset={5}
-                  //   withArrow
-                  //   arrowOffset={50}
-                  //   arrowSize={7}
-                  //   arrowRadius={2}
-                  // > */}
                     {buttonsNotToRender.includes(amountOFButtons) ? (
                       <button.Icon />
                     ) : (
@@ -98,7 +69,6 @@ export default function TabTemplate({
                       </Button>
                     )}
                   </CustomTooltip>
-                  // </Tooltip>
                 );
               })}
             </Flex>

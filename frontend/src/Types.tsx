@@ -1,5 +1,5 @@
 export type blockType = {
-  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
+  typeOfBlock: typeOfBlockType;
   blockContent:
     | string
     | titleSectionType //title section
@@ -47,7 +47,7 @@ export type blockAbleToRef = {
   content: string | string[][];
 };
 
-export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer' | 'slides';
+export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer';
 
 export type documentOptionsType = {
   class: documentClassType;
@@ -55,8 +55,8 @@ export type documentOptionsType = {
   fontType?: 'roman' | 'sans' | 'typewriter';
   paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
   orientation?: 'landscape' | '';
-  columns?: 'onecolumn' | 'twocolumn'
-  language: string
+  columns?: 'onecolumn' | 'twocolumn';
+  language: string;
 };
 
 export type listElementType = {

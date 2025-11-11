@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { cloneDeep } from 'lodash';
-import { FaRegTrashAlt } from 'react-icons/fa';
-import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Center, Flex, Menu, Popover, Stack, Text, Title } from '@mantine/core';
+import { MdOutlineAdd } from 'react-icons/md';
+import { Box, Button, Center, Flex, Stack, Text } from '@mantine/core';
 import { referencesElementType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
-import { useEditTextfields } from '../../hooksAndUtils/documentHooks';
-import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
@@ -22,17 +19,14 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
-  const [openedDeleteConfirmation, setOpenedDeleteConfirmation] = useState(false);
   const [amountOfReferences, setAmoutOfReferences] = useState<number>(0);
-
-  const { editTextfields } = useEditTextfields();
 
   const addReference = () => {
     const assignedNumbers: number[] = [];
     for (const reference of blocksContent[idx].blockContent) {
       assignedNumbers.push(Number(reference.id.replace('bib', '')));
     }
-    //assignedNumbers.sort();
+
     let counter = 1;
     while (assignedNumbers.includes(counter)) {
       counter++;
@@ -47,33 +41,6 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
     ];
     setIsNotSaved(true);
     setAmoutOfReferences((prev) => prev + 1);
-    // const blocksCopy = cloneDeep(blocksContent);
-    // let refId = 0;
-    // for (const i of blocksCopy[idx].blockContent) {
-    //   const iId = Number(i.id.split('ref')[1]);
-    //   if (refId <= iId) {
-
-    //     refId = iId + 1;
-    //   }
-    // }
-
-    // blocksCopy[idx].blockContent = [
-    //   ...blocksCopy[idx].blockContent,
-    //   { id: 'ref'.concat(refId.toString()), label: 'New reference' },
-    // ];
-    // setBlocksContent(blocksCopy);
-  };
-
-  const deleteReference = (idxToDelete: number) => {
-    const refId = blocksContent[idx].blockContent[idxToDelete].id;
-
-    const blocksCopy = editTextfields(getReferenceForEditor(refId), '');
-    //console.log('copy: ', blocksCopy);
-
-    //console.log('delete ref', refId, idxToDelete, blocksCopy[idx].blockContent);
-    blocksCopy[idx].blockContent.splice(idxToDelete, 1);
-    setBlocksContent(blocksCopy);
-    setAmoutOfReferences((prev) => prev - 1);
   };
 
   return (
@@ -90,7 +57,6 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
             {amountOfReferences >= 0
               ? blocksContent[idx].blockContent.map(
                   (item: referencesElementType, referenceId: number) => {
-                    //console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
                     return (
                       <Flex justify="space-between">
                         <Box h="1.4rem" mr="xs" mt="0.7rem">
@@ -128,7 +94,6 @@ export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
                   c="var(--mantine-color-cyan-7)"
                   leftSection={<MdOutlineAdd />}
                   onClick={addReference}
-                  //bd="1px solid var(--mantine-color-cyan-5)"
                   m="0px"
                   h="2rem"
                   w="8rem"

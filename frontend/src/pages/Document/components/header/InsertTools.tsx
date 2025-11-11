@@ -1,59 +1,15 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { BiFont } from 'react-icons/bi';
-import {
-  FaBold,
-  FaCode,
-  FaItalic,
-  FaLink,
-  FaList,
-  FaStrikethrough,
-  FaSubscript,
-  FaSuperscript,
-  FaUnderline,
-} from 'react-icons/fa';
-import { FaArrowTurnUp } from 'react-icons/fa6';
-import {
-  LuHeading1,
-  LuHeading2,
-  LuHeading3,
-  LuImage,
-  LuRefreshCcw,
-  LuTable,
-  //LuTableOfContents,
-} from 'react-icons/lu';
-import {
-  MdFormatListNumberedRtl,
-  MdFunctions,
-  MdOutlineAdd,
-  MdOutlineInsertPageBreak,
-  MdOutlineLibraryBooks,
-  MdOutlineTitle,
-} from 'react-icons/md';
+import { LuImage, LuTable } from 'react-icons/lu';
+import { MdFunctions, MdOutlineLibraryBooks } from 'react-icons/md';
 import { TbOmega } from 'react-icons/tb';
 import Latex from 'react-latex-next';
-import { Box, Center, Flex, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Center, Text } from '@mantine/core';
 import { AddComboox } from '@/components/other/AddCombobox';
-import {
-  blockAbleToRef,
-  blockType,
-  documentClassType,
-  groupedListType,
-  listElementType,
-  listType,
-  referencesElementType,
-} from '@/Types';
+import { blockAbleToRef, blockType, groupedListType, listElementType, listType } from '@/Types';
 import { useBlocksContentContext, useEditorContext } from '../../DocumentContextProviders';
 import { getReferenceForEditor } from '../../hooksAndUtils/documentUtils';
 import { specialCharacters } from '../SpecialCharacters';
-
-// type blockListType = {
-//   blockName: string;
-//   Icon: React.FC;
-//   blockToAdd: blockType;
-//   documentClasses: documentClassType[];
-// };
 
 export const useInsertTools = (): groupedListType => {
   const { editor } = useEditorContext();
@@ -67,9 +23,7 @@ export const useInsertTools = (): groupedListType => {
   const refToEquationElement = {
     label: 'Reference to equation',
     Icon: () => <>{refEquationCombobox}</>,
-    function: () => {
-      //refEquationHandlers.toggle();
-    },
+    function: () => {},
     value: null,
     belonging: ['article', 'beamer', 'book', 'letter', 'report'],
   };
@@ -77,27 +31,21 @@ export const useInsertTools = (): groupedListType => {
   const refToTableElement = {
     label: 'Reference to table',
     Icon: () => <>{refTableCombobox}</>,
-    function: () => {
-      //refTableHandlers.toggle();
-    },
+    function: () => {},
     value: null,
     belonging: ['article', 'beamer', 'book', 'report'],
   };
   const refToImageElement = {
     label: 'Reference to image',
     Icon: () => <>{refFigureCombobox}</>,
-    function: () => {
-      //refFigureHandlers.toggle();
-    },
+    function: () => {},
     value: null,
     belonging: ['article', 'beamer', 'book', 'report'],
   };
   const refToBibElement = {
     label: 'Bibliography reference',
     Icon: () => <>{refBibCombobox}</>,
-    function: () => {
-      //refBibHandlers.toggle();
-    },
+    function: () => {},
     value: null,
     belonging: ['article', 'beamer', 'book', 'report'],
   };
@@ -105,30 +53,23 @@ export const useInsertTools = (): groupedListType => {
   const specialCharacterElement = {
     label: 'Special character',
     Icon: () => <>{specialCharactersCombobox}</>,
-    function: () => {
-      //refEquationHandlers.toggle();
-    },
+    function: () => {},
     value: null,
     belonging: ['article', 'beamer', 'book', 'letter', 'report'],
   };
 
   const getRefsElement = (item: blockType, label: string): listElementType => {
-    // const num = counter;
-    //console.log('bc', item.blockContent);
-    //console.log('equations', blockCounter);
     return {
       Icon: () => (
         <Center m="xs">
           <Text
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            //p="0.1rem"
             p="0.3rem"
             pt="0px"
             pb="0px"
             bg="var(--mantine-color-cyan-0)"
             c="var(--mantine-color-cyan-9)"
             fw="500"
-            // ml="xs"
             fz="sm"
           >
             {(item.blockContent as blockAbleToRef).id}
@@ -154,7 +95,6 @@ export const useInsertTools = (): groupedListType => {
         switch (item.typeOfBlock) {
           case 'equation':
             equationCounter++;
-            //return getRefsElement(item); //, equationCounter);
 
             eqList = [
               ...eqList,
@@ -169,7 +109,7 @@ export const useInsertTools = (): groupedListType => {
             figList = [
               ...figList,
               getRefsElement(item, (item.blockContent as blockAbleToRef).label),
-            ]; //, figureCounter);
+            ];
             break;
           case 'table':
             tableCounter++;
@@ -186,14 +126,12 @@ export const useInsertTools = (): groupedListType => {
                     <Center m="xs">
                       <Text
                         style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                        //p="0.1rem"
                         p="0.3rem"
                         pt="0px"
                         pb="0px"
                         bg="var(--mantine-color-cyan-0)"
                         c="var(--mantine-color-cyan-9)"
                         fw="500"
-                        // ml="xs"
                         fz="sm"
                       >
                         {ref.id}
@@ -219,13 +157,6 @@ export const useInsertTools = (): groupedListType => {
       setEquationList([...eqList]);
       setImageList([...figList]);
       setTableList([...tabList]);
-
-      // if (temp !== null && temp !== undefined) {
-      //   temp = temp.filter((item) => item !== null);
-      // }
-      //console.log('yolo3', temp);
-
-      //setEquationList(temp);
     }
   }, [blocksContent]);
 
@@ -244,11 +175,8 @@ export const useInsertTools = (): groupedListType => {
           <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
-      //expressionInputContentState,
       insertFunction={(value) => {
         editor?.commands.insertContent(getReferenceForEditor(value));
-
-        console.log(editor?.getHTML());
       }}
       iconSize="0.8rem"
       buttonVariant="format"
@@ -271,11 +199,8 @@ export const useInsertTools = (): groupedListType => {
           <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
-      //expressionInputContentState,
       insertFunction={(value) => {
         editor?.commands.insertContent(getReferenceForEditor(value));
-
-        console.log(editor?.getHTML());
       }}
       iconSize="2rem"
       buttonVariant="format"
@@ -297,11 +222,8 @@ export const useInsertTools = (): groupedListType => {
           <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
-      //expressionInputContentState,
       insertFunction={(value) => {
         editor?.commands.insertContent(getReferenceForEditor(value));
-
-        console.log(editor?.getHTML());
       }}
       iconSize="2rem"
       buttonVariant="format"
@@ -325,7 +247,6 @@ export const useInsertTools = (): groupedListType => {
           <sub style={{ color: 'var(--mantine-color-white)' }}>ref</sub>
         </>
       }
-      //expressionInputContentState,
       insertFunction={(value) => {
         editor?.commands.insertContent(getReferenceForEditor(value));
       }}

@@ -1,20 +1,7 @@
 import { FaArchive } from 'react-icons/fa';
 import { HiDocumentDuplicate, HiWindow } from 'react-icons/hi2';
 import { SiLibreofficemath } from 'react-icons/si';
-import { TbMathIntegralX } from 'react-icons/tb';
-import {
-  Badge,
-  Box,
-  Card,
-  Center,
-  Container,
-  Group,
-  SimpleGrid,
-  Stack,
-  Text,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
+import { Badge, Box, Card, Container, Group, SimpleGrid, Text, Title } from '@mantine/core';
 import classes from '../hompage.module.css';
 
 const mockdata = [
@@ -44,7 +31,6 @@ const mockdata = [
 ];
 
 export default function Features() {
-  const theme = useMantineTheme();
   const features = mockdata.map((feature) => (
     <Card
       key={feature.title}
@@ -55,7 +41,6 @@ export default function Features() {
       padding="xl"
       bd="1px solid var(--mantine-color-gray-3)"
     >
-      {/* <Stack align="center" key={feature.title} className={classes.card} ta="center" gap="0px"> */}
       <Text fz="3rem" c="var(--mantine-color-cyan-7)" mb="-1rem">
         <feature.icon />
       </Text>

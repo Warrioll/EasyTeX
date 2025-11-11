@@ -6,7 +6,6 @@ import { useBlocksContentContext } from '@/pages/Document/DocumentContextProvide
 import FigureCard from './FigureCard';
 
 type LibraryFigureTabPropsType = {
-  //figureState: [FileWithPath[] | null, Dispatch<SetStateAction<FileWithPath[] | null>>];
   figureState: [string | null, Dispatch<SetStateAction<string | null>>];
   modalHandlers: readonly [
     boolean,
@@ -42,36 +41,12 @@ export default function LibraryFigureTab({
 
   return (
     <>
-      <FiguresLibrary
-        height="70vh"
-        //figureState={figureState}
-        choosenFigureState={choosenFigureState}
-      />
-      {/* <Box h="70vh" p="xl">
-        <ScrollArea h="100%">
-          <SimpleGrid cols={5}>
-            {figures.map((figure, id) => {
-              return (
-                <>
-                  <FigureCard
-                    idx={id}
-                    figureData={figure}
-                    choosenFigureState={choosenFigureState}
-                  />
-                </>
-              );
-            })}
-          </SimpleGrid>
-        </ScrollArea>
-      </Box> */}
+      <FiguresLibrary height="70vh" choosenFigureState={choosenFigureState} />
       <Flex gap="3rem" pt="lg" justify="center">
         <Button
           w="20rem"
           disabled={choosenFigure === null}
           onClick={() => {
-            // uploadFigure();
-            console.log(figures);
-            //setFigure(figures[choosenFigure]._id);
             if (choosenFigure !== null) {
               setFigure(choosenFigure as unknown as string);
               setIsNotSaved(true);

@@ -5,8 +5,6 @@ type logoType = {
 };
 
 export default function Logo({ width, color1, color2 }: logoType) {
-  //height="121.2mm"
-
   return (
     <svg width={width} version="1.1" viewBox="0 0 121.71 121.2" xmlns="http://www.w3.org/2000/svg">
       <g transform="translate(-357.52 -17.875)">

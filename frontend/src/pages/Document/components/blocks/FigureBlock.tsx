@@ -1,31 +1,21 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Editor } from '@tiptap/react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useErrorBoundary } from 'react-error-boundary';
-import { FaRegWindowClose } from 'react-icons/fa';
-import { FaRegImage, FaUpload } from 'react-icons/fa6';
+import { FaRegImage } from 'react-icons/fa6';
 import { LuImageOff } from 'react-icons/lu';
 import {
   Box,
   Button,
   Center,
   Flex,
-  Group,
   Image,
   Loader,
   Modal,
   SegmentedControl,
   Text,
-  Tooltip,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { blockType } from '@/Types';
-import {
-  useActiveBlockContext,
-  useActiveTextfieldContext,
-  useBlocksContentContext,
-  useEditorContext,
-} from '../../DocumentContextProviders';
+import { useBlocksContentContext } from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
@@ -35,44 +25,38 @@ import UploadFigureTab from './figureBlockComponents/UploadFigureTab';
 import '@mantine/dropzone/styles.css';
 
 import { cloneDeep } from 'lodash';
-import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { FileWithPath } from '@mantine/dropzone';
 
 type FigureBlockProps = {
   idx: number;
-  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  // activeTextInputState: [string, Dispatch<SetStateAction<string>>];
-  // blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  //editor: Editor;
 };
 
-export default function FigureBlock({
-  idx,
-  //activeBlockState,
-  //blocksContentState,
-  //editor,
-  //activeTextInputState,
-}: FigureBlockProps) {
+export default function FigureBlock({ idx }: FigureBlockProps) {
   const [isFigureLoading, setIsFigureLoading] = useState<boolean>(true);
   const { showBoundary, resetBoundary } = useErrorBoundary();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const modalHandlers = useDisclosure(false);
-  const [opened, { open, close }] = modalHandlers;
-  console.log('fig: ', blocksContent[idx]);
+  const [opened, { open, close, toggle }] = modalHandlers;
   const startFigure =
     blocksContent[idx]?.blockContent?.content === ''
       ? null
       : blocksContent[idx]?.blockContent?.content;
   const figureState = useState<string | null>(startFigure);
   const uploadfigureState = useState<FileWithPath[] | null>(null);
-  //const libraryFigureState = useState<FileWithPath[] | null>(null);
+
   const [figure, setFigure] = figureState;
-  //const [uploadfigure, setUploadFigure] = uploadfigureState;
+
   const figureTabState = useState<'Upload' | 'Library'>('Upload');
   const [figureTab, setFigureTab] = figureTabState;
   const [figureUrl, setFigureUrl] = useState<string>('');
   const [figureLoaded, setFigureLoaded] = useState<boolean>(false);
 
   const [figuresCounter, setFiguresCounter] = useState<number>(1);
+
+  const closeModal = () => {
+    uploadfigureState[1](null);
+    close();
+  };
 
   useEffect(() => {
     try {
@@ -82,6 +66,13 @@ export default function FigureBlock({
           counter++;
         }
         setFiguresCounter(counter);
+        setFigure(
+          blocksContent[idx]?.blockContent?.content === ''
+            ? null
+            : blocksContent[idx]?.blockContent?.content
+        );
+        setFigureLoaded(false);
+        setIsFigureLoading(true);
       }
     } catch (e) {
       showBoundary(e);
@@ -100,13 +91,9 @@ export default function FigureBlock({
           }
         );
         setFigureUrl(URL.createObjectURL(response.data));
-        //console.log(figure);
         setFigureLoaded(true);
       } catch (e) {
-        console.log('block figure getFigure error: ', e);
-
-        //showBoundary(e);
-        //se;
+        console.error('get figure error: ', e);
       }
       setIsFigureLoading(false);
     };
@@ -136,14 +123,7 @@ export default function FigureBlock({
   return (
     <div>
       <Flex>
-        <MarkedBlockFrame
-          idx={idx}
-          //activeBlockState={activeBlockState}
-          blockName="Image"
-          //sectionsContent={blocksContent}
-          //setSectionsContent={setBlocksContent}
-          //activeTextInputState={activeTextInputState}
-        >
+        <MarkedBlockFrame idx={idx} blockName="Image">
           <Center>
             <Button
               variant="transparent"
@@ -165,14 +145,12 @@ export default function FigureBlock({
             >
               {figure !== null ? (
                 figureLoaded ? (
-                  //TODO loader zrobić
                   <Image
                     w="24vh"
                     h="24vh"
-                    key={0}
+                    key={blocksContent[idx].blockContent.id}
                     src={figure !== null ? figureUrl : ''}
                     alt=""
-                    //fit={fitImg}
                     fit="contain"
                   />
                 ) : isFigureLoading ? (
@@ -200,16 +178,6 @@ export default function FigureBlock({
                 </Center>
               )}
             </Button>
-            {/* <BasicTexfield
-                    idx={idx}
-                    activeBlockState={activeBlockState}
-                    contentToRead={blocksContent[idx].blockContent as string}
-                    editor={editor}
-                    activeTextInputState={activeTextInputState}
-                    idxInput={idx.toString()}
-                    sectionsContent={blocksContent}
-                    setSectionsContent={setBlocksContent}
-                  /> */}
           </Center>
           <Flex justify="center" align="center" pt="xl">
             <Box h="1.4rem" mr="xl" ml="md">
@@ -228,7 +196,7 @@ export default function FigureBlock({
       </Flex>
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
         yOffset="3.5%"
         size="85vw"
@@ -256,9 +224,13 @@ export default function FigureBlock({
             figureState={figureState}
             uploadfigureState={uploadfigureState}
             modalHandlers={modalHandlers}
+            closeModal={closeModal}
           />
         ) : (
-          <LibraryFigureTab figureState={figureState} modalHandlers={modalHandlers} />
+          <LibraryFigureTab
+            figureState={figureState}
+            modalHandlers={[opened, { open, close: closeModal, toggle }]}
+          />
         )}
       </Modal>
     </div>

@@ -1,9 +1,11 @@
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import axios from 'axios';
 import { FaRegTrashAlt, FaRegWindowClose } from 'react-icons/fa';
 import { FaRegImage, FaUpload } from 'react-icons/fa6';
-import { Box, Button, Center, Flex, Group, Image, Text } from '@mantine/core';
+import { Box, Button, Center, Flex, Group, Image, Loader, Text } from '@mantine/core';
 import { Dropzone, FileWithPath } from '@mantine/dropzone';
+import { useDisclosure } from '@mantine/hooks';
+import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import { useBlocksContentContext } from '@/pages/Document/DocumentContextProviders';
 
 type UploadFigureTabPropsType = {
@@ -17,40 +19,45 @@ type UploadFigureTabPropsType = {
       readonly toggle: () => void;
     },
   ];
+  closeModal: () => void;
 };
 
 export default function UploadFigureTab({
   figureState,
   uploadfigureState,
   modalHandlers,
+  closeModal,
 }: UploadFigureTabPropsType) {
   const [figure, setFigure] = figureState;
   const [opened, { open, close }] = modalHandlers;
   const [uploadFigure, setUploadFigure] = uploadfigureState;
-  const [figureLabel, setFigureLabel] = useState<ReactNode>(<></>);
+  const [figureLabel, setFigureLabel] = useState<string>('');
+  const [uploading, setUploading] = useState<boolean>(false);
+
+  const [uploadErrorOpened, uploadErrorHandlers] = useDisclosure();
 
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
   const saveFigure = async () => {
     try {
+      uploadErrorHandlers.close();
       const blob = new Blob([uploadFigure[0]], { type: 'image/png' });
       const formData = new FormData();
       formData.append('image', uploadFigure[0]);
       const response = await axios.post('http://localhost:8100/figure', formData, {
         withCredentials: true,
-        headers: {
-          // 'Content-Type': 'multipart/form-data',
-        },
+        headers: {},
       });
-
-      //console.log('Figure uploaded succesfully', response);
       setFigure(response.data._id);
       setIsNotSaved(true);
-      close();
+      closeModal();
     } catch (e) {
-      setFigureLabel(<Text c="red">File upload failed</Text>);
-      console.log('Upload error: ', e);
+      setFigureLabel('File upload failed');
+      console.error('Upload image error: ', e);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      uploadErrorHandlers.open();
     }
+    setUploading(false);
   };
 
   return (
@@ -59,11 +66,14 @@ export default function UploadFigureTab({
         <Dropzone
           onDrop={(files) => {
             setUploadFigure(files);
-            setFigureLabel(<></>);
+            uploadErrorHandlers.close();
+            setFigureLabel('');
           }}
-          onReject={(files) => {
-            setFigureLabel(<Text c="red">File is too large or file type is not supported.</Text>);
-            //console.log('rejected files', files);
+          onReject={async (files) => {
+            uploadErrorHandlers.close();
+            setFigureLabel('File is too large or file type is not supported.');
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            uploadErrorHandlers.open();
           }}
           maxSize={5 * 1024 ** 2}
           accept={['image/png', 'image/jpg', 'image/jpeg']}
@@ -71,8 +81,6 @@ export default function UploadFigureTab({
           multiple={false}
           h="65vh"
           bg="var(--mantine-color-gray-1)"
-
-          //{...props}
         >
           <Group
             align="center"
@@ -90,9 +98,6 @@ export default function UploadFigureTab({
                 <Box>
                   <Text size="xl" inline>
                     Drop file to upload
-                    {
-                      //or is too large
-                    }
                   </Text>
                   <Text size="sm" c="dimmed" inline mt={7}>
                     Attach one file in .png, .jpg, or .jpeg format, no larger than 5MB.
@@ -108,9 +113,6 @@ export default function UploadFigureTab({
                 <Box>
                   <Text size="xl" inline>
                     The file type is not supported
-                    {
-                      //or is too large
-                    }
                   </Text>
                   <Text size="sm" c="dimmed" inline mt={7}>
                     Attach one file in .png, .jpg, or .jpeg format, no larger than 5MB.
@@ -148,35 +150,38 @@ export default function UploadFigureTab({
           </Box>
         </>
       )}
-      <Flex justify="center" h="5vh" align="center">
-        {figureLabel}
+      <Flex justify="center" align="center" m="0px" p="0px" mt="lg">
+        <ErrorMessage errorMessage={figureLabel} errorMessageOpened={uploadErrorOpened} />
       </Flex>
       <Flex gap="3rem" pt="lg" justify="center">
         <Button
           w="20rem"
-          disabled={uploadFigure === null}
+          disabled={uploadFigure === null || uploading}
           onClick={() => {
+            setUploading(true);
             saveFigure();
           }}
         >
-          Upload and set image
+          {uploading ? <Loader size={25} /> : 'Upload and set image'}
         </Button>
         <Button
           variant="outline"
           color="red"
           w="20rem"
-          disabled={uploadFigure === null}
+          disabled={uploadFigure === null || uploading}
           onClick={() => {
             setUploadFigure(null);
-            setFigureLabel(<></>);
+
+            uploadErrorHandlers.close();
+            setFigureLabel('');
           }}
         >
           <Box mr="0.4rem">
             <FaRegTrashAlt />
           </Box>
-          <Box>Delete image</Box>
+          <Box>Remove image</Box>
         </Button>
-        <Button w="20rem" variant="outline" onClick={close}>
+        <Button w="20rem" variant="outline" onClick={closeModal}>
           Cancel
         </Button>
       </Flex>

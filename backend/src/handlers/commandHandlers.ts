@@ -4,6 +4,8 @@ import { spawn } from 'child_process';
 import * as fileHander from "fs";
 import { execSync } from 'child_process';
 
+const execAsync= promisify(exec)
+
 //const execPromisify = promisify(exec)
 
 //exec jest asynchroniczny!
@@ -28,13 +30,9 @@ import { execSync } from 'child_process';
 
 
 export const compileTex = async (path:string, fileName: string): Promise<void>=>{
-   execSync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`, {
-    stdio: "inherit"
-  })
-   execSync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`, {
-    stdio: "inherit"
-  })
-   
+   await execAsync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+   await execAsync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+    
   
    //execSync(`firejail --private=/${path} pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
    //execSync(`docker run --rm worker pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
@@ -44,13 +42,13 @@ export const compileTex = async (path:string, fileName: string): Promise<void>=>
 }
 
 export const clearCompilationFiles = async (path:string, fileName: string): Promise<void>=>{
-   execSync(`latexmk -c -cd -output-directory=${path} ${ fileName}`)
+  await execAsync(`latexmk -c -cd -output-directory=${path} ${ fileName}`)
     // await execute(`latexmk -c -cd -output-directory=${path} ${ fileName}`)
 } 
 
 export const deleteDocumentFiles = async (path:string, fileId: string) : Promise<void>=>{
-  execSync(`rm ${[path, fileId.concat('.pdf')].join("/")}`) 
-  execSync(`rm ${[path, fileId.concat('.tex')].join("/")}`)
+ await execAsync(`rm ${[path, fileId.concat('.pdf')].join("/")}`) 
+  await execAsync(`rm ${[path, fileId.concat('.tex')].join("/")}`)
   // await execute(`rm ${[path, fileId.concat('.pdf')].join("/")}`) 
   // await execute(`rm ${[path, fileId.concat('.tex')].join("/")}`)
 }

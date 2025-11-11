@@ -1,11 +1,5 @@
-import { AiOutlineSignature } from 'react-icons/ai';
 import { BiFont } from 'react-icons/bi';
-import { FaFileSignature } from 'react-icons/fa';
-import { FaHeading } from 'react-icons/fa6';
-import { HiOutlineCodeBracketSquare } from 'react-icons/hi2';
-import { LiaFileSignatureSolid } from 'react-icons/lia';
 import {
-  LuDoorClosed,
   LuDoorOpen,
   LuHeading1,
   LuHeading2,
@@ -13,36 +7,21 @@ import {
   LuHeading4,
   LuImage,
   LuMapPinned,
-  LuRefreshCcw,
   LuTable,
   //LuTableOfContents,
 } from 'react-icons/lu';
 import {
   MdFormatListNumberedRtl,
   MdFunctions,
-  MdOutlineAdd,
   MdOutlineInsertPageBreak,
   MdOutlineLibraryBooks,
   MdOutlineTitle,
 } from 'react-icons/md';
 import { PiSignature } from 'react-icons/pi';
 import { RiFileCodeLine } from 'react-icons/ri';
-import {
-  blockAbleToRef,
-  blockType,
-  documentClassType,
-  groupedListType,
-  typeOfBlockType,
-} from '@/Types';
+import { blockType, groupedListType, typeOfBlockType } from '@/Types';
 import { useBlocksContentContext } from '../DocumentContextProviders';
 import { useAddBlock } from '../hooksAndUtils/documentHooks';
-
-// type blockListType = {
-//   blockName: string;
-//   Icon: React.FC;
-//   blockToAdd: blockType;
-//   documentClasses: documentClassType[];
-// };
 
 const texfiledValue: blockType = { typeOfBlock: 'textfield', blockContent: '<p>New textfield</p>' };
 const sectionValue: blockType = {
@@ -113,14 +92,10 @@ const pageBreakValue: blockType = {
 };
 
 const latexExpressionValue: blockType = { typeOfBlock: 'latex', blockContent: '' };
-// const pageBreakBeamerValue: blockType = {
-//   typeOfBlock: 'pageBreak',
-//   blockContent: { title: 'Title', subtitle: 'Subtitle' },
-// };
 
 export const useBlocksList = (): groupedListType => {
   const { addBlock } = useAddBlock();
-  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
+  const { blocksContent } = useBlocksContentContext();
 
   const disableButtons = (typeOfBlock: typeOfBlockType, allowedCount: number) => {
     let counter = 0;
@@ -135,24 +110,6 @@ export const useBlocksList = (): groupedListType => {
     return counter >= allowedCount;
   };
 
-  const getAvailableIdNumberForBlockRefId = (
-    typeOfBlock: typeOfBlockType,
-    idPrefix: string
-  ): number => {
-    const assignedNumbers: number[] = [];
-    for (const block of blocksContent) {
-      if (block.typeOfBlock === typeOfBlock) {
-        assignedNumbers.push(Number(block.blockContent.id.replace(idPrefix, '')));
-      }
-    }
-    //assignedNumbers.sort();
-    let counter = 1;
-    while (assignedNumbers.includes(counter)) {
-      counter++;
-    }
-    return counter;
-  };
-
   const blocksList: groupedListType = [
     {
       label: 'Structure',
@@ -163,10 +120,8 @@ export const useBlocksList = (): groupedListType => {
           function: () => {
             addBlock(titleSectionValue, 1);
           },
-          value: {
-            typeOfBlock: 'titlePage',
-            blockContent: titleSectionValue,
-          },
+          value: titleSectionValue,
+
           belonging: ['article', 'beamer', 'book', 'report'],
           disabledFunction: (): boolean => disableButtons('titlePage', 1),
         },
@@ -187,10 +142,8 @@ export const useBlocksList = (): groupedListType => {
           function: () => {
             addBlock(addressAndDateValue, 1);
           },
-          value: {
-            typeOfBlock: 'titlePage',
-            blockContent: addressAndDateValue,
-          },
+          value: addressAndDateValue,
+
           belonging: ['letter'],
           disabledFunction: (): boolean => disableButtons('titlePage', 1),
         },
@@ -291,8 +244,6 @@ export const useBlocksList = (): groupedListType => {
           label: 'Equation',
           Icon: () => <MdFunctions />,
           function: () => {
-            // (equationValue.blockContent as blockAbleToRef).id =
-            //   `eq${getAvailableIdNumberForBlockRefId('equation', 'eq').toString()}`;
             addBlock(equationValue, 1);
           },
           value: equationValue,
@@ -302,8 +253,6 @@ export const useBlocksList = (): groupedListType => {
           label: 'Table',
           Icon: () => <LuTable />,
           function: () => {
-            // (tableValue.blockContent as blockAbleToRef).id =
-            //   `tab${getAvailableIdNumberForBlockRefId('table', 'tab').toString()}`;
             addBlock(tableValue, 1);
           },
           value: tableValue,
@@ -313,9 +262,6 @@ export const useBlocksList = (): groupedListType => {
           label: 'Image',
           Icon: () => <LuImage />,
           function: () => {
-            //figureCounter++;
-            // (figureValue.blockContent as blockAbleToRef).id =
-            //   `img${getAvailableIdNumberForBlockRefId('figure', 'img').toString()}`;
             addBlock(figureValue, 1);
           },
           value: figureValue,
@@ -360,5 +306,3 @@ export const useBlocksList = (): groupedListType => {
 
   return blocksList;
 };
-
-//export const blocksList = useBlocksList();

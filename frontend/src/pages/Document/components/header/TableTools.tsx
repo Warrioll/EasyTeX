@@ -1,11 +1,4 @@
-import { ReactElement } from 'react';
 import { cloneDeep } from 'lodash';
-import {
-  PiColumnsPlusLeft,
-  PiColumnsPlusRight,
-  PiRowsPlusBottom,
-  PiRowsPlusTop,
-} from 'react-icons/pi';
 import {
   TbColumnInsertLeft,
   TbColumnInsertRight,
@@ -14,7 +7,6 @@ import {
   TbRowInsertTop,
   TbRowRemove,
 } from 'react-icons/tb';
-import { Box, Button, Flex, Tooltip } from '@mantine/core';
 import { groupedListType } from '@/Types';
 import {
   useActiveBlockContext,
@@ -22,25 +14,12 @@ import {
   useBlocksContentContext,
 } from '../../DocumentContextProviders';
 
-type buttonType = {
-  content: ReactElement;
-  clickFunction: () => void | null;
-  fontSize: string;
-  tooltip: string;
-};
-
-// type TableToolsTabPropsType = {
-//   //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
-//   editFunctions: Record<string, (...args: any[]) => any>;
-// };
-
 export function useTableTools(): groupedListType {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
   const addRowAbove = () => {
-    //console.log('Row Add');
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
       let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent.content;
@@ -53,7 +32,6 @@ export function useTableTools(): groupedListType {
   };
 
   const addRowBelow = () => {
-    console.log('table:', blocksContent[activeBlock]);
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
       let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent.content;
@@ -69,7 +47,6 @@ export function useTableTools(): groupedListType {
     if (activeTableCell[0] !== 0 && activeTableCell[1] !== 0) {
       let blockContentCopy = cloneDeep(blocksContent);
       let tableCopy = blockContentCopy[activeBlock].blockContent.content;
-      //let row = Array(tableCopy[0].length).fill('<p>&nbsp;</p>');
       if (tableCopy.length === 1) {
         tableCopy = [['<p>&nbsp;</p>']];
       } else {
@@ -134,21 +111,21 @@ export function useTableTools(): groupedListType {
       group: [
         {
           Icon: () => <TbRowInsertTop />,
-          function: addRowAbove, //editor?.commands.toggleSubscript(),
+          function: addRowAbove,
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
           label: 'Add row above',
         },
         {
           Icon: () => <TbRowInsertBottom />,
-          function: addRowBelow, //editor?.commands.toggleSuperscript(),
+          function: addRowBelow,
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
           label: 'Add row below',
         },
         {
           Icon: () => <TbRowRemove />,
-          function: deleteRow, //editor?.commands.toggleSuperscript(),
+          function: deleteRow,
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
           label: 'Remove row',
@@ -168,14 +145,14 @@ export function useTableTools(): groupedListType {
         },
         {
           Icon: () => <TbColumnInsertRight />,
-          function: addColumnFromRight, //editor?.commands.toggleSuperscript(),
+          function: addColumnFromRight,
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
           label: 'Add column on right side',
         },
         {
           Icon: () => <TbColumnRemove />,
-          function: deleteColumn, //editor?.commands.toggleSuperscript(),
+          function: deleteColumn,
           value: null,
           belonging: ['article', 'beamer', 'book', 'letter', 'report'],
           label: 'Remove column',

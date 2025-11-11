@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import { RiErrorWarningFill } from 'react-icons/ri';
 import {
   Box,
   Button,
@@ -19,7 +18,6 @@ import { useDisclosure } from '@mantine/hooks';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 
 type deleteAccountModalPropsType = {
-  userData: any;
   modalHandlers: readonly [
     boolean,
     {
@@ -30,28 +28,22 @@ type deleteAccountModalPropsType = {
   ];
 };
 
-export default function DeleteAccountModal({
-  userData,
-  modalHandlers,
-}: deleteAccountModalPropsType) {
+export default function DeleteAccountModal({ modalHandlers }: deleteAccountModalPropsType) {
   const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [disableVerifyPasswdButton, setDisableVerifyPasswdButton] = useState<boolean>(false);
   const [currentPassword, setCurrentPassword] = useState<string>('');
-  //const [currentPasswordError, setCurrentPasswordError] = useState<string>('');
-  //const [isPasswordVerfied, setIsPasswordVerfied] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<0 | 1>(0);
   const [deletionPhrase, setDeletionPhrase] = useState<string>('');
 
   const closeModal = () => {
     modalHandlers[1].close();
     setModalContent(0);
-    //setIsPasswordVerfied(false);
+
     setCurrentPassword('');
-    //setCurrentPasswordError('');
+
     setDeletionPhrase('');
-    //setCurrentPasswordError('');
   };
 
   const verifyPassword = async (): Promise<number> => {
@@ -62,7 +54,7 @@ export default function DeleteAccountModal({
         withCredentials: true,
       }
     );
-    //console.log(response)
+
     return response.status;
   };
 
@@ -70,31 +62,27 @@ export default function DeleteAccountModal({
     try {
       e.preventDefault();
       setDisableVerifyPasswdButton(true);
-      //setCurrentPasswordError('');
+
       await errorMessageHandlers.close();
       await new Promise((resolve) => setTimeout(resolve, 200));
       const status = await verifyPassword();
       if (status === 200) {
         setModalContent(1);
-        //setCurrentPasswordError('');
       } else {
         throw new Error('Status not 200!');
       }
-      //setIsPasswordVerfied(true);
+
       setDisableVerifyPasswdButton(false);
     } catch (error) {
-      console.log(error.status);
+      console.error('Delete account - verify password error: ', error);
       if (error.status === 403) {
-        //setCurrentPasswordError('Invalid password!');
         setErrorMessage('Invalid password!');
         await errorMessageHandlers.open();
       } else {
-        //setCurrentPasswordError('Something went wrong');
         setErrorMessage('Something went wrong!');
         await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
-      console.log('verify password error: ', error);
     }
   };
 
@@ -103,7 +91,6 @@ export default function DeleteAccountModal({
       withCredentials: true,
     });
     return response.status;
-    //console.log(response);
   };
 
   const handleDeleteAccount = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -123,17 +110,14 @@ export default function DeleteAccountModal({
       } else {
         setErrorMessage('The phrase does not match!');
         await errorMessageHandlers.open();
-        //setCurrentPasswordError('The phrase does not match!');
       }
 
       setDisableVerifyPasswdButton(false);
     } catch (error) {
-      console.log(error.status);
-      //setCurrentPasswordError('Something went wrong');
+      console.error('Delete account - delete account error: ', error);
       setErrorMessage('Something went wrong!');
       await errorMessageHandlers.open();
       setDisableVerifyPasswdButton(false);
-      console.log('verify password error: ', error);
     }
   };
 
@@ -168,7 +152,6 @@ export default function DeleteAccountModal({
                     placeholder="Password"
                     value={currentPassword}
                     onChange={(event) => {
-                      //setCurrentPasswordError('');
                       setCurrentPassword(event.currentTarget.value);
                     }}
                     w="70%"
@@ -217,12 +200,8 @@ export default function DeleteAccountModal({
                     placeholder="Enter phrase to proceed"
                     variant="filled"
                     w="100%"
-                    // error={
-                    //   currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                    // }
                     value={deletionPhrase}
                     onChange={(event) => {
-                      //setCurrentPasswordError('');
                       setDeletionPhrase(event.currentTarget.value);
                     }}
                   />
@@ -240,7 +219,6 @@ export default function DeleteAccountModal({
                   miw="13rem"
                   onClick={handleDeleteAccount}
                   disabled={disableVerifyPasswdButton}
-                  //type="submit"
                   color="var(--mantine-color-error)"
                   leftSection={!disableVerifyPasswdButton && <FaRegTrashAlt />}
                 >

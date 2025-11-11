@@ -1,5 +1,4 @@
 import { Button, colorsTuple, createTheme, Input } from '@mantine/core';
-//import { pointer } from '@testing-library/user-event/dist/types/pointer';
 import classes from './componentsGlobal.module.css'
 export const theme = createTheme({
     breakpoints:{
@@ -8,7 +7,6 @@ export const theme = createTheme({
       fourXl: '110rem' 
     },
     primaryColor: 'mainCyan',
-    //primaryShade: { light: 7, dark: 7 },
     colors: {
       mainCyan: colorsTuple('var(--mantine-color-cyan-8)'),
       
@@ -23,5 +21,4 @@ export const theme = createTheme({
     }
      
    
-  /** Put your mantine theme override here */
 });

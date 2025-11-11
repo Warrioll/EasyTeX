@@ -9,13 +9,10 @@ export default function Encouragement() {
           w="100%"
           h="100%"
           radius="lg"
-          //bd="2px solid var(--mantine-color-cyan-5) "
           style={{
             filter: 'drop-shadow(0 5px 5px rgba(0,0,0,0.2)) brightness(70%) ',
           }}
           mb="xl"
-
-          //style={{ filter: 'blur(5px)', clipPath: ' inset(0 0 0 0)' }}
         />
         <Stack
           align="center"

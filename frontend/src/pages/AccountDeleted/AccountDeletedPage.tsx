@@ -1,16 +1,5 @@
 import { FaRegCheckCircle } from 'react-icons/fa';
-import {
-  Anchor,
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Button, Center, Paper, Stack, Text, Title } from '@mantine/core';
 
 export default function AccountDeletedPage() {
   return (

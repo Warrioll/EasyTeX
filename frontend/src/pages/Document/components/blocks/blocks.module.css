@@ -1,9 +1,6 @@
 .sectionBlockStyle{
     width: 100%;
      background-color: var(--mantine-color-white);
-   /* border: 1px solid var(--mantine-color-cyan-0); */
-   /* border-left: 3px solid var(--mantine-color-cyan-3); */
-  /* background-color: #ebffff; */
     border-radius: var(--mantine-radius-md);
 
 }
@@ -29,7 +26,7 @@
 }
 
 .blockFrameStyle{
-    /* background-color: var(--mantine-color-cyan-0); */
+
     border-left: 3px solid var(--mantine-color-cyan-3);
     border-right: 3px solid var(--mantine-color-cyan-3);
   
@@ -40,15 +37,6 @@
     top: 100
 }
 
-.textfieldNotFocused{
-    /* word-wrap: break-word;
-    overflow-wrap: break-word;
-    text-align: justify; */
-}
-
-.centeredInput{
-
-}
 
 .titlePageContent{
     border-bottom: 1px solid var(--mantine-color-gray-1);
@@ -135,8 +123,4 @@
     .codeEditorInput:focus{
          outline: none;
          border: none
-    }
-
-    .codeEditor{
-        /* border: 1px solid red; */
     }

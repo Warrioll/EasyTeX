@@ -47,13 +47,7 @@ export default function ElementsTree({
   const addElementAbove = (toAdd) => {
     const elementToAdd = cloneDeep(toAdd);
     const ec = insertElement(activeTreeElement, elementsContent, elementToAdd, 0);
-    setElementsContent(
-      cloneDeep(ec)
-      //.map((item) => {
-      //   return item;
-      // })
-    );
-    //console.log('up insert: ', ec);
+    setElementsContent(cloneDeep(ec));
   };
 
   const addElementBelow = (toAdd) => {
@@ -61,11 +55,7 @@ export default function ElementsTree({
     let idxs = activeTreeElement.split('.').map(Number);
     idxs[idxs.length - 1] = idxs[idxs.length - 1] + 1;
 
-    setElementsContent(
-      insertElement(idxs.join('.'), elementsContent, elementToAdd, 0) //.map((item) => {
-      //   return item;
-      // })
-    );
+    setElementsContent(insertElement(idxs.join('.'), elementsContent, elementToAdd, 0));
 
     setActiveTreeElement(idxs.join('.'));
   };
@@ -84,7 +74,7 @@ export default function ElementsTree({
     let partOfTree;
     for (let i = 0; i < rest.length; i++) {
       let tmp = rest[i];
-      //if(partOfTree!==null){
+
       if (Array.isArray(tmp)) {
         if (i === 0) {
           tmp.length === 1
@@ -107,7 +97,6 @@ export default function ElementsTree({
         }
       }
       partOfTree = tmp;
-      //  }
     }
 
     setElementsContent((ec) => updateIdx(partOfTree, []));
@@ -149,14 +138,13 @@ export default function ElementsTree({
       let partOfTree = cloneDeep(element);
       for (let i = 0; i < rest.length; i++) {
         let tmp = cloneDeep(rest[i]);
-        //if(partOfTree!==null){
+
         if (Array.isArray(tmp)) {
           tmp.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
         } else {
           tmp.children.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
         }
         partOfTree = cloneDeep(tmp);
-        //  }
       }
       setElementsContent(updateIdx(partOfTree, []));
       let newIdxs = [...idxs];
@@ -187,9 +175,8 @@ export default function ElementsTree({
         ? (moreThanLength = true)
         : (moreThanLength = false);
     }
-    //console.log('x1');
+
     if (moreThanLength) {
-      // console.log('x2');
       if (Array.isArray(element)) {
         const lowerElement = { ...element[idxs[idxs.length - 1] + 1] };
         const upperElement = { ...element[idxs[idxs.length - 1]] };
@@ -205,7 +192,7 @@ export default function ElementsTree({
       let partOfTree = cloneDeep(element);
       for (let i = 0; i < rest.length; i++) {
         let tmp = cloneDeep(rest[i]);
-        //if(partOfTree!==null){
+
         if (Array.isArray(tmp)) {
           tmp.splice(idxs[idxs.length - 2 - i], 1, partOfTree);
         } else {
@@ -223,9 +210,6 @@ export default function ElementsTree({
   };
 
   const TreeNode = ({ node, expanded, hasChildren, elementProps, tree }: RenderTreeNodePayload) => {
-    // const isExpression = (element) => {
-    //   return element.label === 'Expression';
-    // };
     const { hovered, ref } = useHover();
 
     const content = node.editable
@@ -247,20 +231,6 @@ export default function ElementsTree({
       : node.children.map((element) => {
           return element.label === 'Expression' ? `"${element.content}"` : element.label;
         });
-
-    //????
-    // useEffect(()=>{
-    //   if(hovered){
-    //     if(node.editable){
-    //       setElemrntTooltipContent(node.content)
-    //       console.log('hover opened: ',node.content )
-    //     }
-    //   }else{
-    //     setElemrntTooltipContent('')
-    //     console.log('hover closed')
-    //   }
-
-    // },[hovered])
 
     return (
       <Group gap="xs" {...elementProps}>
@@ -343,12 +313,11 @@ export default function ElementsTree({
 
   const treeWithTryCatch = () => {
     try {
-      console.log('ft: ', elementsContent);
       return (
         <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />
       );
     } catch (e) {
-      console.log('treeTryCatch');
+      console.error('render tree error:', e);
       return <></>;
     }
   };
@@ -420,18 +389,8 @@ export default function ElementsTree({
           <></>
         )}
       </Flex>
-      <ScrollArea
-        h="100%"
-        //bg="var(--mantine-color-gray-1)"
-        p="sm"
-        pt="0px"
-        pb="0px"
-        //className={classes.elementsTree}
-      >
-        {/* <Tree data={elementsContent} renderNode={TreeNode} expandOnClick={false} levelOffset={20} />  */}
+      <ScrollArea h="100%" p="sm" pt="0px" pb="0px">
         {treeWithTryCatch()}
-        {/* <EquationElementsList tree={elementsContent} />
-            {/* <MemoTree /> */}
       </ScrollArea>
     </>
   );

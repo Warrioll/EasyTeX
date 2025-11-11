@@ -26,14 +26,11 @@ export default function DeleteReferencePopover({
     const refId = blocksContent[idx].blockContent[idxToDelete].id;
 
     const blocksCopy = editTextfields(getReferenceForEditor(refId), '');
-    //console.log('copy: ', blocksCopy);
 
-    //console.log('delete ref', refId, idxToDelete, blocksCopy[idx].blockContent);
     blocksCopy[idx].blockContent.splice(idxToDelete, 1);
     setBlocksContent(blocksCopy);
     setOpenedDeleteConfirmation(false);
     setIsNotSaved(true);
-    //setAmoutOfReferences((prev) => prev - 1);
   };
 
   return (

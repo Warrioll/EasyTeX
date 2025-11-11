@@ -1,5 +1,5 @@
 import axios from "axios"
-import Cookies from 'js-cookie';
+
 
 
 const notAuthPath="/sessionExpired";
@@ -11,16 +11,7 @@ export const noSessionHandler = ()=>{
 }
 
 export const checkIfLoggedIn =async ()=>{
-   
-
-    
-
     try{
-        // const authCookie = Cookies.get('auth');
-              // if (authCookie === undefined || authCookie === null) {
-              //   window.location.href = notAuthPath;
-              // }else{
-              
                 const response = await axios.get(`http://localhost:8100/auth/verifySession`, {
                     withCredentials: true,
                     headers: {
@@ -29,43 +20,33 @@ export const checkIfLoggedIn =async ()=>{
                   })
                   console.log("status dashboard: ", 200)
                 if(response.status!==200){
-                    //window.location.href = notAuthPath;
+                  
                     noSessionHandler()
                 }else{
                    return response.data.userId
                 }
-             // }
     }catch(error){
-        console.log("checkIfLoggedIn error: ", error)
+        console.error("check if logged in error: ", error)
        noSessionHandler()
     }
 }
 
 export const checkIfNotLoggedIn =async ()=>{
-   
-
-
-
   try{
-
               const response = await axios.get(`http://localhost:8100/auth/verifySession`, {
                   withCredentials: true,
                   headers: {
                     "Accept": "application/json",
                   }
                 })
-                //console.log("status dashboard: ", 200)
-                console.log('checkIfnot logged in', response.status)
+               
+                console.error('check if not logged in', response.status)
               if(response.status===200){
                   window.location.href = authPath;
-               }//else{
-              //    return response.data.userId
-              // }
-           // }
+               }
   }catch(error){
-      console.log("checkIfNotLoggedIn error: ", error)
-      //console.log('Not loged in')
-      //window.location.href = authPath;
+      console.error("check if not logged in error: ", error)
+     
   }
 }
 
@@ -78,6 +59,6 @@ export const logout = async ()=>{
                   localStorage.removeItem('accountDeleted');
       window.localStorage.removeItem('unavailableDocument');
   }catch(error){
-    console.log("error logout: ", error)
+    console.error("logout error: ", error)
   }
 }

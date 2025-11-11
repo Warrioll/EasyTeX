@@ -1,19 +1,5 @@
-import { TbFileNeutral, TbFileSad } from 'react-icons/tb';
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Group,
-  Image,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
-
-//import classes from './NotFoundPage.module.css';
+import { TbFileNeutral } from 'react-icons/tb';
+import { Box, Button, Center, Stack, Text, Title } from '@mantine/core';
 
 export default function NotFoundPage() {
   const title = 'Sorry...';

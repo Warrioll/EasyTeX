@@ -1,25 +1,12 @@
-import { CgProfile } from 'react-icons/cg';
-import { FaSquareGithub } from 'react-icons/fa6';
 import { MdAccountCircle } from 'react-icons/md';
 import { RxGithubLogo } from 'react-icons/rx';
-import {
-  ActionIcon,
-  Anchor,
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Group,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Button, Center, Flex, Group, Stack, Text } from '@mantine/core';
 import Logo from '@/svg/Logo';
 import classes from '../hompage.module.css';
 
 export default function Footer() {
   const text =
-    'This application is a student procject developed as an engineering thesis. • Author: Karol Nowak';
+    'This application was developed as part of a student engineering thesis conducted at the Rzeszow University of Technology • Author: Karol Nowak';
 
   const LogoWithText = () => {
     return (
@@ -44,7 +31,6 @@ export default function Footer() {
           p="0px"
           variant="transparent"
           onClick={() => {
-            console.log('githubb');
             window.location = 'https://github.com/Warrioll/EasyTeX';
           }}
         >
