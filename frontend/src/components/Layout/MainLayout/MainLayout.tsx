@@ -2,30 +2,23 @@ import React, { useEffect } from 'react';
 import {
   IoDocumentsOutline,
   IoImagesOutline,
-  IoLogInOutline,
-  IoSettingsOutline,
 } from 'react-icons/io5';
 import { MdOutlineLogin } from 'react-icons/md';
 import { RxAvatar } from 'react-icons/rx';
 import {
   AppShell,
-  Box,
   Burger,
   Button,
   Flex,
   Group,
-  Link,
   Modal,
   ScrollArea,
   SimpleGrid,
   Text,
-  Title,
-  UnstyledButton,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { checkIfLoggedIn, logout } from '@/ApiHandlers/AuthHandler';
 import Logo from '@/svg/Logo';
-//import { MantineLogo } from '@mantinex/mantine-logo';
 import classes from './MainLayout.module.css';
 
 type LayoutPropsType = {
@@ -60,10 +53,6 @@ export default function MainLayout({ content, whiteBackground }: LayoutPropsType
         >
           <Burger opened={burgerOpened} onClick={burgerHandlers.toggle} hiddenFrom="sm" size="sm" />
 
-          {
-            //<MantineLogo size={30} />
-          }
-
           <Group justify="space-between" style={{ flex: 1 }}>
             <Flex ml="sm" justify="center" align="center" pl="0px">
               <Button
@@ -83,9 +72,6 @@ export default function MainLayout({ content, whiteBackground }: LayoutPropsType
                 </Text>
               </Button>
             </Flex>
-            {
-              //<MantineLogo size={30} />
-            }
             <Group ml="xl" gap={0} visibleFrom="sm">
               <Button
                 pt="0px"

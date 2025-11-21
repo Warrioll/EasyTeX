@@ -1,13 +1,9 @@
-import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react';
-import { FaArrowLeft, FaRegTrashAlt } from 'react-icons/fa';
-import { RiErrorWarningFill } from 'react-icons/ri';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Box,
   Button,
-  Flex,
-  Group,
   Loader,
-  LoadingOverlay,
+
   Modal,
   SimpleGrid,
   Text,
@@ -39,7 +35,7 @@ export default function RenameModal({
 
   renameState,
 }: renameModalPropsType) {
-  //const [renameErrorInfo, setRenameErrorInfo] = useState<string | null>(null);
+
   const [disableRenameButton, setDisableRenameButton] = useState<boolean>(false);
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [documentName, setDocumentName] = renameState;
@@ -47,7 +43,6 @@ export default function RenameModal({
   const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  //const nameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
   const closeModal = () => {
     renameModalHandlers[1].close();
     errorDialogHandlers.close();
@@ -63,18 +58,16 @@ export default function RenameModal({
       await errorMessageHandlers.close();
       await new Promise((resolve) => setTimeout(resolve, 200));
       await renameFunction();
-      //setRenameErrorInfo(null);
       renameModalHandlers[1].close();
       errorDialogHandlers.close();
       setDisableRenameButton(false);
     } catch (e) {
-      console.log(`Rename ${thingToRename} error:`, e);
+      console.error(`Rename ${thingToRename} error:`, e);
       if (e.status === 422) {
         setErrorMessage('Invalid name format!');
         errorMessageHandlers.open();
         errorDialogHandlers.open();
       } else {
-        //setRenameErrorInfo('Something went wrong');
         setErrorMessage('Something went wrong!');
         errorMessageHandlers.open();
       }
@@ -83,10 +76,6 @@ export default function RenameModal({
     }
   };
 
-  // useEffect(() => {
-  //   setRenameErrorInfo(null);
-  // }, [renameModalHandlers[0]]);
-
   return (
     <>
       <Modal
@@ -94,7 +83,6 @@ export default function RenameModal({
         onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
         size="lg"
-        //yOffset="15%"
         centered
         title={
           <Text c="var(--mantine-color-cyan-8)">
@@ -114,15 +102,8 @@ export default function RenameModal({
                 value={documentName}
                 onChange={(event) => {
                   setDocumentName(event.currentTarget.value);
-                  //setRenameErrorInfo(null);
-                  // if (nameRegex.test(event.currentTarget.value)) {
-                  //   setRenameErrorInfo(null);
-                  // } else {
-                  //   setRenameErrorInfo('Invalid name');
-                  // }
                 }}
-                // key={form.key('email')}
-                // {...form.getInputProps('email')}
+  
               />
             </Box>
             <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />

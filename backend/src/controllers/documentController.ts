@@ -76,29 +76,7 @@ const verifyAccesToDocument= async (sessionId:string, documentId:string, res: ex
   
 }
 
-// const verifyAccesToDocument= async (userId:string, documentId:string, res: express.Response, callback: (userId:string)=>Promise<void>): Promise<void>=>{
- 
-//     try{
-//        const documentInstantion = await documentModel.findById(documentId)
-//        if (documentInstantion===null || documentInstantion===undefined){
-//         res.sendStatus(404)
-//        }else{
-//           if(documentInstantion.userId!==userId){
-//               res.sendStatus(403)
-//           }else{
-//             await callback(userId, documentInstantion)
-//           }
-        
-//        }
 
-//     }catch(error){
-//       console.log('Document acces verification error:', error)
-//               if(!res.headersSent){
-//             res.sendStatus(500)
-//         }
-//     }
-  
-// }
 
 
 export const getDocumentById = async (req: express.Request, res: express.Response)=>{
@@ -114,30 +92,21 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
     }
   })
 
-// bez ciasteczek poniżej
-    // try{
-    //     const {id} = req.params;
-    //     const document = await documentModel.findById(id);
-    //     res.status(200).json(document);
-    // }catch(error){
-    //     console.log("Get ERROR: ", error)
-    //     res.sendStatus(400);
-    // }
 };
 
 // dokumenty wszystkich użytkowników
-export const  getDocuments= async (req: express.Request, res: express.Response)=>{
+// export const  getDocuments= async (req: express.Request, res: express.Response)=>{
 
-  try{
-      const documents = await documentModel.find().sort({ lastUpdate: -1 });
-      //console.log('documents list',documents)
-     // documents.sort((a, b)=>new Date(a.lastUpdate).getTime() - new Date(b.lastUpdate).getTime())
-      res.status(200).json(documents);
-  }catch(error){
-      console.log("Get ERROR: ", error)
-      res.sendStatus(400);
-  }
-};
+//   try{
+//       const documents = await documentModel.find().sort({ lastUpdate: -1 });
+//       //console.log('documents list',documents)
+//      // documents.sort((a, b)=>new Date(a.lastUpdate).getTime() - new Date(b.lastUpdate).getTime())
+//       res.status(200).json(documents);
+//   }catch(error){
+//       console.log("Get ERROR: ", error)
+//       res.sendStatus(400);
+//   }
+// };
 
 export const getUserDocuments = async (req: express.Request, res: express.Response)=>{
 
@@ -191,38 +160,56 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
  
   await  verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
         try{  
-          
+          console.log('getPDF 1')
           if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
+              console.log('getPDF 2')
           }else{
-            
+             console.log('getPDF 3')
               try{
             await compileTex(documentInstantion.path, documentInstantion._id as unknown as string+'.tex')
+             console.log('getPDF 4')
           }catch(error){
             //rozróżnianie jak plik nie istnieje a jak rekord w bazie nie isnieje
+             console.log('getPDF 5')
             console.log('in docController compilation error: ',error)
             res.sendStatus(422)
+             console.log('getPDF 6')
           }
+           console.log('getPDF 7')
             clearCompilationFiles(documentInstantion.path, documentInstantion._id  as unknown as string+'.tex')
+             console.log('getPDF 8')
           } 
         
+           console.log('getPDF 9')
         
           if (!res.headersSent) {
+             console.log('getPDF 10')
             await extendSession(req.cookies.auth,res)
+             console.log('getPDF 11')
             res.setHeader('Content-type', 'application/pdf')
             //FIXME ?można zrobić sendFile??
             const stream = fileHander.createReadStream([documentInstantion.path, [documentInstantion._id as unknown as string, 'pdf'].join('.')].join('/'))
             stream.pipe(res);
+             console.log('getPDF 12')
             stream.on('error', (error: NodeJS.ErrnoException)=>{
               console.log("Stream pdf error: ", error)
+               console.log('getPDF 13')
               if (!res.headersSent) {
+                 console.log('getPDF 14')
                 if(error.code==='ENOENT' && error.errno===-4058){
+                   console.log('getPDF 15')
                   res.sendStatus(404)
+                   console.log('getPDF 16')
                 }else{
+                   console.log('getPDF 17')
                   res.sendStatus(500)
+                   console.log('getPDF 18')
                 }
               } else {
+                 console.log('getPDF 19')
                 res.destroy();
+                 console.log('getPDF 20')
               }
             })
           }
@@ -232,6 +219,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
             res.sendStatus(500);
           }
         }
+        console.log('get pdf done')
   });
 };
 

@@ -1,5 +1,5 @@
 export type blockType = {
-  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
+  typeOfBlock: typeOfBlockType; 
   blockContent: blockContentType
 };
 

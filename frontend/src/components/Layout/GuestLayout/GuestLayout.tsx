@@ -2,17 +2,13 @@ import React from 'react';
 import { TiHome } from 'react-icons/ti';
 import { useNavigate } from 'react-router-dom';
 import {
-  Anchor,
   AppShell,
-  Box,
   Burger,
   Button,
   Flex,
   Group,
   ScrollArea,
   Text,
-  Title,
-  UnstyledButton,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Logo from '@/svg/Logo';
@@ -32,9 +28,6 @@ export default function GuestLayout({ content }) {
         <Group h="100%" px="md">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
           <Group justify="space-between" style={{ flex: 1 }}>
-            {
-              //<MantineLogo size={30} />
-            }
             <Flex ml="sm" justify="center" align="center">
               <Logo width="1.6rem" />
               <Text mt="0.2rem" c="var(--mantine-color-yellow-8)" fz="lg" fw="700" ml="sm">

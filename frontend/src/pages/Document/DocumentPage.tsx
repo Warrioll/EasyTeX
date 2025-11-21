@@ -178,7 +178,7 @@ export default function DocumentPage() {
               title: 'Document content contains errors!',
               description: [
                 'If you are using a LaTeX expression block or the LaTeX formula tab in the equation editor, make sure that the code contained therein is valid.',
-                'If you are using image block make sure it references an image that exists in your assets library (if not, delete this image block).',
+                'If you are using image block make sure it references an image that exists in your assets library (if not, choose other image from assets library, upload new one, or delete this image block).',
                 'If you are using special characters other than those included in the available language alphabets and the list of special characters, try removing them.',
                 'If none of these apply, try saving the document, refreshing the page, or contacting support.',
               ].join(' '),

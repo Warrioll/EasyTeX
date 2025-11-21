@@ -5,9 +5,8 @@ const figureSchema= new mongoose.Schema({
     name: {type: String, required: true},
     path:{type: String, required: true},
     userId: {type: String, required: true},
-    //fileName: {type: String, required: true},
+
     fileType: {type: String, enum: ['jpg', 'png', 'jpeg'] , required: true},
-    //path:{type: String, required: true},
     
 
     creationDate: {type: Date, required:true},
@@ -18,5 +17,3 @@ const figureSchema= new mongoose.Schema({
 export const figureModel = mongoose.model('Figure', figureSchema, 'Figure');
 export type figureType = HydratedDocument<InferSchemaType<typeof figureSchema>>
 
-//export const getDocuments = () => documentModel.find();
-//export const createDocument = (values: Record<string, any>) => new documentModel(values).save().then((document)=>document.toObject());

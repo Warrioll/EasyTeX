@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import { spawn } from 'child_process';
 import * as fileHander from "fs";
 import { execSync } from 'child_process';
+import { reject } from 'lodash';
 
 const execAsync= promisify(exec)
 
@@ -30,10 +31,39 @@ const execAsync= promisify(exec)
 
 
 export const compileTex = async (path:string, fileName: string): Promise<void>=>{
-   await execAsync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
-   await execAsync(`firejail --private=/${path} --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
-    
+  console.log('dziłej 1' )
+   await execAsync(`firejail --private=/${path} --caps.drop=all --nonewprivs --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex -interaction=nonstopmode --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+    console.log('dziłej 2' )
+   await execAsync(`firejail --private=/${path} --caps.drop=all --nonewprivs --private-tmp --private-dev --net=none --seccomp --cpu=1 --memory=128M pdflatex  -interaction=nonstopmode --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
+  //   await new Promise<void>((resolve, reject)=>{
+
+   
+  //  const execute = spawn('firejail',
+  //   [`--private=/${path}`,
+  //     `--caps.drop=all`,
+  //     `--nonewprivs`,
+  //     `--private-tmp`,
+  //     `--private-dev`,
+  //     `--net=none`,
+  //     `--seccomp`,
+  //     `--cpu=1`,
+  //     `--memory=128M`,
+  //     `pdflatex`,
+  //     `--no-shell-escape`,
+  //     `-output-directory=${path}`,
+  //      `${[path, fileName].join("/")}`]
+  //  )
   
+  //  execute.stdout.on('data', (data)=> process.stdout.write(data))
+  //  execute.stderr.on('data', (data)=> process.stderr.write(data))
+
+  //  execute.on('error', reject)
+  //  execute.on('close', (code)=>{
+  //   if(code ===0){resolve()}
+  //   else reject(new Error('Compialtion failed!'))
+  //  })
+  //   })
+
    //execSync(`firejail --private=/${path} pdflatex --no-shell-escape -output-directory=${path} ${[path, fileName].join("/")}`)
    //execSync(`docker run --rm worker pdflatex -output-directory=${path} ${[path, fileName].join("/")}`)
    

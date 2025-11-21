@@ -1,10 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Center, Image, Stack, Text, Transition } from '@mantine/core';
+import { Box, Center, Image, Stack, Text} from '@mantine/core';
 import classes from './figuresLibrary.module.css';
 
 type FigureCardPropsType = {
-  //wywalić to any
   figureData: any;
   choosenFigureState: [number | null, Dispatch<SetStateAction<number | null>>];
   idx: number;
@@ -12,7 +11,7 @@ type FigureCardPropsType = {
 
 export default function FigureCard({ idx, figureData, choosenFigureState }: FigureCardPropsType) {
   const [figure, setFigure] = useState<any>();
-  const [fitImg, setFitImg] = useState<'cover' | 'contain'>('cover');
+ 
   const [choosenFigure, setChoosenFigure] = choosenFigureState;
 
   useEffect(() => {

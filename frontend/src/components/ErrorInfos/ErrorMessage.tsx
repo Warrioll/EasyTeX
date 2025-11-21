@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { RiErrorWarningFill } from 'react-icons/ri';
 import { Box, Flex, Text, Transition } from '@mantine/core';
 

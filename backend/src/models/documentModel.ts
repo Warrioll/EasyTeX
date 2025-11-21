@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { InferSchemaType, HydratedDocument } from "mongoose";
-import { documentClassType } from "../types";
 
 
 const documentSchema= new mongoose.Schema({

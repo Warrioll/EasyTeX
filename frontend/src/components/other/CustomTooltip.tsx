@@ -18,7 +18,6 @@ const CustomTooltip = React.forwardRef(
       <Tooltip
         ref={ref}
         label={label}
-        //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
         bg={others.bg ? others.bg : 'var(--mantine-color-cyan-9)'}
         c={others.c ? others.c : 'var(--mantine-color-white)'}
         position="bottom"

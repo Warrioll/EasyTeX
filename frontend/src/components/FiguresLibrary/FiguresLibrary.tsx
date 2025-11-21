@@ -17,23 +17,15 @@ import ErrorBanner from '../ErrorInfos/ErrorBanner';
 import FigureCard from './FigureCard';
 
 type LibraryFigureTabPropsType = {
-  //figureState: [FileWithPath[] | null, Dispatch<SetStateAction<FileWithPath[] | null>>];
-  //figureState: [string | null, Dispatch<SetStateAction<string | null>>];
   choosenFigureState: [number | null, Dispatch<SetStateAction<number | null>>];
   height: string;
 };
 
 export default function FiguresLibrary({
-  //figureState,
   choosenFigureState,
   height,
 }: LibraryFigureTabPropsType) {
-  //const [figure, setFigure] = figureState;
   const [figures, setFigures] = useState<any[]>([]);
-  //const choosenFigureState = useState<number | null>(null);
-  const [choosenFigure, setChoosenFigure] = choosenFigureState;
-  //const [opened, { open, close }] = modalHandlers;
-  const [choosenFigureId, setChoosenFigureId] = useState<number | null>(null);
   const [figuresError, setFiguresError] = useState<string>('You have no assets.');
   const [areFiguresLoading, setAreFiguresLoading] = useState<boolean>(true);
 
@@ -50,7 +42,7 @@ export default function FiguresLibrary({
         setFigures(response.data);
       } catch (error) {
         setFiguresError('Sorry, something went wrong.');
-        console.log('Load figures error', error);
+        console.error('Load figures error', error);
       }
       setAreFiguresLoading(false);
     };

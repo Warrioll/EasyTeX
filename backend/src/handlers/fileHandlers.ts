@@ -28,7 +28,7 @@ export const loadTexFile = async(path: string , fileName: string):Promise<(strin
 
 export const saveFileWithContent = async(path: string , fileName: string, extention:string, content: any):Promise<void> =>{
     await createDirectory(path)
-    fileHander.writeFile([path, [fileName, extention].join('.')].join("/"), content);
+    await fileHander.writeFile([path, [fileName, extention].join('.')].join("/"), content);
 }
 
 

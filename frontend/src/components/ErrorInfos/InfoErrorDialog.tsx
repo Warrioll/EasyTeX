@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { RiErrorWarningFill, RiErrorWarningLine } from 'react-icons/ri';
-import { Alert, Box, Dialog } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { RiErrorWarningFill,} from 'react-icons/ri';
+import { Alert,  Dialog } from '@mantine/core';
+
 
 type InfoErrorDialogPropsType = {
   title: string;

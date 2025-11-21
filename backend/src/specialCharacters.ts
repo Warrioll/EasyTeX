@@ -1,6 +1,6 @@
 
 
-export const specialCharacters//:specialCharactersStyle[]
+export const specialCharacters
 = [
 // Greek letters (lowercase + variants)
 { value: 'α', label: 'Alpha', latexRepresentation: '\\alpha ' },
@@ -19,7 +19,6 @@ export const specialCharacters//:specialCharactersStyle[]
 { value: 'μ', label: 'Mu', latexRepresentation: '\\mu ' },
 { value: 'ν', label: 'Nu', latexRepresentation: '\\nu ' },
 { value: 'ξ', label: 'Xi', latexRepresentation: '\\xi ' },
-//{ value: 'ο', label: 'Omicron', latexRepresentation: '\\omicron' },
 { value: 'π', label: 'Pi', latexRepresentation: '\\pi ' },
 { value: 'ϖ', label: 'Pi (variant)', latexRepresentation: '\\varpi ' },
 { value: 'ρ', label: 'Rho', latexRepresentation: '\\rho ' },
@@ -102,8 +101,6 @@ export const specialCharacters//:specialCharactersStyle[]
 
 
 // Currency symbols
-//{ value: '€', label: 'Euro', latexRepresentation: '\\euro' },
-//{ value: '$', label: 'Dollar', latexRepresentation: '\\$ ' },
 { value: '£', label: 'Pound', latexRepresentation: '\\pounds ' },
 { value: '¥', label: 'Yen', latexRepresentation: '\\yen ' },
 

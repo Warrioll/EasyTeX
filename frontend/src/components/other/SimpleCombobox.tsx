@@ -1,6 +1,5 @@
-import { FaAngleDown } from 'react-icons/fa';
 import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
-import { Box, Center, Combobox, Input, InputBase, Tooltip, useCombobox } from '@mantine/core';
+import {  Center, Combobox, Input, InputBase,useCombobox } from '@mantine/core';
 import CustomTooltip from './CustomTooltip';
 import classes from './other.module.css';
 
@@ -58,17 +57,6 @@ export default function SimpleCombobox({
         <Combobox.Target>
           <Center>
             <CustomTooltip label={tooltip}>
-              {/* <Tooltip
-              label={tooltip}
-              //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-              color="cyan"
-              position="bottom"
-              offset={5}
-              withArrow
-              arrowOffset={50}
-              arrowSize={7}
-              arrowRadius={2}
-            > */}
               <InputBase
                 disabled={disabled}
                 w={width}
@@ -83,7 +71,6 @@ export default function SimpleCombobox({
                 rightSectionPointerEvents="none"
                 onClick={() => combobox.toggleDropdown()}
                 variant="unstyled"
-                //bg="var(--mantine-color-cyan-4)"
                 p="0px"
                 size="xs"
                 styles={{
@@ -94,23 +81,21 @@ export default function SimpleCombobox({
                     backgroundColor: combobox.dropdownOpened
                       ? 'var(--mantine-color-cyan-7)'
                       : 'var(--mantine-color-cyan-5)',
-                    //textAlign: 'center',
                   },
                 }}
-                //className={classes.zoomInput}
+
               >
                 {values.find((val) => val.value.toString() === value)?.label || (
                   <Input.Placeholder> </Input.Placeholder>
                 )}
               </InputBase>
-              {/* </Tooltip> */}
+
             </CustomTooltip>
           </Center>
         </Combobox.Target>
 
         <Combobox.Dropdown
           bg="var(--mantine-color-cyan-0)"
-          //c="var(--mantine-color-white)"
           className={classes.simpleComboboxDropdownOption}
           bd=" 1px solid var(--mantine-color-cyan-3)"
         >
