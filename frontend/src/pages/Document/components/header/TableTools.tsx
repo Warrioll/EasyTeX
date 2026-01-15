@@ -11,12 +11,14 @@ import { groupedListType } from '@/Types';
 import {
   useActiveBlockContext,
   useActiveTableCellContext,
+  useActiveTextfieldContext,
   useBlocksContentContext,
 } from '../../DocumentContextProviders';
 
 export function useTableTools(): groupedListType {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
 
   const addRowAbove = () => {
@@ -27,6 +29,10 @@ export function useTableTools(): groupedListType {
       tableCopy.splice(activeTableCell[0] - 1, 0, row);
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
       setBlocksContent(blockContentCopy);
+      const newActiveCell = [activeTableCell[0] + 1, activeTableCell[1]];
+      setActiveTableCell(newActiveCell);
+
+      setActiveTextfield('');
       setIsNotSaved(true);
     }
   };
@@ -39,6 +45,7 @@ export function useTableTools(): groupedListType {
       tableCopy.splice(activeTableCell[0], 0, row);
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
       setBlocksContent(blockContentCopy);
+      setActiveTextfield('');
       setIsNotSaved(true);
     }
   };
@@ -57,6 +64,8 @@ export function useTableTools(): groupedListType {
 
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
       setBlocksContent(blockContentCopy);
+      setActiveTextfield('');
+      setActiveTableCell([0, 0]);
       setIsNotSaved(true);
     }
   };
@@ -70,7 +79,10 @@ export function useTableTools(): groupedListType {
         tableCopy[i].splice(activeTableCell[1] - 1, 0, '<p>&nbsp;</p>');
       }
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
+      const newActiveCell = [activeTableCell[0], activeTableCell[1] + 1];
+      setActiveTableCell(newActiveCell);
       setBlocksContent(blockContentCopy);
+      setActiveTextfield('');
       setIsNotSaved(true);
     }
   };
@@ -84,6 +96,7 @@ export function useTableTools(): groupedListType {
       }
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
       setBlocksContent(blockContentCopy);
+      setActiveTextfield('');
       setIsNotSaved(true);
     }
   };
@@ -101,6 +114,8 @@ export function useTableTools(): groupedListType {
       }
       blockContentCopy[activeBlock].blockContent.content = tableCopy;
       setBlocksContent(blockContentCopy);
+      setActiveTextfield('');
+      setActiveTableCell([0, 0]);
       setIsNotSaved(true);
     }
   };

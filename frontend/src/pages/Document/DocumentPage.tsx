@@ -37,7 +37,7 @@ import classes from './documentPage.module.css';
 import 'katex/dist/katex.min.css';
 
 import { ErrorBoundary } from 'react-error-boundary';
-import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
+import { checkIfLoggedIn } from '@/authHandlers/AuthHandler';
 import MainLayout from '@/components/Layout/MainLayout/MainLayout';
 import AddressAndDateBlock from './components/blocks/AddressAndDateBlock';
 import ClosingBlock from './components/blocks/ClosingBlock';
@@ -421,6 +421,7 @@ export default function DocumentPage() {
                     saveDocumentContent={saveDocumentContent}
                     setPdfFile={setPdfFile}
                     pdfLoaded={pdfLoaded}
+                    workspaceLoaded={workspaceLoaded}
                   />
                   <Box
                     h={{ base: 'calc(100vh - 5.3rem - 15px)', sm: 'calc(100vh - 5.3rem)' }}

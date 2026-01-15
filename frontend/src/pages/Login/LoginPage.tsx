@@ -18,7 +18,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { checkIfNotLoggedIn } from '@/ApiHandlers/AuthHandler';
+import { checkIfNotLoggedIn } from '@/authHandlers/AuthHandler';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
 import Logo from '@/svg/Logo';
 import styles from './loginPage.module.css';

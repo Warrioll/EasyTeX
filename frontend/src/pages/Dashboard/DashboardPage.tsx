@@ -24,7 +24,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { checkIfLoggedIn } from '@/ApiHandlers/AuthHandler';
+import { checkIfLoggedIn } from '@/authHandlers/AuthHandler';
 import ErrorBanner from '@/components/ErrorInfos/ErrorBanner';
 import {
   documentColor,

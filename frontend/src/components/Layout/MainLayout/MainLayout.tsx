@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  IoDocumentsOutline,
-  IoImagesOutline,
-} from 'react-icons/io5';
+import { IoDocumentsOutline, IoImagesOutline } from 'react-icons/io5';
 import { MdOutlineLogin } from 'react-icons/md';
 import { RxAvatar } from 'react-icons/rx';
 import {
@@ -17,7 +14,7 @@ import {
   Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { checkIfLoggedIn, logout } from '@/ApiHandlers/AuthHandler';
+import { checkIfLoggedIn, logout } from '@/authHandlers/AuthHandler';
 import Logo from '@/svg/Logo';
 import classes from './MainLayout.module.css';
 

@@ -30,6 +30,7 @@ import { documentClassType } from '@/Types';
 import { dateFormatter } from '@/utils/formatters';
 import {
   useActiveBlockContext,
+  useActiveTableCellContext,
   useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
@@ -48,6 +49,7 @@ import classes from './Header.module.css';
 
 type headerPropsType = {
   pdfLoaded: boolean;
+  workspaceLoaded: boolean;
   saveDocumentContent: () => void;
   setPdfFile: () => void;
 };
@@ -55,12 +57,13 @@ type headerPropsType = {
 export default function Header({
   saveDocumentContent,
   pdfLoaded,
-
+  workspaceLoaded,
   setPdfFile,
 }: headerPropsType) {
   const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+  const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
   const { editor } = useEditorContext();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('blocks');
@@ -72,6 +75,7 @@ export default function Header({
   };
 
   const { pdfZoom, setPdfZoom, workspaceZoom, setWorkspaceZoom } = useZoomsContext();
+
   const pdfZoomState: [string | null, Dispatch<SetStateAction<string | null>>] = [
     pdfZoom,
     setPdfZoom,
@@ -242,10 +246,27 @@ export default function Header({
     if (blocksContent[activeBlock]) {
       switch (blocksContent[activeBlock].typeOfBlock) {
         case 'textfield':
-          setTabs([...basicTabs, ...basicTextfieldTabs, textfieldTab]);
+          if (activeTextfield === '') {
+            setTabs([...basicTabs]);
+          } else {
+            setTabs([...basicTabs, ...basicTextfieldTabs, textfieldTab]);
+          }
           break;
         case 'table':
-          setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
+          if (activeTextfield === '') {
+            if (activeTableCell[0] === 0 && activeTableCell[1] === 0) {
+              setTabs([...basicTabs]);
+            } else {
+              setTabs([...basicTabs, tableTab]);
+            }
+          } else {
+            if (activeTableCell[0] === 0 && activeTableCell[1] === 0) {
+              setTabs([...basicTabs, ...basicTextfieldTabs]);
+            } else {
+              setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
+            }
+          }
+          // setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
           break;
         default:
           if (value === 'modify') {
@@ -385,7 +406,7 @@ export default function Header({
             <Button
               w={{ base: '3rem', sm: '4.6rem' }}
               variant="format"
-              disabled={!pdfLoaded}
+              disabled={!pdfLoaded || !workspaceLoaded}
               leftSection={!savingPdf && <FaRegSave />}
               onMouseUp={() => {
                 setSavingPdf(true);

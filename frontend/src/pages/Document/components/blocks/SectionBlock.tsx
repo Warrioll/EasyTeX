@@ -11,7 +11,6 @@ type SectionBlockProps = {
 export default function SectionBlock({ idx }: SectionBlockProps) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
-
   const [sectionNumber, setSectionNumber] = useState<string>('');
 
   useEffect(() => {

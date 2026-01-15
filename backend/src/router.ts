@@ -7,7 +7,7 @@ deleteDocument,
 getTexFile} from './controllers/documentController';
 import { login, verifySessionEndPoint, logout, verifyPassword } from './auth/auth';
 import { createFigure, getUserFigureById,getUserFigureFileById, getUserFigures, renameFigure, deleteFigure } from './controllers/figureController';
-import {  getUserByEmail, createUser, getUserData, editUserDetails, changePasswordDetails, deleteAccount
+import { createUser, getUserData, editUserDetails, changePasswordDetails, deleteAccount
  } from './controllers/userController';
 
 const router = express.Router();
@@ -35,7 +35,7 @@ export default (): express.Router =>{
         router.delete('/figure/user/deleteFigure/:id', deleteFigure)
 
         router.get('/user/', getUserData)
-        router.get('/userByEmail', getUserByEmail)
+        //router.get('/userByEmail', getUserByEmail)
         router.post('/user/createNewAccount', createUser)
         router.put('/user/editUserDetails',editUserDetails)
         router.put('/user/changePassword', changePasswordDetails)

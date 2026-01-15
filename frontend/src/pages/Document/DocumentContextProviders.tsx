@@ -13,13 +13,13 @@ type DocumentProvidersPropsType = {
   children: ReactNode;
 };
 
-export const BlocksContentContext = createContext<any>(null);
-export const ActiveBlockContext = createContext<any>(null);
-export const ActiveTextfieldContext = createContext<any>(null);
-export const ActiveTableCellContext = createContext<any>(null);
-export const ReferencesListContext = createContext<any>(null);
-export const EditorContext = createContext<any>(null);
-export const ZoomsContext = createContext<any>(null);
+const BlocksContentContext = createContext<any>(null);
+const ActiveBlockContext = createContext<any>(null);
+const ActiveTextfieldContext = createContext<any>(null);
+const ActiveTableCellContext = createContext<any>(null);
+//export const ReferencesListContext = createContext<any>(null);
+const EditorContext = createContext<any>(null);
+const ZoomsContext = createContext<any>(null);
 
 export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) => {
   const [blocksContent, setBlocksContent] = useState<blockType[]>([]);
@@ -29,7 +29,7 @@ export const BlocksContentProvider = ({ children }: DocumentProvidersPropsType) 
     const notSavedWaringHandler = (e: BeforeUnloadEvent) => {
       if (isNotSaved) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = true;
       }
     };
 
@@ -90,6 +90,11 @@ export const ActiveTextfieldProvider = ({ children }: DocumentProvidersPropsType
 
 export const ActiveTableCellProvider = ({ children }: DocumentProvidersPropsType) => {
   const [activeTableCell, setActiveTableCell] = useState<[number, number]>([0, 0]); //[row, column]
+  const { activeBlock, setActiveBlock } = useActiveBlockContext();
+
+  useEffect(() => {
+    setActiveTableCell([0, 0]);
+  }, [activeBlock]);
 
   return (
     <ActiveTableCellContext.Provider

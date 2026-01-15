@@ -9,24 +9,16 @@ import {
   useEditorContext,
 } from '../../../DocumentContextProviders';
 
-type BasicTextfieldProps = {
+type BasicTextfieldPropsType = {
   idx: number;
   idxInput: string;
-
   contentToRead: string;
 };
 
-export default function BasicTexfield({
-  idx,
-
-  idxInput,
-  contentToRead,
-}: BasicTextfieldProps) {
+export default function BasicTexfield({ idx, idxInput, contentToRead }: BasicTextfieldPropsType) {
   const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { editor } = useEditorContext();
-
-  const basicTextfieldRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (activeTextfield === idxInput && activeBlock !== idx) {
@@ -36,9 +28,6 @@ export default function BasicTexfield({
 
   useEffect(() => {
     if (activeTextfield === idxInput) {
-      if (basicTextfieldRef.current) {
-        basicTextfieldRef.current.focus();
-      }
       if (contentToRead === '&nbsp;' || contentToRead === '<p>&nbsp;</p>') {
         editor?.commands.setContent('');
       } else {

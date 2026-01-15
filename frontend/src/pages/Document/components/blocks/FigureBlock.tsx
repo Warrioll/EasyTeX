@@ -71,8 +71,8 @@ export default function FigureBlock({ idx }: FigureBlockProps) {
             ? null
             : blocksContent[idx]?.blockContent?.content
         );
-        setFigureLoaded(false);
-        setIsFigureLoading(true);
+        //setFigureLoaded(false);
+        //setIsFigureLoading(true);
       }
     } catch (e) {
       showBoundary(e);
@@ -98,6 +98,7 @@ export default function FigureBlock({ idx }: FigureBlockProps) {
       setIsFigureLoading(false);
     };
     if (figure) {
+      setFigureLoaded(false);
       getFigure();
     }
   }, [figure]);

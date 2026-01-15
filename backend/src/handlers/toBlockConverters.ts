@@ -626,7 +626,7 @@ export const tableToBlock =(line: string) : blockType=>{
    
 
     let table: blockAbleToRef;
-    let tableTeX= line.replace(/\\begin\{table\}\[h!\] \\begin\{center\} \\begin\{tabular\}(.*)\\end\{tabular\}\\end\{center\} \\caption\{(.*)\} \\label\{(.*)\} \\end\{table\}/,(wholeFraze, tab, label, id)=>{
+    let tableTeX= line.replace(/\\begin\{table\}\[h!\] \\begin\{center\} \\begin\{tabularx\}\{\\linewidth\}(.*)\\end\{tabularx\}\\end\{center\} \\caption\{(.*)\} \\label\{(.*)\} \\end\{table\}/,(wholeFraze, tab, label, id)=>{
          const labelFormatted = basicToBlockFontConverter(label)
         table = {id:id, label: labelFormatted, content: ''}
         return tab.replaceAll('\\hline', '')

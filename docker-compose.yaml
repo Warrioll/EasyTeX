@@ -37,6 +37,7 @@ services:
         target: /data/db
     ports:
       - "27000:27017"
+    restart: on-failure
 volumes:
   frontend_node_modules:
 

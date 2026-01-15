@@ -177,7 +177,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
              console.log('getPDF 6')
           }
            console.log('getPDF 7')
-            clearCompilationFiles(documentInstantion.path, documentInstantion._id  as unknown as string+'.tex')
+            await clearCompilationFiles(documentInstantion.path, documentInstantion._id  as unknown as string+'.tex')
              console.log('getPDF 8')
           } 
         
@@ -296,13 +296,13 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\begin{frame}')) return slideBreakToBlock(line);
             if(line.includes('\\end{frame}')) return  nullBlock;
              if(line.includes('\\chapter'))  return chapterToBlock(line)
-              console.log('dc: ', documentInstantion.documentClass, 'comp:', documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report', )
+          
             if(line.includes('\\section')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){ console.log('return: ',bookSectionToBlock(line) ); return bookSectionToBlock(line)} return sectionToBlock(line)}
              
             if(line.includes('\\subsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return bookSubsectionToBlock(line)} return  subsectionToBlock(line)};
             if(line.includes('\\subsubsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return   bookSubsubsectionToBlock(line)} return  subsubsectionToBlock(line)};
             if(line.includes('\\begin{equation}')) return equationToBlock(line);
-            if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabular}')) return tableToBlock(line);
+            if(line.includes('\\begin{table}[h!] \\begin{center} \\begin{tabularx}')) return tableToBlock(line);
             if(line==='' || line==='\r') return nullBlock;
             if(line.includes('\\begin{figure}')) return figureToBlock(line);
             if(line.includes('\\opening{')) return openingToBlock(line)
@@ -338,6 +338,10 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
           }
           blocks=[documentBlock, ...blocks]
           blocks = blocks.filter(block => (block.typeOfBlock))
+          console.log('blocks:',  blocks)
+          if(blocks.length<=2){
+              blocks = blocks.filter(block => !(block.typeOfBlock==='textfield' && block.blockContent==='<p>\\null</p>'))
+          }
           //console.log(blocks)
 
     // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
@@ -429,7 +433,7 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
    
       const blocks = req.body as blockType[]; 
       const language: {lang:string} = {lang: ''}
-      console.log(blocks);
+      console.log('blocks: ',blocks);
 
    // let titlePageData = {title: '', author: '', date: ''}
       let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
@@ -530,7 +534,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
     //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
     //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}` 
     // ); 
-
+    if(document.length<=1){
+      document=[...document, '\\null']
+    }
 
 
     let defaultPackages =['\\usepackage{ulem}',
@@ -540,7 +546,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
       '\\usepackage[utf8]{inputenc}',
       '\\usepackage[T1]{fontenc}',
       '\\usepackage[english,polish,german,french,spanish]{babel}',
-      '\\usepackage{lmodern}'
+      '\\usepackage{lmodern}',
+      '\\usepackage{tabularx}'
+      
       
      ]
 

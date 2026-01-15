@@ -325,7 +325,8 @@ export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
 }
 
 export const equationToTex =(blockContent: blockContentType): string =>{
-    return `\\begin{equation}${(blockContent as blockAbleToRef).content}\\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
+    let content: string = (blockContent as blockAbleToRef).content as string
+    return `\\begin{equation}${content.replaceAll('\n', '')}\\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
 }
 
 
@@ -335,8 +336,11 @@ export const slideBreaktoTex =(blockContent: blockContentType, isOnBegining: boo
 
 export const tableToTex =(blockContent: blockAbleToRef): string =>{
     let tableContent:string=''
-
+    let maxCols:number =0
     for(let row=0; row<blockContent.content.length; row++){
+        if(blockContent.content[row].length>maxCols){
+            maxCols=blockContent.content[row].length
+        }
         for(let column=0; column<blockContent.content[row].length; column++){
             tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent.content[row][column]))
             if(!(column===blockContent.content[row].length-1)){
@@ -346,13 +350,14 @@ export const tableToTex =(blockContent: blockAbleToRef): string =>{
         }
         tableContent=tableContent+' \\\\ \\hline '
     }
-    const style='|c'.repeat(blockContent.content[0].length)+'|'
+
+    const style=`|X`.repeat(maxCols)+'|'
  
-    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
+    return `\\begin{table}[h!] \\begin{center} \\begin{tabularx}{\\linewidth}{${style}} \\hline ${tableContent} \\end{tabularx}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
 }
 
 export const figureToTex =(blockContent:blockAbleToRef, path:string, height: number): string =>{
-    //return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
+    
      return `\\begin{figure}[H] \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
 }
 

@@ -32,7 +32,8 @@ export const login = async (req: express.Request, res: express.Response)=>{
              }else{
              if(user.password=== password){
                
-                const session= new sessionModel({userId: user.id, expiresAt: new Date(Date.now() + expireTime), lastUpdate: new Date(Date.now() + expireTime)});
+                const session= new sessionModel({userId: user.id, expiresAt: new Date(Date.now() + expireTime), lastUpdate: new Date(Date.now() //+ expireTime
+                )});
                 const deletedSessions = await sessionModel.deleteMany({userId: user.id})
             
                 const savedSession = await session.save();
@@ -74,7 +75,6 @@ export const verifySession = async (sessionId:string, res: express.Response): Pr
             res.sendStatus(401)
         }else{
             let session = await sessionModel.findById(sessionId)
-
             if(session===null || session===undefined){
                 session = await sessionModel.findOne({previousSession: sessionId})
                 if(session!==null && session!==undefined && session.previousAcceptableUnill.getTime()< Date.now()){
@@ -106,14 +106,12 @@ export const verifySessionWithCallback = async (sessionId:string, res: express.R
             res.sendStatus(401)
         }else{
             let session = await sessionModel.findById(sessionId)
-
             if(session===null || session===undefined){
                 session = await sessionModel.findOne({previousSession: sessionId})
                 if(session!==null && session!==undefined && session.previousAcceptableUnill.getTime()< Date.now()){
                     session=null
                 }
             }
-
             if(session===null || session===undefined){
                 res.sendStatus(401)
             }else{
@@ -125,13 +123,11 @@ export const verifySessionWithCallback = async (sessionId:string, res: express.R
                 }
             }
         }
-     
     }catch(error){
         console.log('Session verification error: ', error)
         if(!res.headersSent){
             res.sendStatus(500)
         }
-
     }
 }
 
