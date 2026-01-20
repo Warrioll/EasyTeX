@@ -35,7 +35,6 @@ export default (): express.Router =>{
         router.delete('/figure/user/deleteFigure/:id', deleteFigure)
 
         router.get('/user/', getUserData)
-        //router.get('/userByEmail', getUserByEmail)
         router.post('/user/createNewAccount', createUser)
         router.put('/user/editUserDetails',editUserDetails)
         router.put('/user/changePassword', changePasswordDetails)

@@ -1,14 +1,13 @@
 import express from 'express'
 import * as fileHander from "fs";
 import { documentModel, documentType } from '../models/documentModel'
-import { compileTex, clearCompilationFiles, deleteDocumentFiles } from '../handlers/commandHandlers';
+import { compileTex, clearCompilationFiles } from '../handlers/commandHandlers';
 import { deleteFile, doesTexFileExist, loadTexFile,  saveFileWithContent} from '../handlers/fileHandlers';
 import { textfieldToTex, 
   sectionToTex, 
   subsectionToTex, 
   documentclassToTex, 
   subsubsectionToTex, 
-  basicToTexFontConverter,
   titlePageToTex, 
   equationToTex,
   tableToTex, 
@@ -40,10 +39,10 @@ tableToBlock,
 openingToBlock,
 setLanguageToBlock,
 closingToBlock} from '../handlers/toBlockConverters';
-import { verifySession,verifySessionWithCallback, extendSession } from '../auth/auth';
+import { verifySessionWithCallback, extendSession } from '../auth/auth';
 import { blockAbleToRef, blockType, documentOptionsType, referencesElementType, slideBreak, titleSectionType} from '../types';
 import { figureModel } from '../models/figureModel';
-import { Document, InferSchemaType, isValidObjectId } from 'mongoose';
+import {isValidObjectId } from 'mongoose';
 import { nameRegex } from '../nameRegexes';
 
 
@@ -94,19 +93,6 @@ export const getDocumentById = async (req: express.Request, res: express.Respons
 
 };
 
-// dokumenty wszystkich użytkowników
-// export const  getDocuments= async (req: express.Request, res: express.Response)=>{
-
-//   try{
-//       const documents = await documentModel.find().sort({ lastUpdate: -1 });
-//       //console.log('documents list',documents)
-//      // documents.sort((a, b)=>new Date(a.lastUpdate).getTime() - new Date(b.lastUpdate).getTime())
-//       res.status(200).json(documents);
-//   }catch(error){
-//       console.log("Get ERROR: ", error)
-//       res.sendStatus(400);
-//   }
-// };
 
 export const getUserDocuments = async (req: express.Request, res: express.Response)=>{
 
@@ -141,7 +127,6 @@ export const getUserDocuments = async (req: express.Request, res: express.Respon
         userDocuments = null
         break;
       }
-      //const userDocuments = await documentModel.find({userId: userId})
       await extendSession(req.cookies.auth,res)
       res.status(200).json(userDocuments)
   
@@ -160,56 +145,54 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
  
   await  verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
         try{  
-          console.log('getPDF 1')
+       
           if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
-              console.log('getPDF 2')
+            
           }else{
-             console.log('getPDF 3')
+            
               try{
             await compileTex(documentInstantion.path, documentInstantion._id as unknown as string+'.tex')
-             console.log('getPDF 4')
+          
           }catch(error){
-            //rozróżnianie jak plik nie istnieje a jak rekord w bazie nie isnieje
-             console.log('getPDF 5')
+                      
             console.log('in docController compilation error: ',error)
             res.sendStatus(422)
-             console.log('getPDF 6')
+            
           }
-           console.log('getPDF 7')
+         
             await clearCompilationFiles(documentInstantion.path, documentInstantion._id  as unknown as string+'.tex')
-             console.log('getPDF 8')
+            
           } 
         
-           console.log('getPDF 9')
+         
         
           if (!res.headersSent) {
-             console.log('getPDF 10')
+            
             await extendSession(req.cookies.auth,res)
-             console.log('getPDF 11')
+            
             res.setHeader('Content-type', 'application/pdf')
-            //FIXME ?można zrobić sendFile??
             const stream = fileHander.createReadStream([documentInstantion.path, [documentInstantion._id as unknown as string, 'pdf'].join('.')].join('/'))
             stream.pipe(res);
-             console.log('getPDF 12')
+           
             stream.on('error', (error: NodeJS.ErrnoException)=>{
               console.log("Stream pdf error: ", error)
-               console.log('getPDF 13')
+           
               if (!res.headersSent) {
-                 console.log('getPDF 14')
+            
                 if(error.code==='ENOENT' && error.errno===-4058){
-                   console.log('getPDF 15')
+                
                   res.sendStatus(404)
-                   console.log('getPDF 16')
+                
                 }else{
-                   console.log('getPDF 17')
+                 
                   res.sendStatus(500)
-                   console.log('getPDF 18')
+               
                 }
               } else {
-                 console.log('getPDF 19')
+               
                 res.destroy();
-                 console.log('getPDF 20')
+               
               }
             })
           }
@@ -219,7 +202,7 @@ export const  getPdf= async (req: express.Request, res: express.Response)=>{
             res.sendStatus(500);
           }
         }
-        console.log('get pdf done')
+       
   });
 };
 
@@ -227,24 +210,14 @@ export const  getTexFile= async (req: express.Request, res: express.Response)=>{
  await  verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
  
   try{
-    //const userId = await verifySession(req.cookies.auth, res);
-
-    //await compileTex(documentInstantion.path, id+'.tex')
-    //clearCompilationFiles(documentInstantion.path, id+'.tex')
     if(! await doesTexFileExist(documentInstantion.path, documentInstantion._id as unknown as string)) {
              res.sendStatus(410)
           }else{
     res.setHeader('Content-type', 'text/x-tex')
     await extendSession(req.cookies.auth,res)
-    //FIXME ?można zrobić sendFile??
-    //FIXME obsługa błędow?
     fileHander.createReadStream([documentInstantion.path, [documentInstantion._id, 'tex'].join('.')].join('/')).pipe(res);
           }
  
-  // }else{
-  //   res.status(403).send({msg: 'Not loged in!'});
-  // }
-      //res.status(200).json(documents);
   }catch(error){
       console.log("getTexFile error: ", error)
      if(!res.headersSent){
@@ -267,7 +240,6 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
 
           let document: (string | undefined)[] = await loadTexFile(documentInstantion.path, documentInstantion._id as unknown as string);
-          //console.log(document)
 
           let titlePageData = {
             title: '',
@@ -278,7 +250,6 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
           let isGettingLatexExpression:boolean = false
           let documentBlock: blockType;
           let blocks: (blockType)[] = document.map((line, idx)=>{
-            //line.indexOf("fraza")===0 jeśli wytłapywanie na początku a nie w środku
           
              if(!isGettingLatexExpression){
             if(line.includes('\\documentclass'))  {documentBlock= documentclassToBlock(line); return  nullBlock}
@@ -297,7 +268,7 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line.includes('\\end{frame}')) return  nullBlock;
              if(line.includes('\\chapter'))  return chapterToBlock(line)
           
-            if(line.includes('\\section')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){ console.log('return: ',bookSectionToBlock(line) ); return bookSectionToBlock(line)} return sectionToBlock(line)}
+            if(line.includes('\\section')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){ return bookSectionToBlock(line)} return sectionToBlock(line)}
              
             if(line.includes('\\subsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return bookSubsectionToBlock(line)} return  subsectionToBlock(line)};
             if(line.includes('\\subsubsection')) {if(documentInstantion.documentClass==='book' || documentInstantion.documentClass==='report'){return   bookSubsubsectionToBlock(line)} return  subsubsectionToBlock(line)};
@@ -319,12 +290,11 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
             if(line==='') return  nullBlock;
             return  textfieldToBlock(line)
             }else{
-              //console.log(line)
-              console.log(latexExpression)
+            
               if(line==='%latexExpression-end'){
                 isGettingLatexExpression=false
                 const le: blockType=  {typeOfBlock: 'latex', blockContent: latexExpression.join('\n')}
-                console.log('bc: ', le)
+               
                 latexExpression=[]
                 return le
               }else{
@@ -332,31 +302,21 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
                 return  nullBlock 
               }
             }})
-          //blocks = blocks.filter(block => (block.typeOfBlock!==undefined && block.typeOfBlock!==null))
           if(!(documentBlock.blockContent as documentOptionsType).language){
             (documentBlock.blockContent as documentOptionsType).language='english'
           }
           blocks=[documentBlock, ...blocks]
           blocks = blocks.filter(block => (block.typeOfBlock))
-          console.log('blocks:',  blocks)
+         
           if(blocks.length<=2){
               blocks = blocks.filter(block => !(block.typeOfBlock==='textfield' && block.blockContent==='<p>\\null</p>'))
           }
-          //console.log(blocks)
-
-    // res.cookie('auth', req.cookies.auth, {maxAge: 1000 * 60 * 1, sameSite: 'lax', //httpOnly: true
-    // })
     if((documentBlock.blockContent as documentOptionsType).class ===documentInstantion.documentClass){
       res.status(200).json(blocks);
     }else{
              res.sendStatus(500);
           }
-          
-                 
-
           }
-
-
 
   } catch(error){
     console.log("getDocumentContent error: ", error)
@@ -370,14 +330,9 @@ export const getDocumentContent = async (req: express.Request, res: express.Resp
 
 export const createDocument = async (req: express.Request, res: express.Response)=>{
 
-//const nd: (string |undefined)[]= ["\\documentclass{book}", , "\\begin{document}",, "wlazł kotek na płotek i mrugaa",, "\\end{document}"];
 await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
 
     try{
-      //const userId = await verifySession(req.cookies.auth, res)
-       
-
-        
 
         if(nameRegex.test(req.body.name)){
         const path: string = ['documentBase', userId].join('/')
@@ -399,11 +354,15 @@ await verifySessionWithCallback(req.cookies.auth, res, async (userId: string)=>{
           "\\begin{document}", savedDocument.documentClass==='beamer' ? '\\begin{frame}' : '' ,'New document',  savedDocument.documentClass==='beamer' ? '\\end{frame}' : '', "\\end{document}"];
         const fileName: string= savedDocument._id+".tex"
         
-        await saveFileWithContent(savedDocument.path, savedDocument.id, 'tex', content.join("\n"))
-        //fileHander.writeFileSync([path, fileName].join("/"), content.join("\n"));
+        
+        try{
+          await saveFileWithContent(savedDocument.path, savedDocument.id, 'tex', content.join("\n"))
+        }catch(error){
+          await documentModel.findByIdAndDelete(savedDocument.id)
+          console.error('Saving tex file failed!')
+          throw error
+        }
 
-        //compileTex(path, fileName);
-        //clearCompilationFiles(path, fileName);
         await extendSession(req.cookies.auth,res)
         res.status(201).json(savedDocument);
       }
@@ -433,16 +392,13 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
    
       const blocks = req.body as blockType[]; 
       const language: {lang:string} = {lang: ''}
-      console.log('blocks: ',blocks);
 
-   // let titlePageData = {title: '', author: '', date: ''}
+
+ 
       let document: (string | undefined)[] = await Promise.all( blocks.map(async (block: blockType, idx: number)=>{
       switch(block.typeOfBlock){
         case 'documentclass':{
           if(documentInstantion.documentClass!==(block.blockContent as documentOptionsType).class as string){
-            //console.log('class from blocks: ', (block.blockContent as documentOptionsType).class)
-            //console.log('class from db: ', documentInstantion.documentClass)
-            //FIXME branie jednego z typów?
             throw new Error("Document types are not the same!");
           }
           return documentclassToTex(block.blockContent as documentOptionsType, language);
@@ -451,8 +407,6 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
           return addressAndDateToTex(block.blockContent as titleSectionType)
         }
         if(typeof block.blockContent === "object" && 'title' in block.blockContent && 'author' in block.blockContent && 'date' in block.blockContent){
-          // titlePageData=block.blockContent;
-          //   return '\\maketitle'
           return titlePageToTex(block.blockContent as titleSectionType)
         }
         return ''
@@ -460,11 +414,8 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
         return '\\tableofcontents'
        } case 'pageBreak':{
         if(documentInstantion.documentClass==='beamer'){
-          //TODO jesli zrobion block usepackaga to samo > alb ojakis inny sposob na wykrywanie tego
           if(idx>1){
-           
             return slideBreaktoTex(block.blockContent as slideBreak, false)
-                     
           }
 
           return slideBreaktoTex(block.blockContent as slideBreak, true)
@@ -529,11 +480,6 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
     }
   }))
 
- 
-    // document.splice(1,0,`\\title{${basicToTexFontConverter( titlePageData.title)}}`
-    //   +`\n\\author{${basicToTexFontConverter( titlePageData.author)}}`
-    //   +`\n\\date{${basicToTexFontConverter( titlePageData.date)}}` 
-    // ); 
     if(document.length<=1){
       document=[...document, '\\null']
     }
@@ -577,16 +523,9 @@ export const updateWholeDocumentContent  = async (req: express.Request, res: exp
           document.push(defaultEnding.join('\n'))
      }
     
-   // console.log(document);
     await saveFileWithContent(documentInstantion.path, documentInstantion._id as unknown as string, 'tex',document.join("\n"))
-    //fileHander.writeFileSync(documentInstantion.path+`/${id}.tex`, document.join("\n"));
 
     const updatedDocument = await documentModel.findByIdAndUpdate(documentInstantion._id, {lastUpdate: new Date(Date.now())})
-
-    //console.log('saved, now compiling...')
-    //await compileTex('documentBase', id+'.tex')
-   // clearCompilationFiles('documentBase', id+'.tex')
-
     await extendSession(req.cookies.auth,res )
     res.sendStatus(200);
 
@@ -604,7 +543,6 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
   
    await verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
   try{
-   // console.log('userId',id)
       
 
       if(nameRegex.test(req.body.name)){
@@ -626,7 +564,6 @@ export const renameDocument  = async (req: express.Request, res: express.Respons
 export const deleteDocument  = async (req: express.Request, res: express.Response)=>{
    await verifyAccesToDocument(req.cookies.auth, req.params.id, res,async ( userId: string, documentInstantion:  documentType)=>{
   try{
-      //await deleteDocumentFiles(documentInstantion.path,id)
       await deleteFile(documentInstantion.path, documentInstantion._id as unknown as string, 'pdf')
       await deleteFile(documentInstantion.path, documentInstantion._id as unknown as string, 'tex')
       const updatedDocument = await documentModel.findByIdAndDelete(documentInstantion._id)

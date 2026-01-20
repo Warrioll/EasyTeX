@@ -35,18 +35,6 @@ export const getUserData = async (req: express.Request, res: express.Response)=>
   }
 }
 
-export const getUserByEmail = async (req: express.Request, res: express.Response)=>{
-
-    try{
-      const {email} = req.params;
-      const [user] = await userModel.find({email: email, password: 'abc1234?', userName: 'Warrioll'});
-      res.status(200).json(user);
-  }catch(error){
-      console.log("Get ERROR: ", error)
-      res.sendStatus(500);
-  }
-}
-
 export const  getAllUsers= async (req: express.Request, res: express.Response)=>{
   try{
       const users = await userModel.find();
@@ -92,9 +80,9 @@ export const changePasswordDetails = async (req: express.Request, res: express.R
        
       if( userId!==null){
       const user = await userModel.findById(userId);
-      console.log(req.body.password)
+    
         if (passwordRegex.test(req.body.password)){
-          console.log('ok')
+     
              const updatedUser = await userModel.findByIdAndUpdate(userId, {password: req.body.password})
             
               res.status(200).json(updatedUser);
@@ -126,7 +114,6 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
             await documentModel.deleteMany({userId: userId})
             await deleteSession(req.cookies.auth)
             await userModel.findByIdAndDelete(userId);
-            // TODO Delete sessions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s
           res.sendStatus(200);
         }else{
         res.sendStatus(403);
@@ -141,7 +128,7 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
   try{
 
     const data = req.body
-    console.log(req.body)
+
     const emailLenghtRegex=/.{5,320}/g
     const userNameLenghtRegex=/.{3,30}/g
     const passwordLenghtRegex=/.{8,64}/g
@@ -150,12 +137,12 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
   
         const checkEmail = await userModel.findOne({email: data.email})
         const checkUserName = await userModel.findOne({userName: data.userName})
-        console.log(checkEmail)
+     
       
         if((checkEmail===null || checkEmail===undefined) && (checkUserName===null || checkUserName===undefined)){
           const newUser = new userModel(data)
           const savedUser = await newUser.save();
-          console.log('creating user')
+      
           await createDirectory(['documentBase', savedUser._id as unknown as string].join('/'))
           await createDirectory(['figureBase', savedUser._id as unknown as string].join('/'))
           res.status(201).json(savedUser)

@@ -133,8 +133,6 @@ export const verifySessionWithCallback = async (sessionId:string, res: express.R
 
 export const extendSession = async (sessionId: string, res: express.Response) =>{
 
-    //TODO usuwanie straych sesji i extend tylko jesli minal jakis sensowny czas wiec moze jakies dodatkowe pola createdAt updatedAt
-
     try{
        const session =await sessionModel.findById(sessionId)
        if(Date.now()>session.lastUpdate.getTime()+extendTime){
@@ -143,7 +141,6 @@ export const extendSession = async (sessionId: string, res: express.Response) =>
         const newSession= new sessionModel({userId: userId, expiresAt: new Date(Date.now() + expireTime), lastUpdate: new Date(Date.now()), previousSession: deletedSession._id , previousAcceptableUnill: new Date(Date.now() + previousAcceptableTime)});
         const savedSession = await newSession.save();
 
-        //console.log("extended sessionID: ",savedSession.id )
         res.cookie('auth',savedSession.id, {maxAge: expireTime, sameSite: 'lax', httpOnly: true
         })
        }

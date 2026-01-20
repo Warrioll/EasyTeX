@@ -35,7 +35,7 @@ export type documentOptionsType = {
     | 'documentclass'
     | 'titlePage'
     | 'tableOfContents'
-    | 'pageBreak'
+    | 'pageBreak' 
     | 'equation'
     | 'table'
     | 'figure'

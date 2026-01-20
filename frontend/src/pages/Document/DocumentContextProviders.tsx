@@ -17,7 +17,6 @@ const BlocksContentContext = createContext<any>(null);
 const ActiveBlockContext = createContext<any>(null);
 const ActiveTextfieldContext = createContext<any>(null);
 const ActiveTableCellContext = createContext<any>(null);
-//export const ReferencesListContext = createContext<any>(null);
 const EditorContext = createContext<any>(null);
 const ZoomsContext = createContext<any>(null);
 

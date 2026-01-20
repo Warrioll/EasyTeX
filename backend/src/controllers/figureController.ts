@@ -1,7 +1,6 @@
 import express from 'express'
 import {figureModel} from '../models/figureModel';
-import { verifySession, extendSession, verifySessionWithCallback } from '../auth/auth';
-import fileHandler from 'fs'
+import { extendSession, verifySessionWithCallback } from '../auth/auth';
 import path from 'path';
 import { saveFileWithContent, deleteFile  } from '../handlers/fileHandlers';
 import { figureType } from '../models/figureModel';
@@ -123,9 +122,15 @@ try{
 
         const figure= new figureModel(figureData);
         const savedFigure = await figure.save();
-        await saveFileWithContent(path, savedFigure._id as unknown as string, extension, req.file.buffer)
-        //fileHandler.writeFileSync([path, [savedFigure._id, extension].join('.')].join('/'), req.file.buffer)
 
+        try{
+          await saveFileWithContent(path, savedFigure._id as unknown as string, extension, req.file.buffer)
+        }catch(error){
+          await figureModel.findByIdAndDelete(savedFigure._id)
+          console.error('Saving figure file failed!')
+          throw error
+        }
+       
 
         await extendSession(req.cookies.auth,res)
         res.status(201).json(savedFigure);

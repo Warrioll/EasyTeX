@@ -1,13 +1,9 @@
 import { promises as fileHander } from "fs";
-import { documentModel } from "../models/documentModel";
-//import { createDirectory } from "./commandHandlers";
 
 
 export const loadTexFile = async(path: string , fileName: string):Promise<(string | undefined)[]> =>{
 
     try{
-        //const document = await documentModel.findById(id)
-        //const contentTemp = await fileHander.readFileSync("documentBase/"+document._id+".tex", 'utf8')
        const contentTemp = await fileHander.readFile([path,[fileName,"tex"].join('.')].join('/'), 'utf8')
         let content = contentTemp.split("\n");
        content = content.map((line: (string | undefined), idx: number)=>{
@@ -32,8 +28,7 @@ export const saveFileWithContent = async(path: string , fileName: string, extent
 }
 
 
-export const deleteFile = async (path:string, fileName: string, fileType: string) : Promise<void>=>{
-  //await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
+export const deleteFile = async (path:string, fileName: string, fileType: string) : Promise<void>=>{ 
   try{
 await fileHander.rm([path, [fileName, fileType].join('.')].join("/"),{  force: true })
   }catch(error){
@@ -43,7 +38,6 @@ await fileHander.rm([path, [fileName, fileType].join('.')].join("/"),{  force: t
 }
 
 export const deleteDirectory = async (path:string) : Promise<void>=>{
-  //await execute(`rm ${[path, [fileId, fileType].join('.')].join("/")}`) 
   try{
  await fileHander.rm(path,{ recursive:true, force: true })
   }catch(error){

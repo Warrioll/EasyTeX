@@ -269,18 +269,12 @@ export default function DocumentPage() {
       if (axios.isAxiosError(error)) {
         switch (error.status) {
           case 400:
-            // localStorage.setItem('unavailableDocument', 'true');
-            // location.reload();
             setIsPageLoaded(false);
             break;
           case 403:
-            // localStorage.setItem('unavailableDocument', 'true');
-            // location.reload();
             setIsPageLoaded(false);
             break;
           case 404:
-            // localStorage.setItem('unavailableDocument', 'true');
-            // location.reload();
             setIsPageLoaded(false);
             setBlocksError({
               title: 'This document does not exists!',
