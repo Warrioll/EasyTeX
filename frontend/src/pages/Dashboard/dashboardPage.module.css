@@ -11,3 +11,20 @@
     border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
+
+@keyframes appear {
+    from{
+        opacity: 0;
+        scale: 0.5;
+    }
+    to{
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+.docCard{
+    animation: appear linear;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+}

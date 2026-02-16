@@ -1,15 +1,8 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Editor, EditorContent } from '@tiptap/react';
-import parse from 'html-react-parser';
-import { cloneDeep } from 'lodash';
-import { Badge, Button, Flex, FocusTrap, Group, Input, Menu, Text } from '@mantine/core';
-import { useDisclosure, useFocusWithin } from '@mantine/hooks';
-import { RichTextEditor } from '@mantine/tiptap';
-import { blockType } from '@/Types';
+import { useEffect, useState } from 'react';
+import { Flex, Text } from '@mantine/core';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
-import styles from './blocks.module.css';
 
 type SectionBlockProps = {
   idx: number;
@@ -19,20 +12,6 @@ export default function SubsectionBlock({ idx }: SectionBlockProps) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const [sectionNumber, setSectionNumber] = useState<string>('');
-
-  // const updateSectionContent = (event) => {
-  //   console.log('section event', event);
-  //   let content = cloneDeep(blocksContent);
-  //   console.log('section  event.target.value', event.target.value);
-  //   //content[idx].blockContent = event.target.value;
-  //   content[idx] = {
-  //     ...content[idx],
-  //     //blockContent: { idx: 1, sectionContent: event.target.value },
-  //     blockContent: event.target.value,
-  //   };
-  //   console.log('section content[idx].blockContent', content[idx].blockContent);
-  //   setBlocksContent(content);
-  // };
 
   useEffect(() => {
     let sectionCounter = 0;
@@ -54,12 +33,12 @@ export default function SubsectionBlock({ idx }: SectionBlockProps) {
 
   return (
     <Flex>
-      <MarkedBlockFrame idx={idx} blockName="Subsection">
+      <MarkedBlockFrame idx={idx} blockName="Heading 2">
         <Flex w="100%" ml="xs">
           <Text ta="left" mt="0.65rem" fz="xs" fw="500" c="var(--mantine-color-cyan-6)">
             H2:
           </Text>
-          {blocksContent[0].blockContent !== 'beamer' && (
+          {blocksContent[0].blockContent.class !== 'beamer' && (
             <Text
               fz="xl"
               fw="bold"

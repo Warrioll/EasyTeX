@@ -1,19 +1,76 @@
-import { figureModel } from "../models/figureModel";
-import { blockAbleToRef, blockContentType, referencesElementType, slideBreak, titleSectionType } from "../types";
+import { blockAbleToRef, blockContentType, documentOptionsType, referencesElementType, slideBreak, titleSectionType } from "../types";
+import { specialCharacters } from "../specialCharacters";
 
-export const documentclassToTex =(blockContent:string): string =>{
-    return('\\documentclass{'+blockContent+'}');
+export const documentclassToTex =(blockContent:documentOptionsType, language: {lang: string}): string =>{
+    let options: string[] =[]
+    let toReturn: string;
+
+    if(blockContent.fontSize){
+        options=[...options, blockContent.fontSize]
+    }
+    if(blockContent.fontType){
+        options=[...options, blockContent.fontType]
+    }
+    if(blockContent.paperSize){
+        options=[...options, blockContent.paperSize]
+    }
+    if(blockContent.orientation){
+        options=[...options, blockContent.orientation]
+    }
+    if(blockContent.columns){
+        options=[...options, blockContent.columns]
+    }
+
+    if(options.length>=1){
+        toReturn=`\\documentclass[${options.join(', ')}]{${blockContent.class}}`;
+    }else{
+        toReturn= '\\documentclass{'+blockContent.class+'}';
+    }
+
+    if(blockContent.language){
+        language.lang='\\AtBeginDocument{\\selectlanguage{'+blockContent.language+'}}'
+    }else{
+        language.lang='\n\\AtBeginDocument{\\selectlanguage{english}}'
+    }
+    return toReturn
+    
+}
+
+export const specialCharactersToTexConverter = (toConvert: string):string=>{
+    toConvert=toConvert.replaceAll('\\', '\\textbackslash ') 
+    toConvert=toConvert.replaceAll('&lt;', '\\textless ') 
+    toConvert=toConvert.replaceAll('&gt;', '\\textgreater ')  
+toConvert=toConvert.replaceAll('{', '\\{')
+  toConvert=toConvert.replaceAll('}', '\\}')
+    toConvert=toConvert.replaceAll('#', '\\#{}')
+    toConvert=toConvert.replaceAll('$', '\\${}')
+    toConvert=toConvert.replaceAll('%', '\\%{}')
+    toConvert=toConvert.replaceAll('^', '\\^{}')
+    toConvert=toConvert.replaceAll('&amp;', '\\&{}') 
+        toConvert=toConvert.replaceAll('_', '\\_{}')
+        toConvert=toConvert.replaceAll('~', '\\textasciitilde ')
+  toConvert=toConvert.replaceAll('|', '\\textbar ')
+
+    for(const specChar of specialCharacters){
+        toConvert=toConvert.replaceAll(specChar.value, `$${specChar.latexRepresentation}$`)
+
+    }
+  
+
+    return toConvert
 }
 
 export const basicToTexFontConverter = (fontToConvert:string): string=>{
 //znaki specjalne
-    //z tym coś nie działa
-    //textfield= textfield.replaceAll('\\', '\\textbackslash')
+ fontToConvert=specialCharactersToTexConverter(fontToConvert);
 
     //obsługa znaku non-breaking space w sytuacji gdy ma rolę placeholdera na froncie
     if(fontToConvert==='&nbsp;' || fontToConvert==='<p>&nbsp;</p>'){
         return ' '
     }
+
+    //usuniecie &nbsp;
+    fontToConvert = fontToConvert.replaceAll('&nbsp;', '')
 
     //bold
     fontToConvert = fontToConvert.replaceAll('<strong>', '\\textbf{')
@@ -39,48 +96,32 @@ export const basicToTexFontConverter = (fontToConvert:string): string=>{
     fontToConvert = fontToConvert.replaceAll('<s>', '\\sout{')
     fontToConvert = fontToConvert.replaceAll('</s>', '}')
 
+     //subscript
+     fontToConvert =  fontToConvert.replaceAll('<sub>', '\\textsubscript{')
+     fontToConvert =  fontToConvert.replaceAll('</sub>', '}')
+
+    //superscript
+     fontToConvert =  fontToConvert.replaceAll('<sup>', '\\textsuperscript{')
+     fontToConvert =  fontToConvert.replaceAll('</sup>', '}')
+
     fontToConvert=fontToConvert.replaceAll(/\<span.*?class=\"mention\".*?data-type=\"mention\".*?data-id=\".*?\".*?>(.*?)<\/span>/g, (wholeFraze, insideOfFraze)=>{
-        console.log('mention: ', wholeFraze)
-        if(insideOfFraze.includes('ref')){
-            console.log('cite: ', `\\cite{${insideOfFraze}}`)
+     
+        if(insideOfFraze.includes('bib')){
+          
             return `\\cite{${insideOfFraze}}`
         }
-        console.log('cite: ', `\\ref{${insideOfFraze}}`)
         return `\\ref{${insideOfFraze}}`
         
     })
 
-    // const splitted = fontToConvert.split('<span class="mention" data-type="mention" data-id="')
-    // console.log('splitted: ', splitted)
-    // const splitted2=splitted.map((item, id)=>{
-    //     if (id>0){
-    //     return item.split('">')
-    //     } 
-    //     return item
-    //     })
-    // console.log('splitted2: ', splitted2)
-    // const converted = splitted2.map((item, id)=>{
-    //     if(Array.isArray(item) && item.length>1){
-    //         console.log('item', item)
-    //         let tmpItem=[...item]
-    //         const itemId=tmpItem[0]
-    //         tmpItem.splice(0,1)
+     fontToConvert =  fontToConvert.replaceAll('<br>', '\\newline ')
 
-    //         if(itemId.includes('eq') || itemId.includes('tab') || itemId.includes('img')){
-    //             return `\\ref{${itemId}}${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
-    //         }
-    //         return `\\cite{${itemId}} ${tmpItem.join('').replace(itemId, '').replace('</span>', '')}`
-    //     }
-    //     return item
-    // })
-    //  console.log('converted: ', converted)
-    // fontToConvert=converted.join('');
-
-    //<span class="mention" data-type="mention" data-id="eq1">eq1</span>
     const splitted= fontToConvert.split('<p>').filter(i=>i!=='')
     fontToConvert=splitted.join('\\newline ')
     fontToConvert= fontToConvert.replaceAll('</p>', "");
-    //fontToConvert= fontToConvert.replaceAll('</p>', "\\newline")
+
+
+   
 
 return fontToConvert
 }
@@ -96,25 +137,18 @@ export const textfieldToTex =(blockContent:string): string =>{
     
     textfield=basicToTexFontConverter(textfield);
 
-        //link
-    textfield = textfield.replaceAll('<a>', '\\uline{\\url{')
-    textfield = textfield.replaceAll('</a>', '}}')
-
-    //subscript
-    textfield = textfield.replaceAll('<sub>', '$_{\\textnormal{')
-    textfield = textfield.replaceAll('</sub>', '}}$')
-
-    //superscript
-    textfield = textfield.replaceAll('<sup>', '$^{\\textnormal{')
-    textfield = textfield.replaceAll('</sup>', '}}$')
 
     //lists points with p-tags inside
     textfield = textfield.replaceAll('<li><p>', '\\item ')
     textfield = textfield.replaceAll('</p></li>', '')
 
+
+
      //lists points without p-tags inside just in case
      textfield = textfield.replaceAll('<li>', '\\item ')
-     textfield = textfield.replaceAll('</li>', '')
+     textfield = textfield.replaceAll('</li>', '')     
+
+
     
     //bulletlist
     textfield = textfield.replaceAll('<ul>', '\\begin{itemize}')
@@ -122,30 +156,38 @@ export const textfieldToTex =(blockContent:string): string =>{
     
     //enumaratedlist
     textfield = textfield.replaceAll('<ol>', '\\begin{enumerate}')
-    textfield = textfield.replaceAll('</ol>', '\\end{enumerate}')
+    textfield = textfield.replaceAll('</ol>', '\\end{enumerate}') 
 
-    //p-tagi i nowe linie
+    textfield = textfield.replaceAll(/(?:\\newline[ ]*)*\\item/g, '\\item')
+    textfield = textfield.replaceAll(/\\item(?:[ ]*\\newline)*/g, '\\item')
+
+    textfield = textfield.replaceAll(/\\end{itemize}(?:[ ]*\\newline)*/g, ()=>{
+     
+        return '\\end{itemize}'})
+    textfield = textfield.replaceAll(/\\end{enumerate}(?:[ ]*\\newline)*/g, '\\end{enumerate}')
+    
 
     if(textfield.endsWith("\\\\"))
         textfield= textfield.substring(0, textfield.length-2)
-
-    // //znaki specjalne
-    // textfield= textfield.replaceAll('\\', '\\textbackslash')
-
-    //console.log("Po split", content);
-    //content = content.map(line=> line.replace('<p>', ''));
-    //console.log("Po map", content);
 
     return(textfield);
 }
 
 export const sectionToTex =(blockContent:string): string =>{
-    // tu trzeba uwzględnić wystąpienie \r
+
     blockContent=basicToTexFontConverter(blockContent);
 
     blockContent=blockContent.replaceAll('\r', '')
     blockContent=erasePTags(blockContent)
     return('\\section{\\textnormal{'+blockContent+'}}');
+}
+export const bookSectionToTex =(blockContent:string): string =>{
+   
+    blockContent=basicToTexFontConverter(blockContent);
+
+    blockContent=blockContent.replaceAll('\r', '')
+    blockContent=erasePTags(blockContent)
+    return('\\chapter{\\textnormal{'+blockContent+'}}');
 }
 
 export const subsectionToTex =(blockContent:string): string =>{
@@ -175,11 +217,13 @@ export const closingToTeX =(blockContent:string): string =>{
    
     blockContent=basicToTexFontConverter(blockContent);
     blockContent=erasePTags(blockContent)
+    if(/^ *$/.test(blockContent)){
+        blockContent='\\ '+blockContent
+    }
     return('\\closing{'+blockContent+'}');
 }
 
 export const slideSectionToTex =(blockContent:string): string =>{
-    // tu trzeba uwzględnić wystąpienie \r
     blockContent=basicToTexFontConverter(blockContent);
 
     blockContent=blockContent.replaceAll('\r', '')
@@ -201,7 +245,7 @@ export const titlePageToTex =(blockContent: titleSectionType): string =>{
 
 
 export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
-    //const title = erasePTags(basicToTexFontConverter( blockContent.title))
+  
     let address = erasePTags(basicToTexFontConverter( blockContent.author))
     let date = erasePTags(basicToTexFontConverter( blockContent.date))
 
@@ -214,7 +258,8 @@ export const addressAndDateToTex =(blockContent: titleSectionType): string =>{
 }
 
 export const equationToTex =(blockContent: blockContentType): string =>{
-    return `\\begin{equation} ${(blockContent as blockAbleToRef).content} \\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
+    let content: string = (blockContent as blockAbleToRef).content as string
+    return `\\begin{equation}${content.replaceAll('\n', '')}\\label{${(blockContent as blockAbleToRef).id}}\\end{equation}`
 }
 
 
@@ -224,8 +269,11 @@ export const slideBreaktoTex =(blockContent: blockContentType, isOnBegining: boo
 
 export const tableToTex =(blockContent: blockAbleToRef): string =>{
     let tableContent:string=''
-
+    let maxCols:number =0
     for(let row=0; row<blockContent.content.length; row++){
+        if(blockContent.content[row].length>maxCols){
+            maxCols=blockContent.content[row].length
+        }
         for(let column=0; column<blockContent.content[row].length; column++){
             tableContent=tableContent+ erasePTags(basicToTexFontConverter(blockContent.content[row][column]))
             if(!(column===blockContent.content[row].length-1)){
@@ -235,14 +283,15 @@ export const tableToTex =(blockContent: blockAbleToRef): string =>{
         }
         tableContent=tableContent+' \\\\ \\hline '
     }
-    const style='|c'.repeat(blockContent.content[0].length)+'|'
+
+    const style=`|X`.repeat(maxCols)+'|'
  
-    return `\\begin{table}[h!] \\begin{center} \\begin{tabular}{${style}} \\hline ${tableContent} \\end{tabular}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
+    return `\\begin{table}[h!] \\begin{center} \\begin{tabularx}{\\linewidth}{${style}} \\hline ${tableContent} \\end{tabularx}\\end{center} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}} \\end{table}`
 }
 
 export const figureToTex =(blockContent:blockAbleToRef, path:string, height: number): string =>{
-    //return '\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=10cm, keepaspectratio]{'+path+'} \\caption{'+erasePTags(basicToTexFontConverter(blockContent.label))+'} \\label{'+blockContent.id+'}\\end{figure}'
-     return `\\begin{figure} \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
+    
+     return `\\begin{figure}[H] \\centering \\includegraphics[width=\\linewidth, height=${height}cm, keepaspectratio]{${path}} \\caption{${erasePTags(basicToTexFontConverter(blockContent.label))}} \\label{${blockContent.id}}\\end{figure}`
 }
 
 

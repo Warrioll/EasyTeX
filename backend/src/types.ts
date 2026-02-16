@@ -1,5 +1,5 @@
 export type blockType = {
-  typeOfBlock: typeOfBlockType; //'textfield' | 'section' | 'subsection' | 'documentclass' | null | undefined;
+  typeOfBlock: typeOfBlockType; 
   blockContent: blockContentType
 };
 
@@ -11,23 +11,36 @@ export type blockContentType =  string
     | referencesElementType[] //references
     | blockAbleToRef
     | slideBreak
+    | documentOptionsType
     | null
     | undefined;
 
+export type documentClassType = 'article' | 'report' | 'book' | 'letter' | 'beamer'
 
+export type documentOptionsType = {
+  class: documentClassType;
+  fontSize?: '10pt' | '11pt' | '12pt';
+  fontType?: 'roman' | 'sans' | 'typewriter';
+  paperSize?: 'a4paper' | 'a5paper' | 'b5paper' | 'letterpaper' | 'executivepaper' | 'legalpaper';
+  orientation?: 'landscape' | '';
+  columns?: 'onecolumn' | 'twocolumn';
+  language?: string
+};
   export type typeOfBlockType =
     | 'textfield'
     | 'section'
     | 'subsection'
     | 'subsubsection'
+    | 'subsubsubsection'
     | 'documentclass'
     | 'titlePage'
     | 'tableOfContents'
-    | 'pageBreak'
+    | 'pageBreak' 
     | 'equation'
     | 'table'
     | 'figure'
     | 'references'
+    | 'latex'
     | null
     | undefined;
 

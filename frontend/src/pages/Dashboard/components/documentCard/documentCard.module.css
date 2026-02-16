@@ -25,12 +25,12 @@
   
   .card {
     background-color: var(--mantine-color-gray-0);
-    /* border: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));   */
+
     transition: all 300ms;      
 }
 
   .card:hover{
-    /* scale: 1.02; */
+
     background-color: var(--mantine-color-white);
 
     .cardMoreButton{
@@ -43,16 +43,7 @@
     opacity: 0%;
   }
   
-  /* .cardTitle {
-    &::after {
-      content: '';
-      display: block;
-      background-color: var(--mantine-color-blue-filled);
-      width: 45px;
-      height: 2px;
-      margin-top: var(--mantine-spacing-sm);
-    }
-  } */
+  
    
 .cardTitle{
     overflow: hidden;

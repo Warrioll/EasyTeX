@@ -9,15 +9,3 @@
     border-left: 3px solid var(--mantine-color-cyan-3);
     border-right: 3px solid var(--mantine-color-cyan-3);
   }
-
-  .input{
-    /* border-left: 3px solid var(--mantine-color-cyan-3);
-    border-right: 3px solid var(--mantine-color-cyan-3); */
-    input{
-     
-    }
-    input:focus{
-      /* background-color: #ebffff; */
-    }
-   
-  }

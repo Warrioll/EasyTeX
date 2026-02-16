@@ -1,5 +1,4 @@
-import { object } from "prop-types";
-import { FaRegClosedCaptioning } from "react-icons/fa";
+
 
 type elementFieldType={
 label:string,
@@ -192,23 +191,6 @@ const fraction={
     ],
   }
 
-  // const upperIndex={
-  //   value: '0',
-  //   label: 'Upper index',
-  //   editable: true,
-  //   children: [
-  //     {...expression}
-  //   ],
-  // }
-
-  // const lowerIndex={
-  //   value: '0',
-  //   label: 'Lower index',
-  //   editable: true,
-  //   children: [
-  //     {...expression}
-  //   ],
-  // }
 
   const sum={
     value: '0',
@@ -394,125 +376,7 @@ const fraction={
     ],
   }
 
-  const caseStructureLeftCurlyBracket={
-    value: '0',
-    label: 'Case structure (left curly bracket)',
-    editable: true,
-    children: [
-      {
-        value: '0.0',
-        label: 'Upper left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Upper right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.0',
-        label: 'Lower left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Lower right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-    ],
-  }
 
-  const caseStructureRightCurlyBracket={
-    value: '0',
-    label: 'Case structure (right curly bracket)',
-    editable: true,
-    children: [
-      {
-        value: '0.0',
-        label: 'Upper left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Upper right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.0',
-        label: 'Lower left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Lower right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-    ],
-  }
-
-  const caseStructureCurlyBrackets={
-    value: '0',
-    label: 'Case structure (curly brackets)',
-    editable: true,
-    children: [
-      {
-        value: '0.0',
-        label: 'Upper left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Upper right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.0',
-        label: 'Lower left',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-      {
-        value: '0.1',
-        label: 'Lower right',
-        editable: false,
-        children: [
-          {...expression}
-        ],
-      },
-    ],
-  }
 
   const row2ElementsLeft={
     value: '0',
@@ -903,9 +767,6 @@ export const elementsPrototypes: Record<string,elementFieldType>={
     bigDisjunction: {label: 'Big disjunction', elementPrototype: bigDisjunction, latexRepresentation: '\\bigvee^a_b'},
     bigConjunction: {label: 'Big conjunction', elementPrototype: bigConjunction, latexRepresentation: '\\bigwedge^a_b'},
     combination: {label: 'Combination', elementPrototype: combination, latexRepresentation: '\\binom{a}{b}'},
-    //caseStructureLeftBracket: {label: 'Case structure (left curly bracket)', elementPrototype: caseStructureLeftCurlyBracket, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right.'},
-   // caseStructureRightBracket: {label: 'Case structure (right curly bracket)', elementPrototype: caseStructureRightCurlyBracket, latexRepresentation: '\\left.\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
-    //caseStructureCurlyBrackets: {label: 'Case structure (curly brackets)', elementPrototype: caseStructureCurlyBrackets, latexRepresentation: '\\left\\{\\begin{array}{ll}a,&b\\\\x,&y\\end{array}\\right\\}'},
     row2ElementsLeft: {label: 'Row (2 elements, left aligned)', elementPrototype: row2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b\\end{array}\\right.'},
     row3ElementsLeft: {label: 'Row (3 elements, left aligned)', elementPrototype: row3ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a&b&c\\end{array}\\right.'},
     column2ElementsLeft: {label: 'Column (2 elements, left aligned)', elementPrototype: column2ElementsLeft, latexRepresentation: '\\left.\\begin{array}{ll}a\\\\b\\end{array}\\right.'},

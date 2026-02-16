@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { FaRegCheckCircle } from 'react-icons/fa';
-import { RiErrorWarningFill } from 'react-icons/ri';
 import {
   Box,
   Button,
@@ -12,7 +11,6 @@ import {
   PasswordInput,
   Stack,
   Text,
-  Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
@@ -20,7 +18,6 @@ import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
 import PasswarodRequirements from '@/components/ErrorInfos/PasswordRequirements';
 
 type changePasswordModalPropsType = {
-  userData: any;
   modalHandlers: [
     boolean,
     {
@@ -31,10 +28,7 @@ type changePasswordModalPropsType = {
   ];
 };
 
-export default function ChangePasswordModal({
-  userData,
-  modalHandlers,
-}: changePasswordModalPropsType) {
+export default function ChangePasswordModal({ modalHandlers }: changePasswordModalPropsType) {
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
   const [errorMessageOpened, errorMessageHandlers] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -42,7 +36,6 @@ export default function ChangePasswordModal({
   const [disableVerifyPasswdButton, setDisableVerifyPasswdButton] = useState<boolean>(false);
   const [currentPassword, setCurrentPassword] = useState<string>('');
   const [currentPasswordError, setCurrentPasswordError] = useState<string>('');
-  //const [isPasswordVerfied, setIsPasswordVerfied] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<0 | 1 | 2>(0);
   const [newPassword, setNewPassword] = useState<{ password: string; repeatedPassword: string }>({
     password: '',
@@ -58,7 +51,6 @@ export default function ChangePasswordModal({
 
   const closeModal = () => {
     setModalContent(0);
-    //setIsPasswordVerfied(false);
     setCurrentPassword('');
     setCurrentPasswordError('');
     setNewPassword({ password: '', repeatedPassword: '' });
@@ -77,7 +69,6 @@ export default function ChangePasswordModal({
         withCredentials: true,
       }
     );
-    //console.log(response)
     return response.status;
   };
 
@@ -97,7 +88,7 @@ export default function ChangePasswordModal({
       //setIsPasswordVerfied(true);
       setDisableVerifyPasswdButton(false);
     } catch (error) {
-      console.log(error.status);
+      console.error('Change password - verify password error: ', error);
       if (error.status === 403) {
         setCurrentPasswordError('Invalid password!');
         setErrorMessage('Invalid password!');
@@ -108,7 +99,6 @@ export default function ChangePasswordModal({
         await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
-      console.log('verify password error: ', error);
     }
   };
 
@@ -121,7 +111,6 @@ export default function ChangePasswordModal({
       }
     );
     return response.status;
-    //console.log(response);
   };
 
   const handlePasswordChange = async (e) => {
@@ -149,7 +138,7 @@ export default function ChangePasswordModal({
       }
       setDisableVerifyPasswdButton(false);
     } catch (error) {
-      console.log(error.status);
+      console.log('Change password - change password error: ', error);
       if (error.status === 400) {
         setNewPasswordError({ repeatedPassword: '', password: 'Invalid password format' });
         errorDialogHandlers.open();
@@ -161,7 +150,6 @@ export default function ChangePasswordModal({
         await errorMessageHandlers.open();
       }
       setDisableVerifyPasswdButton(false);
-      console.log('verify password error: ', error);
     }
   };
 
@@ -171,8 +159,7 @@ export default function ChangePasswordModal({
         opened={modalHandlers[0]}
         onClose={closeModal}
         transitionProps={{ transition: 'fade-up' }}
-        yOffset="3.5%"
-        size="50vw"
+        size="auto"
         title={
           <Text c="var(--mantine-color-cyan-8)">
             <b> Change password</b>
@@ -194,9 +181,6 @@ export default function ChangePasswordModal({
                     variant="filled"
                     label="Current password"
                     placeholder="Password"
-                    // error={
-                    //   currentPasswordError !== 'Something went wrong' ? currentPasswordError : ''
-                    // }
                     value={currentPassword}
                     onChange={(event) => {
                       setCurrentPasswordError('');
@@ -206,16 +190,21 @@ export default function ChangePasswordModal({
                 </Stack>
               </Center>
               <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
-              <Flex justify="center" m="lg" mt="xl" gap="xl">
+              <Flex
+                justify="center"
+                m={{ base: '0rem', sm: 'lg' }}
+                mt="xl"
+                gap={{ base: '0.2rem', sm: 'xl' }}
+              >
                 <Button
                   type="submit"
-                  w="15vw"
                   onClick={handlePasswordVerification}
                   disabled={disableVerifyPasswdButton}
+                  fullWidth
                 >
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <> Verify current password</>}
                 </Button>
-                <Button w="15vw" variant="outline" onClick={closeModal}>
+                <Button fullWidth variant="outline" onClick={closeModal}>
                   Cancel
                 </Button>
               </Flex>
@@ -269,14 +258,14 @@ export default function ChangePasswordModal({
               <ErrorMessage errorMessage={errorMessage} errorMessageOpened={errorMessageOpened} />
               <Flex justify="center" m="lg" mt="xl" gap="xl">
                 <Button
-                  w="15vw"
+                  fullWidth
                   onClick={handlePasswordChange}
                   disabled={disableVerifyPasswdButton}
                   type="submit"
                 >
                   {disableVerifyPasswdButton ? <Loader size={20} /> : <> Change password</>}
                 </Button>
-                <Button w="15vw" variant="outline" onClick={closeModal}>
+                <Button fullWidth variant="outline" onClick={closeModal}>
                   Cancel
                 </Button>
               </Flex>
@@ -286,7 +275,7 @@ export default function ChangePasswordModal({
           <>
             <Center h="20rem" w="100%">
               <Flex direction="column" justify="center" h="100%" align="center">
-                <Flex gap="md" m="xl">
+                <Flex gap="md" m="xl" align="center">
                   <Text size="2rem" c="var(--mantine-color-cyan-4)">
                     <FaRegCheckCircle />
                   </Text>

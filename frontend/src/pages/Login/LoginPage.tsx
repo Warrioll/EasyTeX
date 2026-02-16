@@ -1,20 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';
-import { MdError } from 'react-icons/md';
-import { RiErrorWarningFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import {
-  Alert,
   Anchor,
   BackgroundImage,
   Box,
   Button,
-  Checkbox,
   Container,
-  Dialog,
   Flex,
-  Group,
   Loader,
   Paper,
   PasswordInput,
@@ -22,12 +15,12 @@ import {
   Text,
   TextInput,
   Title,
-  Transition,
 } from '@mantine/core';
-import { isEmail, useForm } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { checkIfLoggedIn, checkIfNotLoggedIn } from '@/ApiHandlers/AuthHandler';
+import { checkIfNotLoggedIn } from '@/authHandlers/AuthHandler';
 import ErrorMessage from '@/components/ErrorInfos/ErrorMessage';
+import Logo from '@/svg/Logo';
 import styles from './loginPage.module.css';
 
 export default function LoginPage() {
@@ -41,34 +34,25 @@ export default function LoginPage() {
       email: '',
       password: '',
     },
-    // validate: {
-    //   email: isEmail('Not an email address'),
-    // },
   });
 
   const login = async (loginData) => {
-    console.log('login Data: ', loginData);
     try {
       close();
       setDisableLogInButton(true);
-      //console.log('data to - log in:', loginData.email);
-
       const response = await axios.post('http://localhost:8100/auth/login', loginData, {
         withCredentials: true,
       });
       setDisableLogInButton(false);
       navigate('/dashboard');
     } catch (e) {
+      console.error('Login error: ', e.status);
       if (e.status === 404 || e.status === 403) {
         setErrorMsg('Invalid password or email!');
-        console.log(e.status);
       } else {
         setErrorMsg('Something went wrong!');
-        console.log(e.status);
       }
 
-      //close()
-      //open();
       await new Promise((resolve) => setTimeout(resolve, 200));
       open();
       setDisableLogInButton(false);
@@ -77,33 +61,33 @@ export default function LoginPage() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      //const authCookie = Cookies.get('auth');
-      // if (authCookie !== undefined || authCookie != null) {
-      //   navigate('/dashboard');
-      // }
       await checkIfNotLoggedIn();
-      // console.log('userId:', userId);
-      // if (userId !== null || userId !== undefined) {
-      //   // navigate('/dashboard');
-      // }
     };
     checkAuth();
   }, []);
 
   return (
-    // 14 lub 13
     <>
-      <BackgroundImage src="./bg13.png" radius="xs">
-        <Stack h="100vh" align="stretch" justify="center">
+      <BackgroundImage src="./bg.png" radius="xs">
+        <Stack h="100vh" align="stretch" justify="center" mih="max-content">
           <Container w={420}>
             <Paper withBorder shadow="xl" p={30} mt={40} radius="md">
               <form onSubmit={form.onSubmit((values) => login(values))}>
+                <Flex mb="md" mt="-0.5rem" justify="center" align="center">
+                  <Logo width="1.5rem" />
+                  <Text mt="0.1rem" c="var(--mantine-color-yellow-8)" fz="xl" fw="700" ml="sm">
+                    Easy
+                  </Text>
+                  <Text mt="0.1rem" fz="xl" fw="700" c="var(--mantine-color-cyan-9)">
+                    TeX
+                  </Text>
+                </Flex>
                 <Title ta="center" className={styles.title}>
                   Welcome back!
                 </Title>
                 <Text c="dimmed" size="sm" ta="center" mt={5} mb={20}>
                   Do not have an account yet?{' '}
-                  <Anchor size="sm" href="/register" target="_blank">
+                  <Anchor size="sm" href="/register">
                     Create account
                   </Anchor>
                 </Text>
@@ -144,11 +128,6 @@ export default function LoginPage() {
             </Paper>
           </Container>
         </Stack>
-        {/* <Dialog opened={opened}  onClose={close} size="lg" radius="md" p='0px' bg='rgba(255,255,255,0.5)' style={{top: 5}}>
-        <Alert variant="light" color="red" radius="xs" title="Alert title" icon='E'>
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. At officiis, quae tempore necessitatibus placeat saepe.
-    </Alert>
-      </Dialog> */}
       </BackgroundImage>
     </>
   );

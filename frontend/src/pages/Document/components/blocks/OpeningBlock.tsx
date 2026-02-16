@@ -1,15 +1,8 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Editor, EditorContent } from '@tiptap/react';
-import parse from 'html-react-parser';
-import { cloneDeep } from 'lodash';
-import { Badge, Button, Flex, FocusTrap, Group, Input, Menu, Text } from '@mantine/core';
-import { useDisclosure, useFocusWithin } from '@mantine/hooks';
-import { RichTextEditor } from '@mantine/tiptap';
-import { blockType } from '@/Types';
+import { useEffect, useState } from 'react';
+import { Flex, Text } from '@mantine/core';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
-import styles from './blocks.module.css';
 
 type OpeningBlockPropsType = {
   idx: number;

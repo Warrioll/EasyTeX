@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import InfoErrorDialog from '@/components/ErrorInfos/InfoErrorDialog';
+import NameRequirements from '@/components/ErrorInfos/NameRequirements';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import classes from './createDocumentModal.module.css';
 
@@ -29,13 +30,12 @@ export default function CreateDocumentModal({
   modalHandlers,
 }: createDocumentModalPropsType) {
   const [documentType, setDocumentType] = useState('Article');
-  //const [createModalOpened, createModalHandlers] = useDisclosure(false);
   const [segmentedControlColor, setSegmentedControlColor] = useState<string>(
     'var(--mantine-color-blue-5)'
   );
   const [documentName, setDocumentName] = useState<string>('');
   const [nameError, setNameError] = useState<string | null>(null);
-  const docuemntNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9. _!@#$%^&-]{3,255}(?<![_.])$/g;
+  const docuemntNameRegex = /^(?![_. ])(?!.*[_. ]{2})[a-zA-Z0-9. _!@#$^&-]{3,255}(?<![_. ])$/;
   const [errorDialogOpened, errorDialogHandlers] = useDisclosure(false);
 
   const createDocument = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,9 +58,6 @@ export default function CreateDocumentModal({
         case 'Presentation':
           documentClass = 'beamer';
           break;
-        case 'Slides':
-          documentClass = 'slides';
-          break;
       }
 
       const response = await axios.post(
@@ -79,7 +76,7 @@ export default function CreateDocumentModal({
       }
     } catch (error) {
       errorDialogHandlers.open();
-      console.log('create dopcument error: ', error);
+      console.error('create document error: ', error);
     }
   };
 
@@ -114,6 +111,7 @@ export default function CreateDocumentModal({
                   disabled
                 />
                 <SegmentedControl
+                  visibleFrom="sm"
                   mt="lg"
                   value={documentType}
                   withItemsBorders={false}
@@ -143,9 +141,44 @@ export default function CreateDocumentModal({
                           `var(--mantine-color-${documentColor('beamer')}-5)`
                         );
                         break;
-                      case 'Slides':
+                    }
+                  }}
+                  fullWidth
+                  size="sm"
+                  radius="md"
+                  data={['Article', 'Report', 'Book', 'Letter', 'Presentation']}
+                  color={segmentedControlColor}
+                />
+                <SegmentedControl
+                  hiddenFrom="sm"
+                  orientation="vertical"
+                  mt="lg"
+                  value={documentType}
+                  withItemsBorders={false}
+                  onChange={(value) => {
+                    setDocumentType(value);
+                    switch (value) {
+                      case 'Article':
                         setSegmentedControlColor(
-                          `var(--mantine-color-${documentColor('slides')}-5)`
+                          `var(--mantine-color-${documentColor('article')}-5)`
+                        );
+                        break;
+                      case 'Report':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('report')}-5)`
+                        );
+                        break;
+                      case 'Book':
+                        setSegmentedControlColor(`var(--mantine-color-${documentColor('book')}-5)`);
+                        break;
+                      case 'Letter':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('letter')}-5)`
+                        );
+                        break;
+                      case 'Presentation':
+                        setSegmentedControlColor(
+                          `var(--mantine-color-${documentColor('beamer')}-5)`
                         );
                         break;
                     }
@@ -174,17 +207,8 @@ export default function CreateDocumentModal({
                       setNameError('Invalid name');
                     }
                   }}
-                  // key={form.key('email')}
-                  // {...form.getInputProps('email')}
                 />
               </Box>
-              {/* <NativeSelect
-              variant="filled"
-              radius="md"
-              label="Input label"
-              withAsterisk
-              data={['Article', 'Report', 'Book', 'Letter', 'Presentation', 'Slides']}
-            /> */}
             </SimpleGrid>
 
             <SimpleGrid cols={2} spacing="xl" mt="md">
@@ -208,20 +232,7 @@ export default function CreateDocumentModal({
         title="Document name requirements"
         errorDialogHandlers={errorDialogHandlers}
         errorDialogOpened={errorDialogOpened}
-        content={
-          <Box mb="sm">
-            <b>Document name</b> must:
-            <li> be 3-255 characters long</li>
-            <li>
-              not contain any other special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters than ._!@#$%^&-</span>
-            </li>
-            <li>
-              not start or end with ._ special{' '}
-              <span style={{ marginLeft: '1.25rem' }}>characters</span>
-            </li>
-          </Box>
-        }
+        content={<NameRequirements thingToName="Document" />}
       />
     </>
   );

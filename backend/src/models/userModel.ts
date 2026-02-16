@@ -10,5 +10,3 @@ const userSchema= new mongoose.Schema({
 export const userModel = mongoose.model('User', userSchema, 'User');
 export type userType = HydratedDocument<InferSchemaType<typeof userSchema>>
 
-//export const getDocuments = () => documentModel.find();
-//export const createDocument = (values: Record<string, any>) => new documentModel(values).save().then((document)=>document.toObject());

@@ -23,6 +23,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - BACKEND_PORT=8100
       - MONGO_URL=mongodb://user:pass@mongodb/EasyTeX?authSource=admin
+    privileged: true 
   mongodb:
     image: mongodb/mongodb-community-server:6.0-ubi8
     container_name: database
@@ -30,11 +31,13 @@ services:
       - MONGODB_INITDB_ROOT_USERNAME=user
       - MONGODB_INITDB_ROOT_PASSWORD=pass
     volumes:
+      - ./dbInit:/docker-entrypoint-initdb.d
       - type: bind
         source: ./data
         target: /data/db
     ports:
       - "27000:27017"
+    restart: on-failure
 volumes:
   frontend_node_modules:
 

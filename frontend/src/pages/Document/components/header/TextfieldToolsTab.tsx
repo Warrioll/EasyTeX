@@ -1,34 +1,12 @@
 import { ReactElement } from 'react';
-import {
-  FaBold,
-  FaCode,
-  FaItalic,
-  FaLink,
-  FaList,
-  FaStrikethrough,
-  FaSubscript,
-  FaSuperscript,
-  FaUnderline,
-} from 'react-icons/fa';
+import { FaList } from 'react-icons/fa';
 import { FaListOl } from 'react-icons/fa6';
-import { LuHeading1, LuHeading2 } from 'react-icons/lu';
-import { MdOutlineAdd } from 'react-icons/md';
-import { PiTextTBold } from 'react-icons/pi';
-import { Box, Button, Flex, Tooltip } from '@mantine/core';
-import { blockType } from '@/Types';
+import { Button, Flex, Tooltip } from '@mantine/core';
 import {
   useActiveBlockContext,
   useBlocksContentContext,
   useEditorContext,
 } from '../../DocumentContextProviders';
-
-type headerProps = {
-  //editFunctions: Record<string, (...args: any[]) => any>;
-  //editor: Editor;
-  //saveElementChanges: () => void;
-  // activeSection: number;
-  //sectionsContent: blockType[];
-};
 
 type buttonType = {
   content: ReactElement;
@@ -37,43 +15,10 @@ type buttonType = {
   tooltip: string;
 };
 
-export default function TextfieldToolsTab(
-  {
-    //editFunctions,
-    //editor,
-    //saveElementChanges,
-    //activeSection,
-    // sectionsContent,
-  }: headerProps
-) {
+export default function TextfieldToolsTab() {
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { editor } = useEditorContext();
-
-  const codeAndLink: buttonType[] = [
-    // {
-    //   //trzeba popatrzeć czemu nie działa https://tiptap.dev/docs/editor/extensions/marks/link
-    //   content: <FaLink />,
-    //   clickFunction: () => editor?.commands.toggleLink(),
-    //   fontSize: 'var(--mantine-font-size-md)',
-    //   tooltip: 'Link',
-    // },
-  ];
-
-  const indexes: buttonType[] = [
-    {
-      content: <FaSubscript />,
-      clickFunction: () => editor?.commands.toggleSubscript(),
-      fontSize: 'var(--mantine-font-size-md)',
-      tooltip: 'Subscript',
-    },
-    {
-      content: <FaSuperscript />,
-      clickFunction: () => editor?.commands.toggleSuperscript(),
-      fontSize: 'var(--mantine-font-size-md)',
-      tooltip: 'Superscript',
-    },
-  ];
 
   const lists: buttonType[] = [
     {
@@ -92,58 +37,6 @@ export default function TextfieldToolsTab(
 
   const textfiledTools = (
     <>
-      <Box ml="2rem">
-        {codeAndLink.map((formatButton, idx) => (
-          <Tooltip
-            label={formatButton.tooltip}
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          >
-            <Button
-              variant="format"
-              fz={formatButton.fontSize}
-              onClick={() => {
-                formatButton.clickFunction();
-                //saveElementChanges();
-              }}
-            >
-              {formatButton.content}
-            </Button>
-          </Tooltip>
-        ))}
-      </Box>
-
-      <Box ml="2rem" mr="2rem">
-        {indexes.map((formatButton, idx) => (
-          <Tooltip
-            label={formatButton.tooltip}
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-          >
-            <Button
-              variant="format"
-              fz={formatButton.fontSize}
-              onClick={() => {
-                formatButton.clickFunction();
-                //saveElementChanges();
-              }}
-            >
-              {formatButton.content}
-            </Button>
-          </Tooltip>
-        ))}
-      </Box>
-
       {lists.map((formatButton, idx) => (
         <Tooltip
           label={formatButton.tooltip}
@@ -160,7 +53,6 @@ export default function TextfieldToolsTab(
             fz={formatButton.fontSize}
             onClick={() => {
               formatButton.clickFunction();
-              //saveElementChanges();
             }}
           >
             {formatButton.content}
@@ -171,7 +63,6 @@ export default function TextfieldToolsTab(
   );
 
   const chooseContent = () => {
-    console.log('active', activeBlock);
     switch (blocksContent[activeBlock].typeOfBlock) {
       case 'textfield':
         return textfiledTools;

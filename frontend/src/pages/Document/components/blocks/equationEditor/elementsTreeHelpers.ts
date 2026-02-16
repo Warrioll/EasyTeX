@@ -10,6 +10,6 @@ export const updateIdx = (array, preIdx) => {
         array[i].children = updateIdx(array[i].children, idxs);
       }
     }
-   // console.log('updateX:', array);
+ 
     return array;
   };

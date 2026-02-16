@@ -20,7 +20,6 @@ export default function ErrorBanner({
   return (
     <Stack
       align="center"
-      //mih="50vh"
       p="md"
       c="var(--mantine-color-gray-6)"
       fz="2rem"

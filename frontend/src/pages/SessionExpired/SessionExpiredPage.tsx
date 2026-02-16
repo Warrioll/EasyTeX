@@ -1,20 +1,9 @@
 import { FaRegTimesCircle } from 'react-icons/fa';
-import {
-  Anchor,
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Button, Center, Paper, Stack, Text, Title } from '@mantine/core';
 
 export default function SessionExpiredPage() {
   return (
-    <Center h="100vh" w="100vw">
+    <Center h="100vh" w="100vw" mih="max-content">
       <Paper withBorder shadow="md" radius="md" p="xl" pl="6rem" pr="6rem">
         <Stack justify="center" align="center" h="100%">
           <Text fz="8rem" c="var(--mantine-color-red-4)">
@@ -29,6 +18,7 @@ export default function SessionExpiredPage() {
           <Button
             bg="var(--mantine-color-red-5)"
             w="15vw"
+            miw="10rem"
             onClick={() => {
               localStorage.removeItem('401');
               window.location = '/login';
@@ -36,9 +26,6 @@ export default function SessionExpiredPage() {
           >
             Sign in here
           </Button>
-          <Text c="var(--mantine-color-gray-6)" m="5rem" mb="0px">
-            Error code: 401
-          </Text>
         </Stack>
       </Paper>
     </Center>

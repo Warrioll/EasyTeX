@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoIosClose } from 'react-icons/io';
 import {
@@ -11,7 +10,6 @@ import {
   InputBase,
   Text,
   TextInput,
-  Title,
   useCombobox,
 } from '@mantine/core';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
@@ -62,6 +60,7 @@ export default function SearchBanner({
       }}
       c="var(--mantine-color-white)"
       justify="flex-start"
+      miw="30rem"
     >
       <Text fz="4.5rem" mr="md" ml="sm" mb="-13px">
         <FaSearch />
@@ -91,7 +90,7 @@ export default function SearchBanner({
               <TextInput
                 variant="unstyled"
                 placeholder=""
-                w="40rem"
+                w={{ base: '5rem', md: '13rem', lg: '23rem', xxxl: '40rem' }}
                 value={inputValue}
                 onChange={(event) => setInputValue(event.target.value)}
               />
@@ -127,7 +126,7 @@ export default function SearchBanner({
                     rightSectionPointerEvents="none"
                     onClick={() => combobox.toggleDropdown()}
                     variant="unstyled"
-                    w="10rem"
+                    w={{ base: '6rem', sm: '10rem' }}
                   >
                     {toTabLabelConverterCombobox() || (
                       <Input.Placeholder>Pick value</Input.Placeholder>
@@ -155,9 +154,6 @@ export default function SearchBanner({
                     <Combobox.Option value="beamer" key="beamer">
                       Presentation
                     </Combobox.Option>
-                    {/* <Combobox.Option value="slides" key="slides">
-                      Slides
-                    </Combobox.Option> */}
                   </Combobox.Options>
                 </Combobox.Dropdown>
               </Combobox>

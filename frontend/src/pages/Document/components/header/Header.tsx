@@ -1,287 +1,213 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Extension } from '@tiptap/core';
-import { Editor } from '@tiptap/react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import axios from 'axios';
-import { BiFont } from 'react-icons/bi';
-import {
-  FaBold,
-  FaCode,
-  FaItalic,
-  FaList,
-  FaRegSave,
-  FaStrikethrough,
-  FaSubscript,
-  FaSuperscript,
-  FaUnderline,
-} from 'react-icons/fa';
-import { FaListOl } from 'react-icons/fa6';
-import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import {
-  LuHeading1,
-  LuHeading2,
-  LuHeading3,
-  LuImage,
-  LuRefreshCcw,
-  LuTable,
-  //LuTableOfContents,
-} from 'react-icons/lu';
-import {
-  MdFormatListNumberedRtl,
-  MdFunctions,
-  MdOutlineAdd,
-  MdOutlineInsertPageBreak,
-  MdOutlineLibraryBooks,
-  MdOutlineTitle,
-} from 'react-icons/md';
-import { PiTextTBold } from 'react-icons/pi';
-import { RiFileDownloadFill, RiFileDownloadLine, RiSplitCellsHorizontal } from 'react-icons/ri';
+import { BiFont, BiFontFamily } from 'react-icons/bi';
+import { BsPersonWorkspace } from 'react-icons/bs';
+import { FaChevronLeft, FaChevronRight, FaRegSave, FaSave } from 'react-icons/fa';
+import { FaRegFileLines } from 'react-icons/fa6';
+import { IoDocumentsOutline, IoImagesOutline } from 'react-icons/io5';
+import { LuDownload, LuRefreshCcw, LuTable } from 'react-icons/lu';
+import { MdOutlineLibraryAdd } from 'react-icons/md';
+import { RxAvatar } from 'react-icons/rx';
+import { TbBlocks } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
 import {
-  Anchor,
   Box,
-  Burger,
   Button,
   Center,
-  Collapse,
-  Combobox,
-  Divider,
-  Drawer,
   Flex,
   FloatingIndicator,
-  Grid,
   Group,
   HoverCard,
-  Input,
-  InputBase,
-  LoadingOverlay,
-  rem,
-  ScrollArea,
+  Loader,
   SimpleGrid,
   Tabs,
   Text,
-  ThemeIcon,
-  Tooltip,
-  UnstyledButton,
-  useCombobox,
-  useMantineTheme,
 } from '@mantine/core';
-//import { MantineLogo } from '@mantinex/mantine-logo';
-import { useDisclosure } from '@mantine/hooks';
+import CustomTooltip from '@/components/other/CustomTooltip';
 import { documentColor, documentMainLabels } from '@/components/other/documentLabelsAndColors';
 import Logo from '@/svg/Logo';
-import { blockType } from '@/Types';
-import { useBlocksList } from '../../blocksList';
+import { documentClassType } from '@/Types';
+import { dateFormatter } from '@/utils/formatters';
 import {
   useActiveBlockContext,
+  useActiveTableCellContext,
+  useActiveTextfieldContext,
   useBlocksContentContext,
   useEditorContext,
+  useZoomsContext,
 } from '../../DocumentContextProviders';
-import { useAddBlock } from '../../documentHandlers';
-import FontTab from './FontTab';
-import TableToolsTab from './TableToolsTab';
+import { useBlocksList } from '../blocksListAndPrototypes';
+import DocumentToolsTab from './DocumentToolsTab';
+import { useInsertTools } from './InsertTools';
+import { useTableTools } from './TableTools';
 import TabTemplate from './TabTemplate';
 import TextfieldToolsTab from './TextfieldToolsTab';
 import { useTextTools } from './TextTools';
+import WorkspaceToolsTab from './WorkspaceToolsTab';
 import ZoomTools from './ZoomTools';
-// import {
-//   IconNotification,
-//   IconCode,
-//   IconBook,
-//   IconChartPie3,
-//   IconFingerprint,
-//   IconCoin,
-//   IconChevronDown,
-// } from '@tabler/icons-react';
 import classes from './Header.module.css';
 
-type headerProps = {
-  editFunctions: Record<string, (...args: any[]) => any>;
-  //editor: Editor;
-  saveElementChanges: () => void;
-  pdfZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
-  workspaceZoom: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
-  // activeSection: number;
-  //sectionsContent: blockType[];
-  //activeTableCellState: [[number, number], React.Dispatch<React.SetStateAction<[number, number]>>];
+type headerPropsType = {
+  pdfLoaded: boolean;
+  workspaceLoaded: boolean;
+  saveDocumentContent: () => void;
+  setPdfFile: () => void;
 };
 
-const Header: React.FC<headerProps> = ({
-  editFunctions,
-  //editor,
-  saveElementChanges,
-  pdfZoom,
-  workspaceZoom,
-  //activeSection,
-  // sectionsContent,
-  //activeTableCellState,
-}) => {
-  //const theme = useMantineTheme();
-  //const []
-
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+export default function Header({
+  saveDocumentContent,
+  pdfLoaded,
+  workspaceLoaded,
+  setPdfFile,
+}: headerPropsType) {
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-  //const {editor}= useEditorContext();
-
+  const { activeTextfield, setActiveTextfield } = useActiveTextfieldContext();
+  const { activeTableCell, setActiveTableCell } = useActiveTableCellContext();
+  const { editor } = useEditorContext();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
-  const [value, setValue] = useState<string | null>('insert');
+  const [value, setValue] = useState<string | null>('blocks');
+  const [displayBarinMinSize, setDisplayBarinMinSize] = useState<'left' | 'right'>('left');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
   const setControlRef = (val: string) => (node: HTMLButtonElement) => {
     controlsRefs[val] = node;
     setControlsRefs(controlsRefs);
   };
-  const [documentName, setDocumentName] = useState<{ name: string; documentClass: string }>({
+
+  const { pdfZoom, setPdfZoom, workspaceZoom, setWorkspaceZoom } = useZoomsContext();
+
+  const pdfZoomState: [string | null, Dispatch<SetStateAction<string | null>>] = [
+    pdfZoom,
+    setPdfZoom,
+  ];
+
+  const [documentName, setDocumentName] = useState<{
+    name: string;
+    documentClass: documentClassType | '';
+    lastUpdate: string;
+    creationDate: string;
+  }>({
     name: '',
     documentClass: '',
+    lastUpdate: '',
+    creationDate: '',
   });
+
+  const [preparingPdfToDownload, setPreparingPdfToDownload] = useState<boolean>(false);
+  const [preparingTexToDownload, setPreparingTexToDownload] = useState<boolean>(false);
+
+  const [reloadingPdf, setReloadingPdf] = useState<boolean>(false);
+  const [savingPdf, setSavingPdf] = useState<boolean>(false);
 
   const { id } = useParams();
 
-  //const [zoomValue, setZoomValue] = pdfZoom;
-
-  // const combobox = useCombobox({
-  //   onDropdownClose: () => combobox.resetSelectedOption(),
-  // });
-  // const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-  // const options = zoomValuesList.map((item) => (
-  //   <Combobox.Option value={item.toString()} key={item.toString()}>
-  //     {item * 100}%
-  //   </Combobox.Option>
-  // ));
-
   const blocksList = useBlocksList();
-
-  const insertTools = (
+  const blocksTools = () => (
     <TabTemplate
       buttons={blocksList}
       iconSize="var(--mantine-font-size-lg)"
       getToottipText={(label: string) => `Add ${label.toLocaleLowerCase()}`}
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
-  // const insertTools = (
-  //   <>
-  //     {blocksList.map((item) => {
-  //       return (
-  //         <Tooltip
-  //           label={item.blockName}
-  //           color="cyan"
-  //           position="bottom"
-  //           offset={5}
-  //           withArrow
-  //           arrowOffset={50}
-  //           arrowSize={7}
-  //           arrowRadius={2}
-  //         >
-  //           <Button
-  //             variant="format"
-  //             fz="var(--mantine-font-size-lg)"
-  //             //TODO obsługa tego
-  //             //onClick={item..addPageBreak}
-  //           >
-  //             <item.Icon />
-  //           </Button>
-  //         </Tooltip>
-  //       );
-  //     })}
-  //   </>
-  // );
 
-  // const fontTools = (
-  //   <FontTab
-  //     editFunctions={editFunctions}
-
-  //     //saveElementChanges={saveElementChanges}
-  //   />
-  // );
   const textTools = useTextTools();
-  const fontTools = (
+  const textToolsTab = () => (
     <TabTemplate
       buttons={textTools}
       iconSize="var(--mantine-font-size-sm)"
-      dontRenderButtons={[6, 7, 8, 9]}
-      belongingValidator={blocksContent[0] ? blocksContent[0].blockContent : ''}
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
-  const textFieldTools = (
-    <TextfieldToolsTab
-    //editFunctions={editFunctions}
-    //saveElementChanges={saveElementChanges}
+  const insertTools = useInsertTools();
+  const insertToolsTab = () => (
+    <TabTemplate
+      dontRenderButtons={[1, 2, 3, 4, 5]}
+      buttons={insertTools}
+      iconSize="var(--mantine-font-size-lg)"
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
     />
   );
 
-  const tableTools = <TableToolsTab editFunctions={editFunctions} />;
+  const textFieldTools = () => <TextfieldToolsTab />;
 
-  const viewTools = (
+  const tableTools = useTableTools();
+  const tableToolsTab = () => (
+    <TabTemplate
+      buttons={tableTools}
+      iconSize="var(--mantine-font-size-lg)"
+      belongingValidator={
+        blocksContent[0] && blocksContent[0].blockContent ? blocksContent[0].blockContent.class : ''
+      }
+    />
+  );
+
+  const viewTools = () => (
     <>
-      <ZoomTools zoomState={workspaceZoom} />
+      <WorkspaceToolsTab />
     </>
   );
 
-  const chooseModifyTabName = (): string => {
-    if (activeBlock !== 0) {
-      switch (blocksContent[activeBlock].typeOfBlock) {
-        case 'textfield':
-          return 'Textfield ';
-        case 'table':
-          return 'Table ';
-        default:
-          return '';
-      }
-    }
-    return '';
-  };
+  const docTools = () => <DocumentToolsTab zoomState={workspaceZoom} />;
 
-  const chooseModifyTabTools = (): ReactNode => {
-    if (activeBlock !== 0) {
-      switch (blocksContent[activeBlock].typeOfBlock) {
-        case 'textfield':
-          return textFieldTools;
-        case 'table':
-          return tableTools;
-        default:
-          return '';
-      }
-    }
-    return '';
-  };
-
-  const tabs = [
-    {
-      value: 'font',
-      label: 'Text',
-      tools: fontTools,
-    },
-    {
-      value: 'insert',
-      label: 'Blocks',
-      tools: insertTools,
-    },
-
+  const basicTabs = [
     {
       value: 'view',
-      label: 'View',
-      tools: viewTools,
+      label: 'Workspace',
+      tools: () => viewTools,
+      Icon: () => <BsPersonWorkspace />,
     },
     {
-      value: 'modify',
-      label: `${chooseModifyTabName()}`,
-      tools: chooseModifyTabTools(),
+      value: 'document',
+      label: 'Document',
+      tools: () => docTools,
+      Icon: () => <FaRegFileLines />,
+    },
+
+    {
+      value: 'blocks',
+      label: 'Blocks',
+      tools: () => blocksTools,
+      Icon: () => <TbBlocks />,
     },
   ];
 
-  const isDisabledtab = (tab: string): boolean => {
-    if (
-      tab === 'modify' &&
-      (activeBlock === 0 ||
-        blocksContent[activeBlock].typeOfBlock === 'section' ||
-        blocksContent[activeBlock].typeOfBlock === 'subsection' ||
-        blocksContent[activeBlock].typeOfBlock === 'subsubsection')
-    ) {
-      //setValue('insert');
-      return true;
-    }
-    return false;
+  const basicTextfieldTabs = [
+    {
+      value: 'font',
+      label: 'Text',
+      tools: () => textToolsTab,
+      Icon: () => <BiFontFamily />,
+    },
+    {
+      value: 'insert',
+      label: 'Insert',
+      tools: () => insertToolsTab,
+      Icon: () => <MdOutlineLibraryAdd />,
+    },
+  ];
+
+  const [tabs, setTabs] = useState(basicTabs);
+
+  const tableTab = {
+    value: 'modify',
+    label: 'Table',
+    tools: () => tableToolsTab,
+    Icon: () => <LuTable />,
+  };
+
+  const textfieldTab = {
+    value: 'modify',
+    label: 'Textfield',
+    tools: () => textFieldTools,
+    Icon: () => <BiFont />,
   };
 
   const downloadTex = async () => {
@@ -297,6 +223,7 @@ const Header: React.FC<headerProps> = ({
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
+    setPreparingTexToDownload(false);
   };
 
   const downloadPdf = async () => {
@@ -312,11 +239,50 @@ const Header: React.FC<headerProps> = ({
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
+    setPreparingPdfToDownload(false);
   };
 
   useEffect(() => {
-    setValue('insert');
-  }, [activeBlock]);
+    if (blocksContent[activeBlock]) {
+      switch (blocksContent[activeBlock].typeOfBlock) {
+        case 'textfield':
+          if (activeTextfield === '') {
+            setTabs([...basicTabs]);
+          } else {
+            setTabs([...basicTabs, ...basicTextfieldTabs, textfieldTab]);
+          }
+          break;
+        case 'table':
+          if (activeTextfield === '') {
+            if (activeTableCell[0] === 0 && activeTableCell[1] === 0) {
+              setTabs([...basicTabs]);
+            } else {
+              setTabs([...basicTabs, tableTab]);
+            }
+          } else {
+            if (activeTableCell[0] === 0 && activeTableCell[1] === 0) {
+              setTabs([...basicTabs, ...basicTextfieldTabs]);
+            } else {
+              setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
+            }
+          }
+          // setTabs([...basicTabs, ...basicTextfieldTabs, tableTab]);
+          break;
+        default:
+          if (value === 'modify') {
+            setValue('blocks');
+          }
+          if (activeTextfield === '') {
+            setValue('blocks');
+            setTabs(basicTabs);
+          } else {
+            setTabs([...basicTabs, ...basicTextfieldTabs]);
+          }
+      }
+    } else {
+      setValue('blocks');
+    }
+  }, [activeBlock, blocksContent, activeTextfield]);
 
   useEffect(() => {
     const getTitle = async () => {
@@ -324,46 +290,257 @@ const Header: React.FC<headerProps> = ({
         const response = await axios.get(`http://localhost:8100/document/${id}`, {
           withCredentials: true,
         });
-        //console.log(response.data);
-        setDocumentName({
-          name: response.data.name,
-          documentClass: response.data.documentClass,
-        });
+        setDocumentName(response.data);
       } catch (error) {
-        console.log('doc page get doc Name error:', error);
+        console.error('get document name error:', error);
       }
     };
-    getTitle();
-  }, []);
+
+    if (!isNotSaved) {
+      getTitle();
+    }
+  }, [isNotSaved]);
+
+  useEffect(() => {
+    if (pdfLoaded) {
+      setSavingPdf(false);
+      setReloadingPdf(false);
+    }
+  }, [pdfLoaded]);
+
+  const DocumentName = () => {
+    return (
+      <HoverCard
+        position="bottom"
+        offset={5}
+        arrowOffset={50}
+        arrowSize={7}
+        arrowRadius={2}
+        shadow="sm"
+        styles={{
+          arrow: {
+            border: `1px solid ${documentColor(documentName.documentClass as documentClassType)}`,
+          },
+        }}
+      >
+        <HoverCard.Target>
+          <Button
+            m="0px"
+            variant="transparent"
+            rightSection={
+              isNotSaved ? (
+                <Flex c="var(--mantine-color-error)">
+                  <Text mt="0.4rem">
+                    <FaSave />
+                  </Text>
+                </Flex>
+              ) : null
+            }
+          >
+            <Text
+              maw="10rem"
+              className={classes.documentName}
+              c={documentColor(documentName.documentClass as documentClassType)}
+            >
+              <b> {documentName.name}</b>
+            </Text>
+          </Button>
+        </HoverCard.Target>
+        <HoverCard.Dropdown
+          bd={`1px solid ${documentColor(documentName.documentClass as documentClassType)}`}
+        >
+          <SimpleGrid maw="20vw" cols={2} verticalSpacing="0.3rem">
+            <Text ml="xs" fw="700">
+              Document type:
+            </Text>
+            <Text ml="xs" c={documentColor(documentName.documentClass as documentClassType)}>
+              {documentMainLabels(documentName.documentClass as documentClassType)}
+            </Text>
+
+            <Text ml="xs" fw="700">
+              Document name:
+            </Text>
+            <Text ml="xs" c="var(--mantine-color-gray-7)" mb="sm">
+              {documentName.name}
+            </Text>
+
+            <Text ml="xs" fw="700">
+              Last update:
+            </Text>
+            <Text ml="xs" c="var(--mantine-color-gray-7)">
+              {documentName.lastUpdate ? dateFormatter(documentName.lastUpdate.toString()) : ''}
+            </Text>
+
+            <Text fw="700" ml="xs">
+              Creation date:
+            </Text>
+            <Text ml="xs" c="var(--mantine-color-gray-7)">
+              {documentName.creationDate ? dateFormatter(documentName.creationDate.toString()) : ''}
+            </Text>
+          </SimpleGrid>
+          {isNotSaved ? (
+            <Flex justify="center" c="var(--mantine-color-error)" mt="lg">
+              <Text mt="0.15rem" mr="xs">
+                <FaSave />
+              </Text>
+
+              <Text fw="500">You have unsaved changes!</Text>
+            </Flex>
+          ) : (
+            <Flex justify="center" c="red" mt="lg">
+              <Text c="var(--mantine-color-gray-6)" fw="500">
+                No unsaved changes
+              </Text>
+            </Flex>
+          )}
+        </HoverCard.Dropdown>
+      </HoverCard>
+    );
+  };
+
+  const PdfTools = () => {
+    return (
+      <>
+        <Box>
+          <CustomTooltip label={savingPdf ? 'Saving document...' : 'Save document'}>
+            <Button
+              w={{ base: '3rem', sm: '4.6rem' }}
+              variant="format"
+              disabled={!pdfLoaded || !workspaceLoaded}
+              leftSection={!savingPdf && <FaRegSave />}
+              onMouseUp={() => {
+                setSavingPdf(true);
+                saveDocumentContent();
+              }}
+              bg={savingPdf ? 'var(--mantine-color-cyan-7)' : ''}
+            >
+              {savingPdf ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                <>
+                  <span className="mantine-visible-from-sm">Save</span>
+                </>
+              )}
+            </Button>
+          </CustomTooltip>
+
+          <CustomTooltip
+            label={reloadingPdf ? 'Reloading PDF without saving...' : ' Reload PDF without saving'}
+          >
+            <Button
+              bg={reloadingPdf ? 'var(--mantine-color-cyan-7)' : ''}
+              w={{ base: '3rem', sm: '7.3rem' }}
+              variant="format"
+              disabled={!pdfLoaded}
+              leftSection={!reloadingPdf && <LuRefreshCcw />}
+              onMouseUp={() => {
+                setReloadingPdf(true);
+                setPdfFile();
+              }}
+            >
+              {reloadingPdf ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                <span className="mantine-visible-from-sm">Reload PDF</span>
+              )}
+            </Button>
+          </CustomTooltip>
+        </Box>
+        <ZoomTools tooltip="PDF zoom" zoomState={pdfZoomState} />
+        <Group justify="end" gap="0px">
+          <CustomTooltip
+            label={preparingTexToDownload ? 'Downloading .tex file...' : 'Download .tex file'}
+          >
+            <Button
+              variant="format"
+              w="4.2rem"
+              disabled={preparingTexToDownload}
+              leftSection={!preparingTexToDownload && <LuDownload />}
+              bg={preparingTexToDownload ? 'var(--mantine-color-cyan-7)' : ''}
+              onMouseUp={() => {
+                setPreparingTexToDownload(true);
+                downloadTex();
+              }}
+            >
+              {preparingTexToDownload ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                '.tex'
+              )}
+            </Button>
+          </CustomTooltip>
+          <CustomTooltip
+            label={preparingPdfToDownload ? 'Downloading .pdf file...' : 'Download .pdf file'}
+          >
+            <Button
+              w="4.2rem"
+              variant="format"
+              leftSection={!preparingPdfToDownload && <LuDownload />}
+              onMouseUp={() => {
+                setPreparingPdfToDownload(true);
+                downloadPdf();
+              }}
+              disabled={preparingPdfToDownload}
+              bg={preparingPdfToDownload ? 'var(--mantine-color-cyan-7)' : ''}
+            >
+              {preparingPdfToDownload ? (
+                <Loader color="var(--mantine-color-white)" size={16} />
+              ) : (
+                '.pdf'
+              )}
+            </Button>
+          </CustomTooltip>
+        </Group>
+      </>
+    );
+  };
 
   return (
-    <Box h="10vh">
-      {/* <header> */}
-      <Tabs radius="sm" variant="none" value={value} onChange={setValue}>
-        <SimpleGrid cols={5} h="5vh" pl="lg" pr="lg" ml="xs" mr="xs">
-          <Group h="100%" w="100%">
-            <Anchor href="/dashboard" className={classes.anchor} pl="xs" pr="xs">
-              <Flex justify="center" align="center">
-                <Logo width="1.3rem" />
-                <Text mt="0.1rem" c="var(--mantine-color-yellow-8)" fz="md" fw="700" ml="sm">
-                  Easy
-                </Text>
-                <Text mt="0.1rem" fz="md" fw="700" c="var(--mantine-color-cyan-9)">
-                  TeX
-                </Text>
-              </Flex>
-            </Anchor>
-          </Group>
-          <Group h="100%">
-            <Tabs.List ref={setRootRef} className={classes.list}>
+    <Box h="5.3rem" miw="48rem" display="block">
+      <Tabs
+        radius="sm"
+        variant="none"
+        value={value}
+        onChange={setValue}
+        miw="48rem"
+        style={{ flexShrink: '0' }}
+      >
+        <Flex
+          justify="space-between"
+          h="2.5rem"
+          pl="lg"
+          pr="lg"
+          ml="xs"
+          mr="xs"
+          pb="0px"
+          mb="0px"
+          miw="48rem"
+          style={{ flexShrink: '0' }}
+        >
+          <Flex h="100%" w="40vw" miw="24rem" mb="0px" style={{ flexShrink: '0' }}>
+            <Button
+              p="0px"
+              mr="md"
+              variant="transparent"
+              onClick={() => {
+                window.location.href = '/dashboard';
+              }}
+              fz="md"
+              pt="7px"
+            >
+              <Logo width="1.4rem" />
+            </Button>
+            <Tabs.List ref={setRootRef} className={classes.list} mb="0px" mt="5px" w="max-content">
               {tabs.map((tab) => (
                 <Tabs.Tab
                   value={tab.value}
                   ref={setControlRef(tab.value)}
                   className={classes.tab}
-                  disabled={isDisabledtab(tab.value)}
+                  leftSection={<tab.Icon />}
+                  styles={{ tabSection: { marginRight: '6px' } }}
+                  style={{ zIndex: '15' }}
                 >
-                  {tab.label}
+                  <Box visibleFrom="xxxl">{tab.label}</Box>
                 </Tabs.Tab>
               ))}
               <FloatingIndicator
@@ -372,167 +549,187 @@ const Header: React.FC<headerProps> = ({
                 className={classes.indicator}
               />
             </Tabs.List>
-          </Group>
+          </Flex>
 
-          <Center>
-            <HoverCard
-              //color="cyan"
-              position="bottom"
-              offset={5}
-              withArrow
-              arrowOffset={50}
-              arrowSize={7}
-              arrowRadius={2}
-            >
-              <HoverCard.Target>
-                <Button variant="transparent">
-                  <Text mr="xs" c={documentColor(documentName.documentClass)}>
-                    <b>{documentMainLabels(documentName.documentClass)}</b>
-                  </Text>{' '}
-                  |
-                  <Text className={classes.documentName} ml="xs" c="var(--mantine-color-gray-7)">
-                    <b> {documentName.name}</b>
-                  </Text>
-                </Button>
-              </HoverCard.Target>
-              <HoverCard.Dropdown>
-                <Box maw="20vw">
-                  <Flex>
-                    <b>Type:</b>
-                    <Text ml="lg" c={documentColor(documentName.documentClass)}>
-                      {documentMainLabels(documentName.documentClass)}
-                    </Text>
-                  </Flex>
-                  <Flex>
-                    <b>Name:</b>
-                    <Text ml="xs" c="var(--mantine-color-gray-7)">
-                      {documentName.name}
-                    </Text>
-                  </Flex>
-                </Box>
-              </HoverCard.Dropdown>
-            </HoverCard>
+          <Center visibleFrom="md" mb="0px" p="0px" w="10vw">
+            <DocumentName />
           </Center>
-          <Group justify="end" gap="0px">
-            {/* <Button variant="transparent">
-              <RiSplitCellsHorizontal />
-            </Button> */}
-            <Button
-              variant="transparent"
-              leftSection={<RiFileDownloadLine />}
-              onClick={downloadTex}
-            >
-              .tex
-            </Button>
-            <Button
-              variant="transparent"
-              leftSection={<RiFileDownloadFill />}
-              onClick={downloadPdf}
-            >
-              .pdf
-            </Button>
-          </Group>
-          <Group justify="end" h="100%" w="100%">
-            <Button variant="default" size="xs">
-              Profile
-            </Button>
-          </Group>
-        </SimpleGrid>
 
-        <SimpleGrid cols={2} spacing="0px" h="5vh">
+          <Flex miw="24rem" mb="0px" w="40vw" style={{ flexShrink: '0' }}>
+            <Group justify="end" h="100%" w="100%" ml="xl" gap={0} mb="0px" p="0px">
+              <Box hiddenFrom="md">
+                <DocumentName />
+              </Box>
+              <Button
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                c="var(--mantine-color-gray-7)"
+                leftSection={<IoDocumentsOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/dashboard';
+                }}
+              >
+                <span className="mantine-visible-from-md">Documents</span>
+              </Button>
+              <Button
+                c="var(--mantine-color-gray-7)"
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                leftSection={<IoImagesOutline />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/assetsLibrary';
+                }}
+              >
+                <span className="mantine-visible-from-md">Assets</span>
+              </Button>
+              <Button
+                c="var(--mantine-color-gray-7)"
+                pt="0px"
+                pb="0px"
+                variant="transparent"
+                leftSection={<RxAvatar />}
+                className={classes.control}
+                onClick={() => {
+                  window.location.href = '/profile';
+                }}
+              >
+                <span className="mantine-visible-from-md">Account</span>
+              </Button>
+            </Group>
+          </Flex>
+        </Flex>
+
+        <SimpleGrid
+          cols={2}
+          spacing="0px"
+          visibleFrom="xl"
+          h="3rem"
+          miw="48rem"
+          mih="2.8rem"
+          mah="5vh"
+        >
           <Center
             style={{ borderRadius: 'var(--mantine-radius-md)' }}
             pl="lg"
             pr="lg"
-            ml="lg"
+            ml="12px"
             mr="xs"
+            miw="max-content"
             className={classes.band}
           >
             {tabs.map((tab) => (
-              <Tabs.Panel value={tab.value}>{tab.tools}</Tabs.Panel>
+              <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
             ))}
           </Center>
-          <Center
-            style={{ borderRadius: 'var(--mantine-radius-md)' }}
+
+          <Flex
+            justify="center"
+            align="center"
             pl="lg"
             pr="lg"
+            gap="xl"
+            miw="max-content"
             ml="xs"
-            mr="lg"
+            mr="12px"
+            style={{ borderRadius: 'var(--mantine-radius-md)' }}
             className={classes.band}
           >
-            <Box ml="2rem" mr="2rem">
-              <Button
-                variant="format"
-                leftSection={<FaRegSave />}
-                onClick={editFunctions.sendChanges}
-              >
-                Save
-              </Button>
-              <Button
-                variant="format"
-                leftSection={<LuRefreshCcw />}
-                onClick={editFunctions.reloadPdf}
-              >
-                Reload PDF
-              </Button>
-            </Box>
-            <ZoomTools zoomState={pdfZoom} />
-          </Center>
+            <PdfTools />
+          </Flex>
         </SimpleGrid>
 
-        {/* <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" /> */}
-      </Tabs>
-      {/* </header> */}
-
-      {/* //do Burgera
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        hiddenFrom="sm"
-        zIndex={1000000}
-      >
-        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
-          <Divider my="sm" />
-
-          <a href="#" className={classes.link}>
-            Home
-          </a>
-          <UnstyledButton className={classes.link} onClick={toggleLinks}>
-            <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown
-                style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
-              />
+        <SimpleGrid
+          cols={1}
+          spacing="0px"
+          hiddenFrom="xl"
+          h="3rem"
+          mih="2.8rem"
+          miw="max-content"
+          mah="5vh"
+        >
+          <Flex
+            w="100vw"
+            justify="center"
+            style={{ display: displayBarinMinSize === 'left' ? 'flex' : 'none' }}
+            miw="48rem"
+          >
+            <Center
+              w="100%"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              pl="lg"
+              pr="lg"
+              ml="12px"
+              mr="xs"
+              className={classes.band}
+              miw="max-content"
+            >
+              {tabs.map((tab) => (
+                <Tabs.Panel value={tab.value}>{tab.tools()()}</Tabs.Panel>
+              ))}
             </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>
-            {
-              //links
-            }
-          </Collapse>
-          <a href="#" className={classes.link}>
-            Learn
-          </a>
-          <a href="#" className={classes.link}>
-            Academy
-          </a>
+            <Center
+              className={classes.band}
+              style={{
+                borderTopLeftRadius: 'var(--mantine-radius-md)',
+                borderBottomLeftRadius: 'var(--mantine-radius-md)',
+              }}
+              miw="max-content"
+            >
+              <Button
+                variant="format"
+                w="2rem"
+                onMouseUp={() => {
+                  setDisplayBarinMinSize('right');
+                }}
+              >
+                <FaChevronLeft />
+              </Button>
+            </Center>
+          </Flex>
 
-          <Divider my="sm" />
-
-          <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
-        </ScrollArea>
-      </Drawer> */}
+          <Flex
+            w="100vw"
+            justify="center"
+            style={{ display: displayBarinMinSize === 'left' ? 'none' : 'flex' }}
+            miw="48rem"
+          >
+            <Center
+              className={classes.band}
+              style={{
+                borderTopRightRadius: 'var(--mantine-radius-md)',
+                borderBottomRightRadius: 'var(--mantine-radius-md)',
+              }}
+              miw="max-content"
+            >
+              <Button
+                variant="format"
+                w="2rem"
+                onMouseUp={() => {
+                  setDisplayBarinMinSize('left');
+                }}
+              >
+                <FaChevronRight />
+              </Button>
+            </Center>
+            <Center
+              w="100%"
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              pl="lg"
+              pr="lg"
+              mr="12px"
+              ml="xs"
+              className={classes.band}
+              miw="max-content"
+            >
+              <PdfTools />
+            </Center>
+          </Flex>
+        </SimpleGrid>
+      </Tabs>
     </Box>
   );
-};
-
-export default Header;
+}

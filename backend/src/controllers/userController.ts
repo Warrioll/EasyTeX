@@ -7,23 +7,13 @@ import { userNameRegex, emailRegex, passwordRegex } from '../nameRegexes';
 import { createDirectory, deleteDirectory } from '../handlers/fileHandlers';
 
 
-// export const getUserById = async (req: express.Request, res: express.Response)=>{
 
-//     try{
-//       const {id} = req.params;
-//       const user = await userModel.findById(id);
-//       res.status(200).json(user);
-//   }catch(error){
-//       console.log("Get ERROR: ", error)
-//       res.sendStatus(400);
-//   }
-// }
 
 
 export const getUserData = async (req: express.Request, res: express.Response)=>{
 
     try{
-      //const {id} = req.params;
+
       const userId = await verifySession(req.cookies.auth, res);
       if( userId!==null){
       const user = await userModel.findById(userId);
@@ -45,18 +35,6 @@ export const getUserData = async (req: express.Request, res: express.Response)=>
   }
 }
 
-export const getUserByEmail = async (req: express.Request, res: express.Response)=>{
-
-    try{
-      const {email} = req.params;
-      const [user] = await userModel.find({email: email, password: 'abc1234?', userName: 'Warrioll'});
-      res.status(200).json(user);
-  }catch(error){
-      console.log("Get ERROR: ", error)
-      res.sendStatus(500);
-  }
-}
-
 export const  getAllUsers= async (req: express.Request, res: express.Response)=>{
   try{
       const users = await userModel.find();
@@ -68,7 +46,6 @@ export const  getAllUsers= async (req: express.Request, res: express.Response)=>
 };
 
 export const editUserDetails = async (req: express.Request, res: express.Response)=>{
-  //console.log('editUserDetails')
   try{
       if(req.cookies.auth===null || req.cookies.auth===undefined){
          res.sendStatus(401);
@@ -77,9 +54,7 @@ export const editUserDetails = async (req: express.Request, res: express.Respons
       const userId = await verifySession(req.cookies.auth,res);
       if( userId!==null){
       const user = await userModel.findById(userId);
-      //console.log(user)
         if (userNameRegex.test(req.body.userName) && emailRegex.test(req.body.email)){
-          //console.log(userId)
              const updatedUser = await userModel.findByIdAndUpdate(userId, {userName: req.body.userName, email: req.body.email})
               res.status(200).json(updatedUser);
         }else{
@@ -102,13 +77,12 @@ export const changePasswordDetails = async (req: express.Request, res: express.R
       }
 
       const userId = await verifySession(req.cookies.auth,res);
-      //const user = await userModel.findById(userId);
        
       if( userId!==null){
       const user = await userModel.findById(userId);
-      console.log(req.body.password)
+    
         if (passwordRegex.test(req.body.password)){
-          console.log('ok')
+     
              const updatedUser = await userModel.findByIdAndUpdate(userId, {password: req.body.password})
             
               res.status(200).json(updatedUser);
@@ -140,7 +114,6 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
             await documentModel.deleteMany({userId: userId})
             await deleteSession(req.cookies.auth)
             await userModel.findByIdAndDelete(userId);
-            // TODO Delete sessions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!s
           res.sendStatus(200);
         }else{
         res.sendStatus(403);
@@ -155,24 +128,21 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
   try{
 
     const data = req.body
-    console.log(req.body)
+
     const emailLenghtRegex=/.{5,320}/g
     const userNameLenghtRegex=/.{3,30}/g
     const passwordLenghtRegex=/.{8,64}/g
     if(emailLenghtRegex.test(data.email) && userNameLenghtRegex.test(data.userName) &&passwordLenghtRegex.test(data.password)){
-      // const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})$/g
-      // const userNameRegex = /^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._!@#$%^&*?\-]+(?<![_.])$/g
-      // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
       if(emailRegex.test(data.email) && userNameRegex.test(data.userName) && passwordRegex.test(data.password)){
   
         const checkEmail = await userModel.findOne({email: data.email})
-        const checkUserName = await userModel.findOne({email: data.userName})
-        console.log(checkEmail)
-        //walidacja regexem emaila i username (długość) ale może w innym if
+        const checkUserName = await userModel.findOne({userName: data.userName})
+     
+      
         if((checkEmail===null || checkEmail===undefined) && (checkUserName===null || checkUserName===undefined)){
           const newUser = new userModel(data)
           const savedUser = await newUser.save();
-          console.log('creating user')
+      
           await createDirectory(['documentBase', savedUser._id as unknown as string].join('/'))
           await createDirectory(['figureBase', savedUser._id as unknown as string].join('/'))
           res.status(201).json(savedUser)
@@ -187,6 +157,6 @@ export const createUser =async (req: express.Request, res: express.Response)=>{
     }
 
   }catch(error){
-    console.log("creating user error: ", error)
+    console.error("creating user error: ", error)
   }
 }

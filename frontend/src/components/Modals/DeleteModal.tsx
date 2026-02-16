@@ -1,14 +1,12 @@
 import { ReactElement, useState } from 'react';
-import { FaArrowLeft, FaRegTrashAlt } from 'react-icons/fa';
-import { RiErrorWarningFill } from 'react-icons/ri';
+import { FaRegTrashAlt } from 'react-icons/fa';
+
 import {
-  Box,
+
   Button,
-  Flex,
   FocusTrap,
   Group,
   Loader,
-  LoadingOverlay,
   Modal,
   SimpleGrid,
   Text,
@@ -36,7 +34,6 @@ export default function DeleteModal({
   children,
   deleteFunction,
 }: deleteModalPropsType) {
-  //const [deleteErrorInfo, setDeleteErrorInfo] = useState<string | null>(null);
   const [disableDeleteButton, setDisableDeleteButton] = useState<boolean>(false);
   const [active, { toggle }] = useDisclosure(false);
 
@@ -53,14 +50,13 @@ export default function DeleteModal({
     try {
       setDisableDeleteButton(true);
 
-      //setDeleteErrorInfo(null);
       await errorMessageHandlers.close();
       await new Promise((resolve) => setTimeout(resolve, 200));
       await deleteFunction();
       deleteModalHandlers[1].close();
       setDisableDeleteButton(false);
     } catch (e) {
-      console.log(`Delete ${thingToDelete} error:`, e);
+      console.error(`Delete ${thingToDelete} error:`, e);
       setErrorMessage('Something went wrong!');
       await errorMessageHandlers.open();
 

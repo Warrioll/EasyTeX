@@ -1,11 +1,16 @@
 .sectionBlockStyle{
     width: 100%;
      background-color: var(--mantine-color-white);
-   /* border: 1px solid var(--mantine-color-cyan-0); */
-   /* border-left: 3px solid var(--mantine-color-cyan-3); */
-  /* background-color: #ebffff; */
     border-radius: var(--mantine-radius-md);
 
+}
+
+.markedBlockFrameMoreButton:hover{
+    background-color: var(--mantine-color-cyan-1);
+}
+
+.buttonWhiteHover:hover{
+    background-color: var(--mantine-color-gray-1);
 }
 
 .unmarkedFrame{
@@ -21,7 +26,7 @@
 }
 
 .blockFrameStyle{
-    /* background-color: var(--mantine-color-cyan-0); */
+
     border-left: 3px solid var(--mantine-color-cyan-3);
     border-right: 3px solid var(--mantine-color-cyan-3);
   
@@ -32,15 +37,6 @@
     top: 100
 }
 
-.textfieldNotFocused{
-    /* word-wrap: break-word;
-    overflow-wrap: break-word;
-    text-align: justify; */
-}
-
-.centeredInput{
-
-}
 
 .titlePageContent{
     border-bottom: 1px solid var(--mantine-color-gray-1);
@@ -76,6 +72,9 @@
 
    width: 100%;
    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
 }
 
@@ -94,3 +93,34 @@
         cursor: default;
     }
 }
+
+.codeEditorNumbers{
+    font-family: monospace;
+    line-height: 1.2rem;
+    padding: 0px;
+    margin: 0px;
+
+
+
+}
+
+
+    .codeEditorInput{
+       outline: none;
+       font-family: monospace;
+        font-size: 1rem;
+         line-height: 1.2rem;
+          padding:0.5rem;
+           margin: 0px;
+         border-bottom-left-radius: 0px;
+           border-top-left-radius: 0px;
+        word-wrap: normal;
+        word-break: normal;
+        overflow: auto;
+                border-radius: var(--mantine-radius-md);
+    }
+
+    .codeEditorInput:focus{
+         outline: none;
+         border: none
+    }

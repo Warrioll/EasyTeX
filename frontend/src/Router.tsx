@@ -1,15 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import GuestLayout from './components/Layout/GuestLayout/GuestLayout';
 import MainLayout from './components/Layout/MainLayout/MainLayout';
+import AccountDeletedPage from './pages/AccountDeleted/AccountDeletedPage';
 import MyAssetsPage from './pages/Assets/MyAssetsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
-import {
-  ActiveBlockProvider,
-  ActiveTableCellProvider,
-  BlocksContentProvider,
-} from './pages/Document/DocumentContextProviders';
+import { BlocksContentProvider, ZoomsProvider } from './pages/Document/DocumentContextProviders';
 import DocumentPage from './pages/Document/DocumentPage';
-import { HomePage } from './pages/Home.page';
+import Homepage from './pages/Homepage/Homepage';
 import LoginPage from './pages/Login/LoginPage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -19,17 +16,15 @@ import SessionExpiredPage from './pages/SessionExpired/SessionExpiredPage';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <GuestLayout content={<HomePage />} />,
+    element: <GuestLayout content={<Homepage />} />,
   },
   {
     path: '/document/:id',
     element: (
       <BlocksContentProvider>
-        <ActiveBlockProvider>
-          <ActiveTableCellProvider>
-            <DocumentPage />
-          </ActiveTableCellProvider>
-        </ActiveBlockProvider>
+        <ZoomsProvider>
+          <DocumentPage />
+        </ZoomsProvider>
       </BlocksContentProvider>
     ),
   },
@@ -39,7 +34,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/profile',
-    element: <MainLayout content={<ProfilePage />} />,
+    element: <MainLayout whiteBackground content={<ProfilePage />} />,
   },
   {
     path: '/assetsLibrary',
@@ -62,12 +57,19 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/accountDeleted',
+    element: (
+      <GuestLayout
+        content={localStorage.getItem('accountDeleted') ? <AccountDeletedPage /> : <NotFoundPage />}
+      />
+    ),
+  },
+  {
     path: '*',
     element: <GuestLayout content={<NotFoundPage />} />,
   },
 ]);
 
 export function Router() {
-  console.log();
   return <RouterProvider router={router} />;
 }

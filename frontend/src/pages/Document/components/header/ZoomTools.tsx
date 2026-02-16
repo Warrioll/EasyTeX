@@ -1,79 +1,63 @@
 import { FiZoomIn, FiZoomOut } from 'react-icons/fi';
-import { Button, Combobox, Flex, Input, InputBase, useCombobox } from '@mantine/core';
+import { Button, Flex } from '@mantine/core';
+import CustomTooltip from '@/components/other/CustomTooltip';
+import SimpleCombobox from '@/components/other/SimpleCombobox';
 
 type zoomToolsPropsType = {
   zoomState: [string | null, React.Dispatch<React.SetStateAction<string | null>>];
+  tooltip: string;
 };
 
-export default function ZoomTools({ zoomState }: zoomToolsPropsType) {
+export default function ZoomTools({ zoomState, tooltip }: zoomToolsPropsType) {
   const [zoomValue, setZoomValue] = zoomState;
 
   const zoomValuesList = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-  const options = zoomValuesList.map((item) => (
-    <Combobox.Option value={item.toString()} key={item.toString()}>
-      {item * 100}%
-    </Combobox.Option>
-  ));
 
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
+  const zoomList = [
+    { value: 0.25, label: '25%' },
+    { value: 0.5, label: '50%' },
+    { value: 0.75, label: '75%' },
+    { value: 1, label: '100%' },
+    { value: 1.25, label: '125%' },
+    { value: 1.5, label: '150%' },
+    { value: 1.75, label: '175%' },
+    { value: 2, label: '200%' },
+  ];
 
   return (
     <Flex ml="2rem" mr="2rem">
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={() => {
-          const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) - 1;
-          if (zoomIdx >= 0) {
-            setZoomValue(zoomValuesList[zoomIdx].toString());
-          }
-        }}
-      >
-        <FiZoomOut />
-      </Button>
-      <Combobox
-        store={combobox}
-        onOptionSubmit={(val) => {
-          setZoomValue(val);
-          combobox.closeDropdown();
-        }}
-      >
-        <Combobox.Target>
-          <InputBase
-            w="5rem"
-            component="button"
-            type="button"
-            pointer
-            rightSection={<Combobox.Chevron />}
-            rightSectionPointerEvents="none"
-            onClick={() => combobox.toggleDropdown()}
-            variant="filled"
-            p="0px"
-          >
-            {(Number(zoomValue) * 100).toString().concat('%') || (
-              <Input.Placeholder>Pick value</Input.Placeholder>
-            )}
-          </InputBase>
-        </Combobox.Target>
+      <CustomTooltip label="Zoom out">
+        <Button
+          variant="format"
+          fz="var(--mantine-font-size-lg)"
+          onMouseUp={() => {
+            const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) - 1;
+            if (zoomIdx >= 0) {
+              setZoomValue(zoomValuesList[zoomIdx].toString());
+            }
+          }}
+          disabled={zoomValue === '0.25'}
+        >
+          <FiZoomOut />
+        </Button>
+      </CustomTooltip>
+      <SimpleCombobox tooltip={tooltip} valueState={zoomState} values={zoomList} width="4.1rem" />
 
-        <Combobox.Dropdown>
-          <Combobox.Options>{options}</Combobox.Options>
-        </Combobox.Dropdown>
-      </Combobox>
-      <Button
-        variant="format"
-        fz="var(--mantine-font-size-lg)"
-        onClick={() => {
-          const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) + 1;
-          if (zoomIdx < zoomValuesList.length) {
-            setZoomValue(zoomValuesList[zoomIdx].toString());
-          }
-        }}
-      >
-        <FiZoomIn />
-      </Button>
+      <CustomTooltip label="Zoom in">
+        <Button
+          disabled={zoomValue === '2'}
+          variant="format"
+          fz="var(--mantine-font-size-lg)"
+          onMouseUp={() => {
+            const zoomIdx = zoomValuesList.indexOf(Number(zoomValue)) + 1;
+            if (zoomIdx < zoomValuesList.length) {
+              setZoomValue(zoomValuesList[zoomIdx].toString());
+            }
+          }}
+        >
+          <FiZoomIn />
+        </Button>
+      </CustomTooltip>
     </Flex>
   );
 }

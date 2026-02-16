@@ -1,10 +1,8 @@
-.bar{
-    
+  .page{
+  margin-top: 0rem;
+  margin-bottom: 1rem;
+  margin: 0.5rem;
 
+   
+  }
 
-}
-
-.space{
-    padding: 10px;
-    padding-right: 10px;
-}

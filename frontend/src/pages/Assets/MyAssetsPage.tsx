@@ -1,30 +1,18 @@
-import { ReactElement, useEffect, useReducer, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import { get } from 'lodash';
-import { FaArrowLeft, FaRegTrashAlt } from 'react-icons/fa';
-import { MdArrowBackIosNew, MdDriveFileRenameOutline, MdOutlineZoomOutMap } from 'react-icons/md';
+import { FaRegTrashAlt } from 'react-icons/fa';
+import { MdDriveFileRenameOutline, MdOutlineZoomOutMap } from 'react-icons/md';
 import { TbForbid2 } from 'react-icons/tb';
-import {
-  Anchor,
-  Box,
-  Button,
-  Center,
-  Flex,
-  Image,
-  Modal,
-  SimpleGrid,
-  Text,
-  Title,
-  Tooltip,
-} from '@mantine/core';
+import { Button, Center, Flex, Image, Modal, SimpleGrid, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import FiguresLibrary from '@/components/FiguresLibrary/FiguresLibrary';
 import DeleteModal from '@/components/Modals/DeleteModal';
 import RenameModal from '@/components/Modals/RenameModal';
+import CustomTooltip from '@/components/other/CustomTooltip';
+import { dateFormatter } from '@/utils/formatters';
 import classes from './myAssetsPage.module.css';
 
 export default function MyAssetsPage() {
-  const figureState = useState<string | null>(null);
   const choosenFigureState = useState<number | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [renameModalOpened, renameModalHandlers] = useDisclosure(false);
@@ -53,14 +41,13 @@ export default function MyAssetsPage() {
         url,
       });
     } catch (e) {
-      console.log('getFugure Error: ', e);
+      console.error('get figure (for preview) error: ', e);
     }
   };
 
   const getFigureForDelete = async () => {
     try {
       const data = await getFigureData();
-      //const url = await getFigureURL();
 
       setChoosenFigureData({
         _id: data.id,
@@ -70,7 +57,7 @@ export default function MyAssetsPage() {
         url: null,
       });
     } catch (e) {
-      console.log('getFugure Error: ', e);
+      console.error('get figure (for deletion) error: ', e);
     }
   };
 
@@ -125,91 +112,36 @@ export default function MyAssetsPage() {
       }
     );
 
-    //console.log('renemae response: ', response);
-    //deleteModalHandlers.close();
     choosenFigureState[1](null);
     setLibraryKey((prev) => prev + 1);
     setChoosenFigureData(null);
   };
 
-  //   const figurePreview = (): ReactElement => {
-  //     return (
-  //       <Modal opened={opened} onClose={close} title={`Preview: ${choosenFigureData.name}`}>
-  //         <Image
-  //           h="65vh"
-  //           key={0}
-  //           src={choosenFigureData.url}
-  //           //onLoad={() => URL.revokeObjectURL(URL.createObjectURL(uploadFigure[0]))}
-  //           fit="contain"
-  //         />
-  //       </Modal>
-  //     );
-  //   };
-
   return (
     <>
       <SimpleGrid
-        cols={3}
+        cols={2}
         mb="xs"
         style={{
           background:
             choosenFigureState[0] === null
-              ? `var(--mantine-color-white)`
-              : `linear-gradient(to right,var(--mantine-color-cyan-7),var(--mantine-color-cyan-3)`,
+              ? `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-1),   var(--mantine-color-white)`
+              : `linear-gradient(to right,var(--mantine-color-cyan-6), var(--mantine-color-cyan-5)`,
           borderRadius: 'var(--mantine-radius-md)',
+          transition: 'all 300ms ease',
         }}
         ml="xl"
         mr="xl"
-        p="xs"
         bd="1px solid var(--mantine-color-gray-3)"
+        py="0.3rem"
       >
-        <Flex align="center" justify="flex-start">
-          <Anchor
-            variant="transparent"
-            c={
-              choosenFigureState[0] === null
-                ? 'var(--mantine-color-cyan-7)'
-                : 'var(--mantine-color-white)'
-            }
-            ml="sm"
-            href="/dashboard"
-          >
-            <Center>
-              <FaArrowLeft />
-              <Text fw="500" ml="xs">
-                Go to dashboard
-              </Text>
-            </Center>
-          </Anchor>
-        </Flex>
-        <Flex align="center" justify="center">
-          <Text
-            fz="1.2rem"
-            ml="xl"
-            mr="xl"
-            mt="0px"
-            fw="500"
-            c={
-              choosenFigureState[0] === null
-                ? 'var(--mantine-color-cyan-9)'
-                : 'var(--mantine-color-white)'
-            }
-          >
+        <Flex align="center" justify="start">
+          <Text fz="1rem" ml="xl" mr="xl" mt="0px" fw="500" c="var(--mantine-color-white)">
             Assets library
           </Text>
         </Flex>
         <Flex c="var(--mantine-color-gray-7)" justify="flex-end" align="center">
-          <Tooltip
-            label="Preview"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          <CustomTooltip label="Preview">
             <Button
               p="0px"
               pr="xs"
@@ -231,18 +163,8 @@ export default function MyAssetsPage() {
             >
               <MdOutlineZoomOutMap />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Rename"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Rename">
             <Button
               pr="xs"
               p="0px"
@@ -261,25 +183,15 @@ export default function MyAssetsPage() {
                 try {
                   setRenameFigure((await getFigureData()).name);
                 } catch (e) {
-                  console.log('getFugure Error: ', e);
+                  console.error('get figure (for rename) Error: ', e);
                 }
                 renameModalHandlers.open();
               }}
             >
               <MdDriveFileRenameOutline />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Unmark"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Unmark">
             <Button
               pr="xs"
               fz="1.3rem"
@@ -299,18 +211,8 @@ export default function MyAssetsPage() {
             >
               <TbForbid2 />
             </Button>
-          </Tooltip>
-          <Tooltip
-            label="Delete"
-            color="cyan"
-            position="bottom"
-            offset={5}
-            withArrow
-            arrowOffset={50}
-            arrowSize={7}
-            arrowRadius={2}
-            disabled={choosenFigureState[0] === null}
-          >
+          </CustomTooltip>
+          <CustomTooltip label="Delete">
             <Button
               pr="xs"
               fz="1.3rem"
@@ -332,7 +234,7 @@ export default function MyAssetsPage() {
             >
               <FaRegTrashAlt />
             </Button>
-          </Tooltip>
+          </CustomTooltip>
         </Flex>
       </SimpleGrid>
       <Center
@@ -345,7 +247,6 @@ export default function MyAssetsPage() {
       >
         <FiguresLibrary
           key={libraryKey}
-          //figureState={figureState}
           choosenFigureState={choosenFigureState}
           height="calc(100vh - 130px)"
         />
@@ -362,13 +263,7 @@ export default function MyAssetsPage() {
         }
       >
         {choosenFigureData ? (
-          <Image
-            h="81vh"
-            key={0}
-            src={choosenFigureData?.url}
-            //onLoad={() => URL.revokeObjectURL(URL.createObjectURL(uploadFigure[0]))}
-            fit="contain"
-          />
+          <Image h="81vh" key={0} src={choosenFigureData?.url} fit="contain" />
         ) : (
           <>
             <Center h="81vh" c="var(--mantine-color-error">
@@ -387,7 +282,7 @@ export default function MyAssetsPage() {
 
       <DeleteModal
         deleteModalHandlers={[deleteModalOpened, deleteModalHandlers]}
-        thingToDelete="document"
+        thingToDelete="asset"
         deleteFunction={deleteDocuemnt}
       >
         <>
@@ -398,7 +293,7 @@ export default function MyAssetsPage() {
               <b>Type: </b>
               {choosenFigureData?.fileType}
               <b>Added: </b>
-              {choosenFigureData?.creationDate}{' '}
+              {dateFormatter(choosenFigureData?.creationDate)}{' '}
             </>
           ) : (
             <></>

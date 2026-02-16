@@ -1,40 +1,16 @@
-import { Dispatch, SetStateAction } from 'react';
-import { FaArrowDown, FaArrowUp, FaRegTrashAlt } from 'react-icons/fa';
-import {
-  Accordion,
-  Box,
-  Button,
-  Flex,
-  Group,
-  Menu,
-  Modal,
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Accordion, Flex, Paper, Stack, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { blockType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import ButtonsOfMarkedBlock from './blocksComponents/ButtonsOfMarkedBlock';
 import DeleteBlockModal from './blocksComponents/DeleteBlockModal';
-import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
 import classes from './blocks.module.css';
 
 type PageBreakBlockPropsType = {
   idx: number;
-  //activeBlockState: [number, Dispatch<SetStateAction<number>>];
-  //blocksContentState: [blockType[], Dispatch<SetStateAction<blockType[]>>];
-  //activeTextInputState: [string, Dispatch<SetStateAction<string>>];
 };
 
-export default function SlideBreakBlock({
-  idx,
-  //activeBlockState,
-  //blocksContentState,
-  //activeTextInputState
-}: PageBreakBlockPropsType) {
+export default function SlideBreakBlock({ idx }: PageBreakBlockPropsType) {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
   const { blocksContent, setBlocksContent } = useBlocksContentContext();
@@ -44,9 +20,7 @@ export default function SlideBreakBlock({
       key={idx}
       tabIndex={idx}
       onFocus={async () => {
-        //toggle();
         setActiveBlock(idx);
-        console.log('slide break content', blocksContent[idx]);
       }}
     >
       <Stack
@@ -55,6 +29,7 @@ export default function SlideBreakBlock({
         pl="0px"
         pr="0px"
         w="40vw"
+        miw="40rem"
         justify="center"
         className={idx === Math.floor(activeBlock) ? classes.blockFrameStyle : ''}
       >
@@ -63,11 +38,8 @@ export default function SlideBreakBlock({
             <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)" h="50px">
               <ButtonsOfMarkedBlock
                 idx={idx}
-                //activeBlockState={activeBlockState}
                 blockName="Slide break"
-                //blockContentState={blocksContentState}
                 typeOfAddBlockFunction="above"
-                //activeTextInputState={activeTextInputState}
                 deleteModalHandlers={deleteModalHandlers}
               />
             </Paper>
@@ -79,7 +51,14 @@ export default function SlideBreakBlock({
           </>
         )}
         <Paper radius="0px" pt="0px" pb="0px" pl="lg" pr="lg" w="calc(40vw-4px)">
-          <Accordion defaultValue="closed" chevronPosition="left">
+          <Accordion
+            className={
+              idx === Math.floor(activeBlock) ? classes.sectionBlockStyle : classes.unmarkedFrame
+            }
+            defaultValue="closed"
+            chevronPosition="left"
+            styles={{ item: { border: 'none' }, chevron: { color: 'var(--mantine-color-cyan-6)' } }}
+          >
             <Accordion.Item key="header" value="header">
               <Accordion.Control>
                 <Text fz="sm" fw="500" c="var(--mantine-color-cyan-6)">
@@ -128,11 +107,8 @@ export default function SlideBreakBlock({
           </Accordion>
           <ButtonsOfMarkedBlock
             idx={idx}
-            //activeBlockState={activeBlockState}
             blockName="Slide break"
-            //blockContentState={blocksContentState}
             typeOfAddBlockFunction="below"
-            //activeTextInputState={activeTextInputState}
             deleteModalHandlers={deleteModalHandlers}
           />
         </Paper>

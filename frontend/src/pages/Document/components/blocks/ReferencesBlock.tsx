@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { cloneDeep } from 'lodash';
-import { FaRegTrashAlt } from 'react-icons/fa';
-import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Flex, Stack, Text, Title } from '@mantine/core';
+import { MdOutlineAdd } from 'react-icons/md';
+import { Box, Button, Center, Flex, Stack, Text } from '@mantine/core';
 import { referencesElementType } from '@/Types';
 import { useActiveBlockContext, useBlocksContentContext } from '../../DocumentContextProviders';
-import { getReferenceForEditor, useEditTextfields } from '../../documentHandlers';
 import BasicTexfield from './blocksComponents/BasicTextfield';
 import BlockReferenceId from './blocksComponents/BlockReferenceId';
 import MarkedBlockFrame from './blocksComponents/MarkedBlockFrame';
+import DeleteReferencePopover from './refrencesBlockComponents/DeleteReferencePopover';
+import ReferenceItemMenu from './refrencesBlockComponents/ReferenceitemMenu';
+import classes from './blocks.module.css';
 
 type ReferencesBlockPropsType = {
   idx: number;
@@ -16,100 +17,90 @@ type ReferencesBlockPropsType = {
 
 export default function ReferencesBlock({ idx }: ReferencesBlockPropsType) {
   const { activeBlock, setActiveBlock } = useActiveBlockContext();
-  const { blocksContent, setBlocksContent } = useBlocksContentContext();
+  const { blocksContent, setBlocksContent, isNotSaved, setIsNotSaved } = useBlocksContentContext();
 
-  const { editTextfields } = useEditTextfields();
+  const [amountOfReferences, setAmoutOfReferences] = useState<number>(0);
 
   const addReference = () => {
-    const blocksCopy = cloneDeep(blocksContent);
-    let refId = 0;
-    for (const i of blocksCopy[idx].blockContent) {
-      const iId = Number(i.id.split('ref')[1]);
-      if (refId <= iId) {
-        //refId = iId + 1;
-        //refId++;
-        refId = iId + 1;
-      }
+    const assignedNumbers: number[] = [];
+    for (const reference of blocksContent[idx].blockContent) {
+      assignedNumbers.push(Number(reference.id.replace('bib', '')));
     }
 
-    blocksCopy[idx].blockContent = [
-      ...blocksCopy[idx].blockContent,
-      { id: 'ref'.concat(refId.toString()), label: 'New reference' },
+    let counter = 1;
+    while (assignedNumbers.includes(counter)) {
+      counter++;
+    }
+    const referencesList = cloneDeep(blocksContent[idx].blockContent);
+    blocksContent[idx].blockContent = [
+      ...referencesList,
+      {
+        id: 'bib'.concat(counter.toString()),
+        label: 'New entry',
+      },
     ];
-    setBlocksContent(blocksCopy);
+    setIsNotSaved(true);
+    setAmoutOfReferences((prev) => prev + 1);
   };
-
-  const deleteReference = (idxToDelete: number) => {
-    const refId = blocksContent[idx].blockContent[idxToDelete].id;
-
-    const blocksCopy = editTextfields(getReferenceForEditor(refId), '');
-    console.log('copy: ', blocksCopy);
-
-    console.log('delete ref', refId, idxToDelete, blocksCopy[idx].blockContent);
-    blocksCopy[idx].blockContent.splice(idxToDelete, 1);
-    setBlocksContent(blocksCopy);
-  };
-
-  console.log('refs: ', blocksContent[idx]);
 
   return (
     <>
       <Flex>
-        <MarkedBlockFrame idx={idx} blockName="Referrences">
+        <MarkedBlockFrame idx={idx} blockName="Bibliography / References">
           <Text mb="md" fw="bold" fz="xl" c="var(--mantine-color-gray-6)">
-            {blocksContent[0].blockContent === 'report' || blocksContent[0].blockContent === 'book'
+            {blocksContent[0].blockContent.class === 'report' ||
+            blocksContent[0].blockContent.class === 'book'
               ? 'Bibliography'
               : 'References'}
           </Text>
           <Stack m="md">
-            {blocksContent[idx].blockContent.map((item: referencesElementType, referenceId) => {
-              console.log('reference:', item, 'input id:', idx.toString() + 'ref' + item.id);
-              return (
-                <Flex>
-                  <Box h="1.4rem" mr="xs" mt="0.7rem">
-                    <BlockReferenceId referenceId={item.id} />
-                  </Box>
-                  <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
-                    [{referenceId + 1}]
-                  </Box>
-                  <Box maw="29vw" w="100%">
-                    <BasicTexfield
-                      idx={idx}
-                      //FIXME - te toString coś nie tak
-                      idxInput={idx.toString() + item.id}
-                      contentToRead={item.label}
-                    />
-                  </Box>
-                  {activeBlock === idx ? (
-                    <Button
-                      w="2rem"
-                      p="0px"
-                      variant="transparent"
-                      c="var(--mantine-color-gray-6)"
-                      onClick={() => {
-                        deleteReference(referenceId);
-                      }}
-                    >
-                      <FaRegTrashAlt />
-                    </Button>
-                  ) : (
-                    <Box w="2rem" />
-                  )}
-                </Flex>
-              );
-            })}
+            {amountOfReferences >= 0
+              ? blocksContent[idx].blockContent.map(
+                  (item: referencesElementType, referenceId: number) => {
+                    return (
+                      <Flex justify="space-between">
+                        <Box h="1.4rem" mr="xs" mt="0.7rem">
+                          <BlockReferenceId referenceId={item.id} />
+                        </Box>
+                        <Box mt="0.5rem" mr="md" c="var(--mantine-color-gray-6)" fw="500">
+                          [{referenceId + 1}]
+                        </Box>
+                        <Box w="100%" mr="xs">
+                          <BasicTexfield
+                            idx={idx}
+                            idxInput={idx.toString() + item.id}
+                            contentToRead={item.label}
+                          />
+                        </Box>
+                        {activeBlock === idx ? (
+                          <>
+                            <ReferenceItemMenu idx={idx} referenceId={referenceId} />
+                            <DeleteReferencePopover idx={idx} referenceId={referenceId} />
+                          </>
+                        ) : (
+                          <Box w="2rem" />
+                        )}
+                      </Flex>
+                    );
+                  }
+                )
+              : null}
 
             {activeBlock === idx ? (
-              <Button
-                bg="var(--mantine-color-gray-1)"
-                c="var(--mantine-color-gray-6)"
-                leftSection={<MdOutlineAdd />}
-                onClick={addReference}
-                m="0px"
-                h="2rem"
-              >
-                Add an element to the reference list
-              </Button>
+              <Center w="100%">
+                <Button
+                  className={classes.buttonWhiteHover}
+                  bg="transparent"
+                  c="var(--mantine-color-cyan-7)"
+                  leftSection={<MdOutlineAdd />}
+                  onClick={addReference}
+                  m="0px"
+                  h="2rem"
+                  w="8rem"
+                >
+                  Add entry
+                </Button>
+              </Center>
             ) : (
               <Box h="2rem" />
             )}

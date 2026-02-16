@@ -1,16 +1,15 @@
-import { Box } from '@mantine/core';
+import { Box, List } from '@mantine/core';
 
 export default function PasswarodRequirements() {
   return (
     <Box mb="sm">
       <b>Password</b> must:
-      <li>be 8-64 characters long</li>
-      <li>contain min. one letter</li>
-      <li>contain min. one number</li>
-      <li>
-        contain min. one of @$!%*#?&{' '}
-        <span style={{ marginLeft: '1.25rem' }}>special character</span>
-      </li>
+      <List>
+        <List.Item>be 8-64 characters long</List.Item>
+        <List.Item>contain min. one letter</List.Item>
+        <List.Item>contain min. one number</List.Item>
+        <List.Item>contain min. one of @$!*#?& special character</List.Item>
+      </List>
     </Box>
   );
 }

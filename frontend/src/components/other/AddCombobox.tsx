@@ -1,13 +1,23 @@
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { MdKeyboardArrowDown, MdOutlineAdd } from 'react-icons/md';
-import { Box, Button, Combobox, Flex, ScrollArea, Text, Tooltip, useCombobox } from '@mantine/core';
+import { ReactNode,useState } from 'react';
+import {
+  Box,
+  Button,
+  Combobox,
+  Flex,
+  FloatingPosition,
+  ScrollArea,
+  Text,
+  useCombobox,
+} from '@mantine/core';
 import { useClickOutside } from '@mantine/hooks';
+import CustomTooltip from './CustomTooltip';
+import classes from './other.module.css';
 
 type addSpecialCharacterComboboxPropsType = {
-  data: any; //{ label: string; icon: ReactNode; value: object | string }[];
+  data: any; 
   placeholder: string;
   buttonContent: ReactNode;
-  //expressionInputContentState: [string, Dispatch<SetStateAction<string>>];
+
   insertFunction: (value: any) => any;
   iconSize: string | number;
   floatingStrategy: 'fixed' | 'absolute';
@@ -15,13 +25,14 @@ type addSpecialCharacterComboboxPropsType = {
   buttonVariant?: string;
   tooltip?: string;
   belongingValidator?: string;
+  position?: FloatingPosition;
+  openedButtonColor?: string;
 };
 
 export function AddComboox({
   data,
   placeholder,
   buttonContent,
-  //expressionInputContentState,
   insertFunction,
   iconSize,
   floatingStrategy,
@@ -29,8 +40,9 @@ export function AddComboox({
   buttonVariant,
   tooltip,
   belongingValidator,
+  position,
+  openedButtonColor,
 }: addSpecialCharacterComboboxPropsType) {
-  //const [expressionInputContent, setExpressionInputContent] = expressionInputContentState;
   const [search, setSearch] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const combobox = useCombobox({
@@ -45,20 +57,14 @@ export function AddComboox({
     },
   });
 
+  combobox.dropdownOpened;
   const ref = useClickOutside(() => combobox.closeDropdown());
 
-  //   const addSpecialCharacter = (specialCharacter: string) => {
-  //     setExpressionInputContent(expressionInputContent.concat(specialCharacter));
-  //     insertElement(expressionInputContent.concat(specialCharacter));
-  //   };
-  //console.log('data:', data);
 
   const getGroupedElements = () => {
     return data.map((group) => {
       let filtredGroup = group.group;
-      //console.log('grouiped', filtredGroup);
       if (belongingValidator) {
-        //console.log('validate', belongingValidator);
         filtredGroup = filtredGroup.filter((item) => item.belonging?.includes(belongingValidator));
       }
       return (
@@ -66,7 +72,6 @@ export function AddComboox({
           {filtredGroup
             .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
             .map((item) => {
-              // console.log(item.Icon);
               return (
                 <Combobox.Option
                   value={item.label}
@@ -74,6 +79,8 @@ export function AddComboox({
                   onClick={() => {
                     insertFunction(item.value);
                   }}
+                  className={classes.hoverButton}
+                  disabled={item.disabledFunction ? item.disabledFunction() : false}
                 >
                   <Flex align="center">
                     <Box w="2rem" fz={iconSize} fw={500} p="0px" m="0px">
@@ -97,7 +104,7 @@ export function AddComboox({
     return filtredGroup
       .filter((item) => item.label.toLowerCase().includes(search.toLowerCase().trim()))
       .map((item) => {
-        //console.log('Icon', item.label, item.Icon);
+      
         return (
           <Combobox.Option
             value={item.label}
@@ -105,6 +112,8 @@ export function AddComboox({
             onClick={() => {
               insertFunction(item.value);
             }}
+            className={classes.hoverButton}
+            disabled={item.disabledFunction ? item.disabledFunction() : false}
           >
             <Flex align="center">
               <Box
@@ -114,10 +123,9 @@ export function AddComboox({
                 p="0px"
                 m="2px"
                 bg="white"
-                bd="1px solid var(--mantine-color-gray-1)"
+                bd="1px solid var(--mantine-color-cyan-1)"
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               >
-                {/* jeśli Icon to funkcja-komponent */}
                 {item.Icon ? <item.Icon /> : 'yolo'}
               </Box>
               <Text ml="sm" ta="left">
@@ -136,78 +144,80 @@ export function AddComboox({
       <Combobox
         store={combobox}
         width={400}
-        withArrow
         withinPortal={false}
         onOptionSubmit={(val) => {
           setSelectedItem(val);
           combobox.closeDropdown();
         }}
         zIndex={5000}
-        position="bottom"
+        position={position ? position : 'bottom'}
         floatingStrategy={floatingStrategy}
         shadow="md"
         styles={{
-          search: { backgroundColor: 'var(--mantine-color-gray-1)' },
+          search: { backgroundColor: 'var(--mantine-color-cyan-1)' },
           dropdown: {
-            border: '1px solid var(--mantine-color-cyan-2)',
-            backgroundColor: 'var(--mantine-color-gray-1)',
+            arrow: { borderColor: 'var(--mantine-color-cyan-2)' },
+            border: '1px solid var(--mantine-color-cyan-3)',
+            backgroundColor: 'var(--mantine-color-cyan-0)',
           },
           groupLabel: { color: 'var(--mantine-color-cyan-7)' },
         }}
       >
         <Combobox.Target withAriaAttributes={false}>
           {tooltip ? (
-            <Tooltip
-              label={tooltip}
-              //label={buttonsNotToRender.includes(idx) ? 'true' : 'false'}
-              color="cyan"
-              position="bottom"
-              offset={5}
-              withArrow
-              arrowOffset={50}
-              arrowSize={7}
-              arrowRadius={2}
-            >
+            <CustomTooltip label={tooltip}>
               <Button
                 onClick={() => {
-                  //e.stopPropagation();
+ 
                   combobox.toggleDropdown();
                 }}
+  
                 variant={buttonVariant ? buttonVariant : 'transparent'}
                 p=" 0.5rem"
                 m="0px"
+                px="0.45rem"
+                mx="3px"
+                bg={
+                  combobox.dropdownOpened
+                    ? openedButtonColor
+                      ? openedButtonColor
+                      : 'var(--mantine-color-gray-2)'
+                    : ''
+                }
               >
                 {buttonContent}
               </Button>
-            </Tooltip>
+            </CustomTooltip>
           ) : (
             <Button
               onClick={() => {
-                //e.stopPropagation();
+          
                 combobox.toggleDropdown();
               }}
               variant={buttonVariant ? buttonVariant : 'transparent'}
-              //p="0px"
-              //m="0px"
             >
               {buttonContent}
             </Button>
           )}
         </Combobox.Target>
 
-        <Combobox.Dropdown //bg="var(--mantine-color-gray-1)"
+        <Combobox.Dropdown
+          styles={{ arrow: { backgroundColor: 'var(--mantine-color-cyan-2)' } }}
         >
           <Combobox.Search
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
             placeholder={`Search ${placeholder}`}
           />
-          <Combobox.Options //style={{ overflowY: 'auto' }}
+          <Combobox.Options 
             mah="50vh"
             h="50vh"
             mb="0px"
           >
-            <ScrollArea h="100%">
+            <ScrollArea
+              h="100%"
+              styles={{ thumb: { backgroundColor: 'var(--mantine-color-cyan-4)' } }}
+            >
               {options.length > 0 ? options : <Combobox.Empty>Nothing found</Combobox.Empty>}
             </ScrollArea>
           </Combobox.Options>

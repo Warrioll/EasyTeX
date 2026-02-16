@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { BiSolidReport } from 'react-icons/bi';
 import { MdEmail } from 'react-icons/md';
 import { PiPresentationChartFill } from 'react-icons/pi';
-import { RiArticleFill, RiBook2Fill, RiSlideshow2Fill } from 'react-icons/ri';
+import { RiArticleFill, RiBook2Fill, } from 'react-icons/ri';
 import { documentClassType } from '@/Types';
 
 type documentMainLabelsReturnType =
@@ -33,7 +33,6 @@ type documentIconPropsType = {
   size: number | string;
 };
 
-//type documentNonCapitalLabelsReturnType =
 
 export function documentMainLabels(type: documentClassType): documentMainLabelsReturnType {
   switch (type) {
@@ -47,8 +46,6 @@ export function documentMainLabels(type: documentClassType): documentMainLabelsR
       return 'Report';
     case 'letter':
       return 'Letter';
-    case 'slides':
-      return 'Slides';
     default:
       return '';
   }
@@ -68,8 +65,6 @@ export function documentPluralNonCapitalLabels(
       return 'reports';
     case 'letter':
       return 'letters';
-    case 'slides':
-      return 'slides';
     default:
       return '';
   }
@@ -77,18 +72,6 @@ export function documentPluralNonCapitalLabels(
 
 export function documentColor(type: documentClassType): documentColorReturnType {
   switch (type) {
-    // case 'article':
-    //   return 'var(--mantine-color-blue-5)';
-    // case 'book':
-    //   return 'var(--mantine-color-teal-5)';
-    // case 'beamer':
-    //   return 'var(--mantine-color-orange-5)';
-    // case 'report':
-    //   return 'var(--mantine-color-grape-5)';
-    // case 'letter':
-    //   return 'var(--mantine-color-lime-5)';
-    // case 'slides':
-    //   return 'var(--mantine-color-pink-5)';
     case 'article':
       return 'blue';
     case 'book':
@@ -98,9 +81,7 @@ export function documentColor(type: documentClassType): documentColorReturnType 
     case 'report':
       return 'grape';
     case 'letter':
-      return 'lime';
-    case 'slides':
-      return 'pink';
+      return 'lime'; 
     default:
       return '';
   }
@@ -120,28 +101,7 @@ export function DocumentIcon({ type, color, size }: documentIconPropsType): docu
       return <BiSolidReport size={size} color={iconColor} />;
     case 'letter':
       return <MdEmail size={size} color={iconColor} />;
-    case 'slides':
-      return <RiSlideshow2Fill size={size} color={iconColor} />;
     default:
       return null;
   }
 }
-
-// const documentNonCapitalLabels = (type: documentClassType): documentNonCapitalLabelsReturnType => {
-//     switch (type) {
-//       case 'article':
-//         return 'article';
-//       case 'report':
-//         return 'report';
-//       case 'book':
-//         return 'book';
-//       case 'letter':
-//         return 'letter';
-//       case 'beamer':
-//         return 'presentation';
-//       case 'slides':
-//         return 'slide';
-//       default:
-//         return '';
-//     }
-//   };
