@@ -2,6 +2,20 @@
 
 Web application for creating documents based on LaTeX without needing to know the LaTeX syntax - simply by using GUI.
 
+# Features
+- User authentication (account creation and login)
+- Editing LaTeX documents via a graphical interface
+- Editing equations within documents using a GUI
+- Managing documents, uploaded images, and user accounts
+
+![](./frontend/public/app.png)
+![](./readmeAssets/addCombobox.PNG)
+![](./readmeAssets/equationEditor.PNG)
+![](./readmeAssets/loginPage.PNG)
+![](./readmeAssets/dashboard.PNG)
+![](./readmeAssets/assetsPage.PNG)
+![](./readmeAssets/account.PNG)
+
 ## How to run it
 
 1. Download Docker (https://www.docker.com/get-started/) and start Docker engine
